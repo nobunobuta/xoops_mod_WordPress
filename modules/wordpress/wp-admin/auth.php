@@ -13,7 +13,13 @@ function veriflog() {
 		if(list($id) = $xoopsDB->fetchRow($r)){
 		}else{
 			$level = 0;
-			if($xoopsUser->isadmin()){
+			$group = is_object($xoopsUser) ? $xoopsUser->getGroups() : array(XOOPS_GROUP_ANONYMOUS);
+			$edit_groups = get_xoops_option('wordpress','wp_edit_authgrp');
+			$admin_groups = get_xoops_option('wordpress','wp_admin_authgrp');
+			if (count(array_intersect($group,$edit_groups)) > 0) {
+				$level = 1;
+			}
+			if (count(array_intersect($group,$admin_groups)) > 0) {
 				$level = 10;
 			}
 			$uname = $xoopsDB->quoteString($xoopsUser->getVar('uname'));
