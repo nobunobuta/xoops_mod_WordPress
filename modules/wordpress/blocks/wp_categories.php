@@ -65,10 +65,13 @@ if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
 		$sorting_key = ($options[2])?$options[2]:'name';
 		$sorting_order = ($options[3])?$options[3]:'asc';
 		
-		global $wpdb, $siteurl,  $wp_id, $wp_inblock ,$user_cache;
+		global $wpdb, $siteurl,  $wp_id, $wp_inblock ,$user_cache, $category_name, $cat;
 
 		$id=1;
 		$use_cache=1;
+		
+		$cat = intval($_GET['cat']);
+		$category_name = $_GET['category_name'];
 		
 		if ($wp_num == "") {
 			$wp_id = $wp_num;
@@ -106,7 +109,7 @@ if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
 		}
 
 		function b_wp'.$i.'_categories_show($options) {
-			global $wpdb, $wp_id, $wp_inblock ,$user_cache;
+			global $wpdb, $siteurl,  $wp_id, $wp_inblock ,$user_cache, $category_name, $cat;
 			$wp_id = "'.$i.'";
 			$wp_inblock = 1;
 			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
