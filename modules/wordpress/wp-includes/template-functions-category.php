@@ -20,12 +20,13 @@ function get_category_link($echo = false, $category_id, $category_nicename) {
 	$category_id = intval($category_id);
 	$cat_ID = $category_id;
 	$permalink_structure = get_settings('permalink_structure');
-
 	if ('' == $permalink_structure) {
 		$file = "$siteurl/index.php";
 		$link = $file.'?cat='.$cat_ID;
 	} else {
-		$category_nicename = $cache_categories[$wp_id][$category_id]->category_nicename;
+		if (!$category_nicename) {
+			$category_nicename = $cache_categories[$wp_id][$category_id]->category_nicename;
+		}
 		// Get any static stuff from the front
 		$front = substr($permalink_structure, 0, strpos($permalink_structure, '%'));
 		$link = $siteurl . $front . 'category/' ;
@@ -56,6 +57,8 @@ function get_category_rss_link($echo = false, $category_id, $category_nicename) 
 }
 
 function the_category($seperator = '', $parents='') {
+	global $wp_id, $category_cache;
+	
     $categories = get_the_category();
     $thelist = '';
     if ('' == $seperator) {
@@ -200,7 +203,7 @@ function dropdown_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_
     $sort_column = 'cat_'.$sort_column;
 
     $query = "
-        SELECT cat_ID, cat_name, category_nicename,category_parent,
+        SELECT cat_ID, cat_name, category_nicename,category_parent,category_description cat_description,
         COUNT({$wpdb->post2cat[$wp_id]}.post_id) AS cat_count,
         DAYOFMONTH(MAX(post_date)) AS lastday, MONTH(MAX(post_date)) AS lastmonth
         FROM {$wpdb->categories[$wp_id]} LEFT JOIN {$wpdb->post2cat[$wp_id]} ON (cat_ID = category_id)
@@ -283,7 +286,7 @@ function list_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_orde
 		$sort_column = 'cat_'.$sort_column;
 
 		$query  = "
-			SELECT cat_ID, cat_name, category_nicename, category_description, category_parent
+			SELECT cat_ID, cat_name, category_nicename, category_description cat_description, category_parent
 			FROM {$wpdb->categories[$wp_id]}
 			WHERE cat_ID > 0 $exclusions
 			ORDER BY $sort_column $sort_order";
