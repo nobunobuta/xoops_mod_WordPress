@@ -8,7 +8,7 @@ function b_wp_recent_posts_show($options)
 	require_once(dirname(__FILE__).'/../wp-blog-header.php');
 	$no_posts = 10;
 	$skip_posts = 0;
-    $request = "SELECT ID, post_title FROM $tableposts WHERE post_status = 'publish' ";
+    $request = "SELECT * FROM $tableposts WHERE post_status = 'publish' ";
 //  if(!$show_pass_post) { $request .= "AND post_password ='' "; }
     $request .= "ORDER BY post_date DESC LIMIT $skip_posts, $no_posts";
     $posts = $wpdb->get_results($request);
