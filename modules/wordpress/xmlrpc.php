@@ -5,7 +5,7 @@ $HTTP_RAW_POST_DATA = $GLOBALS['HTTP_RAW_POST_DATA'];
 $HTTP_RAW_POST_DATA = trim($HTTP_RAW_POST_DATA);
 
 #Temporally fix for kousagi
-if (!empty($_GET['kousagi']) {
+if (!empty($_GET['kousagi'])) {
 	$kousagi = true;
 } else {
 	$kousagi = false;
