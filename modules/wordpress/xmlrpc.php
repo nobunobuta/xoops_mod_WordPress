@@ -5,16 +5,13 @@ $HTTP_RAW_POST_DATA = $GLOBALS['HTTP_RAW_POST_DATA'];
 $HTTP_RAW_POST_DATA = trim($HTTP_RAW_POST_DATA);
 
 #Temporally fix for kousagi
+$kousagi = false;
+$to_wiki = false;
 if (!empty($_GET['kousagi'])) {
 	$kousagi = true;
-} else {
-	$kousagi = false;
-}
-
-if (!empty($_GET['towiki'])) {
-	$to_wiki = true;
-} else {
-	$to_wiki = false;
+	if (intval($_GET['kousagi'])==2) {
+		$to_wiki = true;
+	}
 }
 
 include('wp-config.php');
@@ -58,7 +55,8 @@ logIO("I",$HTTP_RAW_POST_DATA);
  * and re-used throughout the code, where possible. -- emc3
  */
 function miniHTMLtoWiki($str) {
-	$wsp = mb_conv("/¡¡/", $blog_charset, "EUC-JP");
+ global $blog_charset;
+	$wsp = mb_conv("¡¡", $blog_charset, "EUC-JP");
 	$str = preg_replace("/<a href=\"([^\"]*)\">(.*?)<\/a>/", "[[$2:$1]]", $str);
 	$str = preg_replace("/<br \/>/","~\n".$wsp, $str);
 	$str = preg_replace("/<blockquote>/",">\n".$wsp, $str);
