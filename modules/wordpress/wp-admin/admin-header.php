@@ -22,6 +22,11 @@ if (get_xoops_option(wp_mod(),'wp_use_spaw') == 1) {
 } else {
 	$GLOBALS['wp_use_spaw']=false;
 }
+if (get_xoops_option(wp_mod(),'wp_use_spaw') == 2) {
+	$GLOBALS['wp_use_koivi']=true;
+} else {
+	$GLOBALS['wp_use_koivi']=false;
+}
 
 if (!isset($use_cache))	$GLOBALS['use_cache'] = 1;
 if (!isset($blogID))	$GLOBALS['blog_ID'] = 1;

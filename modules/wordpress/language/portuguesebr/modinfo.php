@@ -22,8 +22,11 @@ define("_MI_WORDPRESS_INST_OPTIONS_22","'pt_BR'");
 define("_MI_WORDPRESS_INST_OPTIONS_52","'l, j \\\\\\\de F \\\\\\\de Y'");
 define("_MI_WORDPRESS_INST_OPTIONS_53","'H:i.s'");
 // Config titles
-define("_MI_WPUSESPAW_CFG_MSG","Usar editor SPAW nos formulários de envio?");
-define("_MI_WPUSESPAW_CFG_DESC","Para ativar o editor SPAW, selecione \"Sim\".");
+define("_MI_WPUSESPAW_CFG_MSG","Select WYSIWYG Editor");
+define("_MI_WPUSESPAW_CFG_DESC","Select WYSIWYG Editor");
+define("_MI_OPT_WYSIWYG_NONE","None");
+define("_MI_OPT_WYSIWYG_SPAW","SPAW Editor");
+define("_MI_OPT_WYSIWYG_KOIVI","KOIVI Editor");
 
 define("_MI_WPEDITAUTHGRP_CFG_MSG","Grupo de editores:");
 define("_MI_WPEDITAUTHGRP_CFG_DESC","O(s) grupo(s) que têm autorização para editar e fazer posts (Nível 1 de usuário do WordPress).");

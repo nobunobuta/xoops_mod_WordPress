@@ -59,9 +59,14 @@ $modversion['config'][1] = array(
 	'name'			=> 'wp_use_spaw' ,
 	'title'			=> '_MI_WPUSESPAW_CFG_MSG' ,
 	'description'	=> '_MI_WPUSESPAW_CFG_DESC' ,
-	'formtype'		=> 'yesno' ,
+	'formtype'		=> 'select' ,
 	'valuetype'		=> 'int' ,
 	'default'		=> 0 ,
+	'options' => array(
+                    '_MI_OPT_WYSIWYG_NONE'=>0 ,
+                    '_MI_OPT_WYSIWYG_SPAW'=>1 ,
+                    '_MI_OPT_WYSIWYG_KOIVI'=>2 ,
+                ),
 );
 
 $modversion['config'][2] = array(

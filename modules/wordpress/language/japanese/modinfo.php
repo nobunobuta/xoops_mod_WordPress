@@ -22,8 +22,11 @@ define("_MI_WORDPRESS_INST_OPTIONS_22","'ja'");
 define("_MI_WORDPRESS_INST_OPTIONS_52","'Y年n月j日(l)'");
 define("_MI_WORDPRESS_INST_OPTIONS_53","'H時i分s秒'");
 // Config titles
-define("_MI_WPUSESPAW_CFG_MSG","投稿フォームにSPAWを使用する");
-define("_MI_WPUSESPAW_CFG_DESC","投稿フォームにSPAWを使用する場合にはYESを指定します");
+define("_MI_WPUSESPAW_CFG_MSG","投稿フォームにで使用するエディタ");
+define("_MI_WPUSESPAW_CFG_DESC","投稿フォームにて使用するWYSIWYGエディタを指定します");
+define("_MI_OPT_WYSIWYG_NONE","None");
+define("_MI_OPT_WYSIWYG_SPAW","SPAW Editor");
+define("_MI_OPT_WYSIWYG_KOIVI","KOIVI Editor");
 
 define("_MI_WPEDITAUTHGRP_CFG_MSG","初期権限が投稿権限をもつグループ");
 define("_MI_WPEDITAUTHGRP_CFG_DESC","ユーザ登録時に投稿権限(WordPressのユーザレベル１）のをもつグループ");

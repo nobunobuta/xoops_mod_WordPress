@@ -31,7 +31,12 @@
     <{/foreach}>
         <br />
         <script src="quicktags_spaw.js" language="JavaScript" type="text/javascript"></script>
-	      </fieldset>
+      </fieldset>
+<{elseif $use_koivi == true}>
+      <fieldset id="postdiv">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#post" title="Help with post field"><{$smarty.const._LANG_EF_AD_POSTAREA}></a></legend>
+        <{$spaw_form}>
+      </fieldset>
 <{else}>
       <fieldset id="postdiv">
         <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#post" title="Help with post field"><{$smarty.const._LANG_EF_AD_POSTAREA}></a></legend>

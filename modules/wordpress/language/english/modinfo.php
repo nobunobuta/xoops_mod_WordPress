@@ -22,8 +22,12 @@ define("_MI_WORDPRESS_INST_OPTIONS_22","'en'");
 define("_MI_WORDPRESS_INST_OPTIONS_52","'n/j/Y'");
 define("_MI_WORDPRESS_INST_OPTIONS_53","'g:i a'");
 // Config titles
-define("_MI_WPUSESPAW_CFG_MSG","Use SPAW Editor");
-define("_MI_WPUSESPAW_CFG_DESC","Use SPAW Editor");
+define("_MI_WPUSESPAW_CFG_MSG","Select WYSIWYG Editor");
+define("_MI_WPUSESPAW_CFG_DESC","Select WYSIWYG Editor");
+define("_MI_OPT_WYSIWYG_NONE","None");
+define("_MI_OPT_WYSIWYG_SPAW","SPAW Editor");
+define("_MI_OPT_WYSIWYG_KOIVI","KOIVI Editor");
+
 
 define("_MI_WPEDITAUTHGRP_CFG_MSG","Editor groups");
 define("_MI_WPEDITAUTHGRP_CFG_DESC","Select groups, who initially can post and edit.<br/>(WordPress user level 1)");

@@ -22,8 +22,11 @@ define("_MI_WORDPRESS_INST_OPTIONS_22","'it'");
 define("_MI_WORDPRESS_INST_OPTIONS_52","'n/j/Y'");
 define("_MI_WORDPRESS_INST_OPTIONS_53","'g:i a'");
 // Config titles
-define("_MI_WPUSESPAW_CFG_MSG","Usa Editor");
-define("_MI_WPUSESPAW_CFG_DESC","Usa Editor HTML");
+define("_MI_WPUSESPAW_CFG_MSG","Select WYSIWYG Editor");
+define("_MI_WPUSESPAW_CFG_DESC","Select WYSIWYG Editor");
+define("_MI_OPT_WYSIWYG_NONE","None");
+define("_MI_OPT_WYSIWYG_SPAW","SPAW Editor");
+define("_MI_OPT_WYSIWYG_KOIVI","KOIVI Editor");
 
 define("_MI_WPEDITAUTHGRP_CFG_MSG","Edita gruppi");
 define("_MI_WPEDITAUTHGRP_CFG_DESC","Seleziona i gruppi che possono postare ed editare.<br/>(Utenti Livello 1)");
