@@ -1,3 +1,25 @@
+2004-06-06  0.1.3
+	* wp-mail.php:
+		画像添付のテキストメールや画像を埋め込んだHTMLメールに対応
+		(Get Image file from attached with a Text E-mail or embbeded with an HTML E-mail)
+		
+	* wp-moblog.php:
+	* wp-moblog.php.orig:
+		wp-mail.phpで画像投稿に対応したので、wp-moblog.phpはもはや不要
+		(This file is obsolete. because wp-mail.php can handle photo image, now.)
+
+	* wp-lang/lang_en.php:
+		英語のランゲージファイルに_LANG_WPF_SUBT_EDITが定義されていなかった。
+		(_LANG_WPF_SUBT_EDIT was not defined in English language file.)
+
+	* blocks/wp_recent_posts.php:
+		間違ったミスタイプ文字が混入していた。
+		(Illeagal character is mis-typed in the source)
+
+	* xoops_search.php:
+		検索結果のリンクURLが過剰にURLENCODEされていた。
+		(URL in Search Results  were encoded illeagally)
+
 2004-06-02  0.1.2
 	* admin/index.php:
 	* admin/menu.php:
