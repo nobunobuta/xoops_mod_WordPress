@@ -70,8 +70,16 @@ function wp_insert_post($postarr = array()) {
 	$post_title = $wpdb->escape($post_title);
 	$post_excerpt = $wpdb->escape($post_excerpt);
 	
+	// Make sure we set a valid category
+	if (0 == count($post_category) || !is_array($post_category)) {
+		$post_category = array($post_default_category);
+	}
+
 	$post_cat = $post_category[0];
 	
+	if (empty($post_date))
+		$post_date = current_time('mysql');
+
 	$sql = "INSERT INTO {$wpdb->posts[$wp_id]} 
 		(post_author, post_date, post_content, post_title, post_excerpt, post_category, post_status) 
 		VALUES ('$post_author','$post_date','$post_content','$post_title', '$post_excerpt','$post_cat', '$post_status')";
@@ -90,6 +98,9 @@ function wp_get_single_post($postid = 0, $mode = OBJECT) {
 
 	$sql = "SELECT * FROM {$wpdb->posts[$wp_id]} WHERE ID=$postid";
 	$result = $wpdb->get_row($sql, $mode);
+
+	// Set categories
+	$result['post_category'] = wp_get_post_cats('',$postid);
 
 	return $result;
 }
@@ -112,11 +123,16 @@ function wp_update_post($postarr = array()) {
 	global $wpdb, $wp_id, $blog_charset;
 
 	// First get all of the original fields
-	extract(wp_get_single_post($postarr['ID']));	
+	extract(wp_get_single_post($postarr['ID'],ARRAY_A));	
 
 	// Now overwrite any changed values being passed in
 	extract($postarr);
 	
+	// Make sure we set a valid category
+	if (0 == count($post_category) || !is_array($post_category)) {
+		$post_category = array($post_default_category);
+	}
+
 	// Charset Encoding
 	$post_content = mb_conv($post_content, $blog_charset, "auto");
 	$post_title = mb_conv($post_title, $blog_charset, "auto");
@@ -126,10 +142,15 @@ function wp_update_post($postarr = array()) {
 	$post_title = $wpdb->escape($post_title);
 	$post_excerpt = $wpdb->escape($post_excerpt);
 
+	$post_modified = current_time('mysql');
 	
 	$sql = "UPDATE {$wpdb->posts[$wp_id]} 
 		SET post_content = '$post_content',
 		post_title = '$post_title',
+		post_category = $post_category[0],
+		post_status = '$post_status',
+		post_date = '$post_date',
+		post_modified = '$post_modified',
 		post_excerpt = '$post_excerpt',
 		ping_status = '$ping_status',
 		comment_status = '$comment_status'
@@ -150,11 +171,16 @@ function wp_update_post($postarr = array()) {
 function wp_get_post_cats($blogid = '1', $post_ID = 0) {
 	global $wpdb, $wp_id;
 	
-	$sql = "SELECT category_id FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID ORDER BY category_id";
-	logIO("O",$sql);
+	$sql = "SELECT category_id 
+		FROM {$wpdb->post2cat[$wp_id]} 
+		WHERE post_id = $post_ID 
+		ORDER BY category_id";
+
+//	logIO("O",$sql);
+
 	$result = $wpdb->get_col($sql);
 
-	return $result;
+	return array_unique($result);
 }
 
 function wp_set_post_cats($blogid = '1', $post_ID = 0, $post_categories = array()) {
@@ -167,21 +193,32 @@ function wp_set_post_cats($blogid = '1', $post_ID = 0, $post_categories = array(
 		$post_categories = array($post_categories);
 	}
 
+	$post_categories = array_unique($post_categories);
+
 	// First the old categories
-	$old_categories = $wpdb->get_col("SELECT category_id FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID");
+	$old_categories = $wpdb->get_col("
+		SELECT category_id 
+		FROM {$wpdb->post2cat[$wp_id]} 
+		WHERE post_id = $post_ID");
 
 	// Delete any?
 	foreach ($old_categories as $old_cat) {
-		if (!in_array($old_cat, $post_categories)) // If a category was there before but isn't now
-			$wpdb->query("DELETE FROM {$wpdb->post2cat[$wp_id]} WHERE category_id = $old_cat AND post_id = $post_ID LIMIT 1");
-logio("O","deleting post/cat: $post_ID, $old_cat");
+		if (!in_array($old_cat, $post_categories)) { // If a category was there before but isn't now
+			$wpdb->query("DELETE FROM {$wpdb->post2cat[$wp_id]} 
+				WHERE category_id = $old_cat 
+					AND post_id = $post_ID LIMIT 1
+				");
+			logio("O","deleting post/cat: $post_ID, $old_cat");
+		}
 	}
 
 	// Add any?
 	foreach ($post_categories as $new_cat) {
-		if (!in_array($new_cat, $old_categories))
-			$wpdb->query("INSERT INTO {$wpdb->post2cat[$wp_id]} (post_id, category_id) VALUES ($post_ID, $new_cat)");
-logio("O","adding post/cat: $post_ID, $new_cat");
+		if (!in_array($new_cat, $old_categories)) {
+			$wpdb->query("INSERT INTO {$wpdb->post2cat[$wp_id]} (post_id, category_id) 
+				VALUES ($post_ID, $new_cat)");
+			logio("O","adding post/cat: $post_ID, $new_cat");
+		}
 	}
 }
 
@@ -221,6 +258,9 @@ function post_permalink($post_ID=0, $mode = 'id') {
 		switch(strtolower($mode)) {
 			case 'title':
 				$title = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $postdata['Title']);
+				if (preg_match('/^_*$/',$title)) {
+					$title = "post-$post_ID";
+				}
 				break;
 			case 'id':
 			default:
@@ -756,7 +796,7 @@ function bloggereditpost($m) {
 		}
 
 
-		pingWeblogs($blog_ID);
+//		pingWeblogs($blog_ID);
 
 		return new xmlrpcresp(new xmlrpcval("1", "boolean"));
 
@@ -832,7 +872,7 @@ function bloggerdeletepost($m) {
 		}
 
 
-		pingWeblogs($blog_ID);
+//		pingWeblogs($blog_ID);
 
 		return new xmlrpcresp(new xmlrpcval(1,'boolean'));
 
@@ -943,9 +983,9 @@ function bloggergetpost($m) {
 			$post_date = strtotime($postdata['Date']);
 			$post_date = date("Ymd", $post_date)."T".date("H:i:s", $post_date);
 
-			$content  = "<title>".stripslashes($postdata["Title"])."</title>";
+			$content  = "<title>".mb_conv(stripslashes($postdata["Title"]),"UTF-8","auto")."</title>";
 			$content .= "<category>".$postdata["Category"]."</category>";
-			$content .= stripslashes($postdata["Content"]);
+			$content .= mb_conv(stripslashes($postdata["Content"]),"UTF-8","auto");
 
 			$struct = new xmlrpcval(array("userid" => new xmlrpcval($postdata["Author_ID"]),
 										  "dateCreated" => new xmlrpcval($post_date,"dateTime.iso8601"),
@@ -1023,9 +1063,9 @@ function bloggergetrecentposts($m) {
 			$post_date = strtotime($postdata['Date']);
 			$post_date = date("Ymd", $post_date)."T".date("H:i:s", $post_date);
 
-			$content  = "<title>".stripslashes($postdata["Title"])."</title>";
-			$content .= "<category>".get_cat_name($postdata["Category"])."</category>";
-			$content .= stripslashes($postdata["Content"]);
+			$content  = "<title>".mb_conv(stripslashes($postdata["Title"]),"UTF-8","auto")."</title>";
+			$content .= "<category>".mb_conv(get_cat_name($postdata["Category"]),"UTF-8","auto")."</category>";
+			$content .= mb_conv(stripslashes($postdata["Content"]),"UTF-8","auto");
 
 //			$content = convert_chars($content,"html");
 //			$content = $postdata["Title"];
@@ -1057,7 +1097,7 @@ function bloggergetrecentposts($m) {
 					break;
 			}
 
-			$struct[$i] = new xmlrpcval(array("authorName" => new xmlrpcval($authorname),
+			$struct[$i] = new xmlrpcval(array("authorName" => new xmlrpcval(mb_conv($authorname,"UTF-8","auto")),
 										"userid" => new xmlrpcval($postdata["Author_ID"]),
 										"dateCreated" => new xmlrpcval($post_date,"dateTime.iso8601"),
 										"content" => new xmlrpcval($content),
@@ -1397,7 +1437,8 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 		trackback_url_list($content_struct['mt_tb_ping_urls'],$post_ID);
 
 		logIO("O","(MW) Edited ! ID: $post_ID");
-		$myResp = new xmlrpcval($ID,"string");
+//		$myResp = new xmlrpcval($ID,"string");
+		$myResp = new xmlrpcval(true,"boolean");
 
 		return new xmlrpcresp($myResp);
 
