@@ -8,9 +8,13 @@ function veriflog() {
 	global $tableusers, $wpdb;
 	global $xoopsUser, $xoopsDB;
 	if($xoopsUser){
-		$sql = "select ID from $tableusers where ID = ".$xoopsUser->uid();
+		$sql = "select ID,user_login from $tableusers where ID = ".$xoopsUser->uid();
 		$r = $xoopsDB->query($sql);
-		if(list($id) = $xoopsDB->fetchRow($r)){
+		if(list($id,$user_login) = $xoopsDB->fetchRow($r)){
+			if ($xoopsUser->getVar('uname') != $user_login) {
+				$sql = "UPDATE $tableusers SET user_login = ".$xoopsDB->quoteString($xoopsUser->getVar('uname'))." WHERE ID = ".$xoopsUser->uid();
+				$xoopsDB->queryF($sql);
+			}
 		}else{
 			$level = 0;
 			$group = is_object($xoopsUser) ? $xoopsUser->getGroups() : array(XOOPS_GROUP_ANONYMOUS);
