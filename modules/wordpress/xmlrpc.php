@@ -11,6 +11,12 @@ if (!empty($_GET['kousagi'])) {
 	$kousagi = false;
 }
 
+if (!empty($_GET['towiki'])) {
+	$to_wiki = true;
+} else {
+	$to_wiki = false;
+}
+
 include('wp-config.php');
 
 require_once(ABSPATH.WPINC."/class-xmlrpc.php");
@@ -52,11 +58,12 @@ logIO("I",$HTTP_RAW_POST_DATA);
  * and re-used throughout the code, where possible. -- emc3
  */
 function miniHTMLtoWiki($str) {
-	$str = preg_replace("/<br \/>/","~\n　",$str);
-	$str = preg_replace("/<blockquote>/",">\n　",$str);
-	$str = preg_replace("/<\/blockquote>/", "\n<", $str);
-	$str = preg_replace("/^([^　><])/","　$1", $str);
+	$wsp = mb_conv("/｡｡/", $blog_charset, "EUC-JP");
 	$str = preg_replace("/<a href=\"([^\"]*)\">(.*?)<\/a>/", "[[$2:$1]]", $str);
+	$str = preg_replace("/<br \/>/","~\n".$wsp, $str);
+	$str = preg_replace("/<blockquote>/",">\n".$wsp, $str);
+	$str = preg_replace("/<\/blockquote>/", "\n<", $str);
+	$str = preg_replace("/^([^".$wsp."><])/", $wsp."$1", $str);
 	return $str;
 }
 
@@ -64,20 +71,21 @@ function miniHTMLtoWiki($str) {
  * generic function for inserting data into the posts table.
  */
 function wp_insert_post($postarr = array()) {
-	global $wpdb, $wp_id, $blog_charset, $kousagi;
+	global $wpdb, $wp_id, $blog_charset, $to_wiki;
 
 	// export array as variables
 	extract($postarr);
 
-	//Simple HTML to PukiWiki Format(for kousagi only)
-	if ($kousagi == 2) {
-		$post_content = miniHTMLtoWiki($post_content);
-		$post_excerpt = miniHTMLtoWiki($post_excerpt);
-	}
 	// Charset Encoding
 	$post_content = mb_conv($post_content, $blog_charset, "auto");
 	$post_title = mb_conv($post_title, $blog_charset, "auto");
 	$post_excerpt = mb_conv($post_excerpt, $blog_charset, "auto");
+
+	//Simple HTML to PukiWiki Format(for kousagi only)
+	if ($to_wiki) {
+		$post_content = miniHTMLtoWiki($post_content);
+		$post_excerpt = miniHTMLtoWiki($post_excerpt);
+	}
 	// Do some escapes for safety
 	$post_content = $wpdb->escape($post_content);
 	$post_title = $wpdb->escape($post_title);
