@@ -118,7 +118,7 @@
 	text-decoration: none;
 }
 
-#commentform input, #commentform textarea {
+#wpMainContent #commentform input,#wpMainContent #commentform textarea {
 	background: #fff;
 	border: 1px solid #333;
 }
@@ -128,16 +128,15 @@
 	color: #999999;
 }
 
-/* classes used by the_meta() */ 
-   #wpMainContent ul.post-meta { 
-           list-style: none; 
-   } 
-    
-   #wpMainContent ul.post-meta li { 
-           display: inline; 
-   } 
-    
-   #wpMainContent ul.post-meta span.post-meta-key { 
-           font-weight: bold; 
-   } 
+#wpMainContent ul.post-meta { 
+       list-style: none; 
+} 
+
+#wpMainContent ul.post-meta li { 
+       display: inline; 
+} 
+
+#wpMainContent ul.post-meta span.post-meta-key { 
+       font-weight: bold; 
+} 
 
