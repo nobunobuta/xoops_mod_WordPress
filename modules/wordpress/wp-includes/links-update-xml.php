@@ -3,7 +3,7 @@
 // Copyright (C) 2003 Mike Little -- mike@zed1.com
 
 // Get the path of our parent directory:
-$parentpath = dirname(dirname(__FILE__));
+$parentpath = XOOPS_ROOT_PATH.'/modules/wordpress'.(($wp_id=='-') ?'':$wp_id);
 
 require_once($parentpath.'/wp-config.php');
 
@@ -49,9 +49,9 @@ function update_links() {
  ** otherwise return false (nothing to do)
  **/
 function get_weblogs_updatedfile() {
-	global $ignore_weblogs_cache;
+	global $ignore_weblogs_cache, $wp_id;
 	$update = false;
-	$file = ABSPATH . get_settings('weblogs_cache_file');
+	$file = XOOPS_ROOT_PATH.'/modules/wordpress'.(($wp_id=='-') ?'':$wp_id) ."/". get_settings('weblogs_cache_file');
 	if ($ignore_weblogs_cache) {
 		$update = true;
 	} else {
@@ -76,7 +76,7 @@ function get_weblogs_updatedfile() {
 			$contents = preg_replace("/'/",'&#39;',$contents);
 			$contents = preg_replace('|[^[:space:][:punct:][:alpha:][:digit:]]|','',$contents);
 
-			$cachefp = fopen(ABSPATH . get_settings('weblogs_cache_file'), "w");
+			$cachefp = fopen(XOOPS_ROOT_PATH.'/modules/wordpress'.(($wp_id=='-') ?'':$wp_id) ."/". get_settings('weblogs_cache_file'), "w");
 			fwrite($cachefp, $contents);
 			fclose($cachefp);
 		} else {
@@ -147,7 +147,7 @@ if (get_weblogs_updatedfile()) {
 	xml_set_element_handler($xml_parser, "startElement", "endElement");
 
 	// Open the XML file for reading
-	$fp = fopen(ABSPATH . get_settings('weblogs_cache_file'), "r")
+	$fp = fopen(XOOPS_ROOT_PATH.'/modules/wordpress'.(($wp_id=='-') ?'':$wp_id) ."/". get_settings('weblogs_cache_file'), "r")
 		  or die("Error reading XML data.");
 
 	// Read the XML file 16KB at a time
