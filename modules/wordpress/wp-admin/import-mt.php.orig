@@ -1,42 +1,18 @@
 <?php
 $_my_ext_=pathinfo(__FILE__);if ($_my_ext_['extension']!="php") exit;
 define('MTEXPORT', '');
-if (!file_exists('../wp-config.php')) die("There doesn't seem to be a wp-config.php file. You must install WordPress before you import any entries.");
+$stand_alone=0;
+require("admin-header.php");
+//if (!file_exists('../wp-config.php')) die("There doesn't seem to be a wp-config.php file. You must install WordPress before you import any entries.");
 require('../wp-config.php');
-
+$tableusers = $wpdb->users[$wp_id];
+$tableposts = $wpdb->posts[$wp_id];
+$tablepost2cat = $wpdb->post2cat[$wp_id];
+$tablecategories = $wpdb->categories[$wp_id];
+$tablecomments =  $wpdb->comments[$wp_id];
 $step = $HTTP_GET_VARS['step'];
 if (!$step) $step = 0;
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<title>WordPress &rsaquo; Import from Movable Type</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<style media="screen" type="text/css">
-	body {
-		font-family: Georgia, "Times New Roman", Times, serif;
-		margin-left: 15%;
-		margin-right: 15%;
-	}
-	#logo {
-		margin: 0;
-		padding: 0;
-		background-image: url(http://wordpress.org/images/logo.png);
-		background-repeat: no-repeat;
-		height: 60px;
-		border-bottom: 4px solid #333;
-	}
-	#logo a {
-		display: block;
-		text-decoration: none;
-		text-indent: -100em;
-		height: 60px;
-	}
-	p {
-		line-height: 140%;
-	}
-	</style>
-</head><body>
-<h1 id="logo"><a href="http://wordpress.org">WordPress</a></h1>
 <?php
 switch($step) {
 
@@ -54,17 +30,31 @@ switch($step) {
 	break;
 
 	case 1:
-if ('' != MTEXPORT && !file_exists(MTEXPORT)) die("The file you specified does not seem to exist. Please check the path you've given.");
-if ('' == MTEXPORT) die("You must edit the MTEXPORT line as described on the <a href='import-mt.php'>previous page</a> to continue.");
 
+wp_refcheck("/wp-admin");
+
+if ('' != MTEXPORT && !file_exists(MTEXPORT)) {
+	echo("The file you specified does not seem to exist. Please check the path you've given.");
+	break;
+}
+if ('' == MTEXPORT) {
+	echo ("You must edit the MTEXPORT line as described on the <a href='import-mt.php'>previous page</a> to continue.");
+	break;
+}
+//"
 function checkauthor($author) {
-	global $wpdb;
+	global $wpdb,$tableusers,$xoopsUser;
 	// Checks if an author exists, creates it if it doesn't, and returns author_id
 	$user_id = $wpdb->get_var("SELECT ID FROM $tableusers WHERE user_login = '$author'");
 	if (!$user_id) {
-		$wpdb->query("INSERT INTO $tableusers (user_login, user_pass, user_nickname) VALUES ('$author', 'changeme', '$author')");
-		$user_id = $wpdb->get_var("SELECT ID FROM $tableusers WHERE user_login = '$author'");
-		echo "<strong>Created user '$author'</strong>. ";
+		if (defined('XOOPS_URL')) {
+			//XOOPS版では新しいユーザを作るとおかしくなるので現在ログインしているXOOPSユーザIDでの投稿にする。
+			$user_id = $xoopsUser->uid();
+		} else {
+			$wpdb->query("INSERT INTO $tableusers (user_login, user_pass, user_nickname) VALUES ('$author', 'changeme', '$author')");
+			$user_id = $wpdb->get_var("SELECT ID FROM $tableusers WHERE user_login = '$author'");
+			echo "<strong>Created user '$author'</strong>. ";
+		}
 	}
 	return $user_id;
 }
@@ -72,6 +62,8 @@ function checkauthor($author) {
 // Bring in the data
 $datalines = file(MTEXPORT); // Read the file into an array
 $importdata = implode('', $datalines); // squish it
+$mt_enc = mb_detect_encoding($importdata);
+$importdata = mb_convert_encoding($importdata, $blog_charset, $mt_enc);
 $posts = explode("--------", $importdata);
 $i = -1;
 echo "<ol>";
@@ -298,6 +290,5 @@ foreach ($posts as $post) { if ('' != trim($post)) {
 <?php
 	break;
 }
+include_once("admin-footer.php");
 ?>
-</body>
-</html>
