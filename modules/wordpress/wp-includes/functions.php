@@ -1552,7 +1552,9 @@ global $xoopsConfig;
 		if (trim($wp_block_style) != "") {
 		echo <<< EOD
 <style type="text/css" media="screen">
+    <!--
 	$wp_block_style
+    -->
 </style>
 EOD;
 		}
