@@ -17,10 +17,12 @@ function b_wp_recent_posts_show($options)
 	$request .= " ORDER BY post_date DESC LIMIT $skip_posts, $no_posts";
 	$lposts = $wpdb->get_results($request);
 	$output = '';
-	foreach ($lposts as $lpost) {
-		$post_title = stripslashes($lpost->post_title);
-		$permalink = get_permalink($lpost->ID);
-		$output .= '<li style="font-size:90%"><a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '">' . $post_title . '</a></li>';
+	if ($lposts) {
+		foreach ($lposts as $lpost) {
+			$post_title = stripslashes($lpost->post_title);
+			$permalink = get_permalink($lpost->ID);
+			$output .= '<li style="font-size:90%"><a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '">' . $post_title . '</a></li>';
+		}
 	}
 	$block['content'] = $output;
 	return $block;

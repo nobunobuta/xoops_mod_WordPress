@@ -33,20 +33,20 @@ function b_wp_recent_comments_show($options)
 		$lcomments = $wpdb->get_results($request);
 		$output = '<ul>';
 		$output = '';
-		foreach ($lcomments as $lcomment) {
-			if (preg_match('|<trackback />|', $lcomment->comment_content)) $type='[TrackBack]';
-			elseif (preg_match('|<pingback />|', $lcomment->comment_content)) $type='[PingBack]';
-			else  $type='[Comment]';
+		if ($lcomments) {
+			foreach ($lcomments as $lcomment) {
+				if (preg_match('|<trackback />|', $lcomment->comment_content)) $type='[TrackBack]';
+				elseif (preg_match('|<pingback />|', $lcomment->comment_content)) $type='[PingBack]';
+				else  $type='[Comment]';
 
-			$comment_author = stripslashes($lcomment->comment_author);
-			$comment_content = strip_tags($lcomment->comment_content);
-			$comment_content = stripslashes($comment_content);
-			$comment_excerpt = mb_substr($comment_content,0,$comment_lenth);
-	//      $words=split(" ",$comment_content);
-	//      $comment_excerpt = join(" ",array_slice($words,0,$comment_lenth));
-			$permalink = get_permalink($lcomment->ID)."#comment-".$lcomment->comment_ID;
-			$output .= '<li style="font-size:90%"><strong>' . $comment_author . ':</strong> <a href="' . $permalink;
-			$output .= '" title="View the entire comment by ' . $comment_author.'">' . $comment_excerpt . '...</a> <span style=\"font-size:70%\">- '.$type.'</span></li>';
+				$comment_author = stripslashes($lcomment->comment_author);
+				$comment_content = strip_tags($lcomment->comment_content);
+				$comment_content = stripslashes($comment_content);
+				$comment_excerpt = mb_substr($comment_content,0,$comment_lenth);
+				$permalink = get_permalink($lcomment->ID)."#comment-".$lcomment->comment_ID;
+				$output .= '<li style="font-size:90%"><strong>' . $comment_author . ':</strong> <a href="' . $permalink;
+				$output .= '" title="View the entire comment by ' . $comment_author.'">' . $comment_excerpt . '...</a> <span style=\"font-size:70%\">- '.$type.'</span></li>';
+			}
 		}
 		$output .= '</ul>';	
 	} else {
@@ -58,7 +58,7 @@ function b_wp_recent_comments_show($options)
 function tkzy_get_recent_comments($limit = 10) { 
      global $wpdb, $tablecomments, $tableposts; 
      global $siteurl, $blogfilename; 
-     $comments = $wpdb->get_results("SELECT ID, post_title, post_date, 
+     $lcomments = $wpdb->get_results("SELECT ID, post_title, post_date, 
      comment_ID, comment_author, comment_author_url, comment_author_email, comment_date, comment_content 
      FROM $tableposts, $tablecomments WHERE $tableposts.ID=$tablecomments.comment_post_ID 
      ORDER BY $tablecomments.comment_date DESC LIMIT $limit"); 
@@ -69,34 +69,36 @@ function tkzy_get_recent_comments($limit = 10) {
           } 
           return mysql2date('U',$b->post_date) - mysql2date('U',$a->post_date); 
      } 
-     if($comments){ 
-          usort($comments, "sort_comment_by_date"); 
+     if($lcomments){ 
+          usort($lcomments, "sort_comment_by_date"); 
      } 
-     $new_post_ID = -1; 
-     foreach ($comments as $comment) { 
-          if ($comment->ID != $new_post_ID) { // next post 
-               if ($new_post_ID != -1) { $output .= "\t</ul>\n</li>\n"; } 
-               $post_title = stripslashes($comment->post_title); 
-               $permalink = "$siteurl/$blogfilename?p=$comment->ID&amp;c=1"; 
-               $output .= "<li>"; 
-               $output .= "<a href=\"$permalink\">$post_title</a>\n"; 
-               $output .= "\t<ul>\n"; 
-               $new_post_ID = $comment->ID; 
-          } 
-          $comment_date = $comment->comment_date; 
-          if ( time() - mysql2date('U', $comment_date) < 60*60*24 ) { # within 24 hours 
-               $comment_date = mysql2date('H:i', $comment_date); 
-          } else { 
-               $comment_date = mysql2date('m/d', $comment_date); 
-          } 
-          $output .= "\t\t<li style=\"list-style: none;\"><span style=\"font-size:90%;\" class=\"comment_date\">$comment_date </span>". 
-               "<span class=\"comment_author\">".tkzy_get_comment_author_link($comment,25)."</span></li>\n"; 
-		if (preg_match('|<trackback />|', $comment->comment_content)) $type='[TrackBack]';
-		elseif (preg_match('|<pingback />|', $comment->comment_content)) $type='[Ping]';
-		else  $type='[Comment]';
-		
-		$output .= "<span style=\"font-size:70%\"> - $type</span>";
-     } 
+     $new_post_ID = -1;
+     if ($lcomments) {
+	     foreach ($lcomments as $lcomment) { 
+	          if ($lcomment->ID != $new_post_ID) { // next post 
+	               if ($new_post_ID != -1) { $output .= "\t</ul>\n</li>\n"; } 
+	               $post_title = stripslashes($lcomment->post_title); 
+	               $permalink = "$siteurl/$blogfilename?p=$lcomment->ID&amp;c=1"; 
+	               $output .= "<li>"; 
+	               $output .= "<a href=\"$permalink\">$post_title</a>\n"; 
+	               $output .= "\t<ul>\n"; 
+	               $new_post_ID = $lcomment->ID; 
+	          } 
+	          $comment_date = $lcomment->comment_date; 
+	          if ( time() - mysql2date('U', $comment_date) < 60*60*24 ) { # within 24 hours 
+	               $comment_date = mysql2date('H:i', $comment_date); 
+	          } else { 
+	               $comment_date = mysql2date('m/d', $comment_date); 
+	          } 
+	          $output .= "\t\t<li style=\"list-style: none;\"><span style=\"font-size:90%;\" class=\"comment_date\">$comment_date </span>". 
+	               "<span class=\"comment_author\">".tkzy_get_comment_author_link($lcomment,25)."</span></li>\n"; 
+			if (preg_match('|<trackback />|', $lcomment->comment_content)) $type='[TrackBack]';
+			elseif (preg_match('|<pingback />|', $lcomment->comment_content)) $type='[Ping]';
+			else  $type='[Comment]';
+			
+			$output .= "<span style=\"font-size:70%\"> - $type</span>";
+	     } 
+     }
      $output .= "\t</ul>\n</li>\n"; 
      return $output; 
 } 
