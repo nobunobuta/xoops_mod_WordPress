@@ -317,7 +317,8 @@ if ('' != $author_name) {
         $author_name = $author_name[count($author_name)-2];#there was a trailling slash
         }
     }
-    $author_name = preg_replace('|[^a-z0-9-_]|', '', strtolower($author_name));
+//    $author_name = preg_replace('|[^a-z0-9-_]|', '', strtolower($author_name));
+    $author_name = rawurldecode($author_name); // For Japanese Author Name;
     $author = $wpdb->get_var("SELECT ID FROM {$wpdb->users[$wp_id]} WHERE user_login='".$author_name."'");
     $whichauthor .= ' AND (post_author = '.intval($author).')';
 }

@@ -88,7 +88,7 @@ function get_author_link($echo = false, $author_id, $author_name) {
         // Get any static stuff from the front
         $front = substr($permalink_structure, 0, strpos($permalink_structure, '%'));
         $link = $siteurl . $front . 'author/';
-        $link .= $author_name . '/';
+        $link .= rawurlencode($author_name) . '/';
     }
 
     if ($echo) echo $link;
