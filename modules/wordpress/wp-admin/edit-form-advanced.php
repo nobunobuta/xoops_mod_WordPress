@@ -94,6 +94,7 @@ window.onload = focusit;
 <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#post" title="Help with post field"><?php echo _LANG_EF_AD_POSTAREA; ?></a></legend>
 		<div id="quicktags">
 <?php
+if ($wp_use_spaw==false) {
 if ($use_quicktags) {
 	echo '<a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#quicktags" title="Help with quicktags"><?php echo _LANG_EF_AD_POSTQUICK; ?></a>: ';
 	include('quicktags.php');
@@ -106,10 +107,26 @@ if ($use_quicktags) {
      $rows = 10;
  }
 ?>
-<div><textarea rows="<?php echo $rows; ?>" cols="40" name="content" tabindex="5" id="wp_content"><?php echo $content ?></textarea></div>
+<div><textarea rows="<?php echo $rows; ?>" cols="40" name="wp_content" tabindex="5" id="wp_content"><?php echo $content ?></textarea></div>
+<?php
+} else {
+// For Spaw Editor
+    include_once "spaw/spaw_control.class.php";
+	$content = html_entity_decode($content);
+	$sw = new SPAW_Wysiwyg( 'wp_content', $content, 'jp', 'full', 'default' );
+	$sw -> show();
+    foreach($wpsmiliestrans as $smiley => $img) 
+    { 
+        print '<a href="javascript:bbinsert(document.post,\'\',\''.str_replace("'","\'",$smiley).'\')"><img src="' . get_settings("smilies_directory") . '/'. $img . '" alt="' . $smiley . '" /></a> '; 
+    } 
+	echo "<script src=\"quicktags_spaw.js\" language=\"JavaScript\" type=\"text/javascript\"></script>";
+//
+}
+?>
 </fieldset>
 
 <?php
+if ($wp_use_spaw==false) {
 if ($use_quicktags) {
 ?>
 <script type="text/javascript" language="JavaScript">
@@ -118,6 +135,7 @@ edCanvas = document.getElementById('wp_content');
 //-->
 </script>
 <?php
+}
 }
 if ($action != 'editcomment') {
     if (get_settings('use_geo_positions')) {

@@ -35,9 +35,11 @@ $my_pingserver[0]['port']=80;
 //$my_pingserver[2]['server']="ping.myblog.jp";
 //$my_pingserver[2]['path']="/";
 //$my_pingserver[2]['port']=80;
-//$my_pingserver[3]['server']="ping.cocolog-nifty.com";
-//$my_pingserver[3]['path']="/xmlrpc";
+//$my_pingserver[3]['server']="bulkfeeds.net";
+//$my_pingserver[3]['path']="/rpc";
 //$my_pingserver[3]['port']=80;
+
+$wp_use_spaw=true;
 
 // Get everything else
 require_once(ABSPATH.'wp-settings.php');

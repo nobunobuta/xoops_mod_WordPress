@@ -24,7 +24,7 @@ if ($use_pingback) {
 	$form_pingback = '';
 }
 if ($use_trackback) {
-	$form_trackback = _LANG_EF_TRACK_FORM.'	<input type="text" name="trackback_url" style="width: 360px" id="trackback" tabindex="7" /></p>';
+	$form_trackback = _LANG_EF_TRACK_FORM.'	<input type="text" name="trackback_url" style="width: 360px" id="trackback" tabindex="7" value="'.$trackback_url.'"/></p>';
 	if ('' != $pinged) {
 		$form_trackback .= '<p>Already pinged:</p><ul>';
 		$already_pinged = explode("\n", trim($pinged));
@@ -81,6 +81,7 @@ window.onload = focusit;
 <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#post" title="Help with post field"><?php echo _LANG_EF_AD_POSTAREA; ?></a></legend>
 		<div id="quicktags">
 <?php
+if ($wp_use_spaw==false||!$is_winIE) {
 if ($use_quicktags && 'bookmarklet' != $mode) {
 	echo '<a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#quicktags" title="Help with quicktags">'._LANG_EF_AD_POSTQUICK.'</a>: ';
 	include('quicktags.php');
@@ -93,10 +94,27 @@ if ($use_quicktags && 'bookmarklet' != $mode) {
      $rows = 10;
  }
 ?>
-<div><textarea rows="<?php echo $rows; ?>" cols="40" name="content" tabindex="4" id="wp_content"><?php echo $content ?></textarea></div>
+<div><textarea rows="<?php echo $rows; ?>" cols="40" name="wp_content" tabindex="4" id="wp_content"><?php echo $content ?></textarea></div>
+<?php
+} else {
+// For Spaw Editor
+    include_once "spaw/spaw_control.class.php";
+	$content = html_entity_decode($content);
+	$sw = new SPAW_Wysiwyg( 'wp_content', $content, 'jp', 'full', 'default', '70%', '400px' );
+	$sw -> show();
+    foreach($wpsmiliestrans as $smiley => $img) 
+    { 
+        print '<a href="javascript:bbinsert(document.post,\'\',\''.str_replace("'","\'",$smiley).'\')"><img src="' . get_settings("smilies_directory") . '/'. $img . '" alt="' . $smiley . '" /></a> '; 
+    } 
+echo "<br />"; 
+echo "<script src=\"quicktags_spaw.js\" language=\"JavaScript\" type=\"text/javascript\"></script>";
+//
+}
+?>
 </fieldset>
 
 <?php
+if ($wp_use_spaw==false||!$is_winIE) {
 if ($use_quicktags) {
 ?>
 <script type="text/javascript" language="JavaScript">
@@ -104,7 +122,7 @@ if ($use_quicktags) {
 edCanvas = document.getElementById('wp_content');
 //-->
 </script>
-<?php } ?>
+<?php }} ?>
 
 <?php echo $form_pingback ?>
 <?php echo $form_prevstatus ?>

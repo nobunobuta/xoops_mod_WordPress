@@ -66,7 +66,32 @@ window.close()
     }
     
     /* /big funky fixes */
+// autodetect Trackback
+	$fp = fopen($popupurl,"r");
+	if ($fp) {
+		$tb_contents = "";
+		do {
+			$tb_data = fread($fp, 8192);
+			if (strlen($tb_data) == 0) {
+				break;
+			}
+			$tb_contents .= $tb_data;
+		} while(true);
+		fclose ($fp);
+		if (preg_match_all('#<rdf:RDF[^>]*>(.*?)</rdf:RDF>#si',$tb_contents,$matches,PREG_PATTERN_ORDER)) {
+			$tb_urls = array();
+			$obj = new TrackBack_XML();
+			$tb_body = $matches[1][0];
+			echo $tb_body;
+			list($tb_url,$tb_url_nc) = $obj->parse($tb_body,$popupurl);
+			if ($tb_url !== FALSE) {
+				$trackback_url = $tb_url;
+			}
+		}
+	}
+	
 
+	
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -127,5 +152,74 @@ function launchupload() {
 
 </body>
 </html><?php
+}
+// 埋め込まれたデータから TrackBack Ping urlを取得するクラス
+class TrackBack_XML
+{
+	var $url;
+	var $tb_url;
+	var $tb_url_nc;
+	
+	function parse($buf,$url)
+	{
+		// 初期化
+		$this->url = $url;
+		$this->tb_url = FALSE;
+		$this->tb_url_nc = FALSE;
+		
+		$xml_parser = xml_parser_create();
+		if ($xml_parser === FALSE)
+		{
+			return FALSE;
+		}
+		xml_set_element_handler($xml_parser,array(&$this,'start_element'),array(&$this,'end_element'));
+		
+		if (!xml_parse($xml_parser,$buf,TRUE))
+		{
+/*			die(sprintf('XML error: %s at line %d in %s',
+				xml_error_string(xml_get_error_code($xml_parser)),
+				xml_get_current_line_number($xml_parser),
+				$buf
+			));
+*/
+			return FALSE;
+		}
+		return array($this->tb_url,$this->tb_url_nc);
+	}
+	function start_element($parser,$name,$attrs)
+	{
+		if ($name !== 'RDF:DESCRIPTION')
+		{
+			return;
+		}
+		
+		$about = $url = $tb_url = '';
+		foreach ($attrs as $key=>$value)
+		{
+			switch ($key)
+			{
+				case 'RDF:ABOUT':
+					$about = $value;
+					break;
+				case 'DC:IDENTIFER':
+				case 'DC:IDENTIFIER':
+					$url = $value;
+					break;
+				case 'TRACKBACK:PING':
+					$tb_url = $value;
+					break;
+			}
+		}
+		
+		if ($about == $this->url or $url == $this->url)
+		{
+			$this->tb_url = $tb_url;
+		}
+		if ($tb_url) $this->tb_url_nc = $tb_url;
+	}
+	function end_element($parser,$name)
+	{
+		// do nothing
+	}
 }
 ?>

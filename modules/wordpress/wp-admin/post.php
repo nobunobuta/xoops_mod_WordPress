@@ -18,7 +18,7 @@ if (!get_magic_quotes_gpc()) {
     $HTTP_COOKIE_VARS = add_magic_quotes($HTTP_COOKIE_VARS);
 }
 
-$wpvarstoreset = array('action', 'safe_mode', 'withcomments', 'c', 'posts', 'poststart', 'postend', 'content', 'edited_post_title', 'comment_error', 'profile', 'trackback_url', 'excerpt', 'showcomments', 'commentstart', 'commentend', 'commentorder');
+$wpvarstoreset = array('action', 'safe_mode', 'withcomments', 'c', 'posts', 'poststart', 'postend', 'wp_content', 'edited_post_title', 'comment_error', 'profile', 'trackback_url', 'excerpt', 'showcomments', 'commentstart', 'commentend', 'commentorder');
 
 for ($i=0; $i<count($wpvarstoreset); $i += 1) {
     $wpvar = $wpvarstoreset[$i];
@@ -43,7 +43,7 @@ switch($action) {
 			require_once('admin-header.php');
 
 			$post_pingback = intval($HTTP_POST_VARS['post_pingback']);
-			$content = balanceTags($HTTP_POST_VARS['content']);
+			$content = balanceTags($HTTP_POST_VARS['wp_content']);
 			$content = format_to_post($content);
 			$excerpt = balanceTags($HTTP_POST_VARS['excerpt']);
 			$excerpt = format_to_post($excerpt);
@@ -245,7 +245,7 @@ switch($action) {
 			$post_categories = $HTTP_POST_VARS['post_category'];
 			if (!$post_categories) $post_categories[] = 1;
 			$post_autobr = intval($HTTP_POST_VARS['post_autobr']);
-			$content = balanceTags($HTTP_POST_VARS['content']);
+			$content = balanceTags($HTTP_POST_VARS['wp_content']);
 			$content = format_to_post($content);
 			$excerpt = balanceTags($HTTP_POST_VARS['excerpt']);
 			$excerpt = format_to_post($excerpt);
@@ -685,8 +685,13 @@ if ($is_NS4 || $is_gecko) {
     - <?php echo $blogname ?></a> 
     <?php
 } else if ($is_winIE) {
+	if ($wp_use_spaw) {
+		$range_text = "htmlText";
+	} else {
+		$range_text = "text";
+	}
 ?>
-    <a href="javascript:Q='';if(top.frames.length==0)Q=document.selection.createRange().text;void(btw=window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?text='+escape(Q)+'<?php echo $bookmarklet_tbpb ?>&popupurl='+escape(location.href)+'&popuptitle='+escape(document.title),'bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));btw.focus();">Press it 
+    <a href="javascript:Q='';if(top.frames.length==0)Q=document.selection.createRange().<?php echo $range_text ?>;void(btw=window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?text='+escape(Q)+'<?php echo $bookmarklet_tbpb ?>&popupurl='+escape(location.href)+'&popuptitle='+escape(document.title),'bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=50,status=yes'));btw.focus();">Press it 
     - <?php echo $blogname ?></a> 
     <script type="text/javascript" language="JavaScript">
 <!--
