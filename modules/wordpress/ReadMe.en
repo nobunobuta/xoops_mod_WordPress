@@ -4,7 +4,53 @@ It's based on "WordPress 1.0.2" and "WordPress ME 1.0.3" (Multi Language Edition
 
 There currently is not any English documentation for this module. If you know about the original WordPress, you will be able to use this module easily. If you don't, please see the documents on the WordPress Homepage.
 
+With this module, you can use following XOOPS blocks.
+-WordPress Calendar
+-WordPress Monthly Archives
+-WordPress Categories Listing
+-WordPress Link Listing
+-WordPress Blog Search
+-WordPress Recent Posts
+-WordPress Recent Comments
+-WordPress Contents
+
+I did following original enhancements for this module.
+-Can post a blog with spaw editor.
+-Can specify special ping server.
+
 To install this module, you don't need to run install.php, like WordPress needs it. All you have to do is, copy all files into your XOOPS Module directory and execute XOOPS module install menu as normal.
+
+From WordPress Release0.2.0, Directory strucure is changed a little.
+
+XOOPS_ROOT_PATH
+ |
+ +-modules
+    |
+    :
+    +-wordpress
+    |  |
+    |  :
+    |  +- themes
+    |      |
+    |      +- default
+    |      |   |
+    |      |   +- index-template.php
+    |      |   +  content_block-template.php
+    |      |   +- comments-template.php
+    |      |   +  content_block-template.php
+    |      |   +- wp-layout.css
+    |      |   +- print.css
+    |      |   +- wp-admin.css
+    |      |   +- wp-blocks.css.php
+    |      |   +- wp-config-custom.php
+    |      |
+    |      +- Xoops Theme Name
+    |      :   |
+    :      :   :
+    :
+    +-wordpress0
+    :
+    +-wordpress1
 
 ------------
 ChangeLog
@@ -16,8 +62,9 @@ Added Features)
 
 0.2.0  [2004-06-26]
 Added Features)
--Enable to clone this module.
--Can custmize WordPress templates and Style sheet with each Xoops themes.
+-WordPress Module can be cloned.
+ (If you want to use another WordPress, copy the directory of wordpress into wordpress[0-9] entirely.)
+-WordPress Templates and Stylesheets can be customized synchronising with XOOPS Theme..
 
 0.1.4  [2004-06-10]
 Added Features)
