@@ -525,13 +525,13 @@ function pingWeblogs($blog_ID = 1) {
 	// original function by Dries Buytaert for Drupal
 	global  $siteurl,$my_pingserver;
 	if ((!((get_settings('blogname')=="my weblog") && ($siteurl=="http://example.com"))) && (!preg_match("/localhost\//",$siteurl)) && (get_settings('use_weblogsping'))) {
+		$message = new xmlrpcmsg("weblogUpdates.ping", array(new xmlrpcval(get_settings('blogname')), new xmlrpcval($siteurl."/index.php")));
 		foreach($my_pingserver as $p) {
 			$client = new xmlrpc_client($p['path'],$p['server'],$p['port']);
-			$message = new xmlrpcmsg("weblogUpdates.ping", array(new xmlrpcval(get_settings('blogname')), new xmlrpcval($siteurl."/index.php")));
 			$result = $client->send($message, 30);
 			unset($client);
-			unset($message);
 		}
+		unset($message);
 		if (!$result || $result->faultCode()) {
 			return false;
 		}
@@ -1442,10 +1442,10 @@ function rewrite_rules($matches = '', $permalink_structure = '') {
     $authormatch = preg_replace('|^/+|', '', $authormatch);
 
     $authorfeedmatch = $authormatch . '(.*)/' . $feedregex;
-    $authorfeedquery = 'wp-feed.php?author_name=' . preg_index(1, $matches) . '&feed=' . preg_index(2, $matches);
+    $authorfeedquery = 'wp-feed.php?author_name=' . rawurlencode(preg_index(1, $matches)) . '&feed=' . preg_index(2, $matches);
 
     $authormatch = $authormatch . '?(.*)';
-    $authorquery = 'index.php?author_name=' . preg_index(1, $matches);
+    $authorquery = 'index.php?author_name=' . rawurlencode(preg_index(1, $matches));
 
     $rewrite = array(
                      $catfeedmatch => $catfeedquery,
