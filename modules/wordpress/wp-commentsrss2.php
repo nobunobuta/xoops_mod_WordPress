@@ -10,12 +10,7 @@ header("Content-type: application/xml");
 include_once (dirname(__FILE__)."/../../mainfile.php");
 error_reporting(E_ERROR);
 require('wp-blog-header.php');
-if (function_exists('mb_convert_encoding')) {
-	$rss_charset = 'utf-8';
-}else{
-	$rss_charset = $blog_charset;
-}
-
+$rss_charset = wp_get_rss_charset();
 echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>';
 ?>
 <!-- generator="wordpress/<?php echo $wp_version ?>" -->

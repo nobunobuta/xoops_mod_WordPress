@@ -14,11 +14,7 @@ if (isset($showposts) && $showposts) {
 }
 
 add_filter('the_content', 'trim');
-if (function_exists('mb_convert_encoding')) {
-	$rss_charset = 'utf-8';
-}else{
-	$rss_charset = $blog_charset;
-}
+$rss_charset = wp_get_rss_charset();
 ?>
 <?php echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>'; ?>
 <!-- generator="wordpress/<?php echo $wp_version ?>" -->
@@ -37,7 +33,7 @@ if (function_exists('mb_convert_encoding')) {
 	<dc:language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></dc:language>
 	<dc:date><?php echo gmdate('Y-m-d\TH:i:s'); ?></dc:date>
 <?php if (function_exists('mb_convert_encoding')) { ?>
-	<dc:creator><?php echo antispambot(mb_convert_encoding(get_settings('admin_email'),"UTF-8",$blog_charset)) ?></dc:creator>
+	<dc:creator><?php echo antispambot(mb_convert_encoding(get_settings('admin_email'),$rss_charset,$blog_charset)) ?></dc:creator>
 <?php } else { ?>
 	<dc:creator><?php echo antispambot(get_settings('admin_email')) ?></dc:creator>
 <?php } ?>

@@ -20,10 +20,10 @@ function bloginfo($show='') {
 
 function bloginfo_rss($show='') {
 	global $blog_charset;
-	
 	$info = strip_tags(get_bloginfo($show));
-	if (function_exists('mb_convert_encoding')) {
-		echo mb_convert_encoding(convert_chars($info, 'unicode'),"UTF-8", $blog_charset);
+	$rss_charset = wp_get_rss_charset();
+	if ($blog_charset != $rss_charset) {
+		echo mb_convert_encoding(convert_chars($info, 'unicode'), $rss_charset, $blog_charset);
 	} else {
 		echo convert_chars($info, 'unicode');
 	}
@@ -863,8 +863,9 @@ function the_author_rss()
 {
 	global $blog_charset;
 
-	if (function_exists('mb_convert_encoding')) {
-		echo mb_convert_encoding(the_author('',false),"UTF-8", $blog_charset);
+	$rss_charset = wp_get_rss_charset();
+	if ($blog_charset != $rss_charset) {
+		echo mb_convert_encoding(the_author('',false),$rss_charset, $blog_charset);
 	} else {
 		the_author();
 	}
@@ -909,8 +910,9 @@ function the_title_rss() {
 	$title = get_the_title();
 	$title = strip_tags($title);
 	if (trim($title)) {
-		if (function_exists('mb_convert_encoding')) {
-			echo mb_convert_encoding(convert_chars($title, 'unicode'),"UTF-8", $blog_charset);
+		$rss_charset = wp_get_rss_charset();
+		if ($blog_charset != $rss_charset) {
+			echo mb_convert_encoding(convert_chars($title, 'unicode'),$rss_charset, $blog_charset);
 		} else {
 			echo convert_chars($title, 'unicode');
 		}
@@ -981,8 +983,9 @@ function the_content_rss($more_link_text=_WP_TPL_MORE, $stripteaser=0, $more_fil
 		$excerpt .= ($use_dotdotdot) ? '...' : '';
 		$content = $excerpt;
 	}
-	if (function_exists('mb_convert_encoding')) {
-		echo mb_convert_encoding($content, "UTF-8", $blog_charset);
+	$rss_charset = wp_get_rss_charset();
+	if ($blog_charset != $rss_charset) {
+		echo mb_convert_encoding($content, $rss_charset, $blog_charset);
 	} else {
 		echo $content;
 	}
@@ -1081,8 +1084,9 @@ function the_excerpt_rss($cut = 0, $encode_html = 0) {
 		$excerpt .= ($use_dotdotdot) ? '...' : '';
 		$output = $excerpt;
 	}
-	if (function_exists('mb_convert_encoding')) {
-		echo mb_convert_encoding($output,"UTF-8", $blog_charset);
+	$rss_charset = wp_get_rss_charset();
+	if ($blog_charset != $rss_charset) {
+		echo mb_convert_encoding($output, $rss_charset, $blog_charset);
 	} else {
 		echo $output;
 	}
@@ -1435,11 +1439,12 @@ function the_category_rss($type = 'rss') {
 	$categories = get_the_category();
 	foreach ($categories as $category) {
 		$category->cat_name = stripslashes(convert_chars($category->cat_name));
-		if (function_exists('mb_convert_encoding')) {
+		$rss_charset = wp_get_rss_charset();
+		if ($blog_charset != $rss_charset) {
 			if ('rdf' == $type) {
-				echo mb_convert_encoding("\n<dc:subject>$category->cat_name</dc:subject>","UTF-8", $blog_charset);
+				echo mb_convert_encoding("\n<dc:subject>$category->cat_name</dc:subject>",$rss_charset, $blog_charset);
 			} else {
-				echo mb_convert_encoding("\n<category>$category->cat_name</category>","UTF-8", $blog_charset);
+				echo mb_convert_encoding("\n<category>$category->cat_name</category>",$rss_charset, $blog_charset);
 			}
 		} else {
 			if ('rdf' == $type) {
@@ -1843,15 +1848,17 @@ function comment_author_rss() {
 	global $blog_charset;
 	global $comment;
 	if (!empty($comment->comment_author)) {
-		if (function_exists('mb_convert_encoding')) {
-			echo mb_convert_encoding(htmlspecialchars(strip_tags(stripslashes($comment->comment_author))),"UTF-8", $blog_charset);
+		$rss_charset = wp_get_rss_charset();
+		if ($blog_charset != $rss_charset) {
+			echo mb_convert_encoding(htmlspecialchars(strip_tags(stripslashes($comment->comment_author))),$rss_charset, $blog_charset);
 		} else {
 			echo htmlspecialchars(strip_tags(stripslashes($comment->comment_author)));
 		}
 	}
 	else {
-		if (function_exists('mb_convert_encoding')) {
-			echo mb_convert_encoding("Anonymous","UTF-8", $blog_charset);
+		$rss_charset = wp_get_rss_charset();
+		if ($blog_charset != $rss_charset) {
+			echo mb_convert_encoding("Anonymous",$rss_charset, $blog_charset);
 		} else {
 			echo "Anonymous";
 		}
@@ -1873,8 +1880,9 @@ function comment_text_rss($with_html=false) {
 		$comment_text = strip_tags($comment_text);
 		$comment_text = htmlspecialchars($comment_text);
 	}
-	if (function_exists('mb_convert_encoding')) {
-		echo mb_convert_encoding($comment_text,"UTF-8", $blog_charset);
+	$rss_charset = wp_get_rss_charset();
+	if ($blog_charset != $rss_charset) {
+		echo mb_convert_encoding($comment_text,$rss_charset, $blog_charset);
 	} else {
 		echo $comment_text;
 	}

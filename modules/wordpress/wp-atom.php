@@ -12,11 +12,7 @@ if (isset($showposts) && $showposts) {
 } else {
 	$posts_per_page = get_settings('posts_per_rss');
 }
-if (function_exists('mb_convert_encoding')) {
-	$rss_charset = 'utf-8';
-}else{
-	$rss_charset = $blog_charset;
-}
+$rss_charset = wp_get_rss_charset();
 ?>
 <?php echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>'; ?>
 <feed version="0.3"

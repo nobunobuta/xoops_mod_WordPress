@@ -105,7 +105,6 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 				if ($cat_date) {
 					$date=mysql2date("Y-n-j", $lpost->post_date);
 					if ($date <> $pdate) {
-//						if ($pdate) $output .= "</ul>";
 						$output .= '<label id="postDate">'.$date.'</label><br />';
 						$pdate = $date;
 					}
@@ -129,7 +128,7 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 			$output .= '<div style="text-align:right">&nbsp;<a href="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-rdf.php'.$num_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rdf.gif" /></a></div>';
 		}
 		if ($show_rss2_icon) {
-			$output .= '<div style="text-align:right">&nbsp;<a href="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-rss2.php'.$num_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss.gif" /></a></div>';
+			$output .= '<div style="text-align:right">&nbsp;<a href="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-rss2.php'.$num_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss2.gif" /></a></div>';
 		}
 		if ($show_atom_icon) {
 			$output .= '<div style="text-align:right">&nbsp;<a href="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-atom.php'.$num_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/atom.gif" /></a></div>';

@@ -133,7 +133,7 @@ case 'promote':
 	header('Location: users.php');
 
 break;
-
+/*
 case 'delete':
 //Not available with XOOPS;
 	if ( defined ('XOOPS_URL') {
@@ -165,7 +165,7 @@ case 'delete':
 	header('Location: users.php');
 
 break;
-
+*/
 default:
 	
 	$standalone = 0;

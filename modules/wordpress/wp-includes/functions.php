@@ -1942,4 +1942,17 @@ global $HTTP_SERVER_VARS, $HTTP_ENV_VARS;
 	return true;
 }
 
+function wp_get_rss_charset() {
+  global $blog_charset;
+	if (function_exists('mb_convert_encoding')) {
+		if ($blog_charset != 'iso-8859-1') {
+			$rss_charset = 'utf-8';
+		} else {
+			$rss_charset = $blog_charset;
+		}
+	}else{
+		$rss_charset = $blog_charset;
+	}
+	return $rss_charset;
+}
 ?>
