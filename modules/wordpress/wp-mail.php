@@ -438,7 +438,7 @@ function wp_getattach($content,$prefix="",$create_thumbs=0)
 				$temp_file = $temp_file_base."-".$i.".$subtype";;
 				$i++;
 			}
-			if (!($temp_fp = fopen("attach/" . $temp_file, "w"))) {
+			if (!($temp_fp = fopen("attach/" . $temp_file, "wb"))) {
 				echo("error1");
 				continue;
 			}
