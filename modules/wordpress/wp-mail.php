@@ -7,13 +7,19 @@ require_once(ABSPATH.WPINC.'/class-pop3.php');
 timer_start();
 
 $use_cache = 1;
-#$output_debugging_info = 0;	# =1 if you want to output debugging info
+$output_debugging_info = 0;	# =1 if you want to output debugging info
+
 $time_difference = get_settings('time_difference');
 
-if ($use_phoneemail) {
-	// if you're using phone email, the email will already be in your timezone
-	$time_difference = 1;
-}
+//echo "Server TimeZone is ".date('O')."<br />";
+//Get Server Time Zone
+// If Server Time Zone is not collect, Please comment out following line;
+$server_timezone = date("O");
+// If Server Time Zone is not collect, Please uncomment following line and set collect timezone value;
+// $server_timezone = "+0900"; //This is a sample value for JST+0900
+
+$server_timezone = $server_timezone/100;
+$weblog_timezone = $server_timezone + $time_difference;
 
 error_reporting(2037);
 
@@ -75,6 +81,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				if ($use_phoneemail) {
 					$subject = explode($phoneemail_separator, $subject);
 					$subject = trim($subject[0]);
+					echo $subject."<br/>";
 				}
 				if (!ereg($subjectprefix, $subject)) {
 					continue;
@@ -96,13 +103,17 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				$ddate_m = $date_arr[1];
 				$ddate_d = $date_arr[0];
 				$ddate_Y = $date_arr[2];
+				
+				$mail_timezone = trim(ereg_replace("\([^)]*\)","",$date_arr[4]))/100;
+//				echo "Email TimeZone is {$date_arr[4]}<br />";
+				$mail_time_difference = $weblog_timezone - $mail_timezone;
 				for ($i=0; $i<12; $i++) {
 					if ($ddate_m == $dmonths[$i]) {
 						$ddate_m = $i+1;
 					}
 				}
 				$ddate_U = mktime($ddate_H, $ddate_i, $ddate_s, $ddate_m, $ddate_d, $ddate_Y);
-				$ddate_U = $ddate_U + ($time_difference * 3600);
+				$ddate_U = $ddate_U + ($mai_time_difference * 3600);
 				$post_date = date('Y-m-d H:i:s', $ddate_U);
 			}
 		}
@@ -118,8 +129,6 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		echo 'Too old<br />';
 		continue;
 	}
-	echo "$subjectprefix<br/>";
-	echo "$subject<br/>";
 	if (preg_match('/'.$subjectprefix.'/', $subject)) {
 
 		$userpassstring = '';
@@ -132,6 +141,8 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		if ($content_type == 'multipart/alternative') {
 			$content = explode('--'.$boundary, $content);
 			$content = $content[2];
+			$charset = preg_match("/charset=\"([^\"]*)\"/",$content,$matches);
+			if ($charset) $charset = $matches[1];
 			$content = explode('Content-Transfer-Encoding: quoted-printable', $content);
 			$content = strip_tags($content[1], '<img><p><br><i><b><u><em><strong><strike><font><span><div>');
 		}
@@ -163,13 +174,13 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 			}
 			$contentfirstline = $blah[1];
 		} else {
-			$userpassstring = $firstline;
+			$userpassstring = strip_tags($firstline);
 			$contentfirstline = '';
 		}
 
         $flat = 999.0;
         $flon = 999.0;
-        $secondlineParts = explode(':',$secondline);
+        $secondlineParts = explode(':',strip_tags($secondline));
         if(strncmp($secondlineParts[0],"POS",3)==0) {
             echo "Found POS:<br>\n";
             //echo "Second parts is:".$secondlineParts[1];
@@ -193,15 +204,15 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		$content = trim($content);
 //Please uncomment following line, only if you want to check user and password.
 //		echo "<p><b>Login:</b> $user_login, <b>Pass:</b> $user_pass</p>";
-
-		if ($xooptDB) {
-			$sql = "SELECT ID, user_level FROM $tableusers WHERE user_login='$user_login' ORDER BY ID DESC LIMIT 1";
+		
+		if ($xoopsDB) {
+			$sql = "SELECT ID, user_level FROM $tableusers WHERE user_login='".trim($user_login)."' ORDER BY ID DESC LIMIT 1";
 			$result = $wpdb->get_row($sql);
 			if (!$result) {
 				echo '<p><b>Wrong login</b></p></div>';
 				continue;
 			} else {
-				$sql = "SELECT * FROM ".$xoopsDB->prefix('users')." WHERE uname='$user_login' AND pass='".md5(trim($user_pass))."' ORDER BY uid DESC LIMIT 1";
+				$sql = "SELECT * FROM ".$xoopsDB->prefix('users')." WHERE uname='".trim($user_login)."' AND pass='".md5(trim($user_pass))."' ORDER BY uid DESC LIMIT 1";
 				$result1 = $wpdb->get_row($sql);
 		
 				if (!$result1) {
@@ -236,11 +247,14 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 			}
 			echo "Subject : ".mb_convert_encoding($subject,"EUC-JP","auto")." <br />";
 			echo "Category : $post_category <br />";
-			if (!$thisisforfunonly) {
+			if (!$emailtestonly) {
 
 				$post_title = addslashes(trim(mb_convert_encoding($post_title,"EUC-JP","auto")));
 				$content = preg_replace("|\n([^\n])|", " $1", $content);
-				$content = addslashes(mb_convert_encoding(trim($content),"EUC-JP","JIS"));
+				if ($charset == "") $charset = "JIS";
+				if (trim($charset) == "Shift_JIS") $charset = "SJIS";
+				$content =  preg_replace("/\=([0-9a-fA-F]{2,2})/e",  "pack('c',base_convert('\\1',16,10))", $content);
+				$content = addslashes(mb_convert_encoding(trim($content),"EUC-JP",$charset));
 
                 if($flat > 500) {
                     $sql = "INSERT INTO $tableposts (post_author, post_date, post_content, post_title, post_category) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category)";
