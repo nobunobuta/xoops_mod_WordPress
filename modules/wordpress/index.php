@@ -2,39 +2,10 @@
 /* Don't remove these lines. */
 $blog = 1;
 require('wp-blog-header.php');
+include("header.php");
 // Uncomment the next line if you want to track blog updates from weblogs.com
 //include_once(ABSPATH.WPINC.'/links-update-xml.php');
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
-<head  profile="http://gmpg.org/xfn/1">
-	<title><?php bloginfo('name'); ?><?php wp_title(); ?></title>
-	
-	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $blog_charset; ?>" />
-	<meta name="generator" content="WordPress <?php echo $wp_version; ?>" />
-	<!-- leave this for stats -->
-
-	<style type="text/css" media="screen">
-		@import url( <?php echo $siteurl; ?>/wp-layout.css );
-	</style>
-	
-	<link rel="stylesheet" type="text/css" media="print" href="<?php echo $siteurl; ?>/print.css" />
-	<link rel="alternate" type="text/xml" title="RDF" href="<?php bloginfo('rdf_url'); ?>" />
-	<link rel="alternate" type="text/xml" title="RSS 2.0" href="<?php bloginfo('rss2_url'); ?>" />
-	<link rel="alternate" type="text/xml" title="RSS .92" href="<?php bloginfo('rss_url'); ?>" />
-	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="<?php bloginfo('atom_url'); ?>" />
-	
-	<link rel="pingback" href="<?php bloginfo('pingback_url'); ?>" />
-    <?php get_archives('monthly', '', 'link'); ?>
-	<?php //comments_popup_script(); // off by default ?>
-
-</head>
-
-<body>
-<div id="rap">
-<h1 id="header"><a href="<?php echo $siteurl; ?>" title="<?php bloginfo('name'); ?>"><?php bloginfo('name'); ?></a></h1>
-
 <div id="content">
 <?php if ($posts) { foreach ($posts as $post) { start_wp(); ?>
 
@@ -46,6 +17,7 @@ require('wp-blog-header.php');
 	
 	<div class="storycontent">
 		<?php the_content(); ?>
+		<br clear=left>
 	</div>
 	
 	<div class="feedback">
@@ -65,53 +37,8 @@ require('wp-blog-header.php');
 <?php } ?>
 </div>
 
-
-
-<div id="menu">
-
-<ul>
-	<?php get_links_list(); ?>
- <li id="categories">Categories:
-	<ul>
-	<?php list_cats(0, 'All', 'name'); ?>
-	</ul>
- </li>
- <li id="search">Search:
-	<form id="searchform" method="get" action="<?php echo $PHP_SELF; /*$siteurl."/".$blogfilename*/ ?>">
-	<div>
-		<input type="text" name="s" size="12" /> <input type="submit" name="submit" value="search" />
-	</div>
-	</form>
- </li>
- <li id="archives">Archives:
- 	<ul>
-	 <?php get_archives('monthly'); ?>
- 	</ul>
- </li>
- <li id="calendar">
-	<?php get_calendar(); ?>
- </li>
- <li id="other">Other:
-	<ul>
-		<li><a href="<?php echo $siteurl; ?>/wp-login.php">login</a></li>
-		<li><a href="<?php echo $siteurl; ?>/wp-register.php">register</a></li>
-	</ul>
- </li>
- <li id="meta">Meta:
- 	<ul>
-		<li><a href="<?php bloginfo('rss2_url'); ?>" title="Syndicate this site using RSS"><abbr title="Really Simple Syndication">RSS</abbr> 2.0</a></li>
-		<li><a href="<?php bloginfo('comments_rss2_url'); ?>" title="The latest comments to all posts in RSS">Comments <abbr title="Really Simple Syndication">RSS</abbr> 2.0</a></li>
-		<li><a href="http://validator.w3.org/check/referer" title="This page validates as XHTML 1.0 Transitional">Valid <abbr title="eXtensible HyperText Markup Language">XHTML</abbr></a></li>
-		<li><a href="http://wordpress.xwd.jp/wiki/" title="Documentation by WordPress Japan">Documentation</a></li>
-	</ul>
- </li>
-
-</ul>
-
-</div>
-
-</div>
-
 <p class="credit"><?php echo $wpdb->querycount; ?> queries. <?php timer_stop(1); ?> sec. || <cite>Powered by <a href="http://wordpress.xwd.jp/" title="Powered by WordPress Japan"><strong>WordPress ME</strong></a></cite></p>
-</body>
-</html>
+
+<?php
+include(XOOPS_ROOT_PATH."/footer.php");
+?>

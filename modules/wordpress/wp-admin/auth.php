@@ -6,6 +6,24 @@ require_once('../wp-config.php');
 function veriflog() {
 	global $HTTP_COOKIE_VARS,$cookiehash;
 	global $tableusers, $wpdb;
+	global $xoopsUser, $xoopsDB;
+	if($xoopsUser){
+		$sql = "select ID from $tableusers where ID = ".$xoopsUser->uid();
+		$r = $xoopsDB->query($sql);
+		if(list($id) = $xoopsDB->fetchRow($r)){
+		}else{
+			$level = 0;
+			if($xoopsUser->isadmin()){
+				$level = 10;
+			}
+			$uname = $xoopsDB->quoteString($xoopsUser->getVar('uname'));
+			$email = $xoopsDB->quoteString($xoopsUser->getVar('email'));
+			$sql = "INSERT INTO $tableusers(ID, user_login,user_nickname,user_email, user_level,user_idmode) values(".$xoopsUser->uid().", $uname , $uname , $email , $level, 'nickname' )";
+			$xoopsDB->queryF($sql);
+		}
+		return true;
+	}
+	return false;
 
 	if (!empty($HTTP_COOKIE_VARS["wordpressuser_".$cookiehash])) {
 		$user_login = $HTTP_COOKIE_VARS["wordpressuser_".$cookiehash];
@@ -41,6 +59,7 @@ function veriflog() {
 		if (!empty($HTTP_COOKIE_VARS["wordpressuser_".$cookiehash])) {
 			$error="<strong>Error</strong>: wrong login or password";
 		}
+		redirect_header($siteurl.'/',2,'まずログインしてください。');
 		$redir = "Location: $siteurl/wp-login.php?redirect_to=" . urlencode($HTTP_SERVER_VARS["REQUEST_URI"]);
 		header($redir);
 		exit();

@@ -5,6 +5,10 @@
 	echo number_format(timer_stop(), 2)." seconds";
 ?>
 </p>
-
+<?php
+/*
 </body>
 </html>
+*/
+include(XOOPS_ROOT_PATH.'/footer.php');
+?>

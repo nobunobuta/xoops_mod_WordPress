@@ -5,6 +5,7 @@ $HTTP_USER_AGENT = getenv('HTTP_USER_AGENT'); /* visitor's browser */
 
 // Change to E_ALL for development/debugging
 error_reporting(E_ALL ^ E_NOTICE);
+global $siteurl,$tableoptions,$tableposts,$tableusers,$tablecategories,$tablecomments,$tablepost2cat;
 
 // Table names
 $tableposts               = $table_prefix . 'posts';
@@ -22,11 +23,10 @@ $tableoptiongroups        = $table_prefix . 'optiongroups';
 $tableoptiongroup_options = $table_prefix . 'optiongroup_options';
 define('WPINC', 'wp-includes');
 require (ABSPATH . WPINC . '/wp-db.php');
-
 $wpdb->hide_errors();
-if (!$wpdb->get_row("SELECT * FROM $tableusers LIMIT 1") && !strstr($HTTP_SERVER_VARS['REQUEST_URI'], 'install.php')) {
-	die("It doesn't look like you've installed WP yet. Try running <a href='wp-admin/install.php'>install.php</a>.");
-}
+//if (!$wpdb->get_row("SELECT * FROM $tableusers LIMIT 1") && !strstr($HTTP_SERVER_VARS['REQUEST_URI'], 'install.php')) {
+//	die("It doesn't look like you've installed WP yet. Try running <a href='wp-admin/install.php'>install.php</a>.");
+//}
 $wpdb->show_errors();
 
 // This is the name of the include directory. No "/" allowed.
@@ -48,7 +48,6 @@ if (!strstr($HTTP_SERVER_VARS['REQUEST_URI'], 'install.php') && !strstr($HTTP_SE
     $siteurl = get_settings('siteurl');
 	// "When trying to design a foolproof system, 
 	//  never underestimate the ingenuity of the fools :)"
-
 	$siteurl = preg_replace('|/+$|', '', $siteurl);
     $blogfilename = get_settings('blogfilename');
     $blogname = get_settings('blogname');

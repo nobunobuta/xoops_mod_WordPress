@@ -1,6 +1,7 @@
 <?php
 /* ÈþÆý */
 require("wp-lang/lang_ja.php");
+global $xoopsDB,$xoopsUser,$wpdb;
 $wpj_head = <<<EOD
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -52,7 +53,6 @@ if (!file_exists($curpath . '/wp-config.php'))
 	die($wpj_head . _LANG_WA_HEADER_GUIDE1 . $wpj_foot);
 
 require($curpath.'/wp-config.php');
-
 $wpvarstoreset = array('m','p','posts','w','c', 'cat','withcomments','s','search','exact', 'sentence','poststart','postend','preview','debug', 'calendar','page','paged','more','tb', 'pb','author','order','orderby', 'year', 'monthnum', 'day', 'name', 'category_name');
 
 	for ($i=0; $i<count($wpvarstoreset); $i += 1) {
@@ -87,6 +87,7 @@ if (!isset($posts_per_page) || $posts_per_page == 0)
     $posts_per_page = get_settings('posts_per_page');
 $what_to_show = get_settings('what_to_show');
 $archive_mode = get_settings('archive_mode');
+global $dateformat,$timeformat;
 $dateformat = stripslashes(get_settings('date_format'));
 $timeformat = stripslashes(get_settings('time_format'));
 $time_difference = get_settings('time_difference');
@@ -365,6 +366,7 @@ if ($preview) {
 
 // error_log("$request");
 // echo $request;
+global $posts;
 $posts = $wpdb->get_results($request);
 
 // No point in doing all this work if we didn't match any posts.

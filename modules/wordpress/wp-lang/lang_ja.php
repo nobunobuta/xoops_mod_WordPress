@@ -444,11 +444,11 @@ define('_LANG_WUS_ADD_TWICE','パスワード (2箇所) ');
 /* File Name wp-comments.php */
 define('_LANG_WPCM_LOAD_DIRECTLY','このディレクトリのファイルは直接ご覧いただけません');
 define('_LANG_WPCM_ENTER_PASS','<p>コメントを見るためのパスワードを入力してください。<p>');
-define('_LANG_WPCM_COM_TITLE','Comments');
+define('_LANG_WPCM_COM_TITLE','コメント');
 define('_LANG_WPCM_COM_RSS','このコメントのRSS');
 define('_LANG_WPCM_COM_TRACK','TrackBack URL : ');
 define('_LANG_WPCM_COM_YET','この投稿には、まだコメントが付いていません');
-define('_LANG_WPCM_COM_LEAVE','Leave a Comment');
+define('_LANG_WPCM_COM_LEAVE','コメントの投稿');
 define('_LANG_WPCM_HTML_ALLOWED','改行や段落は自動です<br />URLとE-mailは自動的にリンクされますので、&lt;a&gt;タグは不要です。<br /><acronym title="Hypertext Markup Language">HTML</acronym> allowed: ');
 define('_LANG_WPCM_COM_YOUR','コメントをどうぞ');
 define('_LANG_WPCM_PLEASE_NOTE','<strong>ご注意 : </strong>セッティングにより、コメント投稿から実際に閲覧できるようになるまで暫く時間が掛かる場合があります。 再投稿の必要はありませんので、表示されるまでお待ち下さい。');

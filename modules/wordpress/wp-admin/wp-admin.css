@@ -37,7 +37,7 @@ a:hover {
 	border-bottom: 1px solid #3a75ae;
 	color: #069;
 }
-
+/*
 body	{
 	background: #fff;
 	color: #000;
@@ -48,7 +48,7 @@ body	{
 body, td {
 	font: 10pt "ƒqƒ‰ƒMƒmŠpƒS Pro W3", Osaka, Verdana, "‚l‚r ‚oƒSƒVƒbƒN", sans-serif;
 }
-
+*/
 fieldset {
 	border: 1px solid #ccc;
 	padding: 2px;
@@ -80,7 +80,7 @@ form, label input {
 
 h2 {
 	color: #0080C0;
-	margin: 15px 10px;
+//	margin: 15px 10px;
 }
 
 label {
@@ -220,15 +220,19 @@ p, dl, dd, dt {
 #adminmenu2 a {
 	font-size: 14px;
 }
-
 #categorydiv {
 	line-height: 130%;
-	margin-right: 15px;
+	width: 9em;
+}
+/*
+#categorydiv {
+	line-height: 130%;
+	margin-right: 200px;
 	position: absolute;
 	right: 5%;
 	width: 9em;
 }
-
+*/
 #categorydiv input, #poststatusdiv input, #commentstatusdiv input, #pingstatusdiv input {
 	border: none;
 }
@@ -322,6 +326,7 @@ p, dl, dd, dt {
 }
 
 #titlediv, #poststatusdiv, #commentstatusdiv, #pingstatusdiv, #postpassworddiv, #namediv, #uridiv, #emaildiv {
+
 	float: left;
 	height: 6em;
 	margin-right: 5px;

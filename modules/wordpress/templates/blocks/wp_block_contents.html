@@ -1,0 +1,26 @@
+<style type="text/css">
+	@import url( <{$block.siteurl}>/wp-layout.css );
+</style>
+<div id='content'>
+  <{foreach item=content from=$block.contents}>
+    <{if $content.date != ""}>
+        <{$content.date}>
+    <{/if}>
+        <div class="post">
+            <h3 class="storytitle" id="post-<{$content.date}>"><a href="<{$content.permlink}>" rel="bookmark" title="Permanent Link: <{$content.title}>"><{$content.title}></a></h3>
+            <div class="meta">
+                Filed under: <{$content.category}> - <{$content.author}> @ <{$content.time}>
+            </div>
+            <div class="storycontent">
+                <p><{$content.body}></p>
+                <br clear=left>
+            </div>
+            <div class="feedback">
+                <{$content.linkpage}> <{$content.comments}> 
+            </div>
+<!--
+<$content.trackback>
+-->
+        </div>
+  <{/foreach}>
+</div>

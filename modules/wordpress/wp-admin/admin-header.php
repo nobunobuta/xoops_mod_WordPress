@@ -46,7 +46,10 @@ for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 }
 
 if ($standalone == 0) {
-
+	if ($profile == 0) {
+		include(XOOPS_ROOT_PATH.'/header.php');
+		$xoopsTpl->assign('xoops_module_header', '<link rel="stylesheet" href="wp-admin.css" type="text/css" />');
+	}else{
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -65,6 +68,7 @@ setTimeout("redirect();", 600);
 //-->
 </script>
 <?php
+}
 } // redirect
 ?>
 
@@ -129,15 +133,14 @@ setTimeout("redirect();", 600);
 	   }
 	}
 	
-	window.onload = blurry;
+//	window.onload = blurry;
 //]]>
 </script>
-</head>
-<body>
-
 <?php
 if ($profile==0) {
 	include('menu.php');
+} else {
+	echo "</head><body>";
 }
 ?>
 

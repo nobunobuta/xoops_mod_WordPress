@@ -395,8 +395,9 @@ function user_pass_ok($user_login,$user_pass) {
 }
 
 function get_currentuserinfo() { // a bit like get_userdata(), on steroids
-	global $HTTP_COOKIE_VARS, $user_login, $userdata, $user_level, $user_ID, $user_nickname, $user_email, $user_url, $user_pass_md5, $cookiehash;
+	global $HTTP_COOKIE_VARS, $user_login, $userdata, $user_level, $user_ID, $user_nickname, $user_email, $user_url, $user_pass_md5, $cookiehash, $xoopsUser;
 	// *** retrieving user's data from cookies and db - no spoofing
+/*
 	$user_login = $HTTP_COOKIE_VARS['wordpressuser_'.$cookiehash];
 	$userdata = get_userdatabylogin($user_login);
 	$user_level = $userdata->user_level;
@@ -405,7 +406,19 @@ function get_currentuserinfo() { // a bit like get_userdata(), on steroids
 	$user_email = $userdata->user_email;
 	$user_url = $userdata->user_url;
 	$user_pass_md5 = md5($userdata->user_pass);
+*/
+	if ($xoopsUser) {
+		$user_login = $xoopsUser->uname();
+		$userdata = get_userdatabylogin($user_login);
+		$user_level = $userdata->user_level;
+		$user_ID = $userdata->ID;
+		$user_nickname = $userdata->user_nickname;
+		$user_email = $userdata->user_email;
+		$user_url = $userdata->user_url;
+		$user_pass_md5 = md5($userdata->user_pass);
+	}
 }
+
 
 function get_userdata($userid) {
 	global $wpdb, $cache_userdata, $use_cache, $tableusers;
@@ -425,8 +438,10 @@ function get_userdata($userid) {
 }
 
 function get_userdata2($userid) { // for team-listing
-	global $tableusers, $post;
-	$user_data['ID'] = $userid;
+//	global $tableusers, $post;
+//	$user_data['ID'] = $userid;
+	global $tableusers, $post, $xoopsUser;
+	$user_data['ID'] = $xoopsUser->uid();
 	$user_data['user_login'] = $post->user_login;
 	$user_data['user_firstname'] = $post->user_firstname;
 	$user_data['user_lastname'] = $post->user_lastname;
@@ -833,19 +848,29 @@ function timer_stop($display=0,$precision=3) { //if called like timer_stop(1), w
     return $timetotal;
 }
 
-
 // pings Weblogs.com
 function pingWeblogs($blog_ID = 1) {
 	// original function by Dries Buytaert for Drupal
-	global $use_weblogsping, $blogname,$siteurl,$blogfilename;
+	global $use_weblogsping, $blogname,$siteurl,$blogfilename,$my_pingserver;
 	if ((!(($blogname=="my weblog") && ($siteurl=="http://example.com") && ($blogfilename=="wp.php"))) && (!preg_match("/localhost\//",$siteurl)) && ($use_weblogsping)) {
-		$client = new xmlrpc_client("/RPC2", "rpc.weblogs.com", 80);
-		$message = new xmlrpcmsg("weblogUpdates.ping", array(new xmlrpcval($blogname), new xmlrpcval($siteurl."/".$blogfilename)));
-		$result = $client->send($message);
+//		$client = new xmlrpc_client("/RPC2", "rpc.weblogs.com", 80);
+//		$client = new xmlrpc_client("/rpc/", "ping.bloggers.jp", 80);
+//		$message = new xmlrpcmsg("weblogUpdates.ping", array(new xmlrpcval($blogname), new xmlrpcval($siteurl."/".$blogfilename)));
+//		$result = $client->send($message);
+
+		foreach($my_pingserver as $p) {
+			$client = new xmlrpc_client($p['path'],$p['server'],$p['port']);
+//			echo $p['server']."<br/>";
+			$message = new xmlrpcmsg("weblogUpdates.ping", array(new xmlrpcval($blogname), new xmlrpcval($siteurl."/".$blogfilename)));
+			$result = $client->send($message);
+			unset($client);
+			unset($message);
+		}
 		if (!$result || $result->faultCode()) {
 			return false;
 		}
 		return true;
+		
 	} else {
 		return false;
 	}
@@ -913,7 +938,7 @@ function trackback($trackback_url, $title, $excerpt, $ID) {
 	$blog_name = urlencode(stripslashes($blogname));
 	$tb_url = $trackback_url;
 	$url = urlencode(get_permalink($ID));
-	$query_string = "title=$title&url=$url&blog_name=$blog_name&excerpt=$excerpt";
+	$query_string = "title=$title&url=$url&blog_name=$blog_name&excerpt=$excerpt&charset=$blog_charset";
 	$trackback_url = parse_url($trackback_url);
 	$http_request  = 'POST '.$trackback_url['path']." HTTP/1.0\r\n";
 	$http_request .= 'Host: '.$trackback_url['host']."\r\n";
@@ -1184,7 +1209,7 @@ function pingback($content, $post_ID) {
 				if (!$result->value()){
 					debug_fwrite($log, $result->faultCode().' -- '.$result->faultString());
 				} else {
-					$value = xmlrpc_decode($result->value());
+					$value = xmlrpc_decode1($result->value());
 					if (is_array($value)) {
 						$value_arr = '';
 						foreach($value as $blah) {
@@ -1465,30 +1490,30 @@ function wp_notify_postauthor($comment_id, $comment_type='comment') {
 		$notify_message .= "E-mail : $comment->comment_author_email\r\n";
 		$notify_message .= "URI    : $comment->comment_author_url\r\n";
 		$notify_message .= "Whois  : http://ws.arin.net/cgi-bin/whois.pl?queryinput=$comment->comment_author_IP\r\n";
-		$notify_message .= "Comment:\r\n".stripslashes($comment->comment_content)."\r\n\r\n";
+		$notify_message .= "Comment:\r\n".stripslashes(mb_convert_encoding($comment->comment_content,$blog_charset,"auto"))."\r\n\r\n";
 		$notify_message .= _LANG_F_ALL_COMMENTS." \r\n";
 		$subject = '[' . $blogname . '] Comment: "' .stripslashes($post->post_title).'"';
 	} elseif ('trackback' == $comment_type) {
 		$notify_message  = _LANG_F_NEW_TRACKBACK." #$comment_post_ID ".stripslashes($post->post_title)."\r\n\r\n";
-		$notify_message .= "Website: $comment->comment_author (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
+		$notify_message .= "Website: ".mb_convert_encoding($comment->comment_author,$blog_charset,"auto")." (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
 		$notify_message .= "URI    : $comment->comment_author_url\r\n";
-		$notify_message .= "Excerpt: \n".stripslashes($comment->comment_content)."\r\n\r\n";
+		$notify_message .= "Comment:\r\n".stripslashes(mb_convert_encoding($comment->comment_content,$blog_charset,"auto"))."\r\n\r\n";
 		$notify_message .= _LANG_F_ALL_TRACKBACKS." \r\n";
 		$subject = '[' . $blogname . '] Trackback: "' .stripslashes($post->post_title).'"';
 	} elseif ('pingback' == $comment_type) {
 		$notify_message  = _LANG_F_NEW_PINGBACK." #$comment_post_ID ".stripslashes($post->post_title)."\r\n\r\n";
 		$notify_message .= "Website: $comment->comment_author\r\n";
 		$notify_message .= "URI    : $comment->comment_author_url\r\n";
-		$notify_message .= "Excerpt: \n[...] $original_context [...]\r\n\r\n";
+		$notify_message .= "Excerpt: \n[...] ".mb_convert_encoding($original_context,$blog_charset,"auto")." [...]\r\n\r\n";
 		$notify_message .= _LANG_F_ALL_PINGBACKS." \r\n";
 		$subject = '[' . $blogname . '] Pingback: "' .stripslashes($post->post_title).'"';
 	}
 	$notify_message .= get_permalink($comment->comment_post_ID) . '#comments';
 
 	if ('' == $comment->comment_author_email || '' == $comment->comment_author) {
-		$from = "From: \"$blogname\" <wordpress@" . $HTTP_SERVER_VARS['SERVER_NAME'] . '>';
+		$from = "From: \"". mb_encode_mimeheader(mb_convert_encoding($blogname,"JIS","auto")) ."\" <wordpress@" . $HTTP_SERVER_VARS['SERVER_NAME'] . '>';
 	} else {
-		$from = 'From: "' . stripslashes($comment->comment_author) . "\" <$comment->comment_author_email>";
+		$from = 'From: "' . stripslashes(mb_encode_mimeheader(mb_convert_encoding($comment->comment_author,"JIS","auto"))) . "\" <$comment->comment_author_email>";
 	}
 
 	if (function_exists('mb_send_mail')) {
@@ -1773,6 +1798,15 @@ function hilite($text) {
 	return $text;
 }
 
+function mb_conv($str,$to,$from)
+{
+	if (function_exists('mb_convert_encoding')) {
+		$retstr = mb_convert_encoding($str,$to,$from);
+	} else {
+		$retstr = $str;
+	}
+	return $retstr;
+}
 
 // Check for hacks file if the option is enabled
 if (get_settings('hack_file')) {

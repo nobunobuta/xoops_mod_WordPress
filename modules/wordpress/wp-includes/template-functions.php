@@ -1372,7 +1372,8 @@ function the_category($seperator = '') {
 		echo '<ul class="post-categories">';
 		foreach ($categories as $category) {
 			$category->cat_name = stripslashes($category->cat_name);
-			echo "\n\t<li><a href='" . get_category_link(0, $category->category_id, $category->category_nicename) . "' title='View all posts in $category->cat_name'>$category->cat_name</a></li>";
+			echo "\n\t<li><a href='" . get_category_link(0, $category->category_id, htmlspecialchars($category->cat_name)) . "' title='View all posts in $category->cat_name'>$category->cat_name</a></li>";
+//			echo "\n\t<li><a href='" . get_category_link(0, $category->category_id, $category->category_nicename) . "' title='View all posts in $category->cat_name'>$category->cat_name</a></li>";
 		}
 		echo '</ul>';
 	} else {
@@ -1380,7 +1381,8 @@ function the_category($seperator = '') {
 		foreach ($categories as $category) {
 			$category->cat_name = stripslashes($category->cat_name);
 			if (0 < $i) echo $seperator . ' ';
-			echo "<a href='" . get_category_link(0, $category->category_id, $category->category_nicename) . "' title='View all posts in $category->cat_name'>$category->cat_name</a>";
+			echo "<a href='" . get_category_link(0, $category->category_id, htmlspecialchars($category->cat_name)) . "' title='View all posts in $category->cat_name'>$category->cat_name</a>";
+//			echo "<a href='" . get_category_link(0, $category->category_id, $category->category_nicename) . "' title='View all posts in $category->cat_name'>$category->cat_name</a>";
 			++$i;
 		}
 	}
@@ -1530,7 +1532,8 @@ function list_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_orde
 	}
 
 	foreach ($categories as $category) {
-        $link = '<a href="'.get_category_link(0, $category->cat_ID, $category->category_nicename).'" ';
+//        $link = '<a href="'.get_category_link(0, $category->cat_ID, $category->category_nicename).'" ';
+        $link = '<a href="'.get_category_link(0, $category->cat_ID, htmlspecialchars($category->cat_name)).'" ';
         if ($use_desc_for_title == 0 || empty($category->category_description)) {
 	        $link .= 'title="View all posts filed under ' . htmlspecialchars($category->cat_name) . '"';
 	    }
@@ -1840,7 +1843,7 @@ function trackback_rdf($timezone = 0) {
 	if (!stristr($HTTP_SERVER_VARS['HTTP_USER_AGENT'], 'W3C_Validator')) {
 		echo '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" '."\n";
 		echo '    xmlns:dc="http://purl.org/dc/elements/1.1/"'."\n";
-		echo '    xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">'."\n";
+		echo '    xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/" xml:lang="ja">'."\n";
 		echo '<rdf:Description'."\n";
 		echo '    rdf:about="';
 		permalink_single();

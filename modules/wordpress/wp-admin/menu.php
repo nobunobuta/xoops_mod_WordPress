@@ -21,7 +21,9 @@ foreach ($menu as $item) {
 
 	<li><a href="profile.php">My Profile</a></li>
 	<li><a href="<?php echo "$siteurl/$blogfilename"; ?>">View site</a></li>
+<!--
 	<li class="last"><a href="<?php echo $siteurl ?>/wp-login.php?action=logout">Logout (<?php echo stripslashes($user_nickname) ?>)</a></li>
+-->
 </ul>
 
 <h2><?php echo $title; ?></h2>

@@ -4,7 +4,7 @@
 	Please tweak this and make it your own. :)
 ÈþÆý
 */
-
+/*
 a {
 	color: #9B9FAE;
 }
@@ -20,7 +20,7 @@ a:visited {
 a:hover {
 	color: #7AA0CF;
 }
-
+*/
 acronym, abbr {
 	border-bottom: 1px dashed #333;
 }
@@ -30,40 +30,27 @@ acronym, abbr, span.caps {
 	font-size: 90%;
 	letter-spacing: .07em;
 }
-
 blockquote {
 	border-left: 5px solid #ccc;
 	margin-left: 1.5em;
 	padding-left: 5px;
 }
-
-body {
-	font-family: "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
-	margin: 0;
-	padding: 0;
-	background-color: white;
-	color: #666666;
-}
-
 cite {
 	font-size: 90%;
 	font-style: normal;
 }
-
 h2 {
-	border-bottom: 1px dotted #ccc;
-	font: 80% "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
-	letter-spacing: 0.2em;
-	margin: 15px 0 2px 0;
-	padding-bottom: 2px;
+	font-size : 18px;
+	font-family: "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;;
+	border-bottom: 1px solid #dcdcdc;
+	margin-bottom: 5px;
 }
 
 h3 {
-	border-bottom: dotted 1px #eee;
+	font-size : 16px;
 	font-family: "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
-	margin-top: 0;
+	margin-bottom: 5px;
 }
-
 ol#comments li p {
 	font-size: 100%;
 }
@@ -71,9 +58,12 @@ ol#comments li p {
 p, li, .feedback {
 	font: 90%/175% "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
 }
-
 .storycontent{
 	font: 100% "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
+}
+
+div.storycontent {
+	clear:right;
 }
 
 .credit {
@@ -129,93 +119,12 @@ p, li, .feedback {
 }
 
 #content {
-	margin: 30px 13em 0 3em;
 	padding-right: 60px;
 }
 
 #submenu {
 	padding-left: 60px;
 	font-size: .75em;
-}
-
-#header {
-	background: #ffffff;
-	font: bold 230% "Tempus Sans ITC", "Trebuchet MS", "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
-	margin: 0;
-	padding: 15px 10px 0px 60px;
-}
-
-#header a {
-	color: #9B9FAE;
-	text-decoration: none;
-}
-
-#header a:hover {
-	text-decoration: underline;
-}
-
-#menu {
-	background: #fff;
-	border-left: 1px solid #9B9FAE;
-	padding: 20px 0 10px 20px;
-	position: absolute;
-	right: 0px;
-	top: 0;
-	width: 11em;
-}
-
-#menu form {
-	margin: 0 0 0 13px;
-}
-
-#menu input {
-	background: #ffffff;
-	border: 1px solid #999;
-	letter-spacing: -0.05em;
-}
-
-#menu ul {
-	color: #ccc;
-	font-weight: bold;
-	list-style-type: none;
-	margin: 0;
-	padding-left: 3px;
-	text-transform:capitalize;
-}
-
-#menu ul li {
-	font: normal 110% "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
-	letter-spacing: 0.1em;
-	margin-top: 10px;
-	padding-bottom: 2px; /*border-bottom: dotted 1px #ccc;*/
-}
-
-#menu ul ul {
-	list-style-type: none;
-	font-variant: normal;
-	font-weight: normal;
-	line-height: 100%;
-	margin: 0;
-	padding: 0;
-	text-align: left;
-}
-
-#menu ul ul li {
-	border: 0;
-	font: normal normal 70%/115% "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
-	letter-spacing: 0;
-	margin-top: 0;
-	padding: 0;
-	padding-left: 12px;
-}
-
-#menu ul ul li a {
-	color: #000;
-	text-decoration: none;
-}
-
-#menu ul ul li a:hover {
-	border-bottom: 1px solid #809080;
 }
 
 #wp-calendar {
@@ -249,12 +158,12 @@ p, li, .feedback {
 #wp-calendar caption {
 	font-weight: bold;
 	font-size: 110%;
-	color: #ccc;
+	color: #632;
 	text-align: left;
 }
 
 #wp-calendar td {
-	color: #ccc;
+	color: #aaa;
 	font: normal 12px "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
 	letter-spacing: normal;
 	padding: 2px 0;

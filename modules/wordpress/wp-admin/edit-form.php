@@ -71,7 +71,6 @@ window.onload = focusit;
       <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#title" title="Help on titles"><?php echo _LANG_EF_AD_POSTTITLE; ?></a></legend> 
 	  <div><input type="text" name="post_title" size="30" tabindex="1" value="<?php echo $edited_post_title; ?>" id="title" /></div>
     </fieldset>
-
     <fieldset id="categorydiv">
       <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#category" title="Help on categories"><?php echo _LANG_EF_AD_CATETITLE; ?></a></legend> 
 	  <div><?php dropdown_categories($default_post_cat); ?></div>

@@ -70,13 +70,16 @@ if ((strlen(''.$tb_id)) && (empty($HTTP_GET_VARS['__mode'])) && (strlen(''.$tb_u
 	}
 
 	if ($charset=="") {
-	$charset="auto";
+		$charset="auto";
 	} else {
-	$charset = strtoupper(trim($charset));
+		$charset = strtoupper(trim($charset));
 	}
 	if (function_exists('mb_convert_encoding')) {
-	$comment = mb_convert_encoding($comment, $blog_charset, $charset);
-	$author = mb_convert_encoding($author, $blog_charset, $charset);
+		if ($charset == "auto") {
+			$charset = mb_detect_encoding($commnet.$author,$charset);
+		}
+		$comment = mb_convert_encoding($comment, $blog_charset, $charset);
+		$author = mb_convert_encoding($author, $blog_charset, $charset);
 	}
 
 	$result = $wpdb->query("INSERT INTO $tablecomments 

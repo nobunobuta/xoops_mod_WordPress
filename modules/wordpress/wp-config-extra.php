@@ -1,17 +1,18 @@
 <?php
 // this file contains customizable arrays for smilies, weekdays and month names.
 
-    
+global $weekday;
 // the weekdays and the months.. translate them if necessary
-$weekday[0]='Sunday';
-$weekday[1]='Monday';
-$weekday[2]='Tuesday';
-$weekday[3]='Wednesday';
-$weekday[4]='Thursday';
-$weekday[5]='Friday';
-$weekday[6]='Saturday';
+$weekday[0]='ÆüÍËÆü';
+$weekday[1]='·îÍËÆü';
+$weekday[2]='²ÐÍËÆü';
+$weekday[3]='¿åÍËÆü';
+$weekday[4]='ÌÚÍËÆü';
+$weekday[5]='¶âÍËÆü';
+$weekday[6]='ÅÚÍËÆü';
 
 // the months, translate them if necessary - note: this isn't active everywhere yet
+global $month;
 $month['01']='January';
 $month['02']='February';
 $month['03']='March';
@@ -26,6 +27,7 @@ $month['11']='November';
 $month['12']='December';
 
 // here's the conversion table, you can modify it if you know what you're doing
+global $wpsmiliestrans;
 $wpsmiliestrans = array(
     ' :)'        => 'icon_smile.gif',
     ' :D'        => 'icon_biggrin.gif',

@@ -37,7 +37,7 @@ for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 
 require_once('optionhandler.php');
 
-if ($HTTP_POST_VARS['Submit'] == 'Update') {
+if ($HTTP_POST_VARS['Submit'] == _LANG_WPL_SUBMIT_UPDATE) {
 	update_option('permalink_structure', $HTTP_POST_VARS['permalink_structure']);
 	$permalink_structure = $HTTP_POST_VARS['permalink_structure'];
 } else {
