@@ -255,7 +255,9 @@ echo $posts_nav_bar;
 </table>
 
 <?php
+$do_force=true;
 include(ABSPATH.'wp-blog-header.php');
+$do_force=false;
 
 if ($posts) {
 foreach ($posts as $post) { start_wp();

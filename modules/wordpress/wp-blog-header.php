@@ -3,7 +3,7 @@
 require("wp-lang/lang_ja.php");
 global $xoopsDB,$xoopsUser,$wpdb;
 global $wp_once_called;
-if (!($wp_once_called)) {
+if (!($wp_once_called) || ($do_force)) {
 $wp_once_called = 1;
 $wpj_head = <<<EOD
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -216,11 +216,14 @@ if ((empty($cat)) || ($cat == 'all') || ($cat == '0')) {
 // Category stuff for nice URIs
 
 if ('' != $category_name) {
-	$category_name = preg_replace('|[^a-z0-9-]|', '', $category_name);
+//	$category_name = preg_replace('|[^a-z0-9-]|', '', $category_name);
+	$category_name = preg_replace('/\/$/', '', $category_name);
 	$tables = ", $tablepost2cat, $tablecategories";
 	$join = " LEFT JOIN $tablepost2cat ON ($tableposts.ID = $tablepost2cat.post_id) LEFT JOIN $tablecategories ON ($tablepost2cat.category_id = $tablecategories.cat_ID) ";
-	$whichcat = " AND (category_nicename = '$category_name') ";
-	$cat = $wpdb->get_var("SELECT cat_ID FROM $tablecategories WHERE category_nicename = '$category_name'");
+//	$whichcat = " AND (category_nicename = '$category_name') ";
+//	$cat = $wpdb->get_var("SELECT cat_ID FROM $tablecategories WHERE category_nicename = '$category_name'");
+	$whichcat = " AND (cat_name = '$category_name') ";
+	$cat = $wpdb->get_var("SELECT cat_ID FROM $tablecategories WHERE cat_name = '$category_name'");
 }
 
 // author stuff
@@ -366,8 +369,7 @@ if ($preview) {
 		$preview_content =  preg_replace('/\%u([0-9A-F]{4,4})/e',  "'&#'.base_convert('\\1',16,10).';'", $preview_content);
 	}
 }
-
-// error_log("$request");
+//error_log("$request");
 global $posts;
 $posts = $wpdb->get_results($request);
 
