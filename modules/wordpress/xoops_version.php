@@ -73,4 +73,11 @@ $modversion['blocks'][7]['file'] = "wp_recent_comments.php";
 $modversion['blocks'][7]['name'] = _MI_WORDPRESS_BNAME7;
 $modversion['blocks'][7]['description'] = _MI_WORDPRESS_BDESC7;
 $modversion['blocks'][7]['show_func'] = "b_wp_recent_comments_show";
+
+
+$modversion['blocks'][8]['file'] = "wp_contents.php";
+$modversion['blocks'][8]['name'] = _MI_WORDPRESS_BNAME8;
+$modversion['blocks'][8]['description'] = _MI_WORDPRESS_BNAME8;
+$modversion['blocks'][8]['show_func'] = "b_wp_contents_show";
+$modversion['blocks'][8]['template'] = "wp_block_contents.html";
 ?>
