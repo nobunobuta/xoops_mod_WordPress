@@ -37,7 +37,7 @@ include("header.php");
 <?php } ?>
 </div>
 
-<p class="credit"><?php echo $wpdb->querycount; ?> queries. <?php timer_stop(1); ?> sec. || <cite>Powered by <a href="http://wordpress.xwd.jp/" title="Powered by WordPress Japan"><strong>WordPress ME</strong></a></cite></p>
+<p class="credit"><?php echo $wpdb->querycount; ?> queries. <?php timer_stop(1); ?> sec.<br /><cite>Powered by <a href="http://www.kowa.org/" title="NobuNobu XOOPS"><strong>WordPress Module</strong></a> based on <a href="http://wordpress.xwd.jp/" title="Powered by WordPress Japan"><strong>WordPress ME</strong></a> & <a href="http://www.wordpress.org/" title="Powered by WordPress"><strong>WordPress</strong></a></cite></p>
 
 <?php
 include(XOOPS_ROOT_PATH."/footer.php");
