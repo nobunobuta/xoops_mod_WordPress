@@ -1,6 +1,7 @@
 <?php
 include_once dirname( __FILE__ ).'/../../mainfile.php';
-if(!defined('ABSPATH')) define ('ABSPATH' , XOOPS_ROOT_PATH.'/modules/wordpress/');
+if(!defined('ABSBASE')) define ('ABSBASE' , '/modules/wordpress/');
+if(!defined('ABSPATH')) define ('ABSPATH' , XOOPS_ROOT_PATH.ABSBASE);
 
 // ** MySQL settings ** //
 if (!defined('WP_DB_NAME')) {
@@ -10,7 +11,7 @@ if (!defined('WP_DB_NAME')) {
 	define('WP_DB_HOST', XOOPS_DB_HOST);
 }
 // Change the prefix if you want to have multiple blogs in a single database.
-global $xoopsDB,$xoopsUser, $wpdb, $wp_id, $wp_inblock, $table_prefix, $wp_mod, $wp_base, $wp_prefix, $wp_siteurl, $wp_debug;
+global $xoopsDB,$xoopsUser, $wpdb, $wp_id, $wp_inblock, $table_prefix, $wp_mod, $wp_base, $wp_prefix, $wp_siteurl;
 if (!$GLOBALS['wp_inblock']) {
 	$GLOBALS['wp_dir'] = basename( dirname( __FILE__ ) ) ;
 	if (!preg_match('/wordpress(\d*)/', $GLOBALS['wp_dir'], $regs )) {
@@ -39,8 +40,6 @@ $GLOBALS['table_prefix'][$GLOBALS['wp_id']] = $xoopsDB->prefix($GLOBALS['wp_pref
 
 $GLOBALS['wp_debug'] = true;
 $GLOBALS['use_cache'] = 1; // No reason not to
-// Get everything else
-//require('wp-settings.php');
 
 require($GLOBALS['wp_base'][$GLOBALS['wp_id']].'/wp-settings.php');
 

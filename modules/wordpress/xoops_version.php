@@ -34,7 +34,8 @@ $modversion['tables'] = array(
 	"wp{$my_wp_dirnumber}_optionvalues",
 	"wp{$my_wp_dirnumber}_optiongroups",
 	"wp{$my_wp_dirnumber}_optiongroup_options",
-	"wp{$my_wp_dirnumber}_post2cat"
+	"wp{$my_wp_dirnumber}_post2cat",
+	"wp{$my_wp_dirnumber}_postmeta"
 	);
 
 // Search
@@ -106,6 +107,15 @@ $modversion['config'][5] = array(
 );
 
 $modversion['config'][6] = array(
+	'name'			=> 'wp_use_blockcssheader' ,
+	'title'			=> '_MI_WP_USE_BLOCKCSSHEADER' ,
+	'description'	=> '_MI_WP_USE_BLOCKCSSHEADER_DESC' ,
+	'formtype'		=> 'yesno' ,
+	'valuetype'		=> 'int' ,
+	'default'		=> 0 ,
+);
+
+$modversion['config'][7] = array(
 	'name'			=> 'wp_use_xoops_comments' ,
 	'title'			=> '_MI_WP_USE_XOOPS_COMM' ,
 	'description'	=> '_MI_WP_USE_XOOPS_COMM_DESC' ,

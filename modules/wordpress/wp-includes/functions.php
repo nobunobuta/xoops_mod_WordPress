@@ -273,6 +273,7 @@ function user_pass_ok($user_login,$user_pass) {
 	} else {
 		$userdata = $GLOBALS['cache_userdata'][wp_id()][$user_login];
 	}
+	if (!$userdata) return false;
 	return (md5(trim($user_pass)) == $userdata->user_pass);
 }
 
@@ -303,8 +304,12 @@ function get_userdata($userid) {
 	if ((empty($GLOBALS['cache_userdata'][wp_id()][$userid])) || (!$GLOBALS['use_cache'])) {
 		$userHandler =& wp_handler('User');
 		$userObject =& $userHandler->get($userid);
-		$user =& $userObject->exportWpObject();
-		$GLOBALS['cache_userdata'][wp_id()][$userid] = $user;
+		if ($userObject) {
+			$user =& $userObject->exportWpObject();
+			$GLOBALS['cache_userdata'][wp_id()][$userid] = $user;
+		} else {
+			return false;
+		}
 	} else {
 		$user = $GLOBALS['cache_userdata'][wp_id()][$userid];
 	}
@@ -1669,7 +1674,21 @@ function get_xoops_option($dirname,$conf_name) {
 	
 	return($value);
 }
-function block_style_get($wp_num, $echo = 'true') {
+function block_style_get($wp_num, $echo = true, $with_tpl = true) {
+	if ($with_tpl) {
+		if (get_xoops_option(wp_mod(),'wp_use_blockcssheader')) {
+			$tplVars =& $GLOBALS['xoopsTpl']->get_template_vars();
+			$csslink = "\n<link rel='stylesheet' type='text/css' media='screen' href='".XOOPS_URL."/modules/wordpress".$wp_num ."/wp-blockstyle.php' />";
+			if(array_key_exists('xoops_block_header', $tplVars)) {
+				if (!strstr($tplVars['xoops_block_header'],$csslink)) {
+					$GLOBALS['xoopsTpl']->assign('xoops_block_header',$tplVars['xoops_block_header'].$csslink);
+				}
+			} else {
+				$GLOBALS['xoopsTpl']->assign('xoops_block_header',$csslink);
+			}
+			return;
+		}
+	}
 	if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. $wp_num .'/themes/'.$GLOBALS['xoopsConfig']['theme_set'].'/wp-blocks.css.php')) {
 		$themes = $GLOBALS['xoopsConfig']['theme_set'];
 	} else {
@@ -1679,10 +1698,10 @@ function block_style_get($wp_num, $echo = 'true') {
 	include_once(XOOPS_ROOT_PATH."/modules/wordpress". $wp_num ."/themes/".$themes."/wp-blocks.css.php");
 	if ($echo) {
 		if (trim($wp_block_style) != "") {
-		echo <<< EOD
+			echo <<< EOD
 <style type="text/css" media="screen">
     <!--
-	$wp_block_style
+$wp_block_style
     -->
 </style>
 EOD;
@@ -1806,36 +1825,6 @@ function get_custom_url($filename) {
 	return wp_siteurl().'/themes/'.$themes.'/'. $filename;
 }
 
-function auto_upgrade() {
-	global $wpdb;
-	$wpdb->hide_errors();
-
-	if ($wpdb->query("SHOW COLUMNS FROM ".wp_table('postmeta'))==false) {
-		$sql1 = "CREATE TABLE ".wp_table('postmeta')." (
-					meta_id int(11) NOT NULL auto_increment,
-					post_id int(11) NOT NULL default '0',
-					meta_key varchar(255) default NULL,
-					meta_value text,
-					PRIMARY KEY	 (meta_id),
-					KEY post_id (post_id),
-					KEY meta_key (meta_key)
-				)";
-		$wpdb->query($sql1);
-	}
-
-	if ($wpdb->query("SHOW COLUMNS FROM ".wp_table('comments')." LIKE 'comment_type'")==false) {
-		$sql1 = "ALTER TABLE ".wp_table('comments')." ADD (
-					comment_agent varchar(255) NOT NULL default '',
-					comment_type varchar(20) NOT NULL default '',
-					comment_parent int(11) NOT NULL default '0',
-					user_id int(11) NOT NULL default '0',
-				)";
-		$wpdb->query($sql1);
-	}
-	$wpdb->show_errors();
-	add_option('use_comment_preview','0', 2, "Display Preview Screen after comment posting.", 2, 8);
-}
-
 function current_wp() {
 	$cur_PATH = $_SERVER['SCRIPT_FILENAME'];
 	if (preg_match("/^".preg_quote(wp_base()."/","/")."/i",$cur_PATH)) {
@@ -1896,4 +1885,96 @@ function redirect_js($url,$title="...") {
 	exit();
 }
 
+function wp_create_thumbnail($file, $max_side, $effect = '') { 
+	// 1 = GIF, 2 = JPEG, 3 = PNG
+	if (file_exists($file)) {
+		$type = getimagesize($file); 
+        
+		// if the associated function doesn't exist - then it's not
+		// handle. duh. i hope.
+		if (!function_exists('imagegif') && $type[2] == 1) {
+			$error = 'Filetype not supported. Thumbnail not created.';
+		} elseif (!function_exists('imagejpeg') && $type[2] == 2) {
+			$error = 'Filetype not supported. Thumbnail not created.';
+		} elseif (!function_exists('imagepng') && $type[2] == 3) {
+			$error = 'Filetype not supported. Thumbnail not created.';
+		} else {
+			// create the initial copy from the original file
+			if ($type[2] == 1) {
+				$image = imagecreatefromgif($file);
+			} elseif ($type[2] == 2) {
+				$image = imagecreatefromjpeg($file);
+			} elseif ($type[2] == 3) {
+				$image = imagecreatefrompng($file);
+			} 
+
+			if (function_exists('imageantialias'))
+	            imageantialias($image, TRUE);
+
+			$image_attr = getimagesize($file); 
+            
+			// figure out the longest side
+			if ($image_attr[0] > $image_attr[1]) {
+				$image_width = $image_attr[0];
+				$image_height = $image_attr[1];
+				$image_new_width = $max_side;
+
+				$image_ratio = $image_width / $image_new_width;
+				$image_new_height = $image_height / $image_ratio; 
+				// width is > height
+			} else {
+				$image_width = $image_attr[0];
+				$image_height = $image_attr[1];
+				$image_new_height = $max_side;
+
+				$image_ratio = $image_height / $image_new_height;
+				$image_new_width = $image_width / $image_ratio; 
+				// height > width
+			} 
+            if (function_exists('gd_info')) {
+	            $gdver=gd_info();
+	            if(strstr($gdver["GD Version"],"1.")!=false){
+	            	//For GD
+	                $thumbnail = imagecreate($image_new_width, $image_new_height);
+	            }else{
+	            	//For GD2
+	                $thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
+	            }
+			} else {
+                if (function_exists('imagecreatetruecolor')) {
+                    $thumbnail = @imagecreatetruecolor($image_new_width, $image_new_height);
+                }
+                if (!$thumbnail) {
+                     $thumbnail =imagecreate($image_new_width, $image_new_width);
+                }
+			}
+			@imagecopyresized($thumbnail, $image, 0, 0, 0, 0, $image_new_width, $image_new_height, $image_attr[0], $image_attr[1]); 
+            
+			// move the thumbnail to it's final destination
+            
+			$path = explode('/', $file);
+			$thumbpath = substr($file, 0, strrpos($file, '/')) . '/thumb-' . $path[count($path)-1];
+
+			if ($type[2] == 1) {
+				if (!imagegif($thumbnail, $thumbpath)) {
+					$error = "Thumbnail path invalid";
+				} 
+			} elseif ($type[2] == 2) {
+				if (!imagejpeg($thumbnail, $thumbpath)) {
+					$error = "Thumbnail path invalid";
+				} 
+			} elseif ($type[2] == 3) {
+				if (!imagepng($thumbnail, $thumbpath)) {
+					$error = "Thumbnail path invalid";
+				} 
+			} 
+		} 
+	} 
+
+	if (!empty($error)) {
+		return $error;
+	} else {
+		return 1;
+	} 
+}
 ?>

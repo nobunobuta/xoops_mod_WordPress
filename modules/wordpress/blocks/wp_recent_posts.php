@@ -117,7 +117,7 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 		block_style_get($wp_num);
 		$output = ob_get_contents();
 		ob_end_clean();
-		$output .= "<div id='wpRecentPost'>";
+		$output .= "<div class='wpRecentPost'>";
 		if ($lposts) {
 			if (!$cat_date) {
 				$output .= "<ul class='wpBlockList'>\n";
@@ -131,7 +131,7 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 						if ($pdate <> "") {
 							$output .= "</ul></li>\n";
 						}
-						$output .= "<li><span id=\"postDate\">".$date."</span>\n<ul class=\"children\">\n";
+						$output .= "<li><span class=\"postDate\">".$date."</span>\n<ul class=\"children\">\n";
 						$pdate = $date;
 					}
 				}

@@ -53,8 +53,6 @@ require_once (ABSPATH.WPINC.'/class-xmlrpc.php');
 require_once (ABSPATH.WPINC.'/class-xmlrpcs.php');
 require_once (ABSPATH.WPINC.'/links.php');
 require_once (ABSPATH.WPINC.'/kses.php');
-auto_upgrade();
-
 
 if (empty($GLOBALS['cache_categories'][wp_id()])||(count($GLOBALS['cache_categories'][wp_id()])==0)) {
 	$GLOBALS['cache_categories'][wp_id()] = array();

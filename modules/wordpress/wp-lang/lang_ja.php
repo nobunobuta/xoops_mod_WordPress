@@ -467,8 +467,8 @@ define('_LANG_WUS_AU_THOR','Authors');
 define('_LANG_WUS_AU_LOGIN','ログイン名');
 define('_LANG_WUS_AU_NICK','ニックネーム');
 define('_LANG_WUS_AU_NAME','氏名');
-define('_LANG_WUS_AU_MAIL','E-Mail');
-define('_LANG_WUS_AU_URI','URL');
+define('_LANG_WUS_AU_MAIL','メールアドレス(必須)');
+define('_LANG_WUS_AU_URI','ホームページURL');
 define('_LANG_WUS_AU_LEVEL','レベル');
 define('_LANG_WUS_AU_POSTS','投稿数');
 define('_LANG_WUS_AU_USERS','Users');
@@ -487,13 +487,13 @@ define('_LANG_WPCM_COM_RSS','このコメントの<abbr title="Really Simple Syndicatio
 define('_LANG_WPCM_COM_TRACK','TrackBack URL : ');
 define('_LANG_WPCM_COM_YET','この投稿には、まだコメントが付いていません');
 define('_LANG_WPCM_COM_LEAVE','コメントの投稿');
-define('_LANG_WPCM_HTML_ALLOWED','改行や段落は自動です<br />URLとE-mailは自動的にリンクされますので、&lt;a&gt;タグは不要です。<br /><acronym title="Hypertext Markup Language">HTML</acronym> allowed: ');
+define('_LANG_WPCM_HTML_ALLOWED','改行や段落は自動です<br />URLとメールアドレスは自動的にリンクされますので、&lt;a&gt;タグは不要です。<br />以下のHTMLタグが使用可能です。<br>');
 define('_LANG_WPCM_COM_YOUR','コメントをどうぞ');
 define('_LANG_WPCM_PLEASE_NOTE','<strong>ご注意 : </strong>セッティングにより、コメント投稿から実際に閲覧できるようになるまで暫く時間が掛かる場合があります。 再投稿の必要はありませんので、表示されるまでお待ち下さい。');
-define('_LANG_WPCM_COM_SAYIT','Say it !');
+define('_LANG_WPCM_COM_SAYIT','投稿する');
 define('_LANG_WPCM_THIS_TIME','ごめんなさい、現在コメントを付けることは出来ません');
 // define('_LANG_WPCM_GO_BACK','Go Back');
-define('_LANG_WPCM_COM_NAME','Name');
+define('_LANG_WPCM_COM_NAME','お名前(ニックネーム)(必須)');
 
 /* File Name wp-comments-post.php */
 define('_LANG_WPCP_SORRY_ITEM','ごめんなさい  この投稿に対するコメントは受け付けていません');

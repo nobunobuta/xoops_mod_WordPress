@@ -160,7 +160,9 @@ function XK_updateFields()
     for (i=0; i<editors.length; i++)
     {	  
 		//if html mode toggle to wysiwyg
-		if (document.getElementById("alleditor"+editors[i]).style.display=="none")XK_doToggleView(editors[i]);
+		if (document.getElementById("iframe"+editors[i]).style.display=="none") {
+			XK_doToggleView(editors[i]);
+		}
 		var doc=document.getElementById("iframe"+editors[i]).contentWindow.document;
 
 		var text=(document.getElementById(editors[i]).value.indexOf("<body")!=-1)?XK_getXHTML(doc):XK_getXHTML(doc.body);

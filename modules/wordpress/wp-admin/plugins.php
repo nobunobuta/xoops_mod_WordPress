@@ -10,9 +10,9 @@ if ($user_level < 9) {
 	exit();
 }
 
-init_param(array('GET','POST'), 'action','string', '');
+init_param('', 'action','string', '');
 
-switch($action) {
+switch(get_param('action')) {
 	case 'activate':
 		if ( ! $xoopsWPTicket->check(false) ) {
 			redirect_header($siteurl.'/wp-admin/plugins.php',3,$xoopsWPTicket->getErrors());
@@ -20,7 +20,7 @@ switch($action) {
 		init_param('GET', 'plugin','string',NO_DEFAULT_PARAM, true);
 		$current = "\n" . get_settings('active_plugins') . "\n";
 		$current = preg_replace("|(\n)+\s*|", "\n", $current);
-		$current = trim($current) . "\n " . trim($plugin);
+		$current = trim($current) . "\n " . trim(get_param('plugin'));
 		$current = trim($current);
 		$current = preg_replace("|\n\s*|", "\n", $current); // I don't know where this is coming from
 		update_option('active_plugins', $current, true);
@@ -33,7 +33,7 @@ switch($action) {
 		}
 		init_param('GET', 'plugin','string',NO_DEFAULT_PARAM, true);
 		$current = "\n" . get_settings('active_plugins') . "\n";
-		$current = str_replace("\n" . $plugin, '', $current);
+		$current = str_replace("\n" . get_param('plugin'), '', $current);
 		$current = preg_replace("|(\n)+\s*|", "\n", $current);
 		update_option('active_plugins', trim($current), true);
 		header('Location: plugins.php?deactivate=true');
@@ -62,11 +62,11 @@ switch($action) {
 			}
 		}
 ?>
-<?php if ($activate) { ?>
+<?php if (get_param('activate')) { ?>
 <div class="updated"><p><?php echo _LANG_PG_ACTIVATED_OK; ?></p>
 </div>
 <?php } ?>
-<?php if ($deactivate) { ?>
+<?php if (get_param('deactivate')) { ?>
 <div class="updated"><p><?php echo _LANG_PG_DEACTIVATED_OK; ?></p>
 </div>
 <?php } ?>

@@ -62,7 +62,7 @@ if( ! defined( 'WP_ARCHIVES_MONTHLY_INCLUDED' ) ) {
 			echo "</ul>\n";
 		} else {
 		// Dropdown Listing
-			echo '<form name="archiveform'.$wp_num.'" action="">';
+			echo '<form name="archiveform'.$wp_num.'" action="#">';
 			echo '<select name="archive_chrono" onchange="window.location = (document.forms.archiveform'.$wp_num.'.archive_chrono[document.forms.archiveform'.$wp_num.'.archive_chrono.selectedIndex].value);"> ';
 			echo '<option value="">'._WP_BY_MONTHLY.'</option>';
 			get_archives('monthly','','option', '','',$with_count, $sel_value);

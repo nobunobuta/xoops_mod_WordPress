@@ -79,8 +79,7 @@ function get_author_link($echo = false, $author_id, $author_name="") {
     $permalink_structure = get_settings('permalink_structure');
     
     if ($permalink_structure == '') {
-        $file = wp_siteurl() . '/' . get_settings('blogfilename');
-        $link = $file.'?author='.$author_id;
+        $link = wp_siteurl() . '/index.php?author='.$author_id;
     } else {
         if ($author_name =='') $author_name = $GLOBALS['cache_userdata'][wp_id()][$author_id]->author_name;
         // Get any static stuff from the front

@@ -27,12 +27,12 @@ if ($use_spaw) {
 	$spaw_form = $sw->getHtml();
 } else if ($use_koivi) {
 	include XOOPS_ROOT_PATH."/class/xoopsformloader.php";
-	include_once XOOPS_ROOT_PATH . "/modules/wordpress/wp-admin/wysiwyg/formwysiwygtextarea.php";
+	include_once ABSPATH. "wp-admin/wysiwyg/formwysiwygtextarea.php";
 	$trans_tbl = get_html_translation_table (HTML_SPECIALCHARS);
 	$trans_tbl = array_flip ($trans_tbl);
 	$content = strtr ($content, $trans_tbl);
 	$wysiwyg_text_area = new XoopsFormWysiwygTextArea( $caption, 'wp_content', $content, '100%', '400px','');
-	$wysiwyg_text_area->setUrl("/modules/wordpress/wp-admin/wysiwyg");
+	$wysiwyg_text_area->setUrl(ABSBASE. "wp-admin/wysiwyg");
 	$spaw_form = $wysiwyg_text_area->render();
 } else {
 	$spaw_form = "";

@@ -1,47 +1,74 @@
 <?php
+//$GLOBALS['wp_mail_debug'] = 0; # =0 if you don't want to output any debugging info.
+$GLOBALS['wp_mail_debug'] = 1; # =1 if you want to output debugging info to screen.
+//$GLOBALS['wp_mail_debug'] = 2; # =2 if you want to output debugging info to log file. TODO.
+
+if (file_exists(dirname(__FILE__).'/xoops_version.php')) {
+	require_once(dirname(__FILE__) . '/wp-config.php');
+} else {
+	if (file_exists(dirname(dirname(__FILE__)). '/xoops_version.php')) {
+		require_once(dirname(dirname(__FILE__)) . '/wp-config.php');
+	}
+}
+
 if (file_exists(dirname(__FILE__) .'/wp-mail-conf.php')) {
 	@include_once(dirname(__FILE__) .'/wp-mail-conf.php');
-	if ($exec_key) {
-		if (!(isset($_GET['execkey'])) || $_GET['execkey']!=$exec_key) {
-			return;
+}
+
+if ( function_exists('debug_backtrace') ) {
+	$scriptpath = debug_backtrace();
+	if ( count($scriptpath) ) { // Is this file included from another file ?
+		$GLOBALS['wp_mail_debug'] = 0;  // in this case, shouldn't output any messages.
+	} else if (!empty($GLOBALS['exec_key'])) {
+		if (!(isset($_GET['execkey'])) || $_GET['execkey']!=$GLOBALS['exec_key']) {
+			$GLOBALS['wp_mail_debug'] = 0;  // in this case, shouldn't output any messages.
 		}
 	}
+}
+
+ob_start();
+if ($GLOBALS['wp_mail_debug']) {
+	header("Content-Type: text/html; charset=EUC-JP");
+	echo <<<EOD
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=EUC-JP" />
+</head><body>
+EOD;
+}
+wp_mail_receive();
+if ($GLOBALS['wp_mail_debug']) {
+	echo "</body></html>";
+	ob_end_flush();
+} else {
+	ob_end_clean();
 }
 
 function wp_mail_quit() {
   global $wp_pop3;
   $wp_pop3->quit();
 }
+
 function wp_mail_receive() {
-  global $xoopsDB, $wpdb, $wp_id, $siteurl, $blog_charset, $wp_pop3, $img_target;
+  global $wpdb, $wp_pop3, $img_target;
   
 	require_once(ABSPATH . WPINC . '/class-pop3.php');
 	timer_start();
 	$use_cache = 1;
 	$time_difference = get_settings('time_difference');
-
-	// Get Server Time Zone
-	// If Server Time Zone is not collect, Please comment out following line;
-	$server_timezone = date("O");
-	// echo "Server TimeZone is ".date('O')."<br />";
-
-	// If Server Time Zone is not collect, Please uncomment following line and set collect timezone value;
-	// $server_timezone = "+0900"; //This is a sample value for JST+0900
-
-	$server_timezone = $server_timezone / 100;
-	$weblog_timezone = $server_timezone + $time_difference;
+	$blog_charset = get_settings('blog_charset');
 
 	error_reporting(2037);
 
 	$wp_pop3 = new POP3();
-
 	if (!$wp_pop3->connect(get_settings('mailserver_url'), get_settings('mailserver_port'))) {
 		echo "Ooops $wp_pop3->ERROR <br />\n";
 		return;
 	} 
 
-	$Count = $wp_pop3->login(get_settings('mailserver_login'), get_settings('mailserver_pass'));
-	if ($Count == false) {
+	$mail_count = $wp_pop3->login(get_settings('mailserver_login'), get_settings('mailserver_pass'));
+	if ($mail_count == false) {
 		if (!$wp_pop3->FP) {
 			echo "Oooops Login Failed: $wp_pop3->ERROR<br />\n";
 		} else {
@@ -54,8 +81,8 @@ function wp_mail_receive() {
 	// ONLY USE THIS IF YOUR PHP VERSION SUPPORTS IT!
 	register_shutdown_function('wp_mail_quit');
 	
-	for ($iCount = 1; $iCount <= $Count; $iCount++) {
-		$MsgOne = $wp_pop3->get($iCount);
+	for ($mail_num = 1; $mail_num <= $mail_count; $mail_num++) {
+		$MsgOne = $wp_pop3->get($mail_num);
 		if ((!$MsgOne) || (gettype($MsgOne) != 'array')) {
 			echo "oops, $wp_pop3->ERROR<br />\n";
 			$wp_pop3->quit();
@@ -114,28 +141,8 @@ function wp_mail_receive() {
 					$ddate = str_replace('Date: ', '', $ddate);
 					if (strpos($ddate, ',')) {
 						$ddate = trim(substr($ddate, strpos($ddate, ',') + 1, strlen($ddate)));
-					} 
-					$date_arr = explode(' ', $ddate);
-					$date_time = explode(':', $date_arr[3]);
-
-					$ddate_H = $date_time[0];
-					$ddate_i = $date_time[1];
-					$ddate_s = $date_time[2];
-
-					$ddate_m = $date_arr[1];
-					$ddate_d = $date_arr[0];
-					$ddate_Y = $date_arr[2];
-
-					$mail_timezone = trim(ereg_replace("\([^)]*\)", "", $date_arr[4])) / 100; 
-					// echo "Email TimeZone is {$date_arr[4]}<br />";
-					$mail_time_difference = $weblog_timezone - $mail_timezone;
-					for ($i = 0; $i < 12; $i++) {
-						if ($ddate_m == $dmonths[$i]) {
-							$ddate_m = $i + 1;
-						} 
-					} 
-					$ddate_U = mktime($ddate_H, $ddate_i, $ddate_s, $ddate_m, $ddate_d, $ddate_Y);
-					$ddate_U = $ddate_U + ($mai_time_difference * 3600);
+					}
+					$ddate_U = strtotime ($ddate) + $time_difference*3600;
 					$post_date = date('Y-m-d H:i:s', $ddate_U);
 				} 
 			} 
@@ -159,7 +166,7 @@ function wp_mail_receive() {
 			$userpassstring = '';
 
 			echo "<div style=\"border: 1px dashed #999; padding: 10px; margin: 10px;\">\n";
-			echo "<p><b>$iCount</b></p><p><b>Subject: </b>$subject</p>\n";
+			echo "<p><b>$mail_num</b></p><p><b>Subject: </b>$subject</p>\n";
 
 			$subject = trim(str_replace(get_settings('subjectprefix'), '', $subject));
 
@@ -240,7 +247,7 @@ function wp_mail_receive() {
 			$flon = 999.0;
 			$secondlineParts = explode(':', strip_tags($secondline));
 			if (strncmp($secondlineParts[0], "POS", 3) == 0) {
-				echo "Found POS:<br>\n"; 
+				echo "Found POS:<br />\n"; 
 				// echo "Second parts is:".$secondlineParts[1];
 				// the second line is the postion listing line
 				$secLineParts = explode(',', $secondlineParts[1]);
@@ -257,44 +264,20 @@ function wp_mail_receive() {
 			$blah = explode(':', $userpassstring);
 			$user_login = $blah[0];
 			$user_pass = $blah[1];
-			if (function_exists('mb_convert_encoding')) {
-				$user_login = mb_convert_encoding(trim($user_login), $blog_charset, $charset);
-			} else {
-				$user_login = trim($user_login);
-			}
+			$user_login = mb_conv(trim($user_login), $blog_charset, $charset);
 			
 			$content = $contentfirstline . str_replace($firstline, '', $content);
 			$content = trim($content); 
 			// Please uncomment following line, only if you want to check user and password.
 			// echo "<p><b>Login:</b> $user_login, <b>Pass:</b> $user_pass</p>";
 			echo "<p><b>Login:</b> $user_login, <b>Pass:</b> *********</p>";
-			if ($xoopsDB) {
-				$sql = "SELECT ID, user_level FROM {$wpdb->users[$wp_id]} WHERE user_login='$user_login' ORDER BY ID DESC LIMIT 1";
-				$result = $wpdb->get_row($sql);
-				if (!$result) {
-					echo "<p><b>Wrong Login.</b></p></div>\n";
-					continue;
-				} else {
-					$sql = "SELECT * FROM " . $xoopsDB->prefix('users') . " WHERE uname='$user_login' AND pass='" . md5(trim($user_pass)) . "' ORDER BY uid DESC LIMIT 1";
-					$result1 = $wpdb->get_row($sql);
-
-					if (!$result1) {
-						echo "<p><b>Wrong login or password.</b></p></div>\n";
-						continue;
-					} 
-				} 
-			} else {
-				$sql = "SELECT ID, user_level FROM {$wpdb->users[$wp_id]} WHERE user_login='$user_login' AND user_pass='$user_pass' ORDER BY ID DESC LIMIT 1";
-				$result = $wpdb->get_row($sql);
-
-				if (!$result) {
-					echo "<p><b>Wrong login or password.</b></p></div>\n";
-					continue;
-				} 
+			if (!user_pass_ok($user_login, $user_pass)) {
+				echo "<p><b>Error: Wrong Login.</b></p></div>\n";
+				continue;
 			} 
-
-			$user_level = $result->user_level;
-			$post_author = $result->ID;
+			$userdata = get_userdatabylogin($user_login);
+			$user_level = $userdata->user_level;
+			$post_author = $userdata->ID;
 
 			if ($user_level > 0) {
 				$post_title = xmlrpc_getposttitle($content);
@@ -302,19 +285,19 @@ function wp_mail_receive() {
 					$post_title = $subject;
 				} 
 
+				echo "Subject : " . mb_conv($post_title, $blog_charset, $sub_charset) . " <br />\n";
+
 				$post_category = get_settings('default_category');
 				if (preg_match('/<category>(.+?)<\/category>/is', $content, $matchcat)) {
 					$post_category = xmlrpc_getpostcategory($content);
 				} 
-				if ($post_category == '') {
+				if (empty($post_category)) {
 					$post_category = get_settings('default_post_category');
-				} 
-				if (function_exists('mb_convert_encoding')) {
-					echo "Subject : " . mb_convert_encoding($subject, $blog_charset, $sub_charset) . " <br />\n";
-				} else {
-					echo "Subject : " . $subject . " <br />\n";
-				} 
+				}
 				echo "Category : $post_category <br />\n";
+
+				$post_category = explode(',', $post_category);
+
 				if (!get_settings('emailtestonly')) {
 					// Attaching Image Files Save
 					if ($att_boundary != "") {
@@ -325,7 +308,7 @@ function wp_mail_receive() {
 							$hattachment = wp_getattach($contents[$i], "user-".trim($post_author), 0);
 							if ($hattachment) {
 								if (preg_match("/Content-Id: \<([^\>]*)>/i", $contents[$i], $matches)) {
-									$content = preg_replace("/(cid:" . preg_quote($matches[1]) . ")/", "$siteurl/attach/" . $hattachment, $content);
+									$content = preg_replace("/(cid:" . preg_quote($matches[1]) . ")/", get_settings('fileupload_url') .'/'. $hattachment, $content);
 								} 
 							} 
 						} 
@@ -337,13 +320,8 @@ function wp_mail_receive() {
 
 					$content = preg_replace("|\n([^\n])|", " $1", $content);
 					$content = preg_replace("/\=([0-9a-fA-F]{2,2})/e", "pack('c',base_convert('\\1',16,10))", $content);
-					if (function_exists('mb_convert_encoding')) {
-						$content = addslashes(mb_convert_encoding(trim($content), $blog_charset, $charset));
-						$post_title = addslashes(trim(mb_convert_encoding($post_title, $blog_charset, $sub_charset)));
-					} else {
-						$content = addslashes(trim($content));
-						$post_title = addslashes(trim($post_title));
-					} 
+					$content = mb_conv(trim($content), $blog_charset, $charset);
+
 					// If we find an attachment, add it to the post
 					if ($attachment) {
 						if (isset($img_target) && $img_target) {
@@ -352,57 +330,50 @@ function wp_mail_receive() {
 							$img_target = '';
 						}
 
-						if (file_exists("attach/thumb-" . $attachment)) {
-							$content = "<a href=\"" . $siteurl . "/attach/" . $attachment . "\"".$img_target."><img style=\"float: left;\" hspace=\"6\" src = \"" . $siteurl . "/attach/thumb-" . $attachment . "\"  alt=\"moblog\" ></a>" . $content . "<br clear=left>";
+						if (file_exists(get_settings('fileupload_realpath')."/thumb-" . $attachment)) {
+							$content = "<a href=\"" . get_settings('fileupload_url') . '/' . rawurlencode($attachment) . "\"".$img_target."><img style=\"float: left;\" hspace=\"6\" src = \"" . get_settings('fileupload_url') . '/thumb-' . rawurlencode($attachment) . "\" alt=\"".$attachment."\" title=\"".$attachment."\" /></a>" . $content . "<br clear=\"left\" />";
 						} else {
-							$content = "<a href=\"" . $siteurl . "/attach/" . $attachment . "\"".$img_target."><img style=\"float: left;\" hspace=\"6\" src = \"" . $siteurl . "/attach/" . $attachment . "\"  alt=\"moblog\" ></a>" . $content . "<br clear=left>";
+							$content = "<a href=\"" . get_settings('fileupload_url') . '/' . rawurlencode($attachment) . "\"".$img_target."><img style=\"float: left;\" hspace=\"6\" src = \"" . get_settings('fileupload_url') . '/' . rawurlencode($attachment) . "\" alt=\"".$attachment."\" title=\"".$attachment."\" /></a>" . $content . "<br clear=\"left\" />";
 						} 
 					} 
-					$post_name = sanitize_title($post_title);
-					if ($flat > 500) {
-						$sql = "INSERT INTO {$wpdb->posts[$wp_id]} (post_author, post_date, post_content, post_title, post_category) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category)";
-					} else {
-						$sql = "INSERT INTO {$wpdb->posts[$wp_id]} (post_author, post_date, post_content, post_title, post_category, post_lat, post_lon) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category, $flat, $flon)";
-					} 
-					$result = $wpdb->query($sql);
-					$post_ID = $wpdb->insert_id;
-					// update blank postname
-					if ($post_name == "") {
-						$post_name = "post-".$post_ID;
-						$wpdb->query("UPDATE {$wpdb->posts[$wp_id]} SET post_name='$post_name' WHERE ID = $post_ID");
+					$postHandler =& wp_handler('Post');
+					$postObject =& $postHandler->create();
+					$postObject->setVar('post_content', $content);
+					$postObject->setVar('post_title', trim(mb_conv($post_title, $blog_charset, $sub_charset)));
+					$postObject->setVar('post_date', $post_date);
+					$postObject->setVar('post_author', $post_author);
+					$postObject->setVar('post_category', $post_category[0]);
+					$postObject->setVar('post_name', sanitize_title($post_title));
+					if ($flat < 500) {
+						$postObject->setVar('post_lat',$flat);
+						$postObject->setVar('post_lon', $flon);
 					}
-					echo "Post ID = $post_ID<br />\n";
 
-					$blog_ID = 1;
+					if (!$postHandler->insert($postObject, true)) {
+						echo "<b>Error: Insert New Post</b><br />";
+					}
+					$post_ID = $postObject->getVar('ID');
+					echo "Post ID = $post_ID<br />\n";
+					$postObject->assignCategories($post_category);
+					do_action('publish_post', $post_ID);
+					do_action('publish_phone', $post_ID);
 					if ($flat < 500) {
 						pingGeoUrl($post_ID);
 					} 
-					// Double check it's not there already
-					$exists = $wpdb->get_row("SELECT * FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID AND category_id = $post_category");
-					if (!$exists && $result) {
-						$wpdb->query("
-						INSERT INTO {$wpdb->post2cat[$wp_id]}
-						(post_id, category_id)
-						VALUES
-						($post_ID, $post_category)
-						");
-					} 
-
+					$blog_ID = 1;
 					pingWeblogs($blog_ID);
 					pingBlogs($blog_ID);
 					pingback($content, $post_ID);
-					do_action('publish_post', $post_ID);
-					do_action('publish_phone', $post_ID);
 				} 
 				echo "\n<p><b>Posted title:</b> $post_title<br />\n";
 				echo "<b>Posted content:</b><br /><pre>" . $content . "</pre></p>\n";
 
-				if (!$wp_pop3->delete($iCount)) {
+				if (!$wp_pop3->delete($mail_num)) {
 					echo "<p>Oops " . $wp_pop3->ERROR . "</p></div>\n";
 					$wp_pop3->reset();
 					return;
 				} else {
-					echo "<p>Mission complete, message <strong>$iCount</strong> deleted.</p>\n";
+					echo "<p>Mission complete, message <strong>$mail_num</strong> deleted.</p>\n";
 				} 
 			} else {
 				echo "<p><strong>Level 0 users can\'t post.</strong></p>\n";
@@ -423,13 +394,14 @@ function wp_getattach($content, $prefix = "", $create_thumbs = 0)
 	if ($subtype) $subtype = strtolower($matches[1]);
 	$temp_file = "";
 	if (in_array($subtype, array("gif", "jpg", "jpeg", "png"))) {
-		if (($prefix == 0) && eregi("name=\"?([^\"\n]+)\"?", $contents[0], $filereg)) {
+		if (eregi("name=\"?([^\"]+)\"?", $contents[0], $filereg)) {
 			$filename = ereg_replace("[\t\r\n]", "", $filereg[1]);
 			if (function_exists('mb_convert_encoding')) {
-				$temp_file = mb_convert_encoding(mb_decode_mimeheader($filename, $blog_charset, "auto"));
+				$temp_file = mb_conv(mb_decode_mimeheader($filename), get_settings('blog_charset'), "auto");
 			} else {
 				$temp_file = $filename;
-			} 
+			}
+			
 		} 
 		// 添付データをデコードして保存
 		if (eregi("Content-Transfer-Encoding:.*base64", $contents[0])) {
@@ -438,144 +410,30 @@ function wp_getattach($content, $prefix = "", $create_thumbs = 0)
 				$temp_file_base = $prefix . "_" . time();
 			} else {
 				$temp_file_info = pathinfo($temp_file);
+				if (in_array($temp_file_info["extension"],array("gif", "jpg", "jpeg", "png"))) {
+					$subtype = $temp_file_info["extension"];
+				}
 				$temp_file_base = basename($temp_file, "." . $temp_file_info["extension"]);
 			} 
 			$i = 0;
 			$temp_file = $temp_file_base . ".$subtype";
-			while (file_exists("attach/" . $temp_file)) {
-				$temp_file = $temp_file_base . "-" . $i . ".$subtype";;
+			while (file_exists(get_settings('fileupload_realpath') . '/' . $temp_file)) {
+				$temp_file = $temp_file_base . "-" . $i . ".$subtype";
 				$i++;
 			} 
-			if (!($temp_fp = fopen("attach/" . $temp_file, "wb"))) {
-				echo("Error1<br/>\n");
+			if (!($temp_fp = fopen(get_settings('fileupload_realpath') . '/' . $temp_file, "wb"))) {
+				echo("Error : Could not write attatched file.<br />\n");
 				return false;
 			} 
 			fputs($temp_fp, $tmp);
 			fclose($temp_fp);
 			if ($create_thumbs) {
-				wp_create_thumbnail("attach/" . $temp_file, 180, "");
+				wp_create_thumbnail(get_settings('fileupload_realpath') . '/' . $temp_file, 180, "");
 			} 
 		} 
-		echo "$temp_file <br/>\n";
+		echo "$temp_file <br />\n";
 		return $temp_file;
 	} 
 	return false;
 } 
-
-function wp_create_thumbnail($file, $max_side, $effect = '')
-{ 
-	// 1 = GIF, 2 = JPEG, 3 = PNG
-	if (file_exists($file)) {
-		$type = getimagesize($file); 
-		// if the associated function doesn't exist - then it's not
-		// handle. duh. i hope.
-		if (!function_exists('imagegif') && $type[2] == 1) {
-			$error = 'Filetype not supported. Thumbnail not created.';
-		} elseif (!function_exists('imagejpeg') && $type[2] == 2) {
-			$error = 'Filetype not supported. Thumbnail not created.';
-		} elseif (!function_exists('imagepng') && $type[2] == 3) {
-			$error = 'Filetype not supported. Thumbnail not created.';
-		} else {
-			// create the initial copy from the original file
-			if ($type[2] == 1) {
-				$image = imagecreatefromgif($file);
-			} elseif ($type[2] == 2) {
-				$image = imagecreatefromjpeg($file);
-			} elseif ($type[2] == 3) {
-				$image = imagecreatefrompng($file);
-			} 
-
-			if (function_exists('imageantialias'))
-				imageantialias($image, true);
-
-			$image_attr = getimagesize($file); 
-			// figure out the longest side
-			if ($image_attr[0] > $image_attr[1]) {
-				$image_width = $image_attr[0];
-				$image_height = $image_attr[1];
-				$image_new_width = $max_side;
-
-				$image_ratio = $image_width / $image_new_width;
-				$image_new_height = $image_height / $image_ratio; 
-				// width is > height
-			} else {
-				$image_width = $image_attr[0];
-				$image_height = $image_attr[1];
-				$image_new_height = $max_side;
-
-				$image_ratio = $image_height / $image_new_height;
-				$image_new_width = $image_width / $image_ratio; 
-				// height > width
-			} 
-            if (function_exists('gd_info')) {
-	            $gdver=gd_info();
-	            if(strstr($gdver["GD Version"],"1.")!=false){
-	            	//For GD
-	                $thumbnail = imagecreate($image_new_width, $image_new_height);
-	            }else{
-	            	//For GD2
-	                $thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
-	            }
-			} else {
-                $thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
-			}
-			@imagecopyresized($thumbnail, $image, 0, 0, 0, 0, $image_new_width, $image_new_height, $image_attr[0], $image_attr[1]); 
-			// move the thumbnail to it's final destination
-			$path = explode('/', $file);
-			$thumbpath = substr($file, 0, strrpos($file, '/')) . '/thumb-' . $path[count($path)-1];
-
-			if ($type[2] == 1) {
-				if (!imagegif($thumbnail, $thumbpath)) {
-					$error = "Thumbnail path invalid";
-				} 
-			} elseif ($type[2] == 2) {
-				if (!imagejpeg($thumbnail, $thumbpath)) {
-					$error = "Thumbnail path invalid";
-				} 
-			} elseif ($type[2] == 3) {
-				if (!imagepng($thumbnail, $thumbpath)) {
-					$error = "Thumbnail path invalid";
-				} 
-			} 
-		} 
-	} 
-
-	if (!empty($error)) {
-		return $error;
-	} else {
-		return 1;
-	} 
-} 
-
-require_once(dirname(__FILE__) . '/wp-config.php');
-
-//$output_debugging_info = 0; # =0 if you don't want to output any debugging info.
-$output_debugging_info = 1; # =1 if you want to output debugging info to screen.
-//$output_debugging_info = 2; # =2 if you want to output debugging info to log file. TODO.
-
-if ( function_exists('debug_backtrace') ) {
-	$scriptpath = debug_backtrace();
-	if ( count($scriptpath) ) { // Is this file included from another file ?
-		$output_debugging_info = 0;  // in this case, shouldn't output any messages.
-	}
-}
-
-ob_start();
-if ($output_debugging_info) {
-	header("Content-Type: text/html; charset=EUC-JP");
-	echo <<<EOD
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
-<head>
-<meta http-equiv="content-type" content="text/html; charset=EUC-JP" />
-</head><body>
-EOD;
-}
-wp_mail_receive();
-if ($output_debugging_info) {
-	echo "</body></html>";
-	ob_end_flush();
-} else {
-	ob_end_clean();
-}
 ?>

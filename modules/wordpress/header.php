@@ -37,13 +37,18 @@ ob_start();
 ?>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0(by <?php echo $author_name; ?>)" href="<?php get_author_rss_link(true, $author, $author_name); ?>" />
 <?php
+    } else if (!empty($GLOBALS['p'])) {
+        $_user = get_userdata($GLOBALS['post']->post_author);
+        $author = $_user->ID;
+        $author_name = $_user->user_login;
+?>
+    <link rel="alternate" type="application/rss+xml" title="RSS 2.0(by <?php echo $author_name; ?>)" href="<?php get_author_rss_link(true, $author, $author_name); ?>" />
+<?php
 	}
 ?>
 	<link rel="pingback" href="<?php bloginfo('pingback_url'); ?>" />
 	<link rel="EditURI" type="application/rsd+xml" title="RSD" href="<?php echo wp_siteurl(); ?>/wp-rsd.php" />
 <?php get_archives('monthly', '', 'link'); ?>
-<?php if (!empty($GLOBALS['author'])) { ?>
-<?php } ?>
 <?php // comments_popup_script(); // off by default ?>
 <?php
 $_my_header = ob_get_contents();

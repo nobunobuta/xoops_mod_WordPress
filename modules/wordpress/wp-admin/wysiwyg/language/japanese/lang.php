@@ -62,7 +62,7 @@ define('_XK_ENABLECSS_MODE','See a real preview attaching the css theme file');
 define('_XK_TABLEBORDERS_TOGGLE','Toggle Table Borders');
 define('_XK_UNDO','Undo');
 define('_XK_REDO','Redo');
-define('_XK_FORECOLOR','文字色');
+define('_XK_FORECOLOR','色指定');
 define('_XK_HILITECOLOR','背景色');
 define('_XK_CUT','Cut');
 define('_XK_COPY','Copy');

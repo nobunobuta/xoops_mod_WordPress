@@ -9,7 +9,7 @@
 	
 	<div class="storycontent">
 		<?php the_content(); ?>
-		<br clear=left>
+		<br clear="left" />
 	</div>
 	
 	<div class="feedback">

@@ -78,7 +78,7 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 							if ($pdate <> "") {
 								$output .= "</ul></li>\n";
 							}
-							$output .= "<li><span id=\"postDate\">".$date."</span>\n<ul class=\"children\">\n";
+							$output .= "<li><span class=\"postDate\">".$date."</span>\n<ul class=\"children\">\n";
 							$pdate = $date;
 						}
 					}

@@ -30,8 +30,8 @@ class WordPressComment extends XoopsTableObject
 		$this->initVar('comment_approved', XOBJ_DTYPE_TXTBOX, '1', false, 5);
 		$this->initVar('comment_agent', XOBJ_DTYPE_TXTBOX, '', false, 255);
 		$this->initVar('comment_type', XOBJ_DTYPE_TXTBOX, '', false, 20);
-		$this->initVar('comment_parent', XOBJ_DTYPE_INT, '0', false);
-		$this->initVar('user_id', XOBJ_DTYPE_INT, '0', false);
+		$this->initVar('comment_parent', XOBJ_DTYPE_INT, 0, false);
+		$this->initVar('user_id', XOBJ_DTYPE_INT, 0, false);
 
 		$this->setAttribute('dohtml', 1);
 		$this->setAttribute('doxcode', 0);

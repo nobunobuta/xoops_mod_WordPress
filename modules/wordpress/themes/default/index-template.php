@@ -11,7 +11,7 @@
 	
 	<div class="storycontent">
 		<?php the_content(); ?>
-		<br clear=left>
+		<br clear="left" />
 	</div>
 	
 	<div class="feedback">
@@ -37,5 +37,5 @@ if (get_xoops_option($wp_mod[$wp_id],'wp_use_xoops_comments') == 0) {
 <?php } } else { // end foreach, end if any posts ?>
 <p>Sorry, no posts matched your criteria.</p>
 <?php } ?>
-<p class="credit"><?php echo $wpdb->querycount; ?> queries. <?php timer_stop(1); ?> sec.<br /><cite>Powered by <a href="http://www.kowa.org/" title="NobuNobu XOOPS"><strong>WordPress Module</strong></a> based on <a href="http://wordpress.xwd.jp/" title="Powered by WordPress Japan"><strong>WordPress ME</strong></a> & <a href="http://www.wordpress.org/" title="Powered by WordPress"><strong>WordPress</strong></a></cite></p>
+<p class="credit"><?php echo $wpdb->querycount; ?> queries. <?php timer_stop(1); ?> sec.<br /><cite>Powered by <a href="http://www.kowa.org/" title="NobuNobu XOOPS"><strong>WordPress Module</strong></a> based on <a href="http://wordpress.xwd.jp/" title="Powered by WordPress Japan"><strong>WordPress ME</strong></a> &amp; <a href="http://www.wordpress.org/" title="Powered by WordPress"><strong>WordPress</strong></a></cite></p>
 </div>

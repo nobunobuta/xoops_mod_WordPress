@@ -40,6 +40,9 @@ define("_MI_WP_USE_XOOPS_SMILE_DESC","¥¹¥Þ¥¤¥ë¥¢¥¤¥³¥ó¤òXOOPS¤Ç»ÈÍÑ¤·¤Æ¤¤¤ë¤â¤Î¤
 define("_MI_WP_USE_THEME_TEMPLATE","µ­»ö¥Ö¥í¥Ã¥¯É½¼¨¤Ëtheme¥Ç¥£¥ì¥¯¥È¥ê¤Î¥Æ¥ó¥×¥ì¡¼¥È¤ò»ÈÍÑ");
 define("_MI_WP_USE_THEME_TEMPLATE_DESC","µ­»ö¥Ö¥í¥Ã¥¯É½¼¨¤Ëtheme¥Ç¥£¥ì¥¯¥È¥ê²¼¤Î¥Æ¥ó¥×¥ì¡¼¥È(content_block-template.php)¤ò»ÈÍÑ¤·¤Þ¤¹¡£");
 
+define("_MI_WP_USE_BLOCKCSSHEADER","BLOCK¤ÎCSS»²¾È¤òHTML¥Ø¥Ã¥ÀÉôÊ¬¤ËÁÞÆþ");
+define("_MI_WP_USE_BLOCKCSSHEADER_DESC","BLOCK¤ÎCSS»ØÄê¤ò¡¢HTML¤Î¥Ø¥Ã¥ÀÉôÊ¬¤Ç¥ê¥ó¥¯¤·¤Þ¤¹¡£<br/>XOOPS¥Æ¥ó¥×¥ì¡¼¥È¤Îtheme.htmlÆâ¤Î&lt;{&amp;xoops_module_header}&gt;¤Î²¼¹Ô¤Ë¡¢&lt;{&amp;xoops_block_header}&gt;¤òÁÞÆþ¤¹¤ëÉ¬Í×¤¬¤¢¤ê¤Þ¤¹¡£");
+
 define("_MI_WP_USE_XOOPS_COMM","XOOPS¤Î¥³¥á¥ó¥È¥·¥¹¥Æ¥à¤ò»ÈÍÑ");
 define("_MI_WP_USE_XOOPS_COMM_DESC","¥³¥á¥ó¥È¤òXOOPS¶¦ÄÌ¤Î¥³¥á¥ó¥È¥·¥¹¥Æ¥à¤ò»ÈÍÑ¤·¤Þ¤¹¡¢°Ê²¼¤Î£²¹àÌÜ¤Ï¤³¤ÎÀßÄê¤¬¡Ö¤Ï¤¤¡×¤Î»þ¤Î¤ß¤ËÍ­¸ú¤Ç¤¹¡£");
 // Block Name

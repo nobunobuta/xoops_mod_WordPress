@@ -41,9 +41,8 @@
 		//	DB Constructor - connects to the server and selects a database
 
 		function wpdb($dbuser, $dbpassword, $dbname, $dbhost) {
-			global $xoopsDB;
-			if (isset($xoopsDB)) {
-				$this->dbh =& $xoopsDB->conn;
+			if (isset($GLOBALS['xoopsDB'])) {
+				$this->dbh =& $GLOBALS['xoopsDB']->conn;
 				$this->querycount = 0;
 			} else {
 				$this->dbh = @mysql_connect($dbhost,$dbuser,$dbpassword);
@@ -143,7 +142,6 @@
 		//	Basic Query	- see docs for more detail
 
 		function query($query) {
-			global $wp_debug,$wp_base;
 			// Flush cached values..
 			$this->flush();
 
@@ -152,8 +150,8 @@
 
 			// Keep track of the last query for debug..
 			$this->last_query = $query;
-			if (0&&$wp_debug) {
-				$this->fp = fopen($wp_base['-'].'/log/wp-db.log', 'a');
+			if (0 && $GLOBALS['wp_debug']) {
+				$this->fp = fopen($GLOBALS['wp_base']['-'].'/log/wp-db.log', 'a');
 				fwrite($this->fp, "$query\n");
 				fclose($this->fp);
 			}
