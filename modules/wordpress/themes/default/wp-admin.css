@@ -112,7 +112,7 @@
 	background: #F2F8F9;
 	margin: 20px auto 10px auto;
 	padding: 17px 10px 17px 10px;
-	width: 95%;
+	width: 98%;
 }
 
 #wpAdminMain .wrap h2 {
@@ -203,8 +203,8 @@
 }
 
 #wpAdminMain #categorydiv {
-	line-height: 130%;
-	width: 12em;
+	line-height: 120%;
+	width: 15em;
 	float: left;
 }
 
@@ -263,7 +263,7 @@
 }
 
 #wpAdminMain #poststatusdiv, #wpAdminMain #commentstatusdiv, #wpAdminMain #pingstatusdiv {
-	width: 6.5em;
+	width: 9em;
 }
 
 #wpAdminMain #poststuff {
@@ -297,14 +297,14 @@
 }
 
 #wpAdminMain #quicktags {
-	text-align: right;
+	text-align: left;
 }
 
 #wpAdminMain #titlediv, #wpAdminMain #poststatusdiv, #wpAdminMain #commentstatusdiv, #wpAdminMain #pingstatusdiv, #wpAdminMain #postpassworddiv, #wpAdminMain #namediv, #wpAdminMain #uridiv, #wpAdminMain #emaildiv {
 
 	float: left;
 	height: 6em;
-	margin-right: 5px;
+	margin-right: 2px;
 }
 
 #wpAdminMain #wphead {
