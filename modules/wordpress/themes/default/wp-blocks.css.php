@@ -93,24 +93,66 @@ EOD;
 /* Don't remove this line */ if (!defined("WP_BLOCK_CSS_READ")) { define("WP_BLOCK_CSS_READ","1");$wp_block_style .= <<<EOD
 
 #wpRecentPost {
-	font-size: 90%;
 	word-break: break-all;
 }
 #wpRecentPost #postDate {
 	font-weight: bold;
 	font-size:110%;
+	color:#000000;
 }
 
 #wpRecentPost .new1 {
-	font-size: 80%;
+	font-size: 90%;
 	font-weight: bold;
 	color: #EE0000;
 }
 
 #wpRecentPost .new2 {
-	font-size: 80%;
+	font-size: 90%;
 	font-weight: bold;
 	color: #00BB00;
+}
+
+ul.wpBlockList ,ul.wpBlockList li{
+	list-style-position:outside;
+	margin:3px;
+	margin-left:5px;
+}
+ul.wpBlockDateList ,ul.wpBlockDateList li{
+	list-style-position:outside;
+	list-style-type:none;
+	margin-left:-5px;
+}
+ul.wpBlockDateList #postDate{
+	font-weight: bold;
+	font-size:110%;
+	color:#000000;
+}
+.blockContent ul.children,.blockContent ul.children li {
+	list-style-position:outside;
+	list-style-type:disc;
+	margin:1px;
+	margin-left:5px;
+	font-size: 90%;
+}
+ul.wpBlockDateList ul.children,ul.wpBlockDateList ul.children li {
+	list-style-position:outside;
+	list-style-type:disc;
+	margin-left:12px;
+}
+
+li span.comment-author {
+	font-weight:bold;
+	margin-left:-5px;
+}
+
+li span.post-date {
+	font-weight:bold;
+	margin-left:-5px;
+}
+
+li span.post-title {
+	margin-left:-5px;
 }
 
 #wp-calendar {
