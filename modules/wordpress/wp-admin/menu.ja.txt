@@ -1,0 +1,18 @@
+1	post.php	投稿
+1	edit.php	編集
+3	categories.php	カテゴリー
+5	link-manager.php	リンク
+3	users.php	ユーザ
+4	options.php	オプション
+4	plugins.php	プラグイン
+***
+(Everything after the '***' is a comment.)
+
+
+To add sections to the menu, use this syntax:
+
+ the minimum level the user needs to access the section: between 0 and 10
++tab
++the URL of the section's file
++tab
++the title of this section

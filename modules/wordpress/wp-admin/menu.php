@@ -3,7 +3,11 @@
 
 <ul id="adminmenu">
 <?php
-$menu = file('./menu.txt');
+if (file_exists("./menu."._LANGCODE.".txt")) {
+	$menu = file("./menu."._LANGCODE.".txt");
+} else {
+	$menu = file('./menu.txt');
+}
 $continue = true;
 foreach ($menu as $item) {
 	$class = '';
@@ -22,9 +26,6 @@ foreach ($menu as $item) {
 ?>
 	<li><a href="profile.php" <?php echo $class ?>>My Profile</a></li>
 	<li><a href="<?php echo "$siteurl/index.php"; ?>">View site</a></li>
-<!--
-	<li class="last"><a href="<?php echo $siteurl ?>/wp-login.php?action=logout">Logout (<?php echo stripslashes($user_nickname) ?>)</a></li>
--->
 </ul>
 
 <h2><?php echo $title; ?></h2>
