@@ -45,13 +45,15 @@ require_once (ABSPATH . WPINC . '/kses.php');
 // get_settings() wherever these are needed OR
 // accessing a single global $all_settings var
 if (!strstr($_SERVER['REQUEST_URI'], 'install.php')) {
-    $siteurl = get_settings('siteurl');
-	$siteurl = preg_replace('|/+$|', '', $siteurl);
+	$siteurl = XOOPS_URL.'/modules/wordpress'.(($wp_id=='-')?'':$wp_id);
+//	$siteurl = get_settings('siteurl');
+// 	$siteurl = preg_replace('|/+$|', '', $siteurl);
 	if (get_xoops_option('wordpress'.(($wp_id=='-')?'':$wp_id),'wp_use_xoops_smilies')) {
 		$smilies_directory = XOOPS_URL."/uploads";
 	} else {
 		$smilies_directory = get_settings('smilies_directory');
 	}
+	//WordPressプラグインの互換性確保用
     $querystring_start = '?';
     $querystring_equal = '=';
     $querystring_separator = '&amp;';

@@ -89,7 +89,7 @@ case "update":
             }
         } // end foreach
         unset($cache_settings[$wp_id]); // so they will be re-read
-        get_settings('siteurl'); // make it happen now
+//      get_settings('siteurl'); // make it happen now
     } // end if options
     if ($any_changed) {
         $message = $any_changed ._LANG_WOP_SETTING_SAVED;
