@@ -47,6 +47,9 @@ if (!strstr($_SERVER['REQUEST_URI'], 'install.php') && !strstr($_SERVER['REQUEST
 	} else {
 		$smilies_directory = get_settings('smilies_directory');
 	}
+    $querystring_start = '?';
+    $querystring_equal = '=';
+    $querystring_separator = '&amp;';
 }
 // Used to guarantee unique cookies
 $cookiehash = md5($siteurl);

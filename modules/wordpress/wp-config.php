@@ -34,7 +34,8 @@ $loginsql = WP_DB_USER;
 $passsql = WP_DB_PASSWORD;
 $base = WP_DB_NAME;
 // Get everything else
-require('wp-settings.php');
+//require('wp-settings.php');
+require(XOOPS_ROOT_PATH.'/modules/wordpress'.(($wp_id=='-') ?'':$wp_id).'/wp-settings.php');
 
 // Language File
 if (!defined('_LANGCODE')) {
