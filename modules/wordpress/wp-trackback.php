@@ -76,7 +76,7 @@ if ((strlen(''.$tb_id)) && (empty($HTTP_GET_VARS['__mode'])) && (strlen(''.$tb_u
 	}
 	if (function_exists('mb_convert_encoding')) {
 		if ($charset == "auto") {
-			$charset = mb_detect_encoding($commnet.$author,$charset);
+			$charset = mb_detect_encoding($comment.$author,$charset);
 		}
 		$comment = mb_convert_encoding($comment, $blog_charset, $charset);
 		$author = mb_convert_encoding($author, $blog_charset, $charset);

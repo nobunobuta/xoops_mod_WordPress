@@ -931,7 +931,7 @@ function pingBlogs($blog_ID="1") {
 
 // Send a Trackback
 function trackback($trackback_url, $title, $excerpt, $ID) {
-	global $blogname, $wpdb, $tableposts;
+	global $blogname, $wpdb, $tableposts, $blog_charset;
 	$title = urlencode(stripslashes($title));
 	$excerpt = urlencode(stripslashes($excerpt));
 	$blog_name = urlencode(stripslashes($blogname));
@@ -947,18 +947,18 @@ function trackback($trackback_url, $title, $excerpt, $ID) {
 	$http_request .= $query_string;
 	$fs = @fsockopen($trackback_url['host'], 80);
 	@fputs($fs, $http_request);
-/*
-	$debug_file = 'trackback.log';
-	$fp = fopen($debug_file, 'a');
-	fwrite($fp, "\n*****\nRequest:\n\n$http_request\n\nResponse:\n\n");
-	while(!@feof($fs)) {
-		fwrite($fp, @fgets($fs, 4096));
-	}
-	fwrite($fp, "\n\n");
-	fclose($fp);
-*/
-	@fclose($fs);
+	if(false) {
+		$debug_file = 'trackback.log';
+		$fp = fopen($debug_file, 'a');
+		fwrite($fp, "\n*****\nRequest:\n\n$http_request\n\nResponse:\n\n");
+		while(!@feof($fs)) {
+			fwrite($fp, @fgets($fs, 4096));
+		}
+		fwrite($fp, "\n\n");
+		fclose($fp);
 
+		@fclose($fs);
+	}
 	$wpdb->query("UPDATE $tableposts SET pinged = CONCAT(pinged, '\n', '$tb_url') WHERE ID = $ID");
 	$wpdb->query("UPDATE $tableposts SET to_ping = REPLACE(to_ping, '$tb_url', '') WHERE ID = $ID");
 	return $result;
@@ -968,13 +968,13 @@ function trackback($trackback_url, $title, $excerpt, $ID) {
 function trackback_response($error = 0, $error_message = '') {
 	global $blog_charset;
 	if ($error) {
-		echo '<?xml version="1.0" encoding="$blog_charset"?'.">\n";
+		echo "<?xml version=\"1.0\" encoding=\"$blog_charset\"?".">\n";
 		echo "<response>\n";
 		echo "<error>1</error>\n";
 		echo "<message>$error_message</message>\n";
 		echo "</response>";
 	} else {
-		echo '<?xml version="1.0" encoding="$blog_charset"?'.">\n";
+		echo "<?xml version=\"1.0\" encoding=\"$blog_charset\"?".">\n";
 		echo "<response>\n";
 		echo "<error>0</error>\n";
 		echo "</response>";
@@ -1821,27 +1821,11 @@ function get_xoops_option($dirname,$conf_name) {
 	$record= $xoopsDB->fetcharray($result);
 	$mid = $record['mid'];
     
-	$query = "SELECT conf_value, conf_valuetype FROM ".$xoopsDB->prefix('config')." WHERE conf_modid=".$mid." AND conf_name='".$conf_name."' ";
+	$query = "SELECT conf_value FROM ".$xoopsDB->prefix('config')." WHERE conf_modid=".$mid." AND conf_name='".$conf_name."' ";
 	$result = $xoopsDB->query($query);
 	$record= $xoopsDB->fetcharray($result);
 	$value = $record['conf_value'];
 
-        switch ($record['conf_valuetype']) {
-        case 'int':
-            return intval($value);
-            break;
-        case 'array':
-            return unserialize($value);
-        	break;
-        case 'float':
-            return (float)$value;
-            break;
-        case 'textarea':
-            return $value;
-        	break;
-        default:
-            return $value;
-            break;
-        }
+	return($value);
 }
 ?>
