@@ -190,7 +190,7 @@ class PukiWikiRender {
 	}
 	
 	function _fix_table_br($string) {
-		$string = str_replace("~___td_br___","<br>",$string);
+		$string = str_replace("~___td_br___","<br />",$string);
 		$string = str_replace("___td_br___","",$string);
 		$string = preg_replace("/^<p>([^<>\n]*)<\/p>$/sD","$1",$string);
 		return $string;
@@ -219,7 +219,7 @@ class PukiWikiRender {
 			$autolink_dat = file(MOD_PUKI_WIKI_CACHE_DIR.'autolink.dat');
 			if (!file_exists(MOD_PUKI_CACHE_DIR .'autolink.dat') || ($autolink_dat != file(MOD_PUKI_CACHE_DIR .'autolink.dat'))) {
 				// 比較用オートリンクデータを保存
-				list($pattern, $pattern_a, $forceignorelist) = $autolink_dat;
+				@list($pattern, $pattern_a, $forceignorelist) = $autolink_dat;
 				if ($fp = fopen(MOD_PUKI_CACHE_DIR . 'autolink.dat', 'wb')) {
 					set_file_buffer($fp, 0);
 					flock($fp, LOCK_EX);

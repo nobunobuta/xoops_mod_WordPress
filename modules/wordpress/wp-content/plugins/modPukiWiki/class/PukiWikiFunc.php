@@ -138,7 +138,7 @@ class PukiWikiFunc {
 		{
 			$converter = new PukiWikiInlineConverter();
 		}
-		$_converter = $converter; // copy
+		$_converter = $converter->get_clone($converter); // copy
 		return $_converter->convert($string, $page );
 	}
 

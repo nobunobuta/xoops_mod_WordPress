@@ -127,13 +127,13 @@
 	);
 	if (defined('MOD_PUKI_UPLOAD_URL')) {
 		$_rules= array_merge($_rules, array(
-			'\s(\:\))' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'smile.gif" alt="$1" />',
-			'\s(\:D)' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'bigsmile.gif" alt="$1" />',
-			'\s(\:p)' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'huh.gif" alt="$1" />',
-			'\s(XD)' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'oh.gif" alt="$1" />',
-			'\s(\;\))' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'wink.gif" alt="$1" />',
-			'\s(\;\()' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'sad.gif" alt="$1" />',
-			'\s(;\()'	=> ' <img src="'.MOD_PUKI_UPLOAD_URL.'sad.gif" alt="$1" />',
+			'(\:\))' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'smile.gif" alt="$1" />',
+			'(\:D)' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'bigsmile.gif" alt="$1" />',
+			'(\:p)' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'huh.gif" alt="$1" />',
+			'(XD)' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'oh.gif" alt="$1" />',
+			'(\;\))' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'wink.gif" alt="$1" />',
+			'(\;\()' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'sad.gif" alt="$1" />',
+			'(;\()'	=> ' <img src="'.MOD_PUKI_UPLOAD_URL.'sad.gif" alt="$1" />',
 			'&amp;(smile);'	=> ' <img alt="[$1]" src="' . MOD_PUKI_UPLOAD_URL . 'smile.gif" />',
 			'&amp;(bigsmile);'=>' <img alt="[$1]" src="' . MOD_PUKI_UPLOAD_URL . 'bigsmile.gif" />',
 			'&amp;(huh);'	=> ' <img alt="[$1]" src="' . MOD_PUKI_UPLOAD_URL . 'huh.gif" />',
