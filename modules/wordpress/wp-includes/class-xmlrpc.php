@@ -462,7 +462,7 @@ class xmlrpc_client {
       "Content-Type: text/xml\r\nContent-Length: " .
       strlen($msg->payload) . "\r\n\r\n" .
       $msg->payload;
-    
+	socket_set_timeout($fp, 10);    
     if (!fputs($fp, $op, strlen($op))) {
       $this->errstr="Write error";
       return 0;
