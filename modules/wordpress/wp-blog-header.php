@@ -63,25 +63,65 @@ if (!file_exists($curpath . '/wp-config.php'))
 $wp_inblock = 0;
 require($curpath.'/wp-config.php');
 
+$path_info = array();
+if ( !empty( $_SERVER['PATH_INFO'] ) ) {
+    // Fetch the rewrite rules.
+    $rewrite = rewrite_rules('matches');
+
+    $pathinfo = $_SERVER['PATH_INFO'];
+    // Trim leading '/'.
+    $pathinfo = preg_replace('!^/!', '', $pathinfo);
+
+    if (! empty($rewrite)) {
+        // Get the name of the file requesting path info.
+        $req_uri = $_SERVER['REQUEST_URI'];
+        $req_uri = str_replace($pathinfo, '', $req_uri);
+        $req_uri = preg_replace("!/+$!", '', $req_uri);
+        $req_uri = explode('/', $req_uri);
+        $req_uri = $req_uri[count($req_uri)-1];
+
+        // Look for matches.
+        $pathinfomatch = $pathinfo;
+        foreach ($rewrite as $match => $query) {
+            // If the request URI is the anchor of the match, prepend it
+            // to the path info.
+            if ((! empty($req_uri)) && (strpos($match, $req_uri) === 0)) {
+                $pathinfomatch = $req_uri . '/' . $pathinfo;
+            }
+
+            if (preg_match("!^$match!", $pathinfomatch, $matches)) {
+                // Got a match.
+                // Trim the query of everything up to the '?'.
+                $query = preg_replace("!^.+\?!", '', $query);
+
+                // Substitute the substring matches into the query.
+                eval("\$query = \"$query\";");
+
+                // Parse the query.
+                parse_str($query, $path_info);
+                break;
+            }
+        }
+    }    
+}
 $wpvarstoreset = array('m','p','posts','w','c', 'cat','withcomments','s','search','exact', 'sentence','poststart','postend','preview','debug', 'calendar','page','paged','more','tb', 'pb','author','order','orderby', 'year', 'monthnum', 'day', 'name', 'category_name','author_name');
 
-	for ($i=0; $i<count($wpvarstoreset); $i += 1) {
-		$wpvar = $wpvarstoreset[$i];
-		if (!isset($$wpvar)) {
-			if (empty($_POST[$wpvar])) {
-				if (empty($_GET[$wpvar])) {
-					$$wpvar = '';
-				} else {
-					$$wpvar = $_GET[$wpvar];
-				}
+for ($i=0; $i<count($wpvarstoreset); $i += 1) {
+	$wpvar = $wpvarstoreset[$i];
+	if (!isset($$wpvar)) {
+		if (empty($_POST[$wpvar])) {
+			if (empty($_GET[$wpvar]) && empty($path_info[$wpvar])) {
+				$$wpvar = '';
+			} elseif (!empty($_GET[$wpvar])) {
+				$$wpvar = $_GET[$wpvar];
 			} else {
-				$$wpvar = $_POST[$wpvar];
+				$$wpvar = $path_info[$wpvar];
 			}
+		} else {
+			$$wpvar = $_POST[$wpvar];
 		}
-//		if (isset($$wpvar)) echo $wpvar . " = " . $$wpvar . "<br/>";
 	}
-
-
+}
 /* Sending HTTP headers */
 // It is presumptious to think that WP is the only thing that might change on the page.
 @header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 				// Date in the past
