@@ -1,35 +1,20 @@
 /* This is the stylesheet modern browser will use to print your pages. */
 
-a {
+#wpMainContent a {
 	color: #000;
 }
 
-body {
-	font-family: serif;
-	font-size: 12pt;
-}
 
-#content {
+#wpMainContent {
 	margin: 0px;
 	padding: 0px;
 	width: auto;
 }
 
-#header, h3, h4, .storytitle {
+#wpMainContent h3,#wpMainContent  h4,#wpMainContent  .storytitle {
 	border: none;
 	font-weight: bold;
 	margin: 0px;
 	padding: 0px;
 	width: auto;
-}
-
-#main {
-	float: none;
-	margin: 0px 10%;
-	padding: 0px;
-	width: auto;
-}
-
-#menu {
-	display: none;
 }
