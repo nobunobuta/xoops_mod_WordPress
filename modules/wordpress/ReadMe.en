@@ -55,6 +55,18 @@ XOOPS_ROOT_PATH
 ------------
 ChangeLog
 ------------
+0.3.1  [2004-08-23]
+Added Features)
+-Add PukiWiki rendering plugin (PukiWiki is Japanese major Wiki Engine)
+-Add Viewer for Japanese mobile phone.
+-Add migration tool for MovableType
+
+Fixed Bugs)
+-Some trouble with rendering plugin.
+-Some trouble with multiple blog.
+-Some source starts with <? not <?php
+-<li></li>tag in some XOPPS blocks were not enclosed with <ul></ul>tag.
+
 0.3.0  [2004-08-02]
 Added Features)
 -Add some features from WordPress1.2
@@ -70,7 +82,8 @@ Added Features)
   Block cloning.(Thanks GIJOE)
 -Add Module Icons for eace cloned modules.
 -Enable to down Level 10 User's level.
-Fixed Featuers)
+
+Fixed Bugs)
 -Some Trouble when use cloned modules.
 -Some JavaScript trouble in admin functions.
 

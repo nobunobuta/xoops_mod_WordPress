@@ -1,3 +1,126 @@
+2004-08-23 0.3.1
+	* wp-content/plugins/pukiwiki.php:
+	* themes/default/wp-layout.css:
+	* wp-content/plugins/modPukiWiki/PukiWiki.ini.php:
+	* wp-content/plugins/modPukiWiki/PukiWiki.ini.php.dist:
+	* wp-content/plugins/modPukiWiki/PukiWiki.php:
+	* wp-content/plugins/modPukiWiki/cache/index.html:
+	* wp-content/plugins/modPukiWiki/class/PukiWikiConfig.php:
+	* wp-content/plugins/modPukiWiki/class/PukiWikiElement.php:
+	* wp-content/plugins/modPukiWiki/class/PukiWikiFunc.php:
+	* wp-content/plugins/modPukiWiki/class/PukiWikiLink.php:
+	* wp-content/plugins/modPukiWiki/class/PukiWikiPlugin.php:
+	* wp-content/plugins/modPukiWiki/class/PukiWikiRender.php:
+	* wp-content/plugins/modPukiWiki/config/default.php:
+	* wp-content/plugins/modPukiWiki/config/wordpress.php:
+	* wp-content/plugins/modPukiWiki/config/entities.dat:
+	* wp-content/plugins/modPukiWiki/images/file.gif:
+	* wp-content/plugins/modPukiWiki/images/noimage.png:
+	* wp-content/plugins/modPukiWiki/lib/func.php:
+	* wp-content/plugins/modPukiWiki/plugin/aname.inc.php:
+	* wp-content/plugins/modPukiWiki/plugin/br.inc.php:
+	* wp-content/plugins/modPukiWiki/plugin/clear.inc.php:
+	* wp-content/plugins/modPukiWiki/plugin/color.inc.php:
+	* wp-content/plugins/modPukiWiki/plugin/font.inc.php:
+	* wp-content/plugins/modPukiWiki/plugin/img.inc.php:
+	* wp-content/plugins/modPukiWiki/plugin/isbn.inc.php:
+	* wp-content/plugins/modPukiWiki/plugin/ref.inc.php:
+	* wp-content/plugins/modPukiWiki/plugin/ruby.inc.php:
+	* wp-content/plugins/modPukiWiki/plugin/showrss.inc.php:
+	* wp-content/plugins/modPukiWiki/plugin/size.inc.php:
+	* wp-content/plugins/modPukiWiki/plugin/tenki.inc.php:
+	* wp-content/plugins/modPukiWiki/plugin/xoopsblock.inc.php:
+	* wp-content/plugins/modPukiWiki/sample.css:
+	* wp-content/plugins/modPukiWiki/plugin/ref.inc.php:
+	* wp-content/plugins/modPukiWiki/sample.css:
+		PukiWikiレンダープラグインを追加
+
+	* wp-includes/template-functions-post.php:
+		Pluginにレンダリングをまかせた場合に、RSSの出力が正常にされるように修正
+
+	* wp-admin/post.php:
+		Pluginにレンダリングをまかせた場合、TrackBackを正常に送信するように修正
+
+	* wp-settings.php:
+		プラグインを読み込むタイミングを修正
+		記事ブロックでのプラグインの適用に対応
+
+	* wp-includes/functions.php:
+		filter削除機能のバグ対応
+
+	* wp-admin/options.php:
+	* wp-settings.php:
+		サイトのURLをXOOPSの環境から取得するように変更
+
+	* wp-content/plugins/google-hilite.php:
+	* wp-content/plugins/hello.php:
+	* wp-content/plugins/markdown.php:
+	* wp-content/plugins/pukiwiki.php:
+	* wp-content/plugins/textile1.php:
+	* wp-content/plugins/textile2.php:
+		複数ブログ共存時のプラグイン関数２重定義の回避
+
+	* language/japanese/modinfo.php:
+		メッセージの訂正
+
+	* wp-admin/import-mt.php.orig:
+		MovableTypeデータのWordPressモジュールへの移行に対応
+
+	* xmlrpc.php:
+		幾つかのAPIが日本語対応していなかった。
+
+	* wp-mail.php:
+		blog_charsetが正常に取得出来ていなかった。
+		投稿時のリンク先へのPINGBACKをしないように変更
+
+	* wp-comments.php:
+	* wp-config-extra.php:
+	* themes/default/index-template.php:
+	* wp-includes/links-update-xml.php:
+	* wp-includes/functions.php:
+			複数ブログ設置時に各ブログ固有のテーマディレクトリを参照出来ていなかった
+
+	* wp-ktai-comments-post.php:
+	* wp-ktai.php:
+		携帯用(i-mode)の閲覧プログラムを追加
+		Copyright (c) 2004 Naoki Chiba All rights reserved.
+
+	* index.php:
+		携帯用Viewerへの自動リダイレクトに対応
+
+	* wp-includes/vars.php:
+		AgentにDocomoのi-modeブラウザを追加
+
+	* blocks/wp_archives_monthly.php:
+	* blocks/wp_authors.php:
+	* blocks/wp_categories.php:
+	* blocks/wp_links.php:
+		<li>タグに対応する<ul>タグが発行されていなかった。
+
+	* blocks/wp_recent_comments.php:
+	* blocks/wp_recent_posts.php:
+		ソースの先頭が<?phpでなく<?で開始されていた (Thanks! はすい)
+
+	* include/updateblock.inc.php
+		Block Options削除時の不具合修正 （Thanks! GIJOE)
+
+2004-08-07  nobu
+	* wp-lang/lang_pt_BR.php:
+		_LANG_WAU_ATTACH_ICONの２重定義を削除
+
+2004-08-06  nobu
+	* xmlrpc.php:
+		こうさぎ投稿対応の修正
+
+2004-08-05  nobu
+	* wp-includes/functions-formatting.php:
+	* wp-includes/template-functions-general.php:
+	* wp-lang/lang_de.php:
+	* wp-lang/lang_en.php:
+	* wp-lang/lang_ja.php:
+	* wp-lang/lang_pt_BR.php:
+		カレンダーが文字化けする環境への対応
+
 2004-08-02  0.3.0
 	* wp-includes/template-functions-author.php:
 	* wp-includes/template-functions-category.php:
