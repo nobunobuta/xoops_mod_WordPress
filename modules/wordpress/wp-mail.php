@@ -3,7 +3,6 @@ require(dirname(__FILE__) . '/wp-config.php');
 
 require_once(ABSPATH.WPINC.'/class-pop3.php');
 
-
 timer_start();
 
 $use_cache = 1;
@@ -65,6 +64,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		if ($bodysignal) {
 			$content .= $line;
 		} else {
+
 			if (preg_match('/Content-Type: /i', $line)) {
 				$content_type = trim($line);
 				$content_type = substr($content_type, 14, strlen($content_type)-14);
@@ -93,7 +93,13 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				$subject = trim($line);
 				$subject = substr($subject, 9, strlen($subject)-9);
 				if (function_exists('mb_decode_mimeheader')) {
-					$subject = mb_decode_mimeheader($subject);
+					$subject1 = mb_decode_mimeheader($subject);
+					if ($subject != $subject) {
+						$sub_charset = mb_internal_encoding();
+					}else{
+						$sub_charset = "auto";
+					}
+					$subject = $subject1;
 				}
 				if (get_settings('use_phoneemail')) {
 					$subject = explode(get_settings('phoneemail_separator'), $subject);
@@ -134,6 +140,9 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 			}
 		}
 	}
+	$charset = "";
+	$ncharset = preg_match("/\s?charset=\"?([A-Za-z0-9\-]*)\"?/i",$content,$matches);
+	if ($ncharset) $charset = $matches[1];
 
 	$ddate_today = time() + ($time_difference * 3600);
 	$ddate_difference_days = ($ddate_today - $ddate_U) / 86400;
@@ -146,7 +155,6 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		continue;
 	}
 	if (preg_match('/'.get_settings('subjectprefix').'/', $subject)) {
-
 		$userpassstring = '';
 
 		echo '<div style="border: 1px dashed #999; padding: 10px; margin: 10px;">';
@@ -159,7 +167,10 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		if ($att_boundary != "") {
 			$contents = explode('--'.$att_boundary, $content);
 			$content = $contents[1];
-			$content = preg_replace("/.*?\r\n\r\n/","",$content);
+			$ncharset = preg_match("/\s?charset=\"?([A-Za-z0-9\-]*)\"?/i",$content,$matches);
+			if ($ncharset) $charset = $matches[1];
+			$content = explode("\r\n\r\n",$content,2);
+			$content = $content[1];
 		}
 		if ($hatt_boundary != "") {
 			$contents = explode('--'.$hatt_boundary, $content);
@@ -171,8 +182,8 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				$content = explode('--'.$boundary, $content);
 				$content = $content[2];
 			}
-			$charset = preg_match("/charset=\"([^\"]*)\"/i",$content,$matches);
-			if ($charset) $charset = $matches[1];
+			$ncharset = preg_match("/charset=\"?([^\"]*)\"?/i",$content,$matches);
+			if ($ncharset) $charset = $matches[1];
 			$content = explode('Content-Transfer-Encoding: quoted-printable', $content);
 			$content = strip_tags($content[1], '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td>');
 		} else if ($boundary != "") {
@@ -185,15 +196,15 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				$contents = explode('--'.$hatt_boundary, $content);
 				$content = $contents[1];
 			}
-			$charset = preg_match("/charset=\"([^\"]*)\"/i",$content,$matches);
-			if ($charset) $charset = $matches[1];
+			$ncharset = preg_match("/charset=\"?([^\"]*)\"?/i",$content,$matches);
+			if ($ncharset) $charset = $matches[1];
 			$content = explode('Content-Transfer-Encoding: quoted-printable', $content);
 			$content = strip_tags($content[1], '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td>');
 		}
 		$content = trim($content);
-
 		echo "<p><b>Content-type:</b> $content_type, <b>boundary:</b> $boundary</p>\n";
 		echo "<p><b>att_boundary:</b> $att_boundary, <b>hatt_boundary:</b> $hatt_boundary</p>\n";
+		echo "<p><b>charset:<b>$charset</p>\n";
 //		echo "<p><b>Raw content:</b><br /><pre>".$content.'</pre></p>';
 		
 		$btpos = strpos($content, get_settings('bodyterminator'));
@@ -292,7 +303,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				$post_category = get_settings('default_post_category');
 			}
 			if (function_exists('mb_convert_encoding')) {
-				echo "Subject : ".mb_convert_encoding($subject,$blog_charset,"auto")." <br />";
+				echo "Subject : ".mb_convert_encoding($subject,$blog_charset,$sub_charset)." <br />";
 			} else {
 				echo "Subject : ".$subject." <br />";
 			}
@@ -318,12 +329,12 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				}
 				
 				$content = preg_replace("|\n([^\n])|", " $1", $content);
-				if ($charset == "") $charset = "JIS";
+				if (($charset == "")||trim($charset =="ISO-2022-JP")) $charset = "JIS";
 				if (trim($charset) == "Shift_JIS") $charset = "SJIS";
 				$content =  preg_replace("/\=([0-9a-fA-F]{2,2})/e",  "pack('c',base_convert('\\1',16,10))", $content);
 				if (function_exists('mb_convert_encoding')) {
 					$content = addslashes(mb_convert_encoding(trim($content), $blog_charset, $charset));
-					$post_title = addslashes(trim(mb_convert_encoding($post_title,$blog_charset,"auto")));
+					$post_title = addslashes(trim(mb_convert_encoding($post_title,$blog_charset,$sub_charset)));
 				} else {
 					$content = addslashes(trim($content));
 					$post_title = addslashes(trim($post_title));
@@ -353,6 +364,17 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 					pingGeoUrl($post_ID);	
 				}
 
+				// Double check it's not there already
+				$exists = $wpdb->get_row("SELECT * FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID AND category_id = $post_category");
+				 if (!$exists && $result) { 
+				 	$wpdb->query("
+					INSERT INTO {$wpdb->post2cat[$wp_id]}
+					(post_id, category_id)
+					VALUES
+					($post_ID, $post_category)
+					");
+				}
+				
 				pingWeblogs($blog_ID);
 				pingBlogs($blog_ID);
 				pingback($content, $post_ID);
@@ -360,16 +382,6 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 			echo "\n<p><b>Posted title:</b> $post_title<br />";
 			echo "\n<b>Posted content:</b><br /><pre>".$content.'</pre></p>';
 
-			// Double check it's not there already
-			$exists = $wpdb->get_row("SELECT * FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID AND category_id = $post_category");
-			 if (!$exists && $result) { 
-			 	$wpdb->query("
-				INSERT INTO {$wpdb->post2cat[$wp_id]}
-				(post_id, category_id)
-				VALUES
-				($post_ID, $post_category)
-				");
-			}
 
 			if(!$pop3->delete($iCount)) {
 				echo '<p>Oops '.$pop3->ERROR.'</p></div>';
