@@ -99,7 +99,10 @@ if ($use_quicktags && 'bookmarklet' != $mode) {
 } else {
 // For Spaw Editor
     include_once "spaw/spaw_control.class.php";
-	$content = html_entity_decode($content);
+//	$content = html_entity_decode($content);
+	$trans_tbl = get_html_translation_table (HTML_SPECIALCHARS);
+	$trans_tbl = array_flip ($trans_tbl);
+	$content = strtr ($content, $trans_tbl);
 	$sw = new SPAW_Wysiwyg( 'wp_content', $content, 'jp', 'full', 'default', '70%', '400px' );
 	$sw -> show();
     foreach($wpsmiliestrans as $smiley => $img) 
