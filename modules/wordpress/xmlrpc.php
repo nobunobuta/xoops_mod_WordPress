@@ -1211,7 +1211,7 @@ function bloggersettemplate($m) {
  **********************/
 #Temporally fix for kousagi
 if ($kousagi) {
-	$mwnewpost_sig =  array(array($xmlrpcInt,$xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcStruct,$xmlrpcInt));
+	$mwnewpost_sig =  array(array($xmlrpcString,$xmlrpcInt,$xmlrpcString,$xmlrpcString,$xmlrpcStruct,$xmlrpcInt));
 } else {
 	$mwnewpost_sig =  array(array($xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcStruct,$xmlrpcBoolean));
 }
