@@ -175,8 +175,6 @@ INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 
 INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 2, 2);
 INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 3, 3);
 INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 4, 4);
-INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 7, 6);
-INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 8, 7);
 INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 54, 8);
 INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (7, 55, 1);
 INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (7, 56, 2);
@@ -213,8 +211,8 @@ INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (9, 
 INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (9, 87, 1);
 INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 88, 13);
 INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 89, 14);
-INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 91, 5);
 INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 92, 5);
+INSERT INTO wp4_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 93, 15);
 
 # --------------------------------------------------------
 
@@ -272,8 +270,6 @@ INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_over
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (2, 0, 'blogfilename', 'Y', 3, 'index.php', 20, 8, '_LANG_INST_BASE_VALUE2', 8);
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (3, 0, 'blogname', 'Y', 3, 'my weblog', 20, 8, '_LANG_INST_BASE_VALUE3', 8);
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (4, 0, 'blogdescription', 'Y', 3, 'babblings!', 40, 8, '_LANG_INST_BASE_VALUE4', 8);
-INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (7, 0, 'new_users_can_blog', 'Y', 2, '0', 20, 8, '_LANG_INST_BASE_VALUE7', 8);
-INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (8, 0, 'users_can_register', 'Y', 2, '1', 20, 8, '_LANG_INST_BASE_VALUE8', 8);
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (54, 0, 'admin_email', 'Y', 3, 'you@example.com', 20, 8, '_LANG_INST_BASE_VALUE54', 8);
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (9, 0, 'start_of_week', 'Y', 5, '1', 20, 8, '_LANG_INST_BASE_VALUE9', 8);
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (11, 0, 'use_bbcode', 'Y', 2, '0', 20, 8, '_LANG_INST_BASE_VALUE11', 8);
@@ -316,8 +312,6 @@ INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_over
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (49, 0, 'what_to_show', 'Y', 5, 'posts', 20, 8, '_LANG_INST_BASE_VALUE49', 4);
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (50, 0, 'archive_mode', 'Y', 5, 'monthly', 20, 8, '_LANG_INST_BASE_VALUE50', 4);
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (51, 0, 'time_difference', 'Y', 6, '0', 20, 8, '_LANG_INST_BASE_VALUE51', 4);
-##INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (52, 0, 'date_format', 'Y', 3, 'Y年n月j日(l)', 20, 8, '_LANG_INST_BASE_VALUE52', 4);
-##INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (53, 0, 'time_format', 'Y', 3, 'H時i分s秒', 20, 8, '_LANG_INST_BASE_VALUE53', 4);
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (55, 0, 'default_post_status', 'Y', 5, 'publish', 20, 8, '_LANG_INST_BASE_VALUE55', 8);
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (56, 0, 'default_comment_status', 'Y', 5, 'open', 20, 8, '_LANG_INST_BASE_VALUE56', 8);
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (57, 0, 'default_ping_status', 'Y', 5, 'open', 20, 8, '_LANG_INST_BASE_VALUE57', 8);
@@ -354,8 +348,9 @@ INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_over
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (88, 0, 'comment_moderation', 'Y', 5, 'none', 20, 8, '_LANG_INST_BASE_VALUE88', 8);
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (89, 0, 'moderation_notify', 'Y', 2, '1', 20, 8, '_LANG_INST_BASE_VALUE89', 8);
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (90, 0, 'permalink_structure', 'Y', 3, '', 20, 8, '_LANG_INST_BASE_VALUE90', 8);
-INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (91, 0, 'gzipcompression', 'Y', 2, '0', 20, 8, '_LANG_INST_BASE_VALUE91', 8);
 INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (92, 0, 'hack_file', 'Y', 2, '0', 20, 8, '_LANG_INST_BASE_VALUE92', 8);
+INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (93, 0, 'use_comment_preview', 'Y', 2, 0, 20, 8, 'Display Preview Screen after comment posting.', 8);
+INSERT INTO wp4_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (94, 0, 'active_plugins', 'Y', 1, '', 20, 8, 'Plugin List', 8);
 
 # --------------------------------------------------------
 
