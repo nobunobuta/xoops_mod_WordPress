@@ -84,7 +84,7 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 		$rss_num = (empty($options[6]))? "" : $options[6];
 		$category = (empty($options[7]))? "all" : $options[7];
 		$new_flg = (empty($options[8]))? 0 : $options[8];
-	
+//	echo "$wp_num:$cat_date";
 		global $xoopsDB;
 		global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache;
 
@@ -117,17 +117,23 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 		block_style_get($wp_num);
 		$output = ob_get_contents();
 		ob_end_clean();
-
-		$output .= '<div id="wpRecentPost">';
+		$output .= "<div id='wpRecentPost'>";
 		if ($lposts) {
+			if (!$cat_date) {
+				$output .= "<ul class='wpBlockList'>\n";
+			} else {
+				$output .= "<ul class='wpBlockDateList'>\n";
+			}
 			foreach ($lposts as $lpost) {
 				if ($cat_date) {
 					$date=mysql2date("Y-n-j", $lpost->post_date);
 					if ($date <> $pdate) {
-						$output .= '<label id="postDate">'.$date.'</label><br />';
+						if ($pdate <> "") {
+							$output .= "</ul>\n";
+						}
+						$output .= "<li><span id=\"postDate\">".$date."</span></li>\n<ul class=\"children\">\n";
 						$pdate = $date;
 					}
-					$output .= '&nbsp;';
 				}
 				$newstr = "";
 				if ($new_flg) {
@@ -143,14 +149,14 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 				}
 				$post_title = stripslashes($lpost->post_title);
 				$permalink = get_permalink($lpost->ID);
-				$output .= '&nbsp;<strong><big>&middot;</big></strong>&nbsp;<a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '">' . $post_title . '</a>'.$newstr.'<br />';
+				$output .= '<li><span class="post-title"><a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '">' . $post_title . '</a></span>'.$newstr.'<br />';
+				$output .= "</li>\n";
 			}
+			$output .= "</ul>\n";	
 		}
 		if ($show_rss_icon || $show_rdf_icon || $show_rss2_icon || $show_atom_icon) {
 			$output .= '<hr width="100%" />';
 		}
-		$output .= '</div>';
-
 		$feed_param = $rss_num ? "?num=".$rss_num : "";
 		if ($feed_param != "") {
 			$feed_param .= $cat_param ? "&".$cat_param : "";
@@ -170,6 +176,7 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 		if ($show_atom_icon) {
 			$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('atom_url').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/atom.gif" /></a></div>';
 		}
+		$output .= "</div>";
 		$block['content'] = $output;
 		return $block;
 	}

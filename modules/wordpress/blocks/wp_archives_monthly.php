@@ -49,7 +49,7 @@ if( ! defined( 'WP_ARCHIVES_MONTHLY_INCLUDED' ) ) {
 		ob_start();
 		if ($block_style == 0) {
 		// Simple Listing
-			echo "<ul>\n";
+			echo "<ul class='wpBlockList'>\n";
 			get_archives('monthly','','html', '','',$with_count);
 			echo "</ul>\n";
 		} else {

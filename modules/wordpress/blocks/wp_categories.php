@@ -89,7 +89,7 @@ if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
 		if ($block_style == 0) {
 			// Simple Listing
 			ob_start();
-			echo "<ul>\n";
+			echo "<ul class='wpBlockList'>\n";
 			wp_list_cats("sort_column=$sorting_key&sorting_order=$sorting_order&optioncount=$with_count");
 			echo "</ul>\n";
 			$block['content'] = ob_get_contents();

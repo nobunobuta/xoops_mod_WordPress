@@ -18,7 +18,7 @@ if( ! defined( 'WP_LINKS_INCLUDED' ) ) {
 			$wp_inblock = 0;
 		}
 		ob_start();
-		echo "<ul>\n";
+		echo "<ul class='wpBlockList'>\n";
 		get_links_list();
 		echo "</ul>\n";
 		$block['content'] = ob_get_contents();
