@@ -44,7 +44,7 @@ require_once (ABSPATH . WPINC . '/kses.php');
 // We should eventually migrate to either calling
 // get_settings() wherever these are needed OR
 // accessing a single global $all_settings var
-if (!strstr($_SERVER['REQUEST_URI'], 'install.php') && !strstr($_SERVER['REQUEST_URI'], 'wp-admin/import')) {
+if (!strstr($_SERVER['REQUEST_URI'], 'install.php')) {
     $siteurl = get_settings('siteurl');
 	$siteurl = preg_replace('|/+$|', '', $siteurl);
 	if (get_xoops_option('wordpress'.(($wp_id=='-')?'':$wp_id),'wp_use_xoops_smilies')) {
@@ -59,6 +59,8 @@ if (!strstr($_SERVER['REQUEST_URI'], 'install.php') && !strstr($_SERVER['REQUEST
 
 // Used to guarantee unique cookies
 $cookiehash = md5($siteurl);
+
+require (ABSPATH . WPINC . '/vars.php');
 
 if (!$wp_inblock) {
 	if (!defined('XOOPS_PULUGIN'.$wp_id)) {
@@ -81,5 +83,4 @@ if (!$wp_inblock) {
 	}
 }
 
-require (ABSPATH . WPINC . '/vars.php');
 ?>
