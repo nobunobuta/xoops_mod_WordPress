@@ -62,7 +62,6 @@ if (!file_exists($curpath . '/wp-config.php'))
 
 $wp_inblock = 0;
 require($curpath.'/wp-config.php');
-$day="";
 
 $wpvarstoreset = array('m','p','posts','w','c', 'cat','withcomments','s','search','exact', 'sentence','poststart','postend','preview','debug', 'calendar','page','paged','more','tb', 'pb','author','order','orderby', 'year', 'monthnum', 'day', 'name', 'category_name');
 
