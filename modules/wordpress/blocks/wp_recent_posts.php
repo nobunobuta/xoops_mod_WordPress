@@ -7,10 +7,10 @@ function b_wp_recent_posts_edit($options)
 	return $form;
 
 }
-function b_wp_recent_posts_show($options)	
+function b_wp_recent_posts_show($options)
 {
 	$no_posts = (empty($options[0]))? 10 : $options[0];
-\
+
 	$id=1;
 	global $dateformat, $time_difference, $siteurl, $blogfilename;
 	global $tablelinks,$tablelinkcategories;
