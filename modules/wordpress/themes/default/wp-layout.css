@@ -60,7 +60,7 @@
 	font-size: 100%;
 }
 
-#wpMainContent p, li, .feedback {
+#wpMainContent p,#wpMainContent li,#wpMainContent .feedback {
 	font: 90%/175% "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
 }
 #wpMainContent .storycontent{
