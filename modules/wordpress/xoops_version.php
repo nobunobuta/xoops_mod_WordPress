@@ -100,6 +100,8 @@ $modversion['config'][5] = array(
 	'default'		=> 0 ,
 );
 
+$modversion['blocks']= array();
+
 $modversion['blocks'][1]['file'] = "wp_calendar.php";
 $modversion['blocks'][1]['name'] = sprintf( _MI_WORDPRESS_BNAME1 , $my_wp_dirnumber );
 $modversion['blocks'][1]['description'] = _MI_WORDPRESS_BDESC1;
@@ -158,38 +160,5 @@ $modversion['blocks'][9]['show_func'] = "b_wp{$my_wp_dirnumber}_authors_show";
 $modversion['blocks'][9]['edit_func'] = "b_wp{$my_wp_dirnumber}_authors_edit";
 $modversion['blocks'][9]['options'] = "0|nickname|0";
 
-//Hacked by nobunobu  Keep Block option values when update
-if($_POST) {
-	if(($_POST['fct']=='modulesadmin')&&($_POST['op']=='update_ok')&&($_POST['dirname']==$modversion['dirname'])) {
-		global $xoopsDB, $msgs;
-		$query = "SELECT mid FROM ".$xoopsDB->prefix('modules')." WHERE dirname='".$modversion['dirname']."' ";
-		$result = $xoopsDB->query($query);
-		$record= $xoopsDB->fetcharray($result);
-		if ($record) {
-			$mid = $record['mid'];
-			$count = count($modversion['blocks']);
-			for ( $i = 1; $i <= $count; $i++ ) {
-				$sql = "SELECT name,options FROM ".$xoopsDB->prefix('newblocks')." WHERE mid=".$mid." AND func_num=".$i." AND show_func='".addslashes($modversion['blocks'][$i]['show_func'])."' AND func_file='".addslashes($modversion['blocks'][$i]['file'])."'";
-				$fresult = $xoopsDB->query($sql);
-				$fblock = $xoopsDB->fetchArray($fresult);
-				if ($fblock['options']) {
-					$old_vals=explode("|",$fblock['options']);
-					$def_vals=explode("|",$modversion['blocks'][$i]['options']);
-					if (count($old_vals) == count($def_vals)) {
-						$modversion['blocks'][$i]['options'] = $fblock['options'];
-						$msgs[] = "Block options for <b>".$fblock['name']."</b> will be kept. (value = <b>".$fblock['options']."</b>)";
-					} else if (count($old_vals) < count($def_vals)){
-						for ($j=0; $j < count($old_vals); $j++) {
-							$def_vals[$j] = $old_vals[$j];
-						}
-						$modversion['blocks'][$i]['options'] = implode("|",$def_vals);
-						$msgs[] = "Block options for <b>".$fblock['name']."</b> will be kept and add new option value. (value = <b>".$modversion['blocks'][$i]['options']."</b>)";
-					} else {
-						$msgs[] = "Block options for <b>".$fblock['name']."</b> will be reset to default, because number of options decrease. (value = <b>".$modversion['blocks'][$i]['options']."</b>)";
-					}
-				}
-			}
-		}
-	}
-}
+include dirname( __FILE__ ) . "/include/updateblock.inc.php";
 ?>
