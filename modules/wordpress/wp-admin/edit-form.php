@@ -93,7 +93,7 @@ if ($use_quicktags && 'bookmarklet' != $mode) {
      $rows = 10;
  }
 ?>
-<div><textarea rows="<?php echo $rows; ?>" cols="40" name="content" tabindex="4" id="content"><?php echo $content ?></textarea></div>
+<div><textarea rows="<?php echo $rows; ?>" cols="40" name="content" tabindex="4" id="wp_content"><?php echo $content ?></textarea></div>
 </fieldset>
 
 <?php
@@ -101,7 +101,7 @@ if ($use_quicktags) {
 ?>
 <script type="text/javascript" language="JavaScript">
 <!--
-edCanvas = document.getElementById('content');
+edCanvas = document.getElementById('wp_content');
 //-->
 </script>
 <?php } ?>
