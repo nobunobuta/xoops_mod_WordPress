@@ -10,6 +10,16 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 		$form .= "<input type='text' name='options[]' value='".$options[0]."' /><br />";
 		$form .= "Comment List Count: ";
 		$form .= "<input type='text' name='options[]' value='".$options[1]."' /><br />";
+		$form .= "<br />Display RSS Icon:&nbsp;";
+		if ( $options[2] == 1 ) {
+			$chk = " checked='checked'";
+		}
+		$form .= "<input type='radio' name='options[2]' value='1'".$chk." />&nbsp;"._YES."";
+		$chk = "";
+		if ( $options[2] == 0 ) {
+			$chk = " checked=\"checked\"";
+		}
+		$form .= "&nbsp;<input type='radio' name='options[2]' value='0'".$chk." />"._NO."<br />";
 		return $form;
 
 	}
@@ -17,6 +27,7 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 	{
 		$block_style =  ($options[0])?$options[0]:0;
 		$num_of_list = (empty($options[1]))? 10 : $options[1];
+		$show_rss_icon = (empty($options[2]))? 0 : $options[2];
 
 		global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache;
 
@@ -62,6 +73,11 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 		} else {
 			$output = tkzy_get_recent_comments($num_of_list);
 		}
+		if ($show_rss_icon) {
+			$output .= '<hr width="100%" />';
+			$output .= '<div style="text-align:right">&nbsp;<a href="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-commentsrss2.php"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss_comment.gif" /></a></div>';
+		}
+
 		$block['content'] = $output;
 		return $block;
 	}
