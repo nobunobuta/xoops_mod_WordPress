@@ -181,17 +181,30 @@
   {
     window.frames[editor+'_rEdit'].focus();     
 
-    var imgSrc = showModalDialog('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value, '', 
+    var retval = showModalDialog('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value, '', 
       'dialogHeight:420px; dialogWidth:420px; resizable:no; status:no');
-    
-  	if(imgSrc != null) {
-    	this[editor+'_rEdit'].document.execCommand('insertimage', false, imgSrc);
-  		var match = imgSrc.match(/(.*)\/thumb-(.*)/);
-  		if (match) {
-  			this[editor+'_rEdit'].document.execCommand('createlink',false,match[1]+'/'+match[2]);
-  		}
-  	}
-    SPAW_update_toolbar(editor, true);    
+    if (retval) {
+	    var imgSrc = retval.imgurl;
+	  	if(imgSrc != null) {
+	    	this[editor+'_rEdit'].document.execCommand('insertimage', false, imgSrc);
+	  		var match = imgSrc.match(/(.*)\/thumb-(.*)/);
+	  		if (match) {
+	  			this[editor+'_rEdit'].document.execCommand('createlink',false,match[1]+'/'+match[2]);
+	  		} else {
+		  		match = imgSrc.match(/(.*)\/thumbs\/(.*)/);
+		  		if (match) {
+	  				this[editor+'_rEdit'].document.execCommand('createlink',false,match[1]+'/photos/'+match[2]);
+	  			} else {
+	  				if (retval.zoomrate != 1) {
+		  				this[editor+'_rEdit'].document.execCommand('createlink',false,imgSrc);
+					    var im = SPAW_getImg(editor); // current cell
+					    im.width = im.width * retval.zoomrate;
+					}
+	  			}
+	  		}
+	  	}
+	    SPAW_update_toolbar(editor, true);
+	 }
   }
     
   function SPAW_image_prop_click(editor, sender)
