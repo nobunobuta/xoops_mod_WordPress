@@ -3,6 +3,7 @@ global $tableoptions;
 function b_wp_recent_comments_show($options)
 {
 	$id=1;
+	global $tableposts,$tablepost2cat,$tablecomments,$tablecategories;
 	global $dateformat, $time_difference, $siteurl, $blogfilename;
     global $querystring_start, $querystring_equal, $querystring_separator, $month, $wpdb, $start_of_week;
 	require_once(dirname(__FILE__).'/../wp-blog-header.php');
