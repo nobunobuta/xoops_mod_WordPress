@@ -190,20 +190,21 @@ case 'IErightclick':
 
 	<p><?php echo _LANG_WPF_SUBT_COPY; ?></p>
 	<?php
-	$regedit = "REGEDIT4\r\n[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\MenuExt\Post To &WP : ".get_settings('blogname')."]\r\n@=\"javascript:doc=external.menuArguments.document;Q=doc.selection.createRange().text;void(btw=window.open('".$siteurl."/wp-admin/bookmarklet.php?text='+escape(Q)+'".$bookmarklet_tbpb."&popupurl='+escape(doc.location.href)+'&popuptitle='+escape(doc.title),'bookmarklet','scrollbars=no,width=480,height=".$bookmarklet_height.",left=100,top=150,status=yes'));btw.focus();\"\r\n\"contexts\"=hex:31\"";
+	$regedit = "REGEDIT4\r\n[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\MenuExt\Post To &WP : ".get_settings('blogname')."]\r\n@=\"$siteurl/wp-admin/bookmarklet.jp.php\"\r\n\"contexts\"=hex:31\"";
 	?>
 	<pre style="margin: 20px; background-color: #cccccc; border: 1px dashed #333333; padding: 5px; font-size: 12px;"><?php echo $regedit; ?></pre>
 	<p><?php echo _LANG_WPF_SUBT_BOOK; ?></p>
-
+<!--
 	<p align="center">
 		<form>
-		<input class="search" type="button" value="1" name="<?php echo _LANG_WPF_SUBT_CLOSE; ?>" />
+		<input class="search" type="button" value="<?php echo _LANG_WPF_SUBT_CLOSE; ?>" name="close" onClick='window.close'/>
 		</form>
 	</p>
+-->
 	</td></tr>
 	</table>
 	<?php
-
+	exit();
 break;
 
 

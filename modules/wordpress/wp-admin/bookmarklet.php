@@ -105,12 +105,13 @@ if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) 
 		$themes = "default";
 	}
 	$css_file = $siteurl.'/themes/'.$themes.'/wp-admin.css';
-	
+	$xoops_css = xoops_getcss($xoopsConfig['theme_set']);
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>WordPress > Bookmarklet</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $blog_charset ?>" />
+<link rel="stylesheet" href="<?php echo $xoops_css ?>" type="text/css" />
 <link rel="stylesheet" href="<?php echo $css_file ?>" type="text/css" />
 <link rel="shortcut icon" href="../wp-images/wp-favicon.png" />
 <script type="text/javascript" language="javascript">
@@ -123,30 +124,26 @@ function launchupload() {
 </script>
 <style type="text/css">
 <!--
-
 #wpbookmarklet textarea,input,select {
 	border-width: 1px;
-	border-color: #cccccc;
 	border-style: solid;
 	padding: 2px;
 	margin: 1px;
 }
 
 #wpbookmarklet .checkbox {
-	background-color: #ffffff;
 	border-width: 0px;
 	padding: 0px;
 	margin: 0px;
 }
 
 #wpbookmarklet textarea {
-	font-family: Verdana, Geneva, Arial, Helvetica;
-	font-size: 0.9em;
+	height:180px;
 }
 
 #wpbookmarklet .wrap {
     border: 0px;
-}
+}	
 
 #wpbookmarklet #postdiv {
     margin-bottom: 0.5em;
@@ -161,8 +158,7 @@ function launchupload() {
 </head>
 <body id="wpbookmarklet">
 <div id="wpAdminMain">
-<h1 id="wphead"><a href="http://wordpress.xwd.jp/" rel="external"><span>WordPress Japan</span></a></h1>
-
+<h3><?php echo get_settings('blogname');?></h2>
 <?php require('edit-form.php'); ?>
 </div>
 </body>

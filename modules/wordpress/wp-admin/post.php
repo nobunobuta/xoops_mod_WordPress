@@ -729,7 +729,7 @@ if ($is_NS4 || $is_gecko) {
     <script type="text/javascript" language="JavaScript">
 <!--
 function oneclickbookmarklet(blah) {
-	window.open ("profile.php?action=IErightclick", "oneclickbookmarklet", "width=500, height=450, location=0, menubar=0, resizable=0, scrollbars=1, status=1, titlebar=0, toolbar=0, screenX=120, left=120, screenY=120, top=120");
+	window.open ("profile.php?action=IErightclick", "oneclickbookmarklet", "width=680, height=450, location=0, menubar=0, resizable=0, scrollbars=1, status=1, titlebar=0, toolbar=0, screenX=120, left=120, screenY=120, top=120");
 }
 // -->
 </script>
