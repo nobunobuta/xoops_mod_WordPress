@@ -2,14 +2,14 @@
 if( ! defined( 'XOOPS_ROOT_PATH' ) ) exit ;
 $my_wp_dirname = basename( dirname( __FILE__ ) ) ;
 if( ! preg_match( '/wordpress(\d*)/' , $my_wp_dirname , $regs ) ) echo ( "invalid dirname of WordPress: " . htmlspecialchars( $my_wp_dirname ) ) ;
-
+include XOOPS_ROOT_PATH.'/modules/'.$my_wp_dirname.'/wp-ver.php';
 $my_wp_dirnumber = $regs[1] ;
 
 $modversion['name'] = sprintf(_MI_WORDPRESS_NAME, $my_wp_dirnumber);
 $modversion['dirname'] = $my_wp_dirname;
 
 $modversion['description'] = _MI_WORDPRESS_DESC;
-$modversion['version'] = "0.33";
+$modversion['version'] = $wp_version_xoops;
 $modversion['credits'] = "";
 $modversion['author'] = _MI_WORDPRESS_AUTHOR;
 $modversion['help'] = "help.html";
@@ -100,6 +100,15 @@ $modversion['config'][5] = array(
 	'default'		=> 0 ,
 );
 
+$modversion['config'][6] = array(
+	'name'			=> 'wp_use_xoops_comments' ,
+	'title'			=> '_MI_WP_USE_XOOPS_COMM' ,
+	'description'	=> '_MI_WP_USE_XOOPS_COMM_DESC' ,
+	'formtype'		=> 'yesno' ,
+	'valuetype'		=> 'int' ,
+	'default'		=> 0 ,
+);
+
 $modversion['blocks']= array();
 
 $modversion['blocks'][1]['file'] = "wp_calendar.php";
@@ -158,7 +167,11 @@ $modversion['blocks'][9]['name'] =sprintf( _MI_WORDPRESS_BNAME9 , $my_wp_dirnumb
 $modversion['blocks'][9]['description'] = _MI_WORDPRESS_BDESC9;
 $modversion['blocks'][9]['show_func'] = "b_wp{$my_wp_dirnumber}_authors_show";
 $modversion['blocks'][9]['edit_func'] = "b_wp{$my_wp_dirnumber}_authors_edit";
-$modversion['blocks'][9]['options'] = "0|nickname|0";
+$modversion['blocks'][9]['options'] = "0|nickname|0"
+;
+$modversion['hasComments'] = 1;
+$modversion['comments']['itemName'] = 'p';
+$modversion['comments']['pageName'] = 'index.php';
 
 include dirname( __FILE__ ) . "/include/updateblock.inc.php";
 ?>

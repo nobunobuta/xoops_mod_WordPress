@@ -36,6 +36,9 @@ define("_MI_WP_USE_XOOPS_SMILE_DESC","¥¹¥Þ¥¤¥ë¥¢¥¤¥³¥ó¤òXOOPS¤Ç»ÈÍÑ¤·¤Æ¤¤¤ë¤â¤Î¤
 
 define("_MI_WP_USE_THEME_TEMPLATE","µ­»ö¥Ö¥í¥Ã¥¯É½¼¨¤Ëtheme¥Ç¥£¥ì¥¯¥È¥ê¤Î¥Æ¥ó¥×¥ì¡¼¥È¤ò»ÈÍÑ");
 define("_MI_WP_USE_THEME_TEMPLATE_DESC","µ­»ö¥Ö¥í¥Ã¥¯É½¼¨¤Ëtheme¥Ç¥£¥ì¥¯¥È¥ê²¼¤Î¥Æ¥ó¥×¥ì¡¼¥È(content_block-template.php)¤ò»ÈÍÑ¤·¤Þ¤¹¡£");
+
+define("_MI_WP_USE_XOOPS_COMM","XOOPS¤Î¥³¥á¥ó¥È¥·¥¹¥Æ¥à¤ò»ÈÍÑ");
+define("_MI_WP_USE_XOOPS_COMM_DESC","¥³¥á¥ó¥È¤òXOOPS¶¦ÄÌ¤Î¥³¥á¥ó¥È¥·¥¹¥Æ¥à¤ò»ÈÍÑ¤·¤Þ¤¹¡¢°Ê²¼¤Î£²¹àÌÜ¤Ï¤³¤ÎÀßÄê¤¬¡Ö¤Ï¤¤¡×¤Î»þ¤Î¤ß¤ËÍ­¸ú¤Ç¤¹¡£");
 // Block Name
 define("_MI_WORDPRESS_BNAME1","WordPress%s ¥«¥ì¥ó¥À¡¼");
 define("_MI_WORDPRESS_BDESC1","WordPress ¥«¥ì¥ó¥À¡¼");

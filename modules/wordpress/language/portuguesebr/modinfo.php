@@ -36,6 +36,9 @@ define("_MI_WP_USE_XOOPS_SMILE_DESC","Se ativado, os smilies serão trocados pelo
 
 define("_MI_WP_USE_THEME_TEMPLATE","Usar o template no diretório de temas quando exibir um bloco do blog?");
 define("_MI_WP_USE_THEME_TEMPLATE_DESC","Se ativado, o template (content_block-template.php) existente no diretório \"themes\" será usado.");
+
+define("_MI_WP_USE_XOOPS_COMM","Using XOOPS Comment System");
+define("_MI_WP_USE_XOOPS_COMM_DESC","Using XOOPS Comment System");
 // Block Name
 define("_MI_WORDPRESS_BNAME1","Calendário%s do WordPress");
 define("_MI_WORDPRESS_BDESC1","Calendário do WordPress");
