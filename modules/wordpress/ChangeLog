@@ -98,6 +98,8 @@
 	* wp-admin/install-helper.php.orig:
 	* wp-admin/install.php:
 	* wp-admin/install.php.orig:
+	* wp-admin/wp-register.php:
+	* wp-admin/wp-register.php.orig:
 		Rename WordPress Original Installer(XOOPS Module dosen't use them)
 
 	* phpinfo.php:
