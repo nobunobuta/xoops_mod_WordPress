@@ -98,7 +98,6 @@ EOD;
 #wpRecentPost #postDate {
 	font-weight: bold;
 	font-size:110%;
-	color:#000000;
 }
 
 #wpRecentPost .new1 {
@@ -115,18 +114,16 @@ EOD;
 
 ul.wpBlockList ,ul.wpBlockList li{
 	list-style-position:outside;
-	margin:3px;
-	margin-left:5px;
+	margin-left:8px;
 }
 ul.wpBlockDateList ,ul.wpBlockDateList li{
 	list-style-position:outside;
 	list-style-type:none;
-	margin-left:-5px;
+	margin-left:1px;
 }
 ul.wpBlockDateList #postDate{
 	font-weight: bold;
 	font-size:110%;
-	color:#000000;
 }
 .blockContent ul.children,.blockContent ul.children li {
 	list-style-position:outside;
@@ -143,16 +140,16 @@ ul.wpBlockDateList ul.children,ul.wpBlockDateList ul.children li {
 
 li span.comment-author {
 	font-weight:bold;
-	margin-left:-5px;
+	margin-left:1px;
 }
 
 li span.post-date {
 	font-weight:bold;
-	margin-left:-5px;
+	margin-left:1px;
 }
 
 li span.post-title {
-	margin-left:-5px;
+	margin-left:1px;
 }
 
 #wp-calendar {
