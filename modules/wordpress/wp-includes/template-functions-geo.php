@@ -20,7 +20,7 @@ function print_Lat() {
 }
 
 function print_Lon() {
-    global $id, $postdata;
+    global $postdata;
     if(get_settings('use_geo_positions')) {
         if(get_Lon() < 0) {
             $temp = get_Lon() * -1;

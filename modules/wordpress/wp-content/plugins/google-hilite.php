@@ -20,27 +20,21 @@ function get_search_query_terms($engine = 'google') {
 		// Google Hilite 0.3. http://textism.com
 		$query_terms = preg_replace('/^.*q=([^&]+)&?.*$/i','$1', $referer);
 		$query_terms = preg_replace('/\'|"/', '', $query_terms);
-		if (function_exists('mb_convert_encoding')) {
-			$query_terms = mb_convert_encoding($query_terms, $blog_charset, "auto");
-		}
+		$query_terms = mb_conv($query_terms, $blog_charset, "auto");
 		$query_array = preg_split ("/[\s,\+\.]+/", $query_terms);
 		break;
 
 	case 'lycos':
 		$query_terms = preg_replace('/^.*query=([^&]+)&?.*$/i','$1', $referer);
 		$query_terms = preg_replace('/\'|"/', '', $query_terms);
-		if (function_exists('mb_convert_encoding')) {
-			$query_terms = mb_convert_encoding($query_terms, $blog_charset, "auto");
-		}
+		$query_terms = mb_conv($query_terms, $blog_charset, "auto");
 		$query_array = preg_split ("/[\s,\+\.]+/", $query_terms);
 		break;
 
 	case 'yahoo':
 		$query_terms = preg_replace('/^.*p=([^&]+)&?.*$/i','$1', $referer);
 		$query_terms = preg_replace('/\'|"/', '', $query_terms);
-		if (function_exists('mb_convert_encoding')) {
-			$query_terms = mb_convert_encoding($query_terms, $blog_charset, "auto");
-		}
+		$query_terms = mb_conv($query_terms, $blog_charset, "auto");
 		$query_array = preg_split ("/[\s,\+\.]+/", $query_terms);
 		break;
 
@@ -68,7 +62,12 @@ function get_search_query_terms($engine = 'google') {
 
 function is_referer_search_engine($engine = 'google') {
 	global $siteurl;
+	
+    if (isset($_SERVER['HTTP_REFERER'])) {
 	$referer = urldecode($_SERVER['HTTP_REFERER']);
+	} else {
+		return 0;
+	}
     //echo "referer is: $referer<br />";
 	if ( ! $engine ) {
 		return 0;

@@ -6,13 +6,28 @@ require(dirname(__FILE__) . '/wp-config.php');
 $request_array = 'HTTP_POST_VARS';
 $tb_id = explode('/', $_SERVER['REQUEST_URI']);
 $tb_id = intval($tb_id[count($tb_id)-1]);
-$tb_url = $_POST['url'];
-$title = $_POST['title'];
-$excerpt = $_POST['excerpt'];
-$blog_name = $_POST['blog_name'];
-$charset = $_POST['charset'];
+
+param('url','string');
+param('title','string');
+param('excerpt','html','');
+param('blog_name','string');
+param('charset','string','');
+param('p','integer','');
+param('name','string','');
+param('__mode','string','');
+
+if (isset($url)) $tb_url = $url;
 
 require('wp-blog-header.php');
+
+if ($wp_debug) {
+	$debug_file = './log/trackback_r.log';
+	$fp = fopen($debug_file, 'a');
+	fwrite($fp, "Title(Orig) =$title\n");
+	fwrite($fp, "Excerpt(Orig) =$excerpt\n");
+	fwrite($fp, "BlogName(Orig) =$blog_name\n");
+	fwrite($fp, "CharSet(Orig) =$charset\n\n");
+}
 
 if ( (($p != '') && ($p != 'all')) || ($name != '') ) {
     $tb_id = $posts[0]->ID;
@@ -23,7 +38,7 @@ if (empty($title) && empty($tb_url) && empty($blog_name)) {
 	header('Location: ' . get_permalink($tb_id));
 }
 
-if ((strlen(''.$tb_id)) && (empty($_GET['__mode'])) && (strlen(''.$tb_url))) {
+if ((strlen(''.$tb_id)) && (empty($__mode)) && (strlen(''.$tb_url))) {
 
 	@header('Content-Type: text/xml');
 
@@ -43,9 +58,18 @@ if ((strlen(''.$tb_id)) && (empty($_GET['__mode'])) && (strlen(''.$tb_url))) {
 		if ($charset == "auto") {
 			$charset = mb_detect_encoding($title.$excerpt.$blog_name,$charset);
 		}
-		$title = mb_convert_encoding($title, $blog_charset, $charset);
-		$excerpt = mb_convert_encoding($excerpt, $blog_charset, $charset);
-		$blog_name = mb_convert_encoding($blog_name, $blog_charset, $charset);
+		$title = mb_conv($title, $blog_charset, $charset);
+		$excerpt = mb_conv($excerpt, $blog_charset, $charset);
+		$blog_name = mb_conv($blog_name, $blog_charset, $charset);
+	}
+
+	if ($wp_debug) {
+		fwrite($fp, "Title(Conv) =$title\n");
+		fwrite($fp, "Excerpt(Conv) =$excerpt\n");
+		fwrite($fp, "BlogName(Conv) =$blog_name\n");
+		fwrite($fp, "CharSet(Conv) =$charset\n");
+		fwrite($fp, "\n\n");
+		fclose($fp);
 	}
 
 	$tb_url = addslashes($tb_url);

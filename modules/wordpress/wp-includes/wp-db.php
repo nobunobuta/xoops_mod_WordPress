@@ -41,23 +41,28 @@
 		//	DB Constructor - connects to the server and selects a database
 
 		function wpdb($dbuser, $dbpassword, $dbname, $dbhost) {
-			$this->dbh = @mysql_connect($dbhost,$dbuser,$dbpassword);
-			if ( ! $this->dbh ) {
-				die("<div>
-				<p>" . _LANG_WA_WPDB_GUIDE1 . "</p>
-				<ul>
-				<li>" . _LANG_WA_WPDB_GUIDE2 . "</li>
-				<li>" . _LANG_WA_WPDB_GUIDE3 . "</li>
-				<li>" . _LANG_WA_WPDB_GUIDE4 . "</li>
-				</ul>
-				<p><a href='http://wordpress.xwd.jp/'>WordPress Japan</a></p>
-				</div></body></html>");
+			global $xoopsDB;
+			if (isset($xoopsDB)) {
+				$this->dbh =& $xoopsDB->conn;
+				$this->querycount = 0;
+			} else {
+				$this->dbh = @mysql_connect($dbhost,$dbuser,$dbpassword);
+				if ( ! $this->dbh ) {
+					die("<div>
+					<p>" . _LANG_WA_WPDB_GUIDE1 . "</p>
+					<ul>
+					<li>" . _LANG_WA_WPDB_GUIDE2 . "</li>
+					<li>" . _LANG_WA_WPDB_GUIDE3 . "</li>
+					<li>" . _LANG_WA_WPDB_GUIDE4 . "</li>
+					</ul>
+					<p><a href='http://wordpress.xwd.jp/'>WordPress Japan</a></p>
+					</div></body></html>");
+				}
+	
+	
+				$this->select($dbname);
+				$this->querycount = 0;
 			}
-
-
-			$this->select($dbname);
-			$this->querycount = 0;
-
 		}
 
 		// ==================================================================

@@ -5,17 +5,22 @@ if( ! defined( 'WP_CALENDAR_POSTS_INCLUDED' ) ) {
 
 	function b_wp_calendar_show($option, $wp_num = "")
 	{
-		global $wpdb, $siteurl, $wp_id, $wp_inblock, $xoopsConfig, $use_cache, $m,$monthnum,$year;
+		global $wpdb, $siteurl, $wp_id, $wp_inblock, $xoopsConfig, $use_cache, $m,$monthnum,$year, $wp_mod, $wp_base;
 		$id=1;
-		$m = array_key_exists('m',$_GET) ? $_GET['m']: '';
-		$monthnum = array_key_exists('monthnum',$_GET) ? $_GET['monthnum'] : '';
-		$year = array_key_exists('year',$_GET) ? $_GET['year'] : '';
 		$use_cache = 1;
 		if ($wp_num == "") {
 			$wp_id = $wp_num;
 			$wp_inblock = 1;
 			include(dirname(__FILE__).'/../wp-config.php');
 			$wp_inblock = 0;
+		}
+		if (current_wp()) {
+			param('m','integer','');
+			param('monthnum','integer','');
+			param('year','integer','');
+			$m = array_key_exists('m',$_GET) ? $_GET['m']: '';
+			$monthnum = array_key_exists('monthnum',$_GET) ? $_GET['monthnum'] : '';
+			$year = array_key_exists('year',$_GET) ? $_GET['year'] : '';
 		}
 		ob_start();
 		block_style_get($wp_num);
@@ -28,7 +33,7 @@ if( ! defined( 'WP_CALENDAR_POSTS_INCLUDED' ) ) {
 	for ($i = 0; $i < 10; $i++) {
 		eval ('
 		function b_wp'.$i.'_calendar_show($options) {
-			global $wpdb, $siteurl, $wp_id, $wp_inblock, $xoopsConfig, $use_cache, $m,$monthnum,$year;
+			global $wpdb, $siteurl, $wp_id, $wp_inblock, $xoopsConfig, $use_cache, $m,$monthnum,$year, $wp_mod, $wp_base;
 
 			$wp_id = "'.$i.'";
 			$wp_inblock = 1;

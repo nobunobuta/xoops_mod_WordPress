@@ -97,8 +97,8 @@ define('_LANG_L_WPLOST_YOURPASS','е╤е╣еяб╝е╔╩╢╝║ ?');
 
 /* File Name wp-admin/post.php */
 define('_LANG_P_NEWCOMER_MESS','┐╖╡м┼╨╧┐д╖д╞длдщ┤╓дтд╩ддд╬д╟бв┤╔═¤╝╘дмдвд╩д┐д╬еье┘еыдЄ╛хд▓д╞┼ъ╣╞дЄ╡Ў▓─д╣дыд▐д╟┬╘д┐д╩д▒дьд╨д╩дъд▐д╗дєбгбб─╛д░д╦еье┘еыдЄ╛хд▓д╞дтдщддд┐дд╛ь╣чд╧бв┤╔═¤╝╘д╦─╛└▄есб╝еыдЄд╣дыд│д╚дмд╟днд▐д╣бгбб╛║┐╩д╖д┐╛ь╣чбвд│д╬е┌б╝е╕дЄеъеэб╝е╔д╣дыд└д▒д╟еье┘еыдм═н╕·д╦д╩дъд▐д╣бг');
-define('_LANG_P_DATARIGHT_EDIT','д╡дєд╬┼ъ╣╞дЄ╩╘╜╕д╣дыд│д╚д╧╜╨═шд▐д╗дєбг');
-define('_LANG_P_DATARIGHT_DELETE','д╡дєд╬┼ъ╣╞дЄ║я╜№д╣ды╕в╕┬дмдвдъд▐д╗дєбг');
+define('_LANG_P_DATARIGHT_EDIT','д│д╬┼ъ╣╞дЄ╩╘╜╕д╣дыд│д╚д╧╜╨═шд▐д╗дєбг');
+define('_LANG_P_DATARIGHT_DELETE','д│д╬┼ъ╣╞дЄ║я╜№д╣ды╕в╕┬дмдвдъд▐д╗дєбг');
 define('_LANG_P_DATARIGHT_ERROR','║я╜№д╦╝║╟╘д╖д▐д╖д┐ . . . ┤╔═¤┐═д╦╧в═эд╖д╞дпд└д╡ддбг');
 define('_LANG_P_OOPS_IDCOM','д│д╬IDд╦дшдые│есеєе╚д╧двдъд▐д╗дє');
 define('_LANG_P_OOPS_IDPOS','д│д╬IDд╦дшды┼ъ╣╞д╧двдъд▐д╗дє');
@@ -174,6 +174,7 @@ define('_LANG_EFA_POST_STATUS','┼ъ╣╞е╣е╞б╝е┐е╣');
 define('_LANG_EFA_AD_COMMENTS','е│есеєе╚└▀─ъ');
 define('_LANG_EFA_AD_PINGS','е╘еєд╬└▀─ъ');
 define('_LANG_EFA_POST_PASSWORD','е╤е╣еяб╝е╔');
+define('_LANG_EFA_POST_CUSTOM','еле╣е┐ере╒егб╝еые╔');
 define('_LANG_EFA_POST_EXCERPT','╚┤┐ш');
 define('_LANG_EFA_POST_LATITUDE','░▐┼┘:');
 define('_LANG_EFA_POST_LONGITUDE','╖╨┼┘:');
@@ -242,7 +243,7 @@ define('_LANG_WLA_TEXT_TOOLBAR','Mozillaд╚Netscapeд╟д╧║ю└од╖д┐еъеєепдЄе─б╝еые╨б╝
 define('_LANG_WLA_BUTTON_TEXTNAME','д│д╬еъеєепдЄ─╔▓├д╣ды');
 
 /* File Name wp-admin/link-categories.php */
-define('_LANG_WLC_DONOT_DELETE','Can&#8217;t delete the link category. this is the default one');
+define('_LANG_WLC_DONOT_DELETE','IDдм1д╬еле╞е┤еъб╝д╧║я╜№д╣ды╗Ўдмд╟днд▐д╗дє');
 define('_LANG_WLC_TITLE_TEXT','Edit Link Category &#8220;');
 define('_LANG_WLC_EPAGE_TITLE','<strong>Edit</strong> a link category:');
 define('_LANG_WLC_ADD_TITLE','Add a Link Category:');
@@ -314,6 +315,20 @@ define('_LANG_WLM_TOGGLE_BOXES','┴к┬Є/▓Є╜№');
 define('_LANG_WLM_EDIT_LINK','Edit a link:');
 define('_LANG_WLM_SAVE_CHANGES','╩╤╣╣д╬╩▌┬╕');
 define('_LANG_WLM_EDIT_CANCEL','енеуеєе╗еы');
+
+/* File Name wp-admin/menu.php */
+define('_LANG_ADMIN_MENU_WRITE','┼ъ╣╞');
+define('_LANG_ADMIN_MENU_EDIT','╩╘╜╕');
+define('_LANG_ADMIN_MENU_CATE','еле╞е┤еъб╝');
+define('_LANG_ADMIN_MENU_LINK','еъеєеп');
+define('_LANG_ADMIN_MENU_USER','ецб╝е╢б╝');
+define('_LANG_ADMIN_MENU_OPTION','еке╫е╖ечеє');
+define('_LANG_ADMIN_MENU_PLUG','е╫еще░едеє');
+define('_LANG_ADMIN_MENU_TEMP','е╞еєе╫еьб╝е╚');
+define('_LANG_ADMIN_MENU_UPLOAD','еве├е╫еэб╝е╔');
+define('_LANG_ADMIN_MENU_PROFILE','е╫еэе╒егб╝еы');
+define('_LANG_ADMIN_MENU_VIEW','е╡еде╚╔╜╝и &raquo;');
+define('_LANG_ADMIN_MENU_LOGOUT','еэе░евеже╚ (%s)');
 
 /* File Name wp-admin/moderation.php */
 define('_LANG_WPM_USER_LEVEL','двд╩д┐д╦д╧е│есеєе╚дЄ╛╡╟зд╣ды╕в╕┬дмдвдъд▐д╗дєбг<br />╛▄д╖дпд╧┤╔═¤┐═╦°дк╠фдд╣чдяд╗дпд└д╡ддбг');
@@ -466,7 +481,7 @@ define('_LANG_WUS_ADD_TWICE','е╤е╣еяб╝е╔ (2▓╒╜ъ) ');
 define('_LANG_WPCM_LOAD_DIRECTLY','д│д╬е╟егеьепе╚еъд╬е╒ебедеыд╧─╛└▄д┤═ўддд┐д└д▒д▐д╗дє');
 define('_LANG_WPCM_ENTER_PASS','<p>е│есеєе╚дЄ╕лдыд┐дсд╬е╤е╣еяб╝е╔дЄ╞■╬╧д╖д╞дпд└д╡ддбг<p>');
 define('_LANG_WPCM_COM_TITLE','е│есеєе╚');
-define('_LANG_WPCM_COM_RSS','д│д╬е│есеєе╚д╬RSS');
+define('_LANG_WPCM_COM_RSS','д│д╬е│есеєе╚д╬<abbr title="Really Simple Syndication">RSS</abbr>');
 define('_LANG_WPCM_COM_TRACK','TrackBack URL : ');
 define('_LANG_WPCM_COM_YET','д│д╬┼ъ╣╞д╦д╧бвд▐д└е│есеєе╚дм╔╒ддд╞ддд▐д╗дє');
 define('_LANG_WPCM_COM_LEAVE','е│есеєе╚д╬┼ъ╣╞');
@@ -479,7 +494,7 @@ define('_LANG_WPCM_THIS_TIME','д┤дсдєд╩д╡ддбв╕╜║▀е│есеєе╚дЄ╔╒д▒дыд│д╚д╧╜╨═шд▐д╗д
 define('_LANG_WPCM_COM_NAME','Name');
 
 /* File Name wp-comments-post.php */
-define('_LANG_WPCP_SORRY_ITEM','д┤дсдєд╩д╡дд  д│д╬┼ъ╣╞д╦┬╨д╣дые│есеєе╚д╧─∙дс└┌дъд▐д╖д┐');
+define('_LANG_WPCP_SORRY_ITEM','д┤дсдєд╩д╡дд  д│д╬┼ъ╣╞д╦┬╨д╣дые│есеєе╚д╧╝їд▒╔╒д▒д╞ддд▐д╗дє');
 define('_LANG_WPCP_ERR_FILL','Error: дк╠╛┴░д╚есб╝еыеве╔еье╣дЄ╡н╞■д╖д╞дпд└д╡дд');
 define('_LANG_WPCP_ERR_TYPE','Error: е│есеєе╚дЄ╡н╞■д╖д╞дпд└д╡дд');
 define('_LANG_WPCP_SORRY_SECONDS','д┤дсдєд╩д╡дд  ┬│д▒д╞┼ъ╣╞д╣ды╛ь╣чд╧10╔├░╩╛х╗■┤╓дЄ╢їд▒д╞дпд└д╡дд');
@@ -592,32 +607,32 @@ define('_LANG_INST_BASE_VALUE54','┤╔═¤┐═д╬есб╝еыеве╔еье╣ (└╡│╬д╦)');
 // general blog setup
 define('_LANG_INST_BASE_VALUE9','╜╡д╬╗╧дсд╬═╦╞№╗╪─ъ');
 define('_LANG_INST_BASE_VALUE11','[b]bold[/b]д╬дшджд╩BBCodeдЄ╗╚═╤д╣ды');
-define('_LANG_INST_BASE_VALUE12','**bold** \\\\italic\\\\ __underline__д╬дшджд╩GreyMatter-styleдЄ╗╚═╤д╣ды');
+define('_LANG_INST_BASE_VALUE12','**bold** \\\\italic\\\\ __underline__д╬дшджд╩<br>GreyMatter-styleдЄ╗╚═╤д╣ды');
 define('_LANG_INST_BASE_VALUE13','е▄е┐еєд╦дшдыепеде├епе┐е░дЄ╗╚═╤д╣ды (Mac IEд╟д╧═°═╤д╟днд▐д╗дє)');
-define('_LANG_INST_BASE_VALUE14','╜┼═╫! ├ц╣ё╕ьбв╞№╦▄╕ьбв┤┌╣ё╕ьд╜д╬┬╛д╬е▐еые┴е╨еде╚╕└╕ьд╟д╬╗╚═╤╗■д╦д╧╔мд║[false]д╦д╖д╞дпд└д╡дд');
-define('_LANG_INST_BASE_VALUE15','е┐е░дЄ╡Ў▓─д╖д┐╛ь╣чбвд╜дьдм░ндд╖ы▓╠дЄ╛╖дп╛ь╣чдмдвдъд▐д╣бг═°═╤╛ї╢╖д╦дтдшдъд▐д╣дм[false]д╦д╣дыд│д╚дЄдк┤лдсд╖д▐д╣');
-define('_LANG_INST_BASE_VALUE16','┼ъ╣╞╗■д╦е╣е▐едеъб╝еведе│еєд╬╗╚═╤дЄ╡Ў▓─д╣дыд│д╚д╟бв╚∙╠пд╩е╦ехевеєе╣дЄ┼┴дидыд│д╚дм▓─╟╜д╚д╩дъд▐д╣');
+define('_LANG_INST_BASE_VALUE14','╜┼═╫! ├ц╣ё╕ьбв╞№╦▄╕ьбв┤┌╣ё╕ьд╜д╬┬╛д╬е▐еые┴е╨еде╚╕└╕ьд╟д╬<br>╗╚═╤╗■д╦д╧╔мд║[false]д╦д╖д╞дпд└д╡дд');
+define('_LANG_INST_BASE_VALUE15','е┐е░дЄ╡Ў▓─д╖д┐╛ь╣чбвд╜дьдм░ндд╖ы▓╠дЄ╛╖дп╛ь╣чдмдвдъд▐д╣бг<br>═°═╤╛ї╢╖д╦дтдшдъд▐д╣дм[false]д╦д╣дыд│д╚дЄдк┤лдсд╖д▐д╣');
+define('_LANG_INST_BASE_VALUE16','┼ъ╣╞╗■д╦е╣е▐едеъб╝еведе│еєд╬╗╚═╤дЄ╡Ў▓─д╣дыд│д╚д╟бв<br>╚∙╠пд╩е╦ехевеєе╣дЄ┼┴дидыд│д╚дм▓─╟╜д╚д╩дъд▐д╣');
 define('_LANG_INST_BASE_VALUE17','е╣е▐едеъб╝еведе│еєд╬двдые╟егеьепе╚еъдЄ╗╪─ъ (║╟╕хд╬е╣еще├е╖ехд╧╔╘═╫)');
-define('_LANG_INST_BASE_VALUE18','е│есеєе╚┼ъ╣╞╗■д╦╠╛┴░д╚есб╝еыеве╔еье╣д╬╞■╬╧дЄ╔м┐▄д╦д╣дыбг[false]д╦д╣дыд╚бвд╜дьдщдм╠д╡н╞■д╟дте│есеєе╚дЄ┼ъ╣╞д╣дыд│д╚дм╜╨═шд▐д╣');
+define('_LANG_INST_BASE_VALUE18','е│есеєе╚┼ъ╣╞╗■д╦╠╛┴░д╚есб╝еыеве╔еье╣д╬╞■╬╧дЄ╔м┐▄д╦д╣дыбг<br>[false]д╦д╣дыд╚бвд╜дьдщдм╠д╡н╞■д╟дте│есеєе╚дЄ┼ъ╣╞д╣дыд│д╚дм╜╨═шд▐д╣');
 define('_LANG_INST_BASE_VALUE20','е│есеєе╚дм┼ъ╣╞д╡дьд┐║▌есб╝еы─╠├╬д╣ды');
 /* rss/rdf feeds */
 define('_LANG_INST_BASE_VALUE21','RSSд╦╜╨╬╧д╣ды╡н╗Ў┐Ї');
-define('_LANG_INST_BASE_VALUE22','RSSд╦╜╨╬╧д╣ды╕└╕ь ( ╗▓╣═ : <a href="http://backend.userland.com/stories/storyReader$16" target="_blank">http://backend.userland.com/stories/storyReader$16</a>');
+define('_LANG_INST_BASE_VALUE22','RSSд╦╜╨╬╧д╣ды╕└╕ь<br>(╗▓╣═:<a href="http://backend.userland.com/stories/storyReader$16" target="_blank">http://backend.userland.com/stories/storyReader$16</a>');
 define('_LANG_INST_BASE_VALUE23','b2rss.phpд╦д╞&lt;description>├цд╦HTMLе┐е░дЄ╡Ў▓─д╖д▐д╣дл ?');
-define('_LANG_INST_BASE_VALUE24','RSSд╟╜╨╬╧д╣ды╚┤┐ш╡н╗Ўд╬─╣д╡(0=╠╡└й╕┬) ├э : b2rss.phpд╟д╧е│б╝е╔▓╜д╡дьд┐HTMLдЄ╗╚═╤д╣дьд╨0д╦е╗е├е╚д╡дьд▐д╣бг');
+define('_LANG_INST_BASE_VALUE24','RSSд╟╜╨╬╧д╣ды╚┤┐ш╡н╗Ўд╬─╣д╡(0=╠╡└й╕┬)<br>├э : b2rss.phpд╟д╧е│б╝е╔▓╜д╡дьд┐HTMLдЄ╗╚═╤д╣дьд╨0д╦е╗е├е╚д╡дьд▐д╣бг');
 define('_LANG_INST_BASE_VALUE25','RSS╜╨╬╧═╤д╦╚┤┐ше╒егб╝еые╔дЄ╗╚═╤д╣ды');
 define('_LANG_INST_BASE_VALUE26','┼ъ╣╞╡н╗ЎдЄhttp://weblogs.com/д╦д╞еъе╣е╚▓╜д╡дьдыд│д╚дЄ╡Ў▓─д╣ды');
 define('_LANG_INST_BASE_VALUE27','┼ъ╣╞╡н╗ЎдЄhttp://blo.gs/д╦д╞еъе╣е╚▓╜д╡дьдыд│д╚дЄ╡Ў▓─д╣ды');
 define('_LANG_INST_BASE_VALUE28','д│дьдЄ╩╤╣╣д╣ды╔м═╫д╧двдъд▐д╗дє');
-define('_LANG_INST_BASE_VALUE29','Trackbackд╬╗╚═╤дЄ╡Ў▓─д╣дыдлд╖д╩дддлдЄ└▀─ъд╖д╞дпд└д╡ддбб[false]д╦д╣дыд╚═°═╤д╟днд╩дпд╩дъд▐д╣бг');
-define('_LANG_INST_BASE_VALUE30','Pingbackд╬╗╚═╤дЄ╡Ў▓─д╣дыдлд╖д╩дддлдЄ└▀─ъд╖д╞дпд└д╡ддбб[false]д╦д╣дыд╚═°═╤д╟днд╩дпд╩дъд▐д╣бг');
+define('_LANG_INST_BASE_VALUE29','Trackbackд╬╗╚═╤дЄ╡Ў▓─д╣дыдлд╖д╩дддлдЄ└▀─ъд╖д╞дпд└д╡дд<br>[false]д╦д╣дыд╚═°═╤д╟днд╩дпд╩дъд▐д╣бг');
+define('_LANG_INST_BASE_VALUE30','Pingbackд╬╗╚═╤дЄ╡Ў▓─д╣дыдлд╖д╩дддлдЄ└▀─ъд╖д╞дпд└д╡дд<br>[false]д╦д╣дыд╚═°═╤д╟днд╩дпд╩дъд▐д╣бг');
 define('_LANG_INST_BASE_VALUE31','[true]д╟е╒ебедеыд╬еве├е╫еэб╝е╔дЄ╡Ў▓─бв[false]д╟╢╪╗▀');
-define('_LANG_INST_BASE_VALUE32','▓ш┴№дЄеве├е╫еэб╝е╔д╣дые╟егеьепе╚еъдЄ└ф┬╨е╤е╣д╟╗╪─ъд╖д╞дпд└д╡дд(║╟╕хд╬е╣еще├е╖ехд╧╔╘═╫)ббе╡б╝е╨б╝дмUNIX┤─╢нд╬╛ь╣чд╧бв│║┼Ўе╟егеьепе╚еъд╬е╤б╝е▀е├е╖ечеєдЄ[766]░╩╛хд╦д╖д╞дпд└д╡дд');
-define('_LANG_INST_BASE_VALUE33','д╜д╬е╟егеьепе╚еъб╝д╬URLдЄ╞■╬╧д╖д▐д╣(еве├е╫еэб╝е╔д╡дьд┐е╒ебедеыд╪д╬еъеєепдЄ└╕└од╣дыд┐дсд╦╗╚═╤д╡дьд▐д╣)ббд│д┴дщдт║╟╕хд╬е╣еще├е╖ехд╧╔╘═╫д╟д╣');
-define('_LANG_INST_BASE_VALUE34','╡Ў▓─д╣дые╒ебедеые┐еде╫дЄ╗╪─ъд╖д▐д╣ббд│д╬еъе╣е╚д╧┴¤д╣д│д╚дмд╟днд▐д╣(│╞е╒ебедеые┐еде╫д╧╚╛│╤е╣е┌б╝е╣д╟╢ш└┌д├д╞дпд└д╡дд)');
-define('_LANG_INST_BASE_VALUE35','еве├е╫еэб╝е╔▓─╟╜д╩е╒ебедеые╡еде║дЄ╗╪─ъд╖д╞дпд└д╡ддбг д█д╚дєд╔д╬е╡б╝е╨б╝д╟д╧2048KBд╦└й╕┬д╡дьд╞ддд▐д╣(е╡б╝е╨б╝д╬╕┬│ж├═дшдъ╣тдд├═дЄе╗е├е╚д╖д╞дт░╒╠гдмдвдъд▐д╗дє)');
+define('_LANG_INST_BASE_VALUE32','▓ш┴№дЄеве├е╫еэб╝е╔д╣дые╟егеьепе╚еъдЄ└ф┬╨е╤е╣д╟╗╪─ъд╖д╞дпд└д╡дд<br>(║╟╕хд╬е╣еще├е╖ехд╧╔╘═╫)ббе╡б╝е╨б╝дмUNIX┤─╢нд╬╛ь╣чд╧бв<br>│║┼Ўе╟егеьепе╚еъд╬е╤б╝е▀е├е╖ечеєдЄ[766]░╩╛хд╦д╖д╞дпд└д╡дд');
+define('_LANG_INST_BASE_VALUE33','д╜д╬е╟егеьепе╚еъб╝д╬URLдЄ╞■╬╧д╖д▐д╣<br>(еве├е╫еэб╝е╔д╡дьд┐е╒ебедеыд╪д╬еъеєепдЄ└╕└од╣дыд┐дсд╦╗╚═╤д╡дьд▐д╣)<br>д│д┴дщдт║╟╕хд╬е╣еще├е╖ехд╧╔╘═╫д╟д╣');
+define('_LANG_INST_BASE_VALUE34','╡Ў▓─д╣дые╒ебедеые┐еде╫дЄ╗╪─ъд╖д▐д╣ д│д╬еъе╣е╚д╧┴¤д╣д│д╚дмд╟днд▐д╣<br>(│╞е╒ебедеые┐еде╫д╧╚╛│╤е╣е┌б╝е╣д╟╢ш└┌д├д╞дпд└д╡дд)');
+define('_LANG_INST_BASE_VALUE35','еве├е╫еэб╝е╔▓─╟╜д╩е╒ебедеые╡еде║дЄ╗╪─ъд╖д╞дпд└д╡ддбг<br>д█д╚дєд╔д╬е╡б╝е╨б╝д╟д╧2048KBд╦└й╕┬д╡дьд╞ддд▐д╣<br>(е╡б╝е╨б╝д╬╕┬│ж├═дшдъ╣тдд├═дЄе╗е├е╚д╖д╞дт░╒╠гдмдвдъд▐д╗дє)');
 define('_LANG_INST_BASE_VALUE36','е╒ебедеыд╬еве├е╫еэб╝е╔дЄ╡Ў▓─д╣дыецб╝е╢б╝еье┘еыдЄ└▀─ъд╖д╞дпд└д╡дд');
-define('_LANG_INST_BASE_VALUE37','╛хд╬└▀─ъд╚д╧┤╪╖╕д╩дпбв┤╔═¤┐═дм└▀─ъд╖д┐╞├─ъд╬ецб╝е╢б╝д└д▒е╒ебедеыд╬еве├е╫еэб╝е╔дЄ╡Ў▓─д╣дыд│д╚дт╜╨═шд▐д╣ббд╜д╬╛ь╣чд╧д│д┴дщд╟ецб╝е╢б╝╠╛дЄ╗╪─ъд╖д▐д╣бг ╩г┐Їд╬╛ь╣чд╧╚╛│╤е╣е┌б╝е╣д╟╢ш└┌д├д╞дпд└д╡ддбг');
+define('_LANG_INST_BASE_VALUE37','╛хд╬└▀─ъд╚д╧┤╪╖╕д╩дпбв┤╔═¤┐═дм└▀─ъд╖д┐╞├─ъд╬ецб╝е╢б╝д└д▒е╒ебедеыд╬<br>еве├е╫еэб╝е╔дЄ╡Ў▓─д╣дыд│д╚дт╜╨═шд▐д╣бг<br>д╜д╬╛ь╣чд╧д│д┴дщд╟ецб╝е╢б╝╠╛дЄ╗╪─ъд╖д▐д╣бг<br>╩г┐Їд╬╛ь╣чд╧╚╛│╤е╣е┌б╝е╣д╟╢ш└┌д├д╞дпд└д╡ддбг');
 /* email settings */
 define('_LANG_INST_BASE_VALUE38','есб╝еые╡б╝е╨б╝╠╛');
 define('_LANG_INST_BASE_VALUE39','еэе░едеє╠╛');
@@ -625,10 +640,10 @@ define('_LANG_INST_BASE_VALUE40','е╤е╣еяб╝е╔');
 define('_LANG_INST_BASE_VALUE41','е▌б╝е╚╚╓╣ц');
 define('_LANG_INST_BASE_VALUE42','┼ъ╣╞д╣дые╟е╒ейеые╚еле╞е┤еъб╝д╬╗╪─ъ');
 define('_LANG_INST_BASE_VALUE43','┬ъ╠╛д╦д─д▒ды└▄╞м╕ь');
-define('_LANG_INST_BASE_VALUE44','е┐б╝е▀е═б╝е┐б╝е╣е╚еъеєе░(╦▄╩╕длдщд│д╬╩╕╗·╬єд╟╗╧д▐ды╔Ї╩мдЄ║я╜№д╣ды)');
+define('_LANG_INST_BASE_VALUE44','е┐б╝е▀е═б╝е┐б╝е╣е╚еъеєе░<br>(╦▄╩╕длдщд│д╬╩╕╗·╬єд╟╗╧д▐ды╔Ї╩мдЄ║я╜№д╣ды)');
 define('_LANG_INST_BASE_VALUE45','[true]д╦д╣дыд╚е╞е╣е╚етб╝е╔д╦д╩дъд▐д╣');
-define('_LANG_INST_BASE_VALUE46','д│д│дЄ[true]д╦д╣дыд│д╚д╟бв╖╚┬╙┼┼╧├д╬есб╝еые╡б╝е╙е╣д╩д╔длдщд╬╩м│фд╖д┐╞т═╞д╟дт░ьд─д╬╦▄╩╕д╚д╖д╞─┤└░д╡дьд▐д╣');
-define('_LANG_INST_BASE_VALUE47','есе├е╗б╝е╕дЄ┴ў┐од╣ды║▌д╧еэе░едеє╠╛д╦┬│д▒д╞е╤е╣еяб╝е╔дЄ╞■дьд▐д╣бг ╩м│ф┴ў┐од╖д┐╩╕╛╧дЄ╖╥д▓дыд┐дсд╬е╗е╤еьб╝е┐б╝е╣е╚еъеєе░дЄд│д│д╟╗╪─ъд╖д╞дпд└д╡ддбг');
+define('_LANG_INST_BASE_VALUE46','д│д│дЄ[true]д╦д╣дыд│д╚д╟бв╖╚┬╙┼┼╧├д╬есб╝еые╡б╝е╙е╣д╩д╔длдщд╬<br>╩м│фд╖д┐╞т═╞д╟дт░ьд─д╬╦▄╩╕д╚д╖д╞─┤└░д╡дьд▐д╣');
+define('_LANG_INST_BASE_VALUE47','есе├е╗б╝е╕дЄ┴ў┐од╣ды║▌д╧еэе░едеє╠╛д╦┬│д▒д╞е╤е╣еяб╝е╔дЄ╞■дьд▐д╣бг<br> ╩м│ф┴ў┐од╖д┐╩╕╛╧дЄ╖╥д▓дыд┐дсд╬е╗е╤еьб╝е┐б╝е╣е╚еъеєе░дЄ<br>д│д│д╟╗╪─ъд╖д╞дпд└д╡ддбг');
 define('_LANG_INST_BASE_VALUE48','едеєе╟е├епе╣д╦╔╜╝ид╣ды┼ъ╣╞┐Ї');
 define('_LANG_INST_BASE_VALUE49','┼ъ╣╞╩╠бв╞№╔╒╩╠д╩д╔д╬╔╜╝ие╣е┐едеыд╬┴к┬Є');
 define('_LANG_INST_BASE_VALUE50','евб╝еледе╓▓╜д╣ды├▒░╠д╬┴к┬Є');
@@ -652,10 +667,10 @@ define('_LANG_INST_BASE_VALUE58','PingBackд╦дшды┼ъ╣╞дЄе╟е╒ейеые╚д╟е┴езе├епд╣ды')
 define('_LANG_INST_BASE_VALUE59','┐╖╡м┼ъ╣╞д╬е╟е╒ейеые╚еле╞е┤еъб╝');
 define('_LANG_INST_BASE_VALUE83','╩╘╜╕е╒ейб╝ерд╦╔╜╝ид╣ды╡н╗Ўд╬┐Ї (min 3, max 100)');
 define('_LANG_INST_BASE_VALUE60','еъеєепдЄ╩╘╜╕д╟дндыецб╝е╢б╝еье┘еыд╬└▀─ъ');
-define('_LANG_INST_BASE_VALUE61','д│д│дЄ[false]д╦д╣дыд│д╚д╟д╣д┘д╞д╬еъеєепдм╔╜╝ид╡дьбв├пд╟дтеъеєепе▐е═б╝е╕еуб╝дЄ╩╘╜╕д╣дыд│д╚дм╜╨═шдыдшджд╦д╩дъд▐д╣');
+define('_LANG_INST_BASE_VALUE61','д│д│дЄ[false]д╦д╣дыд│д╚д╟д╣д┘д╞д╬еъеєепдм╔╜╝ид╡дьбв<br>├пд╟дтеъеєепе▐е═б╝е╕еуб╝дЄ╩╘╜╕д╣дыд│д╚дм╜╨═шдыдшджд╦д╩дъд▐д╣');
 define('_LANG_INST_BASE_VALUE62','╔╛▓┴╔╜╝ид╦╗╚═╤д╣дые┐еде╫дЄ╗╪─ъд╖д▐д╣');
 define('_LANG_INST_BASE_VALUE63','╡н╣цдЄ╗╚дж╛ь╣чд│д│д╟╗╪─ъд╖д▐д╣');
-define('_LANG_INST_BASE_VALUE64','0д╬▓┴├═дЄ╗╪─ъд╖д▐д╣бг д│д│дЄ[true]д╦д╖д┐╛ь╣чбв0д╧╔╛▓┴д╬┤Ё╜рд╦д╩дъд▐д╗дє');
+define('_LANG_INST_BASE_VALUE64','0д╬▓┴├═дЄ╗╪─ъд╖д▐д╣бг д│д│дЄ[true]д╦д╖д┐╛ь╣чбв<br>0д╧╔╛▓┴д╬┤Ё╜рд╦д╩дъд▐д╗дє');
 define('_LANG_INST_BASE_VALUE65','╞▒д╕╔╛▓┴е▌едеєе╚д╦д╧╞▒д╕едесб╝е╕дЄ╗╚═╤д╣ды');
 define('_LANG_INST_BASE_VALUE66','╔╛▓┴0д╬едесб╝е╕');
 define('_LANG_INST_BASE_VALUE67','╔╛▓┴1д╬едесб╝е╕');
@@ -694,10 +709,10 @@ define('_LANG_UPG_STEP_INFO3','<p>д│д╬е╫еэе╗е╣д└д▒д╟д╣д┘д╞д╬║ю╢╚дм┤░╬╗д╖д▐д╖д┐бг
 
 /* File Name wp-admin/upgrade-functions.php */
 define('_LANG_INST_BASE_VALUE88','╛╡╟зд╡дьд┐е│есеєе╚д╬д▀╔╜╝ид╡дьдыдшджд╦д╣дыбг');
-define('_LANG_INST_BASE_VALUE89','д│д│дЄ[true]д╦д╖д╞дкдпд│д╚д╟бв╛╡╟з┬╘д┴е│есеєе╚дмдвдыд│д╚дЄесб╝еыд╟─╠├╬▓─╟╜д╦д╩дъд▐д╣бг');
+define('_LANG_INST_BASE_VALUE89','д│д│дЄ[true]д╦д╖д╞дкдпд│д╚д╟бв╛╡╟з┬╘д┴е│есеєе╚дмдвдыд│д╚дЄ<br>есб╝еыд╟─╠├╬▓─╟╜д╦д╩дъд▐д╣бг');
 define('_LANG_INST_BASE_VALUE90','е╤б╝е▐е═еєе╚еъеєепеке╫е╖ечеєд╦д─ддд╞д╬╛▄д╖дд└т╠└д╧<a href="options-permalink.php">д│д┴дщд╬е┌б╝е╕</a>д╟д┤═ўддд┐д└д▒д▐д╣бг');
-define('_LANG_INST_BASE_VALUE91','е╒ебедеы╜╨╬╧╗■д╦gzipдЄ═н╕·д╦д╣дыдлд╔дждлдЄ┴к┬Єд╖д╞дпд└д╡ддбг дк╗╚ддд╬ежезе╓е╡б╝е╨б╝Apacheд╦mod_gzipд╚ддджете╕ехб╝еыдм┴╚д▀╣■д▐дьд╞ддд╩дд╛ь╣чд╧бвд│д│дЄ[true]д╦д╖д╞дпд└д╡ддбг');
-define('_LANG_INST_BASE_VALUE92','Hackе╒ебедеыдЄ╗╚═╤д╣ды╛ь╣чд╧д│д│дЄ[true]д╦д╖д╞дпд└д╡ддбг Hackе╒ебедеыд╧WordPressд╬еыб╝е╚╛хд╦├╓ддд╞бвmy-hacks.phpд╬дшджд╦╕╞д╙╜╨д╖д▐д╣бг д│дьд╧еве├е╫е░еьб╝е╔╗■д╦╛х╜ёднд╡дьд╩дддшджд╦д╣дыд┐дсд╬дтд╬д╟д╣бг');
+define('_LANG_INST_BASE_VALUE91','е╒ебедеы╜╨╬╧╗■д╦gzipдЄ═н╕·д╦д╣дыдлд╔дждлдЄ┴к┬Єд╖д╞дпд└д╡ддбг <br>дк╗╚ддд╬ежезе╓е╡б╝е╨б╝Apacheд╦mod_gzipд╚ддджете╕ехб╝еыдм<br>┴╚д▀╣■д▐дьд╞ддд╩дд╛ь╣чд╧бвд│д│дЄ[true]д╦д╖д╞дпд└д╡ддбг');
+define('_LANG_INST_BASE_VALUE92','Hackе╒ебедеыдЄ╗╚═╤д╣ды╛ь╣чд╧д│д│дЄ[true]д╦д╖д╞дпд└д╡ддбг<br>Hackе╒ебедеыд╧WordPressд╬еыб╝е╚╛хд╦├╓ддд╞бвmy-hacks.phpд╬<br>дшджд╦╕╞д╙╜╨д╖д▐д╣бг<br>д│дьд╧еве├е╫е░еьб╝е╔╗■д╦╛х╜ёднд╡дьд╩дддшджд╦д╣дыд┐дсд╬дтд╬д╟д╣бг');
 define('_LANG_INST_BASE_VALUE93','Blogд╬енеуещепе┐б╝е╗е├е╚ (<a href="http://developer.apple.com/documentation/macos8/TextIntlSvcs/TextEncodingConversionManager/TEC1.5/TEC.b0.html">╩╕╗·е│б╝е╔еъе╣е╚</a>');
 define('_LANG_INST_BASE_VALUE94','е░еъе╦е├е╕╔╕╜р╗■(GMT)длдщд╬╗■║╣');
 

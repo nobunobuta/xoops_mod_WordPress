@@ -172,28 +172,71 @@ function single_post_title($prefix = '', $display = true) {
 	}
 }
 
+function single_author_title($prefix = '', $display = true ) {
+	global $p, $author,$author_name, $wpdb, $wp_id;
+	if (!empty($author_name)) {
+		$author_name = rawurldecode($author_name); // For Japanese Author Name;
+		$sql = "SELECT * FROM {$wpdb->users[$wp_id]}  WHERE user_login='".$author_name."'";
+	} elseif (!empty($author)) {
+		$author=intval($author);
+		$sql = "SELECT * FROM {$wpdb->users[$wp_id]} WHERE ID='".$author."'";
+	} elseif (!empty($p)) {
+		$author = $wpdb->get_var("SELECT post_author FROM {$wpdb->posts[$wp_id]} WHERE ID = '$p'");
+		$sql = "SELECT * FROM {$wpdb->users[$wp_id]} WHERE ID='".$author."'";
+	}
+	if (!empty($sql)) {
+		$results = $wpdb->get_results($sql);
+		$result = $results[0];
+		$idmode = $result->user_idmode;
+	    if ($idmode == 'nickname')    $id = $result->user_nickname;
+	    if ($idmode == 'login')    $id = $result->user_login;
+	    if ($idmode == 'firstname')    $id = $result->user_firstname;
+	    if ($idmode == 'lastname')    $id = $result->user_lastname;
+	    if ($idmode == 'namefl')    $id = $result->user_firstname.' '.$result->user_lastname;
+	    if ($idmode == 'namelf')    $id = $result->user_lastname.' '.$result->user_firstname;
+	    if ($idmode == 'ID')        $id = $result->ID;
+	    if (!$idmode) $id = $result->user_nickname;
+	    if ($display) {
+	    	echo $prefix.strip_tags(stripslashes($id));
+	    } else {
+	    	return $prefix.strip_tags(stripslashes($id));
+	    }
+	}
+}
+
 function single_cat_title($prefix = '', $display = true ) {
 	global $cat;
 	if(!empty($cat) && !(strtoupper($cat) == 'ALL')) {
 		$my_cat_name = get_the_category_by_ID($cat);
 		if(!empty($my_cat_name)) {
-			if ($display)
+			if ($display) {
 				echo $prefix.strip_tags(stripslashes($my_cat_name));
-			else
+			} else {
 				return strip_tags(stripslashes($my_cat_name));
+			}
 		}
 	}
 }
 
 function single_month_title($prefix = '', $display = true ) {
-	global $m, $month;
-	if(!empty($m)) {
+	global $m, $monthnum, $month, $year, $wp_month_format,$p;
+	if (empty($p)) {
+		if(!empty($monthnum) && !empty($year)) {
+			$my_year = $year;
+			$my_month = $month[zeroise($monthnum,2)];
+		} elseif(!empty($m)) {
 		$my_year = substr($m,0,4);
 		$my_month = $month[substr($m,4,2)];
-		if ($display)
-			echo $prefix.$my_month.$prefix.$my_year;
-		else
-			return $m;
+		}
+		if (!empty($my_month)) {
+			$text = ereg_replace('%MONTH',$my_month,$wp_month_format);
+			$text = ereg_replace('%YEAR',$my_year,$text);
+			if ($display) {
+				echo $prefix . $text;
+			} else {
+				return $text;
+			}
+		}
 	}
 }
 
@@ -534,7 +577,7 @@ function the_date_xml() {
 }
 
 function the_date($d='', $before='', $after='', $echo = true) {
-	global $id, $post, $day, $previousday, $dateformat, $newday;
+	global $post, $day, $previousday, $dateformat, $newday;
 	$the_date = '';
 	if ($day != $previousday) {
 		$the_date .= $before;
@@ -555,7 +598,7 @@ function the_date($d='', $before='', $after='', $echo = true) {
 }
 
 function the_time($d='', $echo = true) {
-	global $id, $post, $timeformat;
+	global $post, $timeformat;
 	if ($d=='') {
 		$the_time = mysql2date($timeformat, $post->post_date);
 	} else {
@@ -570,14 +613,14 @@ function the_time($d='', $echo = true) {
 }
 
 function the_weekday() {
-	global $weekday, $id, $post;
+	global $weekday, $post;
 	$the_weekday = $weekday[mysql2date('w', $post->post_date)];
 	$the_weekday = apply_filters('the_weekday', $the_weekday);
 	echo $the_weekday;
 }
 
 function the_weekday_date($before='',$after='') {
-	global $weekday, $id, $post, $day, $previousweekday;
+	global $weekday, $post, $day, $previousweekday;
 	$the_weekday_date = '';
 	if ($day != $previousweekday) {
 		$the_weekday_date .= $before;

@@ -42,7 +42,7 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 		$show_rss_icon = (!isset($options[2]))? 0 : $options[2];
 		$cat_date = (!isset($options[3]))? ($block_style ? 1 : 0) : $options[3];
 		$show_type = (!isset($options[4]))? 1 : $options[4];
-		global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache;
+		global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache, $wp_mod, $wp_base;
 		$id=1;
 		$use_cache = 1;
 
@@ -57,8 +57,11 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 			$no_comments = $num_of_list;
 			$comment_lenth = 30;
 			$skip_posts = 0;
-			$request = "SELECT ID, comment_ID, comment_content, comment_author,comment_date FROM {$wpdb->posts[$wp_id]}, {$wpdb->comments[$wp_id]} WHERE {$wpdb->posts[$wp_id]}.ID={$wpdb->comments[$wp_id]}.comment_post_ID AND post_status = 'publish' ";
-			$request .= "AND comment_approved = '1' ORDER BY {$wpdb->comments[$wp_id]}.comment_date DESC LIMIT $no_comments";
+			$request = "SELECT ID, comment_ID, comment_content, comment_author,comment_date FROM {$wpdb->posts[$wp_id]}, {$wpdb->comments[$wp_id]} WHERE {$wpdb->posts[$wp_id]}.ID={$wpdb->comments[$wp_id]}.comment_post_ID AND post_status = 'publish' AND comment_approved = '1' ";
+			if (get_xoops_option($wp_mod[$wp_id],'wp_use_xoops_comments') == 1) {
+				$request .= "AND (comment_content like '<trackback />%' OR comment_content like '<pingkback />%') ";
+			}
+			$request .= "ORDER BY {$wpdb->comments[$wp_id]}.comment_date DESC LIMIT $no_comments";
 			$lcomments = $wpdb->get_results($request);
 			$output = '';
 			$pdate = "";
@@ -101,7 +104,10 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 					$output .= "</li>\n";
 				}
 			}
-			$output .= "</ul>\n";	
+			$output .= "</ul>\n";
+			if ($cat_date) {
+				$output .= "</ul>\n";
+			}
 		} else {
 			$output = tkzy_get_recent_comments($num_of_list, $cat_date, $show_type);
 		}
@@ -122,7 +128,7 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 		$comment_lenth = 30;
 		$lcomments = $wpdb->get_results("SELECT ID, post_title, post_date, 
 		comment_ID, comment_author, comment_author_url, comment_author_email, comment_date, comment_content 
-		FROM {$wpdb->posts[$wp_id]}, {$wpdb->comments[$wp_id]} WHERE {$wpdb->posts[$wp_id]}.ID={$wpdb->comments[$wp_id]}.comment_post_ID 
+		FROM {$wpdb->posts[$wp_id]}, {$wpdb->comments[$wp_id]} WHERE {$wpdb->posts[$wp_id]}.ID={$wpdb->comments[$wp_id]}.comment_post_ID AND {$wpdb->comments[$wp_id]}.comment_approved='1'
 		ORDER BY {$wpdb->comments[$wp_id]}.comment_date DESC LIMIT $limit"); 
 		$output = ''; 
 		if($lcomments){ 
@@ -223,7 +229,7 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 		}
 
 		function b_wp'.$i.'_recent_comments_show($options) {
-			global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache;
+			global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache, $wp_mod, $wp_base;
 			$wp_id = "'.$i.'";
 			$wp_inblock = 1;
 			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");

@@ -112,12 +112,11 @@ function wp_kses_split2($string, $allowed_html, $allowed_protocols)
   if (!preg_match('%^<\s*(/\s*)?([a-zA-Z0-9]+)([^>]*)>?$%', $string, $matches))
     return '';
     # It's seriously malformed
-
   $slash = trim($matches[1]);
   $elem = $matches[2];
   $attrlist = $matches[3];
 
-  if (!is_array($allowed_html[strtolower($elem)]))
+  if (empty($allowed_html[strtolower($elem)]) || !is_array($allowed_html[strtolower($elem)]))
     return '';
     # They are using a not allowed HTML element
 
@@ -144,7 +143,7 @@ function wp_kses_attr($element, $attr, $allowed_html, $allowed_protocols)
 
 # Are any attributes allowed at all for this element?
 
-  if (count($allowed_html[strtolower($element)]) == 0)
+  if (empty($allowed_html[strtolower($element)]) || count($allowed_html[strtolower($element)]) == 0)
     return "<$element$xhtml_slash>";
 
 # Split it
@@ -557,9 +556,5 @@ function wp_filter_kses($data) {
 	global $allowedtags;
 	return wp_kses($data, $allowedtags);
 }
-
-// Filter untrusted content
-add_filter('comment_author', 'wp_filter_kses');
-add_filter('comment_text', 'wp_filter_kses');
 
 ?>

@@ -3,11 +3,10 @@ $HTTP_HOST = getenv('HTTP_HOST');  /* domain name */
 $REMOTE_ADDR = getenv('REMOTE_ADDR'); /* visitor's IP */
 $HTTP_USER_AGENT = getenv('HTTP_USER_AGENT'); /* visitor's browser */
 
-// Change to E_ALL for development/debugging
-//error_reporting(E_ALL ^ E_NOTICE);
 global $siteurl;
 
 if(!defined('WPINC')) define('WPINC', 'wp-includes');
+
 require_once (ABSPATH . WPINC . '/wp-db.php');
 // Table names
 $wpdb->posts[$wp_id]               = $table_prefix[$wp_id] . 'posts';
@@ -23,6 +22,7 @@ $wpdb->optiontypes[$wp_id]         = $table_prefix[$wp_id] . 'optiontypes';
 $wpdb->optionvalues[$wp_id]        = $table_prefix[$wp_id] . 'optionvalues';
 $wpdb->optiongroups[$wp_id]        = $table_prefix[$wp_id] . 'optiongroups';
 $wpdb->optiongroup_options[$wp_id] = $table_prefix[$wp_id] . 'optiongroup_options';
+$wpdb->postmeta[$wp_id]            = $table_prefix[$wp_id] . 'postmeta';
 
 $dogs = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]} WHERE 1=1");
 foreach ($dogs as $catt) {
@@ -30,30 +30,34 @@ foreach ($dogs as $catt) {
 }
 // This is the name of the include directory. No "/" allowed.
 
+require ('wp-ver.php');
 require_once (ABSPATH . WPINC . '/functions.php');
+require_once (ABSPATH . WPINC . '/wp-tickets.php');
 require_once (ABSPATH . WPINC . '/functions-formatting.php');
+require_once (ABSPATH . WPINC . '/functions-filter.php');
+if (get_settings('hack_file')) {
+	include_once ($wp_base[$wp_id] . '/my-hacks.php');
+}
 require ('wp-config-extra.php');
 require_once (ABSPATH . WPINC . '/template-functions.php');
 require_once (ABSPATH . WPINC . '/class-xmlrpc.php');
 require_once (ABSPATH . WPINC . '/class-xmlrpcs.php');
 require_once (ABSPATH . WPINC . '/links.php');
 require_once (ABSPATH . WPINC . '/kses.php');
+auto_upgrade();
 
-//setup the old globals from b2config.php
-//
 // We should eventually migrate to either calling
 // get_settings() wherever these are needed OR
 // accessing a single global $all_settings var
+
 if (!strstr($_SERVER['REQUEST_URI'], 'install.php')) {
-	$siteurl = XOOPS_URL.'/modules/wordpress'.(($wp_id=='-')?'':$wp_id);
-//	$siteurl = get_settings('siteurl');
-// 	$siteurl = preg_replace('|/+$|', '', $siteurl);
-	if (get_xoops_option('wordpress'.(($wp_id=='-')?'':$wp_id),'wp_use_xoops_smilies')) {
+	$siteurl = $wp_siteurl[$wp_id];
+	if (get_xoops_option($wp_mod[$wp_id],'wp_use_xoops_smilies')) {
 		$smilies_directory = XOOPS_URL."/uploads";
 	} else {
 		$smilies_directory = get_settings('smilies_directory');
 	}
-	//WordPressプラグインの互換性確保用
+	//WordPress･ﾗ･鬣ｰ･､･ﾟｴｹﾀｭｳﾎﾊﾝﾍﾑ
     $querystring_start = '?';
     $querystring_equal = '=';
     $querystring_separator = '&amp;';
@@ -63,15 +67,15 @@ if (!strstr($_SERVER['REQUEST_URI'], 'install.php')) {
 $cookiehash = md5($siteurl);
 
 require (ABSPATH . WPINC . '/vars.php');
-
+require (ABSPATH . WPINC . '/wp-filter-setup.php');
 if ($wp_inblock!=1) {
 	if (!defined('XOOPS_PULUGIN'.$wp_id)) {
 		define('XOOPS_PULUGIN'.$wp_id,1);
-		if (!strstr($_SERVER['PHP_SELF'], 'wp-admin/plugins.php') && get_settings('active_plugins')) {
-			$current_plugins = explode("\n", (get_settings('active_plugins')));
-			foreach ($current_plugins as $plugin) {
-				if (file_exists(ABSPATH . 'wp-content/plugins/' . $plugin)) {
-					include_once(ABSPATH . 'wp-content/plugins/' . $plugin);
+		if (get_settings('active_plugins')) {
+			$check_plugins = explode("\n", (get_settings('active_plugins')));
+			foreach ($check_plugins as $check_plugin) {
+				if (file_exists(ABSPATH . 'wp-content/plugins/' . $check_plugin)) {
+					include_once(ABSPATH . 'wp-content/plugins/' . $check_plugin);
 				}
 			}
 		}

@@ -34,7 +34,7 @@ if( ! defined( 'WP_ARCHIVES_MONTHLY_INCLUDED' ) ) {
 		$block_style =  ($options[0])?$options[0]:0;
 		$with_count =  ($options[1]==0)?false:true;
 
-		global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache;
+		global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache, $wp_mod, $wp_base;
 		
 		$id=1;
 		$use_cache = 1;
@@ -74,7 +74,7 @@ if( ! defined( 'WP_ARCHIVES_MONTHLY_INCLUDED' ) ) {
 		}
 
 		function b_wp'.$i.'_archives_monthly_show($options) {
-			global $wpdb, $wp_id, $wp_inblock, $use_cache;
+			global $wpdb, $wp_id, $wp_inblock, $use_cache, $wp_mod, $wp_base;
 
 			$wp_id = "'.$i.'";
 			$wp_inblock = 1;

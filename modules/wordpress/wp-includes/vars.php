@@ -52,14 +52,14 @@ $wp_htmltrans = array_flip(get_html_translation_table(HTML_ENTITIES));
 $wp_htmltrans['<'] = '<';	# preserve HTML
 $wp_htmltrans['>'] = '>';	# preserve HTML
 $wp_htmltransbis = array(
-	'�' => '&#8211;',
-	'�' => '&#8212;',
-	'�' => '&#8216;',
-	'�' => '&#8217;',
-	'�' => '&#8220;',
-	'�' => '&#8221;',
-	'�' => '&#8226;',
-	'�' => '&#8364;',
+	'–' => '&#8211;',
+	'—' => '&#8212;',
+	'‘' => '&#8216;',
+	'’' => '&#8217;',
+	'“' => '&#8220;',
+	'”' => '&#8221;',
+	'•' => '&#8226;',
+	'€' => '&#8364;',
 	'&lt;' => '&#60;',	# preserve fake HTML
 	'&gt;' => '&#62;',	# preserve fake HTML
 	'&amp;' => '&#038;',	# preserve fake HTML
@@ -189,15 +189,15 @@ $wp_gecko_correction['in'] = array(
 	'/\‘/', '/\’/', '/\“/', '/\”/',
 	'/\•/', '/\–/', '/\—/', '/\Ω/',
 	'/\β/', '/\γ/', '/\θ/', '/\λ/',
-	'/\π/', '/\′/', '/\″/', '/\�/',
-	'/\€/', '/\ /'
+	'/\π/', '/\′/', '/\″/', '/\∠/',
+	'/\€/'
 );
 $wp_gecko_correction['out'] = array(
 	'&8216;', '&rsquo;', '&ldquo;', '&rdquo;',
 	'&bull;', '&ndash;', '&mdash;', '&Omega;',
 	'&beta;', '&gamma;', '&theta;', '&lambda;',
 	'&pi;', '&prime;', '&Prime;', '&ang;',
-	'&euro;', '&#8201;'
+	'&euro;'
 );
 
 # server detection
@@ -290,15 +290,4 @@ foreach($wpsmiliestrans[$wp_id] as $smiley => $img) {
 	$wp_smiliesreplace[$wp_id][] = " <img src='$smilies_directory/$img' alt='$smiley_masked' />";
 }
 
-
-// Some default filters
-add_filter('category_description', 'wptexturize');
-add_filter('list_cats', 'wptexturize');
-add_filter('comment_author', 'wptexturize');
-add_filter('comment_text', 'wptexturize');
-add_filter('single_post_title', 'wptexturize');
-add_filter('the_title', 'wptexturize');
-add_filter('the_content', 'wptexturize');
-add_filter('the_excerpt', 'wptexturize');
-//add_action('wp_head', 'doGeoUrlHeader');
 ?>

@@ -1,20 +1,21 @@
 <?php /* RDF 1.0 generator, original version by garym@teledyn.com */
 $blog = 1; // enter your blog's ID
 $doing_rss = 1;
-header("Content-type: application/xml");
-include_once (dirname(__FILE__)."/../../mainfile.php");
+require(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
-if ($_GET['num']) $showposts = $_GET['num'];
+param('num','integer');
+if (isset($num)) $showposts = $num;
 require('wp-blog-header.php');
+
 if (isset($showposts) && $showposts) {
     $showposts = (int)$showposts;
 	$posts_per_page = $showposts;
 } else {
 	$posts_per_page = get_settings('posts_per_rss');
 }
-
 add_filter('the_content', 'trim');
 $rss_charset = wp_get_rss_charset();
+header("Content-type: application/xml");
 ?>
 <?php echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>'; ?>
 <!-- generator="wordpress/<?php echo $wp_version ?>" -->
@@ -32,11 +33,7 @@ $rss_charset = wp_get_rss_charset();
 	<description><?php bloginfo_rss('description') ?></description>
 	<dc:language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></dc:language>
 	<dc:date><?php echo gmdate('Y-m-d\TH:i:s'); ?></dc:date>
-<?php if (function_exists('mb_convert_encoding')) { ?>
-	<dc:creator><?php echo antispambot(mb_convert_encoding(get_settings('admin_email'),$rss_charset,$blog_charset)) ?></dc:creator>
-<?php } else { ?>
-	<dc:creator><?php echo antispambot(get_settings('admin_email')) ?></dc:creator>
-<?php } ?>
+	<dc:creator><?php echo antispambot(mb_conv(get_settings('admin_email'),$rss_charset,$blog_charset)) ?></dc:creator>
 	<admin:generatorAgent rdf:resource="http://wordpress.xwd.jp/?v=<?php echo $wp_version ?>"/>
 	<admin:errorReportsTo rdf:resource="mailto:<?php echo antispambot(get_settings('admin_email')) ?>"/>
 	<sy:updatePeriod>hourly</sy:updatePeriod>

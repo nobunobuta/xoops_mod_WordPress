@@ -7,13 +7,13 @@ function get_the_category($id=false) {
         $id = $post->ID;
     }
 
-    if ($category_cache[$wp_id][$id]) {
+    if (isset($category_cache[$wp_id])&&isset($category_cache[$wp_id][$id])) {
         return $category_cache[$wp_id][$id];
 	} else {
 		$categories = $wpdb->get_results("
 			SELECT category_id, cat_name, category_nicename, category_description, category_parent
 			FROM  {$wpdb->categories[$wp_id]}, {$wpdb->post2cat[$wp_id]}
-			WHERE {$wpdb->post2cat[$wp_id]}.category_id = cat_ID AND {$wpdb->post2cat[$wp_id]}.post_id = ($id'
+			WHERE {$wpdb->post2cat[$wp_id]}.category_id = cat_ID AND {$wpdb->post2cat[$wp_id]}.post_id = '$id'
 			");
 
 		return $categories;
@@ -21,7 +21,7 @@ function get_the_category($id=false) {
 }
 
 function get_category_link($echo = false, $category_id, $category_nicename) {
-	global $wpdb, $post, $siteurl,$cache_categories, $wp_id;
+	global $wpdb, $post, $siteurl,$cache_categories, $wp_id,$wp_mod;
 	$category_id = intval($category_id);
 	$cat_ID = $category_id;
 	$permalink_structure = get_settings('permalink_structure');
@@ -43,18 +43,19 @@ function get_category_link($echo = false, $category_id, $category_nicename) {
 	return $link;
 }
 
-function get_category_rss_link($echo = false, $category_id, $category_nicename) {
+function get_category_rss_link($echo = false, $category_id, $category_nicename, $feed='feed') {
 	global $siteurl;
 	$category_id = intval($category_id);
 	$cat_ID = $category_id;
 	$permalink_structure = get_settings('permalink_structure');
 
 	if ('' == $permalink_structure) {
-	   $file = $siteurl . '/wp-rss2.php';
+	   if ($feed=='feed') $feed='rss2';
+	   $file = $siteurl . '/wp-'.$feed.'.php';
 	   $link = $file .'?cat='. $category_id;
 	} else {
 	$link = get_category_link(0, $category_id, $category_nicename);
-	       $link = $link . "feed/";
+	       $link = $link . "$feed/";
 	}
 
 	if ($echo) echo $link;
@@ -69,7 +70,6 @@ function the_category($seperator = '', $parents='') {
     if ('' == $seperator) {
         $thelist .= '<ul class="post-categories">';
         foreach ($categories as $category) {
-//            $category->cat_name = stripslashes($category->cat_name);
             $category->cat_name = $category->cat_name;
             $thelist .= "\n\t<li>";
             switch(strtolower($parents)) {
@@ -95,7 +95,6 @@ function the_category($seperator = '', $parents='') {
     } else {
         $i = 0;
         foreach ($categories as $category) {
-//            $category->cat_name = stripslashes($category->cat_name);
             $category->cat_name = $category->cat_name;
             if (0 < $i) $thelist .= $seperator . ' ';
             switch(strtolower($parents)) {
@@ -122,7 +121,7 @@ function the_category_rss($type = 'rss') {
     $categories = get_the_category();
     $the_list = '';
     foreach ($categories as $category) {
-        $category->cat_name = stripslashes(convert_chars($category->cat_name));
+        $category->cat_name = convert_chars($category->cat_name);
         if ('rdf' == $type) {
             $the_list .= "\n\t<dc:subject>$category->cat_name</dc:subject>";
         } else {
@@ -140,12 +139,12 @@ function get_the_category_by_ID($cat_ID) {
     } else {
         $cat_name = $cache_categories[$wp_id][$cat_ID]->cat_name;
     }
-    return(stripslashes($cat_name));
+    return($cat_name);
 }
 
 function get_category_parents($id, $link = FALSE, $separator = '/', $nicename = FALSE){
     global $tablecategories, $cache_categories,$wp_id;
-    $chain = "";
+    $chain = '';
     $parent = $cache_categories[$wp_id][$id];
     if ($nicename) {
         $name = $parent->category_nicename;
@@ -174,17 +173,23 @@ function get_category_children($id, $before = '/', $after = '') {
     return $chain;
 }
 	
+// Deprecated.
 function the_category_ID($echo = true) {
-    global $post;
-    if ($echo)
-        echo $post->post_category;
-    else
-        return $post->post_category;
+    // Grab the first cat in the list.
+    $categories = get_the_category();
+    $cat = $categories[0]->category_id;
+    
+    if ($echo) echo $cat;
+
+    return $cat;
 }
 
+// Deprecated.
 function the_category_head($before='', $after='') {
-    global $post, $currentcat, $previouscat, $dateformat, $newday;
-    $currentcat = $post->post_category;
+    global $currentcat, $previouscat;
+    // Grab the first cat in the list.
+    $categories = get_the_category();
+    $currentcat = $categories[0]->category_id;
     if ($currentcat != $previouscat) {
         echo $before;
         echo get_the_category_by_ID($currentcat);
@@ -203,13 +208,11 @@ function category_description($category = 0) {
 
 // out of the WordPress loop
 function dropdown_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_order = 'asc',
-        $optiondates = 0, $optioncount = 0, $hide_empty = 1, $optionnone=FALSE,
-        $selected=0, $hide=0) {
+        $optiondates = 0, $optioncount = 0, $hide_empty = 0, $optionnone=false,
+        $selected=0, $hide=0, $hierarchical=true, $child_of=0, $link=false, $level=0) {
     global $wpdb, $wp_id,$siteurl,$cat;
-//    if (($file == 'blah') || ($file == '')) $file = $siteurl . '/index.php';
 
     if (!$selected) $selected=$cat;
-    $sort_column = 'cat_'.$sort_column;
 
     $query = "
         SELECT cat_ID, cat_name, category_nicename,category_parent, category_description cat_description,
@@ -224,11 +227,12 @@ function dropdown_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_
         $query .= get_category_children($hide, " AND cat_ID != ");
     }
     $query .=" GROUP BY cat_ID";
-    if (intval($hide_empty) == 1) $query .= " HAVING cat_count > 0";
-    $query .= " ORDER BY $sort_column $sort_order, post_date DESC";
-
+    $query .= " ORDER BY cat_$sort_column $sort_order, post_date DESC";
     $categories = $wpdb->get_results($query);
-    echo "<select name='cat' class='postform'>\n";
+    
+    if ($level==0) {
+    	echo "<select name='cat' class='postform'>\n";
+    }
     if (intval($optionall) == 1) {
         $all = apply_filters('list_cats', $all);
         echo "\t<option value='all'>$all</option>\n";
@@ -236,18 +240,30 @@ function dropdown_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_
     if (intval($optionnone) == 1) echo "\t<option value='0'>None</option>\n";
     if ($categories) {
         foreach ($categories as $category) {
-            $cat_name = apply_filters('list_cats', $category->cat_name);
-            echo "\t<option value=\"".$category->cat_ID."\"";
-            if ($category->cat_ID == $selected)
-                echo ' selected="selected"';
-            echo '>';
-            echo stripslashes($cat_name);
-            if (intval($optioncount) == 1) echo '&nbsp;&nbsp;('.$category->cat_count.')';
-            if (intval($optiondates) == 1) echo '&nbsp;&nbsp;'.$category->lastday.'/'.$category->lastmonth;
-            echo "</option>\n";
+        	if (!$hierarchical || ($child_of == $category->category_parent)) {
+				if ((intval($hide_empty) != 1) || ($category->cat_count>0)) {
+					$pad = str_repeat('&#8211; ', $level);
+					$cat_name = apply_filters('list_cats', $pad.$category->cat_name);
+					if ($link) {
+						echo "\t<option value=\"".get_category_link(false,$category->cat_ID,$category->category_nicename)."\"";
+					} else {
+						echo "\t<option value=\"".$category->cat_ID."\"";
+					}
+					if ($category->cat_ID == $selected)
+					    echo ' selected="selected"';
+					echo '>';
+					echo $cat_name;
+					if (intval($optioncount) == 1) echo '&nbsp;&nbsp;('.$category->cat_count.')';
+					if (intval($optiondates) == 1) echo '&nbsp;&nbsp;'.$category->lastday.'/'.$category->lastmonth;
+					echo "</option>\n";
+				}
+				dropdown_cats(0,'',$sort_column, $sort_order,$optiondates,$optioncount,$hide_empty,$optionnone,$selected,$hide,$hierarchical=true, $category->cat_ID, $link, $level+1);
+			}
         }
     }
-    echo "</select>\n";
+    if ($level==0) {
+	    echo "</select>\n";
+	}
 }
 
 // out of the WordPress loop
@@ -445,5 +461,4 @@ function the_category_unicode() {
 	$category = apply_filters('the_category_unicode', $category);
 	echo convert_chars($category, 'unicode');
 }
-
 ?>

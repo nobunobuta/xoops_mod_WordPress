@@ -63,7 +63,7 @@ function dolly_css() {
 margin: 0; padding: 0;
 		right: 3em;
 		font-size: 20px;
-		color: #666;
+		color: #888;
 	}
 	</style>
 	";

@@ -1,7 +1,10 @@
-<?php $blog = 1; // enter your blog's ID
+<?php
+$blog = 1; // enter your blog's ID
 header('Content-type: text/xml');
+include('wp-config.php');
 include('wp-blog-header.php');
-?><?php echo "<?xml version=\"1.0\" encoding=\"$blog_charset\"?".">\n"; ?>
+?>
+<?php echo "<?xml version=\"1.0\" encoding=\"$blog_charset\"?".">\n"; ?>
 <travels>
 <?php
 $start = count($posts)-1;

@@ -45,7 +45,7 @@ if( ! defined( 'WP_AUTHORS_INCLUDED' ) ) {
 		$idmode = (empty($options[1]))? '' : $options[1];
 		$show_rss2_icon = (empty($options[2]))? 0 : $options[2];
 
-		global $wpdb, $siteurl,  $wp_id, $wp_inblock ,$user_cache;
+		global $wpdb, $siteurl,  $wp_id, $wp_mod, $wp_base, $wp_inblock ,$user_cache;
 
 		$id=1;
 		$use_cache=1;
@@ -79,7 +79,7 @@ if( ! defined( 'WP_AUTHORS_INCLUDED' ) ) {
 		}
 
 		function b_wp'.$i.'_authors_show($options) {
-		global $wpdb, $siteurl,  $wp_id, $wp_inblock ,$user_cache;
+		global $wpdb, $siteurl,  $wp_id, $wp_mod, $wp_base, $wp_inblock ,$user_cache;
 			$wp_id = "'.$i.'";
 			$wp_inblock = 1;
 			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");

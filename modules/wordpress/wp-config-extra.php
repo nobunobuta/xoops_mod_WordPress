@@ -1,6 +1,6 @@
 <?php
 // this file contains customizable arrays for smilies, weekdays and month names.
-global $xoopsConfig;
+global $xoopsConfig, $wp_mod, $wp_base;
 if ( file_exists(dirname(__FILE__)."/language/".$xoopsConfig['language']."/main.php") ) {
 	include_once dirname(__FILE__)."/language/".$xoopsConfig['language']."/main.php";
 } else {
@@ -39,7 +39,7 @@ $wp_month_format = _WP_MONTH_FORMAT;
 
 // here's the conversion table, you can modify it if you know what you're doing
 global $wpsmiliestrans;
-if (get_xoops_option('wordpress'.(($wp_id=='-')?'':$wp_id),'wp_use_xoops_smilies')) {
+if (get_xoops_option($wp_mod[$wp_id],'wp_use_xoops_smilies')) {
 	// Get smilies infomation from XOOPS DB
 	$db =& Database::getInstance();
 	$getsmiles = $db->query("SELECT id, code, smile_url FROM ".$db->prefix("smiles")." ORDER BY id");
@@ -99,12 +99,5 @@ if (get_xoops_option('wordpress'.(($wp_id=='-')?'':$wp_id),'wp_use_xoops_smilies
 	    ':mrgreen:' => 'icon_mrgreen.gif',
 	);
 }
-
-if (file_exists(dirname(__FILE__).'/themes/'.$xoopsConfig['theme_set'].'/wp-config-custom.php')) {
-	$themes = $xoopsConfig['theme_set'];
-} else {
-	$themes = "default";
-}
-include(dirname(__FILE__).'/themes/'.$themes.'/wp-config-custom.php');
-
+include(get_custom_path('wp-config-custom.php'));
 ?>

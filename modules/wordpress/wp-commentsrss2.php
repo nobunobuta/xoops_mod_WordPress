@@ -1,16 +1,18 @@
 <?php 
-
 // Contributed by Alex King
 // http://www.alexking.org/software/b2/
 
 /* These first lines are the first part of a WordPress template.
 		   In every template you do, you got to copy them before the CafeLog 'loop' */
-$blog=1; // enter your blog's ID
-header("Content-type: application/xml");
-include_once (dirname(__FILE__)."/../../mainfile.php");
+$blog = 1; // enter your blog's ID
+$doing_rss = 1;
+require(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
+param('num','integer');
+if (isset($num)) $showposts = $num;
 require('wp-blog-header.php');
 $rss_charset = wp_get_rss_charset();
+header("Content-type: application/xml");
 echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>';
 ?>
 <!-- generator="wordpress/<?php echo $wp_version ?>" -->
@@ -53,14 +55,13 @@ foreach ($posts as $post) { start_wp();
 												   {$wpdb->posts[$wp_id]}.post_password
 											FROM {$wpdb->comments[$wp_id]} 
 											LEFT JOIN {$wpdb->posts[$wp_id]} ON comment_post_id = id
-											WHERE comment_post_ID = '$id'
+											WHERE comment_post_ID = '$wp_post_id'
 											AND {$wpdb->comments[$wp_id]}.comment_approved = '1'
 											AND {$wpdb->posts[$wp_id]}.post_status = 'publish'
 											AND post_date < '".date("Y-m-d H:i:s")."' 
 											ORDER BY comment_date 
 											LIMIT ".get_settings('posts_per_rss'));
-		}
-		else { // if no post id passed in, we'll just ue the last 10 comments.
+		} else { // if no post id passed in, we'll just ue the last 10 comments.
 			$comments = $wpdb->get_results("SELECT comment_ID,
 												   comment_author,
 												   comment_author_email,

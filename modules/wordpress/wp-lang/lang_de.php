@@ -11,36 +11,36 @@ URL : http://wordpress.xwd.jp/
 -------------------------------------- */
 
 /* File Name wp-settings.php */
-define('_LANG_WA_SETTING_GUIDE','<p>Anscheinend ist WP noch nicht installiert. Ausführen: <a href=\'wp-admin/install.php\'>install.php</a>.</p>');
+define('_LANG_WA_SETTING_GUIDE','<p>Anscheinend ist WP noch nicht installiert. Ausfôþren: <a href=\'wp-admin/install.php\'>install.php</a>.</p>');
 
 /* File Name wp-blog-header.php */
 define('_LANG_WA_HEADER_GUIDE1','<p>Die Datei <code>wp-config.php</code> scheint nicht zu exisitiern. Ohne diese Datei geht es nicht weiter. Hilfe?: <a href=\'http://wordpress.org/docs/faq/#wp-config\'>Gibt es hier</a>. Die Datei <code>wp-config.php</code> kann <a href=\'wp-admin/install-config.php\'>mit Hilfe des Webinterfaces erstellt werden</a>, funktioniert aber nicht immer mit allen Setups. Am sichersten ist es die Datei manuell zu erstellen.</p>');
 
 /* File Name wp-admin/install-config.php */
-define('_LANG_WA_CONFIG_GUIDE1','<p>Die Datei \'wp-config.php\' exisitiert bereits. Sollte es notwendig sein, Parameter in dieser Datei zu ändern, ist die alte Datei vorher zu löschen.</p>');
+define('_LANG_WA_CONFIG_GUIDE1','<p>Die Datei \'wp-config.php\' exisitiert bereits. Sollte es notwendig sein, Parameter in dieser Datei zu ôþdern, ist die alte Datei vorher zu lôþchen.</p>');
 define('_LANG_WA_CONFIG_GUIDE2','<p>Achtung, eine wp-config-sample.php ist notwendig um fortzufahren. Bitte erneut uploaden.<p>');
-define('_LANG_WA_CONFIG_GUIDE3','<p>Achtung, in das Verzeichnis kann nicht geschrieben werden. Entweder muss die Verzeichnisberechtigung geändert werden, oder die Datei wp-config.php manuell erstellt werden.</p>');
-define('_LANG_WA_CONFIG_GUIDE4','Willkommen bei WordPress. Bevor es losgehen kann, sind einige Daten bzgl. der Datenbank notwendig. Folgende Informationen müssen bekannt sein:');
+define('_LANG_WA_CONFIG_GUIDE3','<p>Achtung, in das Verzeichnis kann nicht geschrieben werden. Entweder muss die Verzeichnisberechtigung geôþdert werden, oder die Datei wp-config.php manuell erstellt werden.</p>');
+define('_LANG_WA_CONFIG_GUIDE4','Willkommen bei WordPress. Bevor es losgehen kann, sind einige Daten bzgl. der Datenbank notwendig. Folgende Informationen môþsen bekannt sein:');
 define('_LANG_WA_CONFIG_DATABASE','Datenbank Name');
 define('_LANG_WA_CONFIG_USERNAME','Datenbank User');
 define('_LANG_WA_CONFIG_PASSWORD','Database Passwort');
 define('_LANG_WA_CONFIG_LOCALHOST','Datenbank Host');
-define('_LANG_WA_CONFIG_PREFIX','Tabellen Präfix');
-define('_LANG_WA_CONFIG_GUIDE5','<strong>Sollte aus irgendeinem Grund die automatische Generierung nicht funktionieren besteht kein Grung zur Besorgnis. Alles was diese Datei macht, ist das Schreiben der Datenbank Informationen in eine Konfigurationsdatei. Es besteht die Option die Datei <code>wp-config-sample.php</code> in einem Texteditor zu modifizieren, die fehlenden Informationen einzutragen und die Datei als <code>wp-config.php</code> abzuspeichern. </strong></p><p>In den meisten Fällen können die Informationen vom ISP bezogen werden. Sollten die Informationen nicht vorliegen, kann die Installation erst dann fortgeführt werden, wenn diese Informationen vorliegen. Ansonsten kann es jetzt <a href="install-config.php?step=1">endlich losgehen</a>! ');
+define('_LANG_WA_CONFIG_PREFIX','Tabellen Prôþix');
+define('_LANG_WA_CONFIG_GUIDE5','<strong>Sollte aus irgendeinem Grund die automatische Generierung nicht funktionieren besteht kein Grung zur Besorgnis. Alles was diese Datei macht, ist das Schreiben der Datenbank Informationen in eine Konfigurationsdatei. Es besteht die Option die Datei <code>wp-config-sample.php</code> in einem Texteditor zu modifizieren, die fehlenden Informationen einzutragen und die Datei als <code>wp-config.php</code> abzuspeichern. </strong></p><p>In den meisten Fôþlen kôþnen die Informationen vom ISP bezogen werden. Sollten die Informationen nicht vorliegen, kann die Installation erst dann fortgefôþrt werden, wenn diese Informationen vorliegen. Ansonsten kann es jetzt <a href="install-config.php?step=1">endlich losgehen</a>! ');
 define('_LANG_WA_CONFIG_GUIDE6','Bitte die Verbindungsdaten zur Datenbank eingeben. Falls unbekannt, kontaktiere Deinen Administrator. ');
 define('_LANG_WA_CONFIG_GUIDE7','<small>Name der Datenbank in der WP installiert werden soll. </small>');
 define('_LANG_WA_CONFIG_GUIDE8','<small>MySQL Username</small>');
 define('_LANG_WA_CONFIG_GUIDE9','<small>...und MySQL Passwort.</small>');
-define('_LANG_WA_CONFIG_GUIDE10','<small>In 99% aller Fälle muss dieser Wert nicht geändert werden.</small>');
-define('_LANG_WA_CONFIG_GUIDE11','<small>Sollen multiple WP Installationen in einer einzigen Datenbnak laufen, bitte diesen Wert ändern.</small>');
-define('_LANG_WA_CONFIG_GUIDE12','Ok mein Freund! Diesen Teil der Installation kannst Du jetzt vergessen. WordPress kann nämlich mit der Datenbank kommunizieren. Wenn Du soweit bist, geht es jetzt los mit <a href="install.php">der Installation!</a>');
+define('_LANG_WA_CONFIG_GUIDE10','<small>In 99% aller Fôþle muss dieser Wert nicht geôþdert werden.</small>');
+define('_LANG_WA_CONFIG_GUIDE11','<small>Sollen multiple WP Installationen in einer einzigen Datenbnak laufen, bitte diesen Wert ôþdern.</small>');
+define('_LANG_WA_CONFIG_GUIDE12','Ok mein Freund! Diesen Teil der Installation kannst Du jetzt vergessen. WordPress kann nôþlich mit der Datenbank kommunizieren. Wenn Du soweit bist, geht es jetzt los mit <a href="install.php">der Installation!</a>');
 
 
 /* File Name wp-include/wp-db.php */
-define('_LANG_WA_WPDB_GUIDE1','<strong>Fehler beim Aufbau einer Datenbankverbindung!</strong> Wahrscheinlich stimmen die Verbindungsadten in der Datei <code>wp-config.php</code> nicht. Bitte überprüfen und nochmals versuchen.');
+define('_LANG_WA_WPDB_GUIDE1','<strong>Fehler beim Aufbau einer Datenbankverbindung!</strong> Wahrscheinlich stimmen die Verbindungsadten in der Datei <code>wp-config.php</code> nicht. Bitte ôþerprôþen und nochmals versuchen.');
 define('_LANG_WA_WPDB_GUIDE2','Stimmt die User/Passwort Kombination?');
 define('_LANG_WA_WPDB_GUIDE3','Stimmt der Hostname?');
-define('_LANG_WA_WPDB_GUIDE4','Läuft der Datenbankserver?');
+define('_LANG_WA_WPDB_GUIDE4','Lôþft der Datenbankserver?');
 
 /* File Name wp-include/functions.php */
 define('_LANG_F_TIMESTAMP','Timestamp editieren');
@@ -53,7 +53,7 @@ define('_LANG_F_ALL_PINGBACKS','Hier kannst Du alle Pingbacks zu diesem Post seh
 define('_LANG_F_COMMENT_POST','Es gibt einen neuen Kommentar auf das Posting');
 define('_LANG_F_WAITING_APPROVAL','das freigegeben werden muss.');
 define('_LANG_F_APPROVAL_VISIT','Um den Kommentar freizugeben, hier klicken:');
-define('_LANG_F_DELETE_VISIT','Um den Kommentar zu löschen, hier klicken:');
+define('_LANG_F_DELETE_VISIT','Um den Kommentar zu lôþchen, hier klicken:');
 define('_LANG_F_PLEASE_VISIT','Es warten neue Kommentare auf die Freigabe. Weiter im Mod-Panel:');
 
 /* File Name wp-register.php */
@@ -61,14 +61,14 @@ define('_LANG_R_ENTER_LOGIN','<strong>FEHLER</strong>: Bitte Login angeben.');
 define('_LANG_R_PASS_TWICE','<strong>FEHLER</strong>: Bitte Passwort zweimal eingeben.');
 define('_LANG_R_SAME_PASS','<strong>FEHLER</strong>: Bitte dasgleiche Passwort in beide Felder eingeben.');
 define('_LANG_R_MAIL_ADDRESS','<strong>FEHLER</strong>: Bitte Emailadresse eingeben.');
-define('_LANG_R_ADDRESS_CORRECT','<strong>FEHLER</strong>: Die Emailadresse ist ungültig.');
-define('_LANG_R_CHOOSE_ANOTHER','<strong>FEHLER</strong>: Dieses Login ist bereits vergeben, bitte ein Anderes wählen.');
+define('_LANG_R_ADDRESS_CORRECT','<strong>FEHLER</strong>: Die Emailadresse ist ungôþtig.');
+define('_LANG_R_CHOOSE_ANOTHER','<strong>FEHLER</strong>: Dieses Login ist bereits vergeben, bitte ein Anderes wôþlen.');
 define('_LANG_R_REGISTER_CONTACT','<strong>FEHLER</strong>: Registrierung fehlgeschlagen... bitte wende Dich an den Webmaster!');
 define('_LANG_R_USER_REGISTRATION','Neue User Registrierung in Blog');
 define('_LANG_R_MAIL_REGISTRATION','Neue User Registrierung');
 define('_LANG_R_R_COMPLETE','Registrierung abgeschlossen');
 define('_LANG_R_R_DISABLED','Registrierung deaktiviert');
-define('_LANG_R_R_CLOSED','User Registrierungen sind zur Zeit nicht möglich.');
+define('_LANG_R_R_CLOSED','User Registrierungen sind zur Zeit nicht môþlich.');
 define('_LANG_R_R_REGISTRATION','Registrierung');
 define('_LANG_R_USER_LOGIN','Login:');
 define('_LANG_R_USER_PASSWORD','Passwort:');
@@ -83,9 +83,9 @@ define('_LANG_L_RECEIVE_PASSWORD','Bitte gib deine Informationen ein. Wir senden
 define('_LANG_L_EXIST_SORRY','Leider existiert der User nicht in unserer Datenbank. Stimmt der Username oder die Mailadresse nicht? <a href="wp-login.php?action=lostpassword">Versuch\'s nochmal</a>.');
 define('_LANG_L_YOUR_LOGPASS','Dein WeBlog Login/Passwort');
 define('_LANG_L_NOT_SENT','Email konnte nicht zugesandt werden.');
-define('_LANG_L_DISABLED_FUNC','M&ouml;glicher Grund: Dein Host unterstützt die mail()-Funktion nicht...');
+define('_LANG_L_DISABLED_FUNC','M&ouml;glicher Grund: Dein Host unterstôþzt die mail()-Funktion nicht...');
 define('_LANG_L_SUCCESS_SEND',' : Email erfolgreich versandt.');
-define('_LANG_L_CLICK_ENTER','Hier klicken für Login!');
+define('_LANG_L_CLICK_ENTER','Hier klicken fôþ Login!');
 define('_LANG_L_WRONG_SESSION','Fehler: falsches Login/Passwort');
 define('_LANG_L_BACK_BLOG','Zur&uuml;ck zum DevBlog?');
 define('_LANG_L_WP_RESIST','Registrieren?');
@@ -133,7 +133,7 @@ define('_LANG_E_LATEST_COMMENTS','Neueste Kommentare');
 define('_LANG_E_AWAIT_MODER','Freizugebende Kommentare');
 define('_LANG_E_SHOW_POSTS','Zeige Posts:');
 define('_LANG_E_TITLE_COMMENTS','Kommentare');
-define('_LANG_E_FILL_REQUIRED','Fehler: bitte die notwendigen Felder ausfüllen (Name & Kommentar)');
+define('_LANG_E_FILL_REQUIRED','Fehler: bitte die notwendigen Felder ausfôþlen (Name & Kommentar)');
 define('_LANG_E_TITLE_LEAVECOM','Kommentar abegeben');
 define('_LANG_E_RESULTS_FOUND','Kein(e) Treffer gefunden.');
 
@@ -169,6 +169,7 @@ define('_LANG_EFA_POST_STATUS','Post Status');
 define('_LANG_EFA_AD_COMMENTS','Kommentare');
 define('_LANG_EFA_AD_PINGS','Pings');
 define('_LANG_EFA_POST_PASSWORD','Post Password');
+define('_LANG_EFA_POST_CUSTOM','Custom Field');
 define('_LANG_EFA_POST_EXCERPT','Ausschnitt');
 define('_LANG_EFA_POST_LATITUDE','Latitude:');
 define('_LANG_EFA_POST_LONGITUDE','Longitude:');
@@ -309,6 +310,20 @@ define('_LANG_WLM_EDIT_LINK','Link editieren:');
 define('_LANG_WLM_SAVE_CHANGES','&Auml;nderungen &uuml;bernehmen');
 define('_LANG_WLM_EDIT_CANCEL','L&ouml;schen');
 
+/* File Name wp-admin/menu.php */
+define('_LANG_ADMIN_MENU_WRITE','Write');
+define('_LANG_ADMIN_MENU_EDIT','Edit');
+define('_LANG_ADMIN_MENU_CATE','Categories');
+define('_LANG_ADMIN_MENU_LINK','Links');
+define('_LANG_ADMIN_MENU_USER','Users');
+define('_LANG_ADMIN_MENU_OPTION','Options');
+define('_LANG_ADMIN_MENU_PLUG','Plugins');
+define('_LANG_ADMIN_MENU_TEMP','Templates');
+define('_LANG_ADMIN_MENU_UPLOAD','Upload');
+define('_LANG_ADMIN_MENU_PROFILE','Profile');
+define('_LANG_ADMIN_MENU_VIEW','View site &raquo;');
+define('_LANG_ADMIN_MENU_LOGOUT','Logout (%s)');
+
 /* File Name wp-admin/moderation.php */
 define('_LANG_WPM_USER_LEVEL','Dein Level ist nicht hoch genug um Kommentare zu moderieren. Frage den BlogAdmin f&uuml;r eine Promotion :)');
 define('_LANG_WPM_LATE_POSTS','Posts');
@@ -448,7 +463,7 @@ define('_LANG_WUS_ADD_TWICE','Passwort (2x) ');
 define('_LANG_WPCM_LOAD_DIRECTLY','Bitte diese Seite nicht direkt laden. Danke!');
 define('_LANG_WPCM_ENTER_PASS','<p>Passwort eingeben um Kommentar zu schreiben.<p>');
 define('_LANG_WPCM_COM_TITLE','Kommentare');
-define('_LANG_WPCM_COM_RSS','<abbr title="Really Simple Syndication">RSS</abbr> Feed für Kommentare zu diesem Post.');
+define('_LANG_WPCM_COM_RSS','<abbr title="Really Simple Syndication">RSS</abbr> Feed fôþ Kommentare zu diesem Post.');
 define('_LANG_WPCM_COM_TRACK','Der <acronym title="Uniform Resource Identifier">URI</acronym> um diesen Eintrag zu verlinken lautet: ');
 define('_LANG_WPCM_COM_YET','Bislang keine Kommentare.');
 define('_LANG_WPCM_COM_LEAVE','Schreibe einen Kommentar');
@@ -546,7 +561,7 @@ define('_LANG_WAO_READING_FEEDS','Syndication Feeds');
 define('_LANG_WAO_READING_ARTICLE','Zeige f&uuml;r jeden Artikel:');
 define('_LANG_WAO_READING_ENCODE','Encoding f&uuml;r Seiten und Feeds:');
 define('_LANG_WAO_READING_CHARACTER','Das Character Encoding in dem das Blog geschrieben wird (UTF-8 empfohlen: <a href="http://developer.apple.com/documentation/macos8/TextIntlSvcs/TextEncodingConversionManager/TEC1.5/TEC.b0.html">Liste</a>)');
-define('_LANG_WAO_READING_GZIP','WP soll Beitr&auml;ge komprimieren (gzip) falls der Browser dies unterstützt');
+define('_LANG_WAO_READING_GZIP','WP soll Beitr&auml;ge komprimieren (gzip) falls der Browser dies unterstôþzt');
 define('_LANG_WAO_READING_BTNTXT','Update Optionen');
 
 /* Cheatin&#8217; uh? */

@@ -27,7 +27,7 @@ $post_autobr = 0;
 $post_default_title = ""; // posts submitted via the xmlrpc interface get that title
 $post_default_category = 1; // posts submitted via the xmlrpc interface go into that category
 
-$xmlrpc_logging = 0;
+$xmlrpc_logging = $wp_debug;
 
 function logIO($io,$msg) {
 	global $xmlrpc_logging;
@@ -552,9 +552,10 @@ function b2getcategories($m) {
 			$cat_name = $row->cat_name;
 			$cat_ID = $row->cat_ID;
 
-			$struct[$i] = new xmlrpcval(array("categoryID" => new xmlrpcval($cat_ID),
-										  "categoryName" => new xmlrpcval(mb_conv($cat_name,"UTF-8","auto"))
-										  ),"struct");
+			$struct[$i] = new xmlrpcval(array(
+											"categoryID" => new xmlrpcval($cat_ID),
+											"categoryName" => new xmlrpcval(mb_conv($cat_name,"UTF-8","auto"))),
+										"struct");
 			$i = $i + 1;
 		}
 
@@ -576,7 +577,6 @@ function b2getcategories($m) {
 
 
 ### b2.getPostURL ###
-
 $wp_getPostURL_sig = array(array($xmlrpcString, $xmlrpcString, $xmlrpcString, $xmlrpcString, $xmlrpcString, $xmlrpcString));
 
 $wp_getPostURL_doc = 'Given a blog ID, username, password, and a post ID, returns the URL to that post.';
@@ -610,15 +610,10 @@ function b2_getPostURL($m) {
 	}
 
 	if (user_pass_ok($username,$password)) {
-
 		$blog_URL = $siteurl.'/index.php';
-
 		$postdata = get_postdata($post_ID);
-
 		if (!($postdata===false)) {
-
 			$title = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $postdata['Title']);
-
 			// this code is blatantly derived from permalink_link()
 			$archive_mode = get_settings('archive_mode');
 			switch($archive_mode) {
@@ -649,16 +644,13 @@ function b2_getPostURL($m) {
 		} else {
 			return new xmlrpcresp(new xmlrpcval($post_URL));;
 		}
-
 	} else {
 		return new xmlrpcresp(0, $xmlrpcerruser+3, // user error 3
 	   'Wrong username/password combination '.$username.' / '.starify($password));
 	}
-
 }
 
 /**** /B2 API ****/
-
 
 
 /**** Blogger API ****/
@@ -669,8 +661,6 @@ function b2_getPostURL($m) {
 # so you won't have to browse the eGroup to find all the methods
 #
 # special note: Evan please keep _your_ API page up to date :p
-
-
 
 ### blogger.newPost ###
 
@@ -732,7 +722,6 @@ function bloggernewpost($m) {
 			sleep($sleep_after_edit);
 		}
 
-
 		pingWeblogs($blog_ID);
 		pingCafelog($cafelogID, $post_title, $post_ID);
 		pingBlogs($blog_ID);
@@ -748,12 +737,9 @@ function bloggernewpost($m) {
 	}
 }
 
-
-
 ### blogger.editPost ###
 
 $bloggereditpost_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcString, $xmlrpcString, $xmlrpcString, $xmlrpcString, $xmlrpcBoolean));
-
 $bloggereditpost_doc='Edits a post, blogger-api like';
 
 function bloggereditpost($m) {
@@ -826,19 +812,13 @@ function bloggereditpost($m) {
 		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
 			sleep($sleep_after_edit);
 		}
-
-
 //		pingWeblogs($blog_ID);
-
 		return new xmlrpcresp(new xmlrpcval("1", "boolean"));
-
 	} else {
 		return new xmlrpcresp(0, $xmlrpcerruser+3, // user error 3
 	   'Wrong username/password combination '.$username.' / '.starify($password));
 	}
 }
-
-
 
 ### blogger.deletePost ###
 
@@ -902,19 +882,13 @@ function bloggerdeletepost($m) {
 		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
 			sleep($sleep_after_edit);
 		}
-
-
 //		pingWeblogs($blog_ID);
-
 		return new xmlrpcresp(new xmlrpcval(1,'boolean'));
-
 	} else {
 		return new xmlrpcresp(0, $xmlrpcerruser+3, // user error 3
 	   'Wrong username/password combination '.$username.' / '.starify($password));
 	}
 }
-
-
 
 ### blogger.getUsersBlogs ###
 
@@ -931,10 +905,8 @@ function bloggergetusersblogs($m) {
 	$user_login = $m->getParam(1);
 	$user_login = $user_login->scalarval();
 
-
 	$sql = "SELECT user_level FROM {$wpdb->users[$wp_id]} WHERE user_login = '$user_login' AND user_level > 3";
     $result = $wpdb->get_results($sql);
-
 
 	$is_admin = $wpdb->num_rows;
 
@@ -1108,7 +1080,6 @@ function bloggergetrecentposts($m) {
 			switch($authordata["user_idmode"]) {
 				case "nickname":
 					$authorname = $authordata["user_nickname"];
-
 			case "login":
 					$authorname = $authordata["user_login"];
 					break;
@@ -1128,7 +1099,6 @@ function bloggergetrecentposts($m) {
 					$authorname = $authordata["user_nickname"];
 					break;
 			}
-
 			$struct[$i] = new xmlrpcval(array("authorName" => new xmlrpcval(mb_conv($authorname,"UTF-8","auto")),
 										"userid" => new xmlrpcval($postdata["Author_ID"]),
 										"dateCreated" => new xmlrpcval($post_date,"dateTime.iso8601"),
@@ -1268,8 +1238,6 @@ function bloggersettemplate($m) {
 }
 
 /**** /Blogger API ****/
-
-
 
 /**** metaWeblog API ****/
 
@@ -1636,7 +1604,6 @@ function mwrecentposts ($params) {	// ($blogid, $user, $pass, $num)
 	}
 }
 
-
 $mwgetcats_sig =  array(array($xmlrpcArray,$xmlrpcString,$xmlrpcString,$xmlrpcString));
 $mwgetcats_doc = 'Get a post, MetaWeblog API-style';
 
@@ -1724,7 +1691,6 @@ function mt_supportedMethods($params) {
     }
     $v->addArray($outAr);
     return new xmlrpcresp($v);
-
 }
 
 $mt_getPostCategories_sig = array(array($xmlrpcArray, $xmlrpcString, $xmlrpcString, $xmlrpcString));
@@ -1865,7 +1831,6 @@ function mt_getRecentPostTitles($params) {
 	}
 }
 
-
 $mt_supportedTextFilters_sig = array(array($xmlrpcArray));
 $mt_supportedTextFilters_doc = "Retrieve information about the text formatting plugins supported by the server. (not implemented)";
 
@@ -1875,8 +1840,6 @@ function mt_supportedTextFilters($params) {
 	
 	return new xmlrpcresp(new xmlrpcval(array(),'array'));
 }
-
-
 
 $mt_getTrackbackPings_sig = array(array($xmlrpcArray,$xmlrpcString));
 $mt_getTrackbackPings_doc = "Retrieve the list of Trackback pings posted to a particular entry. (not implemented)";
@@ -1890,7 +1853,6 @@ function mt_getTrackbackPings($params) {
 	
 	return new xmlrpcresp(new xmlrpcval(array($xmlstruct),'array'));
 }
-
 
 $mt_getpost_sig =  array(array($xmlrpcStruct,$xmlrpcString,$xmlrpcString,$xmlrpcString));
 $mt_getpost_doc = 'Get a post, MetaWeblog API-style';
@@ -1973,17 +1935,12 @@ $pingback_ping_doc = 'Gets a pingback and registers it as a comment prefixed by 
 
 function pingback_ping($m) { // original code by Mort
 	// (http://mort.mine.nu:8080)
-	global   $wpdb, $wp_id; 
+	global   $wpdb, $wp_id, $blog_charset; 
 	global $siteurl,$wp_version; 
 
-	    
 	if (!get_settings('use_pingback')) {
 		return new xmlrpcresp(new xmlrpcval('Sorry, this weblog does not allow you to pingback its posts.'));
 	}
-
-
-	//$log = debug_fopen('./xmlrpc.log', 'w');
-
 	$title='';
 
 	$pagelinkedfrom = $m->getParam(0);
@@ -1994,10 +1951,6 @@ function pingback_ping($m) { // original code by Mort
 
 	$pagelinkedfrom = str_replace('&amp;', '&', $pagelinkedfrom);
 	$pagelinkedto = preg_replace('#&([^amp\;])#is', '&amp;$1', $pagelinkedto);
-
-	//debug_fwrite($log, 'BEGIN '.time().' - '.date('Y-m-d H:i:s')."\n\n");
-	//debug_fwrite($log, 'Page linked from: '.$pagelinkedfrom."\n");
-	//debug_fwrite($log, 'Page linked to: '.$pagelinkedto."\n");
 
 	$messages = array(
 		htmlentities("Pingback from ".$pagelinkedfrom." to "
@@ -2013,13 +1966,11 @@ function pingback_ping($m) { // original code by Mort
 	// Check if the page linked to is in our site
 	$pos1 = strpos($pagelinkedto, str_replace('http://', '', str_replace('www.', '', $siteurl)));
 	if($pos1) {
-
 		// let's find which post is linked to
 		$urltest = parse_url($pagelinkedto);
 		if ($post_ID = url_to_postid($pagelinkedto)) {
 			$way = 'url_to_postid()';
-		}
-		elseif (preg_match('#p/[0-9]{1,}#', $urltest['path'], $match)) {
+		} elseif (preg_match('#p/[0-9]{1,}#', $urltest['path'], $match)) {
 			// the path defines the post_ID (archives/p/XXXX)
 			$blah = explode('/', $match[0]);
 			$post_ID = $blah[1];
@@ -2054,15 +2005,10 @@ function pingback_ping($m) { // original code by Mort
 
 		logIO("O","(PB) URI='$pagelinkedto' ID='$post_ID' Found='$way'");
 
-		//debug_fwrite($log, "Found post ID $way: $post_ID\n");
-
 		$sql = "SELECT post_author FROM {$wpdb->posts[$wp_id]} WHERE ID = $post_ID";
 		$result = $wpdb->get_results($sql);
 
 		if ($wpdb->num_rows) {
-
-			//debug_fwrite($log, 'Post exists'."\n");
-
 			// Let's check that the remote site didn't already pingback this entry
 			$sql = 'SELECT * FROM '.$wpdb->comments[$wp_id].' 
 				WHERE comment_post_ID = '.$post_ID.' 
@@ -2071,63 +2017,78 @@ function pingback_ping($m) { // original code by Mort
 			$result = $wpdb->get_results($sql);
 	    
 			if ($wpdb->num_rows || (1==1)) {
-
 				// very stupid, but gives time to the 'from' server to publish !
 				sleep(1);
-
 				// Let's check the remote site
 				$fp = @fopen($pagelinkedfrom, 'r');
-
 				$puntero = 4096;
 				while($remote_read = fread($fp, $puntero)) {
 					$linea .= $remote_read;
 				}
-					// Work around bug in strip_tags():
-					$linea = str_replace('<!DOCTYPE','<DOCTYPE',$linea);
-					$linea = strip_tags($linea, '<title><a>');
-					$linea = strip_all_but_one_link($linea, $pagelinkedto);
-					// I don't think we need this? -- emc3
-					//$linea = preg_replace('#&([^amp\;])#is', '&amp;$1', $linea);
-					if (empty($matchtitle)) {
-						preg_match('|<title>([^<]*?)</title>|is', $linea, $matchtitle);
-					}
-					$pos2 = strpos($linea, $pagelinkedto);
-					$pos3 = strpos($linea, str_replace('http://www.', 'http://', $pagelinkedto));
-					if (is_integer($pos2) || is_integer($pos3)) {
-						//debug_fwrite($log, 'The page really links to us :)'."\n");
-						$pos4 = (is_integer($pos2)) ? $pos2 : $pos3;
-						$start = $pos4-100;
-						$context = substr($linea, $start, 250);
-						$context = str_replace("\n", ' ', $context);
-						$context = str_replace('&amp;', '&', $context);
+				logIO("O","(PB) CHARSET='$blog_charset");
+				$linea = mb_conv($linea, $blog_charset, 'auto');
+				
+				// Work around bug in strip_tags():
+				$linea = str_replace('<!DOCTYPE','<DOCTYPE',$linea);
+				$linea = strip_tags($linea, '<title><a>');
+				$linea = strip_all_but_one_link($linea, $pagelinkedto);
+				// I don't think we need this? -- emc3
+				if (empty($matchtitle)) {
+					preg_match('|<title>([^<]*?)</title>|is', $linea, $matchtitle);
+				}
+				$pos2 = strpos($linea, $pagelinkedto);
+				$pos3 = strpos($linea, str_replace('http://www.', 'http://', $pagelinkedto));
+				logIO("O","(PB) POS='$pos2, $pos3'");
+				if (is_integer($pos2) || is_integer($pos3)) {
+					//debug_fwrite($log, 'The page really links to us :)'."\n");
+					$pos4 = (is_integer($pos2)) ? $pos2 : $pos3;
+					$start = $pos4-50;
+					if (function_exists('mb_convert_encoding')) {
+						$tmp1 = mb_strcut($linea,0,$start,$blog_charset);
 					} else {
-						//debug_fwrite($log, 'The page doesn\'t link to us, here\'s an excerpt :'."\n\n".$linea."\n\n");
+						$tmp1 = substr($linea,0,$start);
 					}
-				//}
-				//debug_fwrite($log, '*****'."\n\n");
+					if (preg_match("/<[^>]*?$/",$tmp1,$match)) {
+					logIO("O","(PB) MATCH='{$match[0]}");
+						$offset = strlen($match[0]);
+					} else {
+						$offset = 0;
+					}
+					if (function_exists('mb_convert_encoding')) {
+						$context = mb_strcut($linea, $start-$offset, 150+$offset, $blog_charset);
+					} else {
+						$context = substr($linea, $star-$offsett, 150+$offset);
+					}
+					$context = str_replace("\n", ' ', $context);
+					$context = str_replace('&amp;', '&', $context);
+					logIO("O","(PB) CONTENT='$context");
+				} else {
+					logIO("O","(PB) CONTEXT=The page doesn't link to us, here's an excerpt");
+					exit();
+				}
 				fclose($fp);
-
 				if (!empty($context)) {
 					// Check if pings are on, inelegant exit
 					$pingstatus = $wpdb->get_var("SELECT ping_status FROM {$wpdb->posts[$wp_id]} WHERE ID = $post_ID");
-					if ('closed' == $pingstatus) die('Sorry, pings are turned off for this post.');
-
+					if ('closed' == $pingstatus) {
+						logIO("O","(PB) Sorry, pings are turned off for this post.");
+						exit();
+					}
 					$pagelinkedfrom = preg_replace('#&([^amp\;])#is', '&amp;$1', $pagelinkedfrom);
 					$title = (!strlen($matchtitle[1])) ? $pagelinkedfrom : $matchtitle[1];
-					$original_context = $context;
-					$context = '<pingback />[...] '.addslashes(trim($context)) .' [...]';
+					$context = strip_tags($context);
+					$context = '<pingback />[...] '.htmlspecialchars(trim($context)) .' [...]';
 					$context = format_to_post($context);
 					$original_pagelinkedfrom = $pagelinkedfrom;
 					$pagelinkedfrom = addslashes($pagelinkedfrom);
 					$original_title = $title;
 					$title = addslashes(strip_tags(trim($title)));
 					$now = current_time('mysql');
-					$consulta = $wpdb->query("INSERT INTO ${$wpdb->comments[$wp_id]} 
+					$consulta = $wpdb->query("INSERT INTO {$wpdb->comments[$wp_id]} 
 						(comment_post_ID, comment_author, comment_author_url, comment_date, comment_content) 
 						VALUES 
 						($post_ID, '$title', '$pagelinkedfrom', '$now', '$context')
 						");
-
 					$comment_ID = $wpdb->get_var('SELECT last_insert_id()');
 					if (get_settings('comments_notify'))
 						wp_notify_postauthor($comment_ID, 'pingback');

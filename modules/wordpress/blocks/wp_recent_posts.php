@@ -86,7 +86,7 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 		$new_flg = (empty($options[8]))? 0 : $options[8];
 //	echo "$wp_num:$cat_date";
 		global $xoopsDB;
-		global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache;
+		global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache, $wp_mod, $wp_base;
 
 		$id=1;
 		$use_cache = 1;
@@ -154,29 +154,48 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 				$output .= '<li><span class="post-title"><a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '">' . $post_title . '</a></span>'.$newstr.'<br />';
 				$output .= "</li>\n";
 			}
-			$output .= "</ul>\n";	
+			$output .= "</ul>\n";
+			if ($cat_date) {
+				$output .= "</ul>\n";
+			}
 		}
 		if ($show_rss_icon || $show_rdf_icon || $show_rss2_icon || $show_atom_icon) {
 			$output .= '<hr width="100%" />';
 		}
 		$feed_param = $rss_num ? "?num=".$rss_num : "";
+/*
 		if ($feed_param != "") {
 			$feed_param .= $cat_param ? "&".$cat_param : "";
 		} else {
 			$feed_param = $cat_param ? "?".$cat_param : "";
 		}
-		
-		if ($show_rss_icon) {
-			$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('rss_url').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss.gif" /></a></div>';
-		}
-		if ($show_rdf_icon) {
-			$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('rdf_url').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rdf.gif" /></a></div>';
-		}
-		if ($show_rss2_icon) {
-			$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('rss2_url').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss2.gif" /></a></div>';
-		}
-		if ($show_atom_icon) {
-			$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('atom_url').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/atom.gif" /></a></div>';
+*/
+		if ((empty($category)) || ($category == 'all') || ($category == '0')) {
+			if ($show_rss_icon) {
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('rss_url').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss.gif" /></a></div>';
+			}
+			if ($show_rdf_icon) {
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('rdf_url').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rdf.gif" /></a></div>';
+			}
+			if ($show_rss2_icon) {
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('rss2_url').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss2.gif" /></a></div>';
+			}
+			if ($show_atom_icon) {
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('atom_url').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/atom.gif" /></a></div>';
+			}
+		} else {
+			if ($show_rss_icon) {
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_category_rss_link(false, $category,"",'rss').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss.gif" /></a></div>';
+			}
+			if ($show_rdf_icon) {
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_category_rss_link(false, $category,"",'rdf').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss.gif" /></a></div>';
+			}
+			if ($show_rss2_icon) {
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_category_rss_link(false, $category,"",'rss2').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss.gif" /></a></div>';
+			}
+			if ($show_atom_icon) {
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_category_rss_link(false, $category,"",'atom').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss.gif" /></a></div>';
+			}
 		}
 		$output .= "</div>";
 		$block['content'] = $output;
@@ -196,7 +215,7 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 
 		function b_wp'.$i.'_recent_posts_show($options) {
 			global $xoopsDB;
-			global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache;
+			global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache, $wp_mod, $wp_base;
 			$wp_id = "'.$i.'";
 			$wp_inblock = 1;
 			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");

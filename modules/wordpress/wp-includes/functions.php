@@ -6,6 +6,12 @@ if (!function_exists('_')) {
 	}
 }
 
+if (!function_exists('_e')) {
+	function _e($string) {
+		echo $string;
+	}
+}
+
 if (!function_exists('floatval')) {
 	function floatval($string) {
 		return ((float) $string);
@@ -13,12 +19,135 @@ if (!function_exists('floatval')) {
 }
 
 /* functions... */
+function add_magic_quotes($array) {
+	foreach ($array as $k => $v) {
+		if (is_array($v)) {
+			$array[$k] = add_magic_quotes($v);
+		} else {
+			$array[$k] = addslashes($v);
+		}
+	}
+	return $array;
+}
 
 
+function remove_magic_quotes( $mixed ) {
+	if( get_magic_quotes_gpc()) {
+		if( is_array( $mixed ) ) {
+			foreach($mixed as $k => $v) {
+				$mixed[$k] = remove_magic_quotes( $v );
+			}
+		} else {
+			$mixed = stripslashes( $mixed );
+		}
+	}
+	return $mixed;
+}
 
+/**
+ * Sets a parameter with values from the request or to provided default,
+ * except if param is already set!
+ *
+ * Also removes magic quotes if they are set automatically by PHP.
+ * Also forces type.
+ * Priority order: POST, GET, COOKIE, DEFAULT.
+ *
+ * {@internal param(-) }}
+ *
+ * @author fplanque
+ * @param string Variable to set
+ * @param string Force value type to one of:
+ * - boolean
+ * - integer
+ * - float
+ * - string
+ * - string-yn
+ * - array
+ * - array-int
+ * - object
+ * - null
+ * - html (does nothing)
+ * @param mixed Default value or TRUE if user input required
+ * @param boolean Override if variable already set
+ * @param boolean Force setting of variable to default?
+ * @return mixed Final value of Variable, or false if we don't force setting and and did not set
+ *
+ * @todo add option to override what's already set. DONE.
+ */
+
+function array_int_callback(& $value) {
+	settype($value,'integer');
+	return $value;
+}
+
+if (!defined('NO_DEFAULT_PARAM')) define('NO_DEFAULT_PARAM', '__nodefault__');
+function param($var, $type = '', $default = NO_DEFAULT_PARAM, $override = false, $forceset = true )
+{
+	// Check if already set
+	// WARNING: when PHP register globals is ON, COOKIES get priority over GET and POST with this!!!
+	if( !isset($GLOBALS[$var]) || $override ) {
+		if (isset($GLOBALS[$var])) {
+			unset($GLOBALS[$var]);
+		}
+		if (isset($_POST[$var])) {
+			$GLOBALS[$var] = remove_magic_quotes($_POST[$var]);
+		} elseif (isset($_GET["$var"])) {
+			$GLOBALS[$var] = remove_magic_quotes($_GET[$var]);
+		} elseif (isset($_COOKIE[$var])) {
+			$GLOBALS[$var] = remove_magic_quotes($_COOKIE[$var]);
+		} elseif (isset($_SESSION[$var])) {
+			$GLOBALS[$var] = remove_magic_quotes($_SESSION[$var]);
+		}
+//		echo $var." = ".$GLOBALS[$var]."<br>\n";
+		if (!isset($GLOBALS[$var])) {
+//			echo $var."<br>\n";
+//			echo "Default($var) = $default<br>";
+			if ($default === true) {
+				die('<p class="error">'.sprintf('Parameter %s is required!', $var ).'</p>' );
+			} elseif ($forceset && ("$default" != NO_DEFAULT_PARAM)) {
+				$GLOBALS[$var] = $default;
+//				echo "Default($var) = $default<br>";
+			} elseif ($type == 'string-yn') {
+				$GLOBALS[$var] = 'N';
+			} else {
+				// param not found! don't set the variable.
+				// Won't be memorized nor type-forced! 
+				return false;
+			}
+		} else if (($GLOBALS[$var] == "") && ($default != NO_DEFAULT_PARAM) && $forceset) {
+			$GLOBALS[$var] = $default;
+		} 
+	} else {
+		$GLOBALS[$var] = remove_magic_quotes($GLOBALS[$var]);
+	}
+	// type will be forced even if it was set before and not overriden
+//	echo $var." = ".$GLOBALS[$var]."<br>\n";
+	if( !empty($type) ) {
+		// Force the type
+		switch( $type ) {
+			case 'html':
+				// do nothing
+				break;
+			case 'string':
+				$GLOBALS[$var] = trim( strip_tags($GLOBALS[$var]) );
+				break;
+			case 'string-yn':
+				$GLOBALS[$var] = ($GLOBALS[$var] == 'Y') ? 'Y' : 'N';
+				break;
+			case 'array-int':
+				settype($GLOBALS[$var],'array');
+				array_walk($GLOBALS[$var],'array_int_callback');
+				break;
+			default:
+				settype($GLOBALS[$var], $type );
+		}
+	}
+//		echo $var." = ".$GLOBALS[$var]."<br>\n";
+	return $GLOBALS[$var];
+}
 
 function get_lastpostdate() {
-	global  $cache_lastpostdate, $use_cache, $time_difference, $pagenow, $wpdb ,$wp_id;
+	global	$cache_lastpostdate, $use_cache, $time_difference, $pagenow, $wpdb ,$wp_id;
 	if ((!isset($cache_lastpostdate[$wp_id])) OR (!$use_cache)) {
 		$now = date("Y-m-d H:i:s",(time() + ($time_difference * 3600)));
 
@@ -43,16 +172,6 @@ function user_pass_ok($user_login,$user_pass) {
 function get_currentuserinfo() { // a bit like get_userdata(), on steroids
 	global $user_login, $userdata, $user_level, $user_ID, $user_nickname, $user_email, $user_url, $user_pass_md5, $cookiehash, $xoopsUser;
 	// *** retrieving user's data from cookies and db - no spoofing
-/*
-	$user_login = $_COOKIE['wordpressuser_'.$cookiehash];
-	$userdata = get_userdatabylogin($user_login);
-	$user_level = $userdata->user_level;
-	$user_ID = $userdata->ID;
-	$user_nickname = $userdata->user_nickname;
-	$user_email = $userdata->user_email;
-	$user_url = $userdata->user_url;
-	$user_pass_md5 = md5($userdata->user_pass);
-*/
 	if ($xoopsUser) {
 		$user_login = $xoopsUser->uname();
 		$userdata = get_userdatabylogin($user_login);
@@ -61,7 +180,6 @@ function get_currentuserinfo() { // a bit like get_userdata(), on steroids
 		$user_nickname = $userdata->user_nickname;
 		$user_email = $userdata->user_email;
 		$user_url = $userdata->user_url;
-//		$user_pass_md5 = md5($userdata->user_pass);
 		$user_pass_md5 = $xoopsUser->pass();
 	}
 }
@@ -74,9 +192,8 @@ function get_userdata($userid) {
 		$user = $wpdb->get_row("SELECT * FROM {$wpdb->users[$wp_id]} WHERE ID = $userid");
 		$xuser = $wpdb->get_row("SELECT * FROM ".$xoopsDB->prefix('users')." WHERE uid=$userid");
         $user->user_nickname = stripslashes($user->user_nickname);
-        $user->user_firstname = stripslashes($user->user_firstname);
-        $user->user_lastname = stripslashes($user->user_lastname);
-        $user->user_firstname =  stripslashes($user->user_firstname);
+		$user->user_login = stripslashes($user->user_login);
+		$user->user_firstname =	 stripslashes($user->user_firstname);
         $user->user_lastname = stripslashes($user->user_lastname);
 		$user->user_description = stripslashes($user->user_description);
 		$user->user_pass = $xuser->pass;
@@ -88,9 +205,8 @@ function get_userdata($userid) {
 }
 
 function get_userdata2($userid) { // for team-listing
-//	global  $post;
-//	$user_data['ID'] = $userid;
-	global  $post, $xoopsUser;
+	global	$post, $xoopsUser;
+
 	$user_data['ID'] = $xoopsUser->uid();
 	$user_data['user_login'] = $post->user_login;
 	$user_data['user_firstname'] = $post->user_firstname;
@@ -246,23 +362,133 @@ function update_option($option_name, $newvalue) {
 	$cache_settings[$wp_id] = get_alloptions(); // Re cache settings
 }
 
-function add_option($name, $value='') {
+function add_option($name, $value='', $group=0, $desc="", $type=1, $level=8) {
 	// Adds an option if it doesn't already exist
 	global $wpdb, $wp_id;
 	if(!get_settings($name)) {
 		$name = $wpdb->escape($name);
+		$type = intval($type);
+		$level = intval($level);
+		$group = intval($group);
 		$options = $wpdb->get_results("SELECT option_id FROM {$wpdb->options[$wp_id]} WHERE option_name = '$name'");
 		if (count($options) == 0) {
 			$value = $wpdb->escape($value);
-			$wpdb->query("INSERT INTO {$wpdb->options[$wp_id]} (option_name, option_value) VALUES ('$name', '$value')");
+			$wpdb->query("INSERT INTO {$wpdb->options[$wp_id]}
+				 (option_name, option_value, option_type, option_description, option_admin_level) 
+				 VALUES ('$name', '$value',  $type, '$desc', $level)");
 
-			if($wpdb->insert_id) {
+			if($option_id = $wpdb->insert_id) {
 				global $cache_settings;
 				$cache_settings[$wp_id]->{$name} = $value;
+				if ($group) {
+					$seq = $wpdb->get_var("SELECT MAX(seq) FROM {$wpdb->optiongroup_options[$wp_id]} WHERE group_id=$group");
+					if ($seq) {
+						$seq++;
+						$wpdb->query("INSERT INTO {$wpdb->optiongroup_options[$wp_id]} 
+								(group_id, option_id, seq)
+								VALUES ($group, $option_id, $seq)
+							");
+					}
+				}
 			}
 		}
 	}
 	return;
+}
+
+
+/* Options functions */
+
+function add_post_meta($post_id, $key, $value, $unique = false) {
+	global $wpdb, $wp_id;
+	
+	if ($unique) {
+		if( $wpdb->get_var("SELECT meta_key FROM {$wpdb->postmeta[$wp_id]} WHERE meta_key
+= '$key' AND post_id = '$post_id'") ) {
+			return false;
+		}
+	}
+
+	$wpdb->query("INSERT INTO {$wpdb->postmeta[$wp_id]}
+								(post_id,meta_key,meta_value) 
+								VALUES ('$post_id','$key','$value')
+						");
+	
+	return true;
+}
+
+function delete_post_meta($post_id, $key, $value = '') {
+	global $wpdb,$wp_id;
+
+	if (empty($value)) {
+		$meta_id = $wpdb->get_var("SELECT meta_id FROM {$wpdb->postmeta[$wp_id]} WHERE
+post_id = '$post_id' AND meta_key = '$key'");
+	} else {
+		$meta_id = $wpdb->get_var("SELECT meta_id FROM {$wpdb->postmeta[$wp_id]} WHERE
+post_id = '$post_id' AND meta_key = '$key' AND meta_value = '$value'");
+	}
+
+	if (!$meta_id) return false;
+
+	if (empty($value)) {
+		$wpdb->query("DELETE FROM {$wpdb->postmeta[$wp_id]} WHERE post_id = '$post_id'
+AND meta_key = '$key'");
+	} else {
+		$wpdb->query("DELETE FROM {$wpdb->postmeta[$wp_id]} WHERE post_id = '$post_id'
+AND meta_key = '$key' AND meta_value = '$value'");
+	}
+		
+	return true;
+}
+
+function get_post_meta($post_id, $key, $single = false) {
+	global $wpdb, $post_meta_cache,$wp_id;
+
+	if (isset($post_meta_cache[$wp_id][$post_id][$key])) {
+		if ($single) {
+			return $post_meta_cache[$wp_id][$post_id][$key][0];
+		} else {
+			return $post_meta_cache[$wp_id][$post_id][$key];
+		}
+	}
+
+	$metalist = $wpdb->get_results("SELECT meta_value FROM {$wpdb->postmeta[$wp_id]} WHERE post_id = '$post_id' AND meta_key = '$key'", ARRAY_N);
+
+	$values = array();
+	if ($metalist) {
+		foreach ($metalist as $metarow) {
+			$values[] = $metarow[0];
+		}
+	}
+
+	if ($single) {
+		if (count($values)) {
+			return $values[0];
+		} else {
+			return '';
+		}
+	} else {
+		return $values;
+	}
+}
+
+function update_post_meta($post_id, $key, $value, $prev_value = '') {
+	global $wpdb, $post_meta_cache,$wp_id;
+
+		if(! $wpdb->get_var("SELECT meta_key FROM {$wpdb->postmeta[$wp_id]} WHERE meta_key
+= '$key' AND post_id = '$post_id'") ) {
+			return false;
+		}
+
+	if (empty($prev_value)) {
+		$wpdb->query("UPDATE {$wpdb->postmeta[$wp_id]} SET meta_value = '$value' WHERE
+meta_key = '$key' AND post_id = '$post_id'");
+	} else {
+		$wpdb->query("UPDATE{$wpdb->postmeta[$wp_id]} SET meta_value = '$value' WHERE
+meta_key = '$key' AND post_id = '$post_id' AND meta_value = '$prev_value'");
+	}
+
+	return true;
 }
 
 function get_postdata($postid) {
@@ -312,14 +538,14 @@ function get_postdata2($postid=0) { // less flexible, but saves DB queries
 }
 
 function get_commentdata($comment_ID,$no_cache=0,$include_unapproved=false) { // less flexible, but saves DB queries
-	global $postc,$id,$commentdata, $wpdb ,$wp_id;
+	global $postc,$commentdata, $wpdb ,$wp_id;
 	$comment_ID = intval($comment_ID);
 	if ($no_cache) {
 		$query = "SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_ID = $comment_ID";
 		if (false == $include_unapproved) {
 		    $query .= " AND comment_approved = '1'";
 		}
-    		$myrow = $wpdb->get_row($query, ARRAY_A);
+    	$myrow = $wpdb->get_row($query, ARRAY_A);
 	} else {
 		$myrow['comment_ID']=$postc->comment_ID;
 		$myrow['comment_post_ID']=$postc->comment_post_ID;
@@ -598,17 +824,15 @@ function pingBlogs($blog_ID="1") {
 
 // Send a Trackback
 function trackback($trackback_url, $title, $excerpt, $ID, $charset = "") {
-	global  $wpdb,  $blog_charset ,$wp_id;
+	global $wpdb, $blog_charset ,$wp_id, $wp_base;
 	$ID=intval($ID);
 	$title = stripslashes($title);
 	$excerpt = stripslashes($excerpt);
 	$blog_name = stripslashes(get_settings('blogname'));
 	if ($charset) {
-		if (function_exists('mb_convert_encoding')) {
-			$title = mb_convert_encoding($title,$charset,$blog_charset);
-			$excerpt = mb_convert_encoding($excerpt,$charset,$blog_charset);
-			$blog_name = mb_convert_encoding($blog_name,$charset,$blog_charset);
-		}
+		$title = mb_conv($title,$charset,$blog_charset);
+		$excerpt = mb_conv($excerpt,$charset,$blog_charset);
+		$blog_name = mb_conv($blog_name,$charset,$blog_charset);
 	} else {
 		$charset = $blog_charset;
 	}
@@ -631,20 +855,19 @@ function trackback($trackback_url, $title, $excerpt, $ID, $charset = "") {
 	$http_request .= $query_string;
 	$fs = @fsockopen($trackback_url['host'], 80);
 	@fputs($fs, $http_request);
-	if(false) {
-		$debug_file = '../log/trackback.log';
-		$fp = fopen($debug_file, 'a');
-		fwrite($fp, "\n*****\nRequest:\n\n$http_request\n\nResponse:\n\n");
-		fwrite($fp, "CHARSET:$charset\n");
-		fwrite($fp, "TITLE:$title\n");
-		fwrite($fp, "TITLE1:".urldecode($title1)."\n");
-		fwrite($fp, "EXCERPT:$excerpt\n");
+
+	$fp = debug_fopen($wp_base[$wp_id].'/log/trackback.log', 'a');
+	debug_fwrite($fp, "\n*****\nRequest:\n\n$http_request\n\nResponse:\n\n");
+	debug_fwrite($fp, "CHARSET:$charset\n");
+	debug_fwrite($fp, "TITLE:$title\n");
+	debug_fwrite($fp, "TITLE1:".urldecode($title1)."\n");
+	debug_fwrite($fp, "EXCERPT:$excerpt\n");
 		while(!@feof($fs)) {
-			fwrite($fp, @fgets($fs, 4096));
-		}
-		fwrite($fp, "\n\n");
-		fclose($fp);
+		debug_fwrite($fp, @fgets($fs, 4096));
 	}
+	debug_fwrite($fp, "\n\n");
+	debug_fclose($fp);
+
 	@fclose($fs);
 	$wpdb->query("UPDATE {$wpdb->posts[$wp_id]} SET pinged = CONCAT(pinged, '\n', '$tb_url') WHERE ID = $ID");
 	$wpdb->query("UPDATE {$wpdb->posts[$wp_id]} SET to_ping = REPLACE(to_ping, '$tb_url', '') WHERE ID = $ID");
@@ -723,8 +946,8 @@ function xmlrpc_removepostdata($content) {
 }
 
 function debug_fopen($filename, $mode) {
-	global $debug;
-	if ($debug == 1) {
+	global $wp_debug;
+	if ($wp_debug == 1) {
 		$fp = fopen($filename, $mode);
 		return $fp;
 	} else {
@@ -733,23 +956,30 @@ function debug_fopen($filename, $mode) {
 }
 
 function debug_fwrite($fp, $string) {
-	global $debug;
-	if ($debug == 1) {
+	global $wp_debug;
+	if ($wp_debug == 1) {
 		fwrite($fp, $string);
 	}
 }
 
 function debug_fclose($fp) {
-	global $debug;
-	if ($debug == 1) {
+	global $wp_debug;
+	if ($wp_debug == 1) {
 		fclose($fp);
 	}
 }
 
 function pingback($content, $post_ID) {
 	// original code by Mort (http://mort.mine.nu:8080)
-	global $siteurl, $wp_version;
-	$log = debug_fopen('./pingback.log', 'a');
+	global $siteurl, $wp_version,$wp_id, $wp_base;
+
+	$buf_keep = array();
+	while (ob_get_level()) {
+		$buf_keep[] = ob_get_contents ();
+		ob_end_clean();
+	}
+
+	$log = debug_fopen($wp_base[$wp_id].'/log/pingback.log', 'a');
 	$post_links = array();
 	debug_fwrite($log, 'BEGIN '.time()."\n");
 
@@ -818,7 +1048,7 @@ function pingback($content, $post_ID) {
 
 		// Send the GET request
 		$request = "GET $path HTTP/1.1\r\nHost: $host\r\nUser-Agent: WordPress/$wp_version PHP/" . phpversion() . "\r\n\r\n";
-		ob_end_flush();
+		@ob_end_flush();
 		fputs($fp, $request);
 
 		// Start receiving headers and content
@@ -910,9 +1140,13 @@ function pingback($content, $post_ID) {
 			@fclose($fp);
 		}
 	}
-
 	debug_fwrite($log, "\nEND: ".time()."\n****************************\n\r");
 	debug_fclose($log);
+
+	for ($i=count($buf_keep)-1; $i>=0 ; $i--) {
+		ob_start();
+		echo $buf_keep[$i];
+	}
 }
 
 /**
@@ -1052,67 +1286,60 @@ function wp_notify_postauthor($comment_id, $comment_type='comment') {
 	$blogname = stripslashes(get_settings('blogname'));
 
 	if ('comment' == $comment_type) {
-		$notify_message  = _LANG_F_NEW_COMMENT." #$comment->comment_post_ID ".stripslashes($post->post_title)."\r\n\r\n";
+		$notify_message	 = _LANG_F_NEW_COMMENT." #$comment->comment_post_ID ".stripslashes($post->post_title)."\r\n\r\n";
 		$notify_message .= "Author : $comment->comment_author (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
 		$notify_message .= "E-mail : $comment->comment_author_email\r\n";
-		$notify_message .= "URI    : $comment->comment_author_url\r\n";
+		$notify_message .= "URI	   : $comment->comment_author_url\r\n";
 		$notify_message .= "Whois  : http://ws.arin.net/cgi-bin/whois.pl?queryinput=$comment->comment_author_IP\r\n";
-		if (function_exists('mb_convert_encoding')) {
-			$notify_message .= "Comment:\r\n".stripslashes(mb_convert_encoding($comment->comment_content,$blog_charset,"auto"))."\r\n\r\n";
-		} else {
-			$notify_message .= "Comment:\r\n".stripslashes($comment->comment_content)."\r\n\r\n";
-		}
+		$notify_message .= "Comment:\r\n".stripslashes(mb_conv($comment->comment_content,$blog_charset,"auto"))."\r\n\r\n";
 		$notify_message .= _LANG_F_ALL_COMMENTS." \r\n";
 		$subject = '[' . $blogname . '] Comment: "' .stripslashes($post->post_title).'"';
 	} elseif ('trackback' == $comment_type) {
-		$notify_message  = _LANG_F_NEW_TRACKBACK." #$comment_post_ID ".stripslashes($post->post_title)."\r\n\r\n";
-		if (function_exists('mb_convert_encoding')) {
-			$notify_message .= "Website: ".mb_convert_encoding($comment->comment_author,$blog_charset,"auto")." (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
-		} else {
-			$notify_message .= "Website: ".$comment->comment_author." (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
-		}
-		$notify_message .= "URI    : $comment->comment_author_url\r\n";
-		if (function_exists('mb_convert_encoding')) {
-			$notify_message .= "Comment:\r\n".stripslashes(mb_convert_encoding($comment->comment_content,$blog_charset,"auto"))."\r\n\r\n";
-		} else {
-			$notify_message .= "Comment:\r\n".stripslashes($comment->comment_content)."\r\n\r\n";
-		}
+		$notify_message	 = _LANG_F_NEW_TRACKBACK." #$comment->comment_post_ID ".stripslashes($post->post_title)."\r\n\r\n";
+		$notify_message .= "Website: ".mb_conv($comment->comment_author,$blog_charset,"auto")." (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
+		$notify_message .= "URI	   : $comment->comment_author_url\r\n";
+		$notify_message .= "Comment:\r\n".stripslashes(mb_conv($comment->comment_content,$blog_charset,"auto"))."\r\n\r\n";
 		$notify_message .= _LANG_F_ALL_TRACKBACKS." \r\n";
 		$subject = '[' . $blogname . '] Trackback: "' .stripslashes($post->post_title).'"';
 	} elseif ('pingback' == $comment_type) {
-		$notify_message  = _LANG_F_NEW_PINGBACK." #$comment_post_ID ".stripslashes($post->post_title)."\r\n\r\n";
+		$notify_message	 = _LANG_F_NEW_PINGBACK." #$comment->comment_post_ID ".stripslashes($post->post_title)."\r\n\r\n";
 		$notify_message .= "Website: $comment->comment_author\r\n";
-		$notify_message .= "URI    : $comment->comment_author_url\r\n";
-		if (function_exists('mb_convert_encoding')) {
-			$notify_message .= "Excerpt: \n[...] ".mb_convert_encoding($original_context,$blog_charset,"auto")." [...]\r\n\r\n";
-		} else {
-			$notify_message .= "Excerpt: \n[...] ".$original_context." [...]\r\n\r\n";
-		}
+		$notify_message .= "URI	   : $comment->comment_author_url\r\n";
+		$notify_message .= "Excerpt: \n[...] ".mb_conv($original_context,$blog_charset,"auto")." [...]\r\n\r\n";
 		$notify_message .= _LANG_F_ALL_PINGBACKS." \r\n";
 		$subject = '[' . $blogname . '] Pingback: "' .stripslashes($post->post_title).'"';
 	}
-	$notify_message .= get_permalink($comment->comment_post_ID) . '#comments';
+	$notify_message .= get_permalink($comment->comment_post_ID,false) . '#comments';
 
 	if ('' == $comment->comment_author_email || '' == $comment->comment_author) {
 		if (function_exists('mb_convert_encoding')) {
-			$from = "From: \"". mb_encode_mimeheader(mb_convert_encoding($blogname,"JIS","auto")) ."\" <wordpress@" . $_SERVER['SERVER_NAME'] . '>';
+			$from = "From: \"". mb_encode_mimeheader(mb_conv($blogname,"JIS","auto")) ."\" <wordpress@" . $_SERVER['SERVER_NAME'] . '>';
 		} else {
 			$from = "From: \"". $blogname ."\" <wordpress@" . $_SERVER['SERVER_NAME'] . '>';
 		}
 	} else {
 		if (function_exists('mb_convert_encoding')) {
-			$from = 'From: "' . stripslashes(mb_encode_mimeheader(mb_convert_encoding($comment->comment_author,"JIS","auto"))) . "\" <$comment->comment_author_email>";
+			$from = 'From: "' . stripslashes(mb_encode_mimeheader(mb_conv($comment->comment_author,"JIS","auto"))) . "\" <$comment->comment_author_email>";
 		} else {
 			$from = 'From: "' . stripslashes($comment->comment_author) . "\" <$comment->comment_author_email>";
 		}
 	}
-
-	if (function_exists('mb_send_mail')) {
-		mb_send_mail($user->user_email, $subject, $notify_message, $from);
+	if (defined('XOOPS_URL')) {
+		$xoopsMailer =& getMailer();
+		$xoopsMailer->useMail();
+		$xoopsMailer->setToEmails($user->user_email);
+		$xoopsMailer->setFromEmail($comment->comment_author_email);
+		$xoopsMailer->setFromName(stripslashes($comment->comment_author));
+		$xoopsMailer->setSubject($subject);
+		$xoopsMailer->setBody($notify_message);
+		$xoopsMailer->send(true);
 	} else {
-		@mail($user->user_email, $subject, $notify_message, $from);
+		if (function_exists('mb_send_mail')) {
+			mb_send_mail($user->user_email, $subject, $notify_message, $from);
+		} else {
+			@mail($user->user_email, $subject, $notify_message, $from);
+		}
 	}
-
     return true;
 }
 
@@ -1123,7 +1350,7 @@ function wp_notify_postauthor($comment_id, $comment_type='comment') {
  */
 function wp_notify_moderator($comment_id) {
     global $wpdb;
-    global  $siteurl ,$wp_id;
+	global	$siteurl ,$wp_id;
 
     $comment = $wpdb->get_row("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_ID='$comment_id' LIMIT 1");
     $post = $wpdb->get_row("SELECT * FROM {$wpdb->posts[$wp_id]} WHERE ID='$comment->comment_post_ID' LIMIT 1");
@@ -1132,10 +1359,10 @@ function wp_notify_moderator($comment_id) {
     $comment_author_domain = gethostbyaddr($comment->comment_author_IP);
     $comments_waiting = $wpdb->get_var("SELECT count(comment_ID) FROM {$wpdb->comments[$wp_id]} WHERE comment_approved = '0'");
 
-    $notify_message  = _LANG_F_COMMENT_POST." #$comment->comment_post_ID ".stripslashes($post->post_title)._LANG_F_WAITING_APPROVAL."\r\n\r\n";
+	$notify_message	 = _LANG_F_COMMENT_POST." #$comment->comment_post_ID ".stripslashes($post->post_title)._LANG_F_WAITING_APPROVAL."\r\n\r\n";
     $notify_message .= "Author : $comment->comment_author (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
     $notify_message .= "E-mail : $comment->comment_author_email\r\n";
-    $notify_message .= "URL    : $comment->comment_author_url\r\n";
+	$notify_message .= "URL	   : $comment->comment_author_url\r\n";
     $notify_message .= "Whois  : http://ws.arin.net/cgi-bin/whois.pl?queryinput=$comment->comment_author_IP\r\n";
     $notify_message .= "Comment:\r\n".stripslashes($comment->comment_content)."\r\n\r\n";
     $notify_message .= _LANG_F_APPROVAL_VISIT." $siteurl/wp-admin/post.php?action=mailapprovecomment&p=".$comment->comment_post_ID."&comment=$comment_id\r\n";
@@ -1146,15 +1373,23 @@ function wp_notify_moderator($comment_id) {
     $subject = '[' . stripslashes(get_settings('blogname')) . '] Please approve: "' .stripslashes($post->post_title).'"';
     $from  = "From: ".get_settings('admin_email');
 
-    if (function_exists('mb_send_mail')) {
-	    mb_send_mail(get_settings('admin_email'), $subject, $notify_message, $from);
-    } else {
-	    @mail(get_settings('admin_email'), $subject, $notify_message, $from);
-    }
-
+	if (defined('XOOPS_URL')) {
+		$xoopsMailer =& getMailer();
+		$xoopsMailer->useMail();
+		$xoopsMailer->setToEmails(get_settings('admin_email'));
+		$xoopsMailer->setFromEmail(get_settings('admin_email'));
+		$xoopsMailer->setSubject($subject);
+		$xoopsMailer->setBody($notify_message);
+		$xoopsMailer->send();
+	} else {
+	    if (function_exists('mb_send_mail')) {
+		    mb_send_mail(get_settings('admin_email'), $subject, $notify_message, $from);
+	    } else {
+		    @mail(get_settings('admin_email'), $subject, $notify_message, $from);
+	    }
+	}
     return true;
 }
-
 
 // implementation of in_array that also should work on PHP3
 if (!function_exists('in_array')) {
@@ -1173,13 +1408,13 @@ if (!function_exists('in_array')) {
 }
 
 function start_wp() {
-	global $post, $id, $postdata, $authordata, $day, $preview, $page, $pages, $multipage, $more, $numpages;
+	global $post, $wp_post_id, $postdata, $authordata, $day, $preview, $page, $pages, $multipage, $more, $numpages;
 	global $preview_userid,$preview_date,$preview_content,$preview_title,$preview_category,$preview_notify,$preview_make_clickable,$preview_autobr;
 	global $pagenow,$wp_id;
 	if (!$preview) {
-		$id = $post->ID;
+		$wp_post_id = $post->ID;
 	} else {
-		$id = 0;
+		$wp_post_id = 0;
 		$postdata = array (
 			'ID' => 0,
 			'Author_ID' => $_GET['preview_userid'],
@@ -1225,89 +1460,52 @@ function is_new_day() {
 		return(0);
 	}
 }
-// Filters: these are the core of WP's plugin architecture
-
-function apply_filters($tag, $string) {
-	global $wp_filter, $wp_id;;
-	if (isset($wp_filter[$wp_id]['all'])) {
-		foreach ($wp_filter[$wp_id]['all'] as $priority => $functions) {
-			if (isset($wp_filter[$wp_id][$tag][$priority]))
-				$wp_filter[$wp_id][$tag][$priority] = array_merge($wp_filter[$wp_id]['all'][$priority], $wp_filter[$wp_id][$tag][$priority]);
-			else
-				$wp_filter[$wp_id][$tag][$priority] = array_merge($wp_filter[$wp_id]['all'][$priority], array());
-			$wp_filter[$wp_id][$tag][$priority] = array_unique($wp_filter[$wp_id][$tag][$priority]);
-		}
-
-	}
-	
-	if (isset($wp_filter[$wp_id][$tag])) {
-		ksort($wp_filter[$wp_id][$tag]);
-		foreach ($wp_filter[$wp_id][$tag] as $priority => $functions) {
-			foreach($functions as $function) {
-//					if ($tag == "the_content") echo $function."<br>\n";
-					$string = $function($string);
-			}
-		}
-	}
-	return $string;
-}
-
-function add_filter($tag, $function_to_add, $priority = 10) {
-	global $wp_filter, $wp_id;
-	// So the format is wp_filter[$wp_id]['tag']['array of priorities']['array of functions']
-	if (!@in_array($function_to_add, $wp_filter[$wp_id][$tag]["$priority"])) {
-		$wp_filter[$wp_id][$tag]["$priority"][] = $function_to_add;
-	}
-	return true;
-}
-
-function remove_filter($tag, $function_to_remove, $priority = 10) {
-	global $wp_filter, $wp_id;;
-	if (@in_array($function_to_remove, $wp_filter[$wp_id][$tag]["$priority"])) {
-		$new_function_list = array();
-		foreach ($wp_filter[$wp_id][$tag]["$priority"] as $function) {
-			if ($function_to_remove != $function) {
-				$new_function_list[] = $function;
-			}
-		}
-		if (!count($new_function_list)) {
-			if (!empty($wp_filter[$wp_id][$tag]["$priority"])) {
-				unset($wp_filter[$wp_id][$tag]["$priority"]);
-			}
-		} else {
-			$wp_filter[$wp_id][$tag]["$priority"] = $new_function_list;
-		}
-	}
-	//die(var_dump($wp_filter));
-	return true;
-}
-// The *_action functions are just aliases for the *_filter functions, they take special strings instead of generic content
-
-function do_action($tag, $string) {
-	return apply_filters($tag, $string);
-}
-
-function add_action($tag, $function_to_add, $priority = 10) {
-	add_filter($tag, $function_to_add, $priority);
-}
-
-function remove_action($tag, $function_to_remove, $priority = 10) {
-	remove_filter($tag, $function_to_remove, $priority);
-}
 
 function wp_head() {
 	do_action('wp_head', '');
 }
 
-function mb_conv($str,$to,$from)
-{
-	if (function_exists('mb_convert_encoding')) {
-		$retstr = mb_convert_encoding($str,$to,$from);
-	} else {
-		$retstr = $str;
+function permlink_to_param() {
+	if ( !empty( $_SERVER['PATH_INFO'] ) ) {
+		// Fetch the rewrite rules.
+		$rewrite = rewrite_rules('matches');
+		$pathinfo = $_SERVER['PATH_INFO'];
+		// Trim leading '/'.
+		$pathinfo = preg_replace('!^/!', '', $pathinfo);
+
+		if (! empty($rewrite)) {
+			// Get the name of the file requesting path info.
+			$req_uri = $_SERVER['REQUEST_URI'];
+			$req_uri = str_replace($pathinfo, '', $req_uri);
+			$req_uri = preg_replace("!/+$!", '', $req_uri);
+			$req_uri = explode('/', $req_uri);
+			$req_uri = $req_uri[count($req_uri)-1];
+			// Look for matches.
+			$pathinfomatch = $pathinfo;
+			foreach ($rewrite as $match => $query) {
+				// If the request URI is the anchor of the match, prepend it
+				// to the path info.
+				if ((! empty($req_uri)) && (strpos($match, $req_uri) === 0)) {
+					$pathinfomatch = $req_uri . '/' . $pathinfo;
+				}
+
+				if (preg_match("!^$match!", $pathinfomatch, $matches)) {
+					// Got a match.
+					// Trim the query of everything up to the '?'.
+					$query = preg_replace("!^.+\?!", '', $query);
+
+					// Substitute the substring matches into the query.
+					eval("\$query = \"$query\";");
+
+					// Parse the query.
+					parse_str($query, $_GET);
+					break;
+				}
+			}
+		}	 
 	}
-	return $retstr;
 }
+
 /* rewrite_rules
  * Construct rewrite matches and queries from permalink structure.
  * matches - The name of the match array to use in the query strings.
@@ -1315,7 +1513,7 @@ function mb_conv($str,$to,$from)
  * Returns an associate array of matches and queries.
  */
 function rewrite_rules($matches = '', $permalink_structure = '') {
-
+	global $wp_id,$wp_mod;
     function preg_index($number, $matches = '') {
         $match_prefix = '$';
         $match_suffix = '';
@@ -1324,7 +1522,6 @@ function rewrite_rules($matches = '', $permalink_structure = '') {
             $match_prefix = '$' . $matches . '['; 
                                                $match_suffix = ']';
         }        
-        
         return "$match_prefix$number$match_suffix";        
     }
     
@@ -1442,10 +1639,10 @@ function rewrite_rules($matches = '', $permalink_structure = '') {
     $authormatch = preg_replace('|^/+|', '', $authormatch);
 
     $authorfeedmatch = $authormatch . '(.*)/' . $feedregex;
-    $authorfeedquery = 'wp-feed.php?author_name=' . rawurlencode(preg_index(1, $matches)) . '&feed=' . preg_index(2, $matches);
+    $authorfeedquery = 'wp-feed.php?author_name=' . preg_index(1, $matches) . '&feed=' . preg_index(2, $matches);
 
     $authormatch = $authormatch . '?(.*)';
-    $authorquery = 'index.php?author_name=' . rawurlencode(preg_index(1, $matches));
+    $authorquery = 'index.php?author_name=' . preg_index(1, $matches);
 
     $rewrite = array(
                      $catfeedmatch => $catfeedquery,
@@ -1500,19 +1697,12 @@ function check_comment($author, $email, $url, $comment, $user_ip) {
 	return true;
 }
 
-// Check for hacks file if the option is enabled
-if (get_settings('hack_file')) {
-	if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'.(($wp_id=='-') ?'':$wp_id) . '/my-hacks.php'))
-		require(XOOPS_ROOT_PATH.'/modules/wordpress'.(($wp_id=='-') ?'':$wp_id) . '/my-hacks.php');
-}
-
 function get_xoops_option($dirname,$conf_name) {
 	global $xoopsDB;
 
-    $query = "SELECT mid FROM ".$xoopsDB->prefix('modules')." WHERE dirname='".$dirname."' ";
-	$result = $xoopsDB->query($query);
-	$record= $xoopsDB->fetcharray($result);
-	$mid = $record['mid'];
+	$module_handler =& xoops_gethandler('module');
+	$module=$module_handler->getByDirname($dirname);
+	$mid=$module->getVar('mid');
     
 	$query = "SELECT conf_value,conf_valuetype FROM ".$xoopsDB->prefix('config')." WHERE conf_modid=".$mid." AND conf_name='".$conf_name."' ";
 	$result = $xoopsDB->query($query);
@@ -1607,11 +1797,35 @@ function wp_convert_rss_charset($srcstr) {
   global $blog_charset;
 	$rss_charset = wp_get_rss_charset();
 	if ($blog_charset != $rss_charset) {
-		return mb_convert_encoding($srcstr,  $rss_charset, $blog_charset);
+		if ((strtolower($blog_charset) == 'euc-jp')&&(strtolower($rss_charset)=='utf-8')) {
+			return mb_convert_encoding(mb_convert_encoding($srcstr,"SJIS","EUC-JP"),"UTF-8","SJIS-win");
+		}
+		return mb_convert_encoding($srcstr,	 $rss_charset, $blog_charset);
 	} else {
 		return $srcstr;
 	}
 }
+
+function mb_conv($str,$to,$from)
+{
+	if (function_exists('mb_convert_encoding')) {
+		if ($to != $from) {
+			if ((strtolower($from) == 'euc-jp')&&(strtolower($to)=='utf-8')) {
+				$retstr = mb_convert_encoding(mb_convert_encoding($str,"SJIS","EUC-JP"),"UTF-8","SJIS-win");
+			} else if (((strtolower($from) == 'sjis')||(strtolower($from) == 'shiftjis'))&&(strtolower($to)=='utf-8')) {
+				$retstr = mb_convert_encoding($str,"UTF-8","SJIS-win");
+			} else {
+				$retstr = mb_convert_encoding($str,$to,$from);
+			}
+		} else {
+			$retstr = $str;
+		}
+	} else {
+		$retstr = $str;
+	}
+	return $retstr;
+}
+
 function trailingslashit($string) {
     if ( '/' != substr($string, -1)) {
         $string .= '/';
@@ -1620,9 +1834,89 @@ function trailingslashit($string) {
 }
 
 function get_version() {
-	$old_stat=error_reporting(0);
-	include (dirname(dirname(__FILE__))."/xoops_version.php");
-	error_reporting($old_stat);
-	return $modversion['version'];
+	global $wp_version_str;
+	return $wp_version_str;
+}
+
+function get_custom_path($filename) {
+	global $wp_id, $wp_base, $xoopsConfig;
+	if (file_exists($wp_base[$wp_id].'/themes/'.$xoopsConfig['theme_set'].'/'. $filename)) {
+		$themes = $xoopsConfig['theme_set'];
+	} else {
+		$themes = "default";
+	}
+	return $wp_base[$wp_id].'/themes/'.$themes.'/'. $filename;
+}
+
+function get_custom_url($filename) {
+	global $wp_id, $wp_base, $wp_siteurl, $xoopsConfig;
+	if (file_exists($wp_base[$wp_id].'/themes/'.$xoopsConfig['theme_set'].'/'. $filename)) {
+		$themes = $xoopsConfig['theme_set'];
+	} else {
+		$themes = "default";
+	}
+	return $wp_siteurl[$wp_id].'/themes/'.$themes.'/'. $filename;
+}
+
+function auto_upgrade() {
+	global $wpdb, $wp_id;
+	$wpdb->hide_errors();
+
+	if ($wpdb->query("SHOW COLUMNS FROM {$wpdb->postmeta[$wp_id]}")==false) {
+		$sql1 = "CREATE TABLE {$wpdb->postmeta[$wp_id]} (
+					meta_id int(11) NOT NULL auto_increment,
+					post_id int(11) NOT NULL default '0',
+					meta_key varchar(255) default NULL,
+					meta_value text,
+					PRIMARY KEY	 (meta_id),
+					KEY post_id (post_id),
+					KEY meta_key (meta_key)
+				)";
+		$wpdb->query($sql1);
+	}
+
+	if ($wpdb->query("SHOW COLUMNS FROM {$wpdb->comments[$wp_id]} LIKE 'comment_type'")==false) {
+		$sql1 = "ALTER TABLE {$wpdb->comments[$wp_id]} ADD (
+					comment_agent varchar(255) NOT NULL default '',
+					comment_type varchar(20) NOT NULL default '',
+					comment_parent int(11) NOT NULL default '0',
+					user_id int(11) NOT NULL default '0',
+				)";
+		$wpdb->query($sql1);
+	}
+	$wpdb->show_errors();
+	add_option('use_comment_preview','0', 2, "Display Preview Screen after comment posting.", 2, 8);
+}
+
+function current_wp() {
+	global $wp_id, $wp_base;
+	$cur_PATH = $_SERVER['SCRIPT_FILENAME'];
+	if (preg_match("/^".preg_quote($wp_base[$wp_id]."/","/")."/i",$cur_PATH)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function get_ticket($name='', $timeout=300) {
+  global $wp_id, $wp_prefix;
+	$session_tiket = md5($name.md5(XOOPS_ROOT_PATH.XOOPS_DB_NAME.XOOPS_DB_USER.XOOPS_DB_PASS).microtime()*100000);
+	$_SESSION[$wp_prefix[$wp_id].$name.'_tiket'] = $session_tiket;
+	$_SESSION[$wp_prefix[$wp_id].$name.'_lifetime'] = time()+$timeout;
+	return $session_tiket;
+}
+
+function verify_ticket($name,$ticket,$location) {
+  global $wp_id, $wp_prefix;
+	$session_ticket = $_SESSION[$wp_prefix[$wp_id].$name.'_tiket'];
+	$session_lifetime = $_SESSION[$wp_prefix[$wp_id].$name.'_lifetime'];
+	unset($_SESSION[$wp_prefix[$wp_id].$name.'_lifetime']);
+	unset($_SESSION[$wp_prefix[$wp_id].$name.'_tiket']);
+	if ($session_ticket != $ticket) {
+		redirect_header($location ,5,'Illeagal POST operation');
+	}
+	if (time()>$session_lifetime) {
+		redirect_header($location ,5,'POST session time expired.');
+	}
 }
 ?>

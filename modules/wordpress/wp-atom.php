@@ -1,11 +1,12 @@
 <?php 
 $blog = 1;
 $doing_rss = 1;
-header("Content-type: application/xml");
-include_once (dirname(__FILE__)."/../../mainfile.php");
+require(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
-if ($_GET['num']) $showposts = $_GET['num'];
+param('num','integer');
+if (isset($num)) $showposts = $num;
 require('wp-blog-header.php');
+
 if (isset($showposts) && $showposts) {
     $showposts = (int)$showposts;
 	$posts_per_page = $showposts;
@@ -13,6 +14,7 @@ if (isset($showposts) && $showposts) {
 	$posts_per_page = get_settings('posts_per_rss');
 }
 $rss_charset = wp_get_rss_charset();
+header("Content-type: application/xml");
 ?>
 <?php echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>'; ?>
 <feed version="0.3"

@@ -1,23 +1,4 @@
 <?php
-
-// Default filters for these functions
-add_filter('comment_author', 'wptexturize');
-add_filter('comment_author', 'convert_chars');
-
-add_filter('comment_email', 'antispambot');
-
-add_filter('comment_url', 'clean_url');
-
-add_filter('comment_text', 'convert_bbcode');
-add_filter('comment_text', 'convert_gmcode');
-add_filter('comment_text', 'convert_chars');
-add_filter('comment_text', 'make_clickable');
-add_filter('comment_text', 'wpautop', 30);
-add_filter('comment_text', 'balanceTags');
-add_filter('comment_text', 'convert_smilies', 20);
-
-add_filter('comment_excerpt', 'convert_chars');
-
 function clean_url($url) {
 	if ('' == $url) return $url;
 	$url = preg_replace('|[^a-z0-9-~+_.?#=&;,/:]|i', '', $url);
@@ -28,8 +9,8 @@ function clean_url($url) {
 }
 
 function comments_number($zero='No Comments', $one='1 Comment', $more='% Comments', $number='') {
-	global $id, $comment,  $wpdb ,$wp_id;
-	if ('' == $number) $number = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $id AND comment_approved = '1'");
+	global $wp_post_id, $comment,  $wpdb ,$wp_id;
+	if ('' == $number) $number = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $wp_post_id AND comment_approved = '1'");
 	if ($number == 0) {
 		$blah = $zero;
 	} elseif ($number == 1) {
@@ -37,11 +18,11 @@ function comments_number($zero='No Comments', $one='1 Comment', $more='% Comment
 	} elseif ($number  > 1) {
 		$blah = str_replace('%', $number, $more);
 	}
-	echo $blah;
+    echo apply_filters('comments_number', $blah);
 }
 
 function comments_link($file='', $echo=true) {
-	global $id, $pagenow;
+	global $wp_post_id, $pagenow;
 	if ($file == '')	$file = $pagenow;
 	if ($file == '/')	$file = '';
 	if (!$echo) return get_permalink() . '#comments';
@@ -57,13 +38,17 @@ function comments_popup_script($width=400, $height=400, $file='wp-comments-popup
 }
 
 function comments_popup_link($zero='No Comments', $one='1 Comment', $more='% Comments', $CSSclass='', $none='Comments Off') {
-	global $id, $wpcommentspopupfile, $wpcommentsjavascript, $post, $wpdb,  $cookiehash ,$wp_id;
-	global $siteurl;
+	global $wp_post_id, $wpcommentspopupfile, $wpcommentsjavascript, $post, $wpdb,  $cookiehash ,$wp_id;
+	global $siteurl,$wp_mod;
 	global $comment_count_cache;
-	if ('' == $comment_count_cache[$wp_id]["$id"]) {
-		$number = $wpdb->get_var("SELECT COUNT(comment_ID) FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $id AND comment_approved = '1';");
+	if (get_xoops_option($wp_mod[$wp_id],'wp_use_xoops_comments') == 0) {
+		if ('' == $comment_count_cache[$wp_id]["$wp_post_id"]) {
+			$number = $wpdb->get_var("SELECT COUNT(comment_ID) FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $wp_post_id AND comment_approved = '1';");
 	} else {
-		$number = $comment_count_cache[$wp_id]["$id"];
+			$number = $comment_count_cache[$wp_id]["$wp_post_id"];
+		}
+	} else {
+		$number = $wpdb->get_var("SELECT COUNT(comment_ID) FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $wp_post_id AND comment_approved = '1' AND (comment_content like '<trackback />%' OR comment_content like '<pingkback />%');");
 	}
 	if (0 == $number && 'closed' == $post->comment_status && 'closed' == $post->ping_status) {
 		echo $none;
@@ -77,12 +62,58 @@ function comments_popup_link($zero='No Comments', $one='1 Comment', $more='% Com
         }
         echo '<a href="';
         if ($wpcommentsjavascript) {
-            echo $siteurl.'/'.$wpcommentspopupfile.'?p='.$id.'&amp;c=1';
+            echo $siteurl.'/'.$wpcommentspopupfile.'?p='.$wp_post_id.'&amp;c=1';
             //echo get_permalink();
             echo '" onclick="wpopen(this.href); return false"';
         } else {
             // if comments_popup_script() is not in the template, display simple comment link
             comments_link();
+            echo '"';
+        }
+        if (!empty($CSSclass)) {
+            echo ' class="'.$CSSclass.'"';
+        }
+        echo '>';
+        comments_number($zero, $one, $more, $number);
+        echo '</a>';
+    }
+}
+
+function xcomments_link($file='', $echo=true) {
+	global $wp_post_id, $pagenow;
+	if ($file == '')	$file = $pagenow;
+	if ($file == '/')	$file = '';
+	if (!$echo) return get_permalink() . '#xcomments';
+	else echo get_permalink() . '#xcomments';
+}
+
+function xcomments_popup_link($zero='No Comments', $one='1 Comment', $more='% Comments', $CSSclass='', $none='Comments Off') {
+	global $wp_post_id, $wpcommentspopupfile, $wpcommentsjavascript, $post, $wpdb,  $cookiehash ,$wp_id;
+	global $siteurl, $xoopsDB, $xoopsModule, $wp_mod;
+
+	$module_handler =& xoops_gethandler('module');
+	$module =& $module_handler->getByDirname($wp_mod[$wp_id]);
+	$mid = $module->getVar('mid');
+
+	$number = xoops_comment_count($mid, $wp_post_id);
+	if (0 == $number && 'closed' == $post->comment_status) {
+		echo $none;
+		return;
+	} else {
+        if (!empty($post->post_password)) { // if there's a password
+            if ($_COOKIE['wp-postpass_'.$cookiehash] != $post->post_password) {  // and it doesn't match the cookie
+                echo("Enter your password to view comments");
+                return;
+            }
+        }
+        echo '<a href="';
+        if ($wpcommentsjavascript) {
+            echo $siteurl.'/'.$wpcommentspopupfile.'?p='.$wp_post_id.'&amp;c=1';
+            //echo get_permalink();
+            echo '" onclick="wpopen(this.href); return false"';
+        } else {
+            // if comments_popup_script() is not in the template, display simple comment link
+            xcomments_link();
             echo '"';
         }
         if (!empty($CSSclass)) {
@@ -114,7 +145,7 @@ function comment_author() {
 
 function comment_author_email() {
 	global $comment;
-	echo apply_filters('author_email', stripslashes($comment->comment_author_email));
+	echo apply_filters('author_email', $comment->comment_author_email);
 }
 
 function comment_author_link() {
@@ -149,7 +180,7 @@ function comment_author_email_link($linktext='', $before='', $after='') {
 	global $comment;
 	$email = apply_filters('comment_email', $comment->comment_author_email);
 	if ((!empty($email)) && ($email != '@')) {
-	$display = ($linktext != '') ? $linktext : stripslashes($email);
+		$display = ($linktext != '') ? $linktext : $email;
 		echo $before;
 		echo "<a href='mailto:$email'>$display</a>";
 		echo $after;
@@ -161,7 +192,7 @@ function comment_author_url_link($linktext='', $before='', $after='') {
 	$url = apply_filters('comment_url', $comment->comment_author_url);
 
 	if ((!empty($url)) && ($url != 'http://') && ($url != 'http://url')) {
-	$display = ($linktext != '') ? $linktext : stripslashes($url);
+		$display = ($linktext != '') ? $linktext : $url;
 		echo "$before<a href='$url' rel='external'>$display</a>$after";
 	}
 }
@@ -175,14 +206,14 @@ function comment_text() {
 	global $comment;
 	$comment_text = str_replace('<trackback />', '', $comment->comment_content);
 	$comment_text = str_replace('<pingback />', '', $comment_text);
-	echo apply_filters('comment_text', $comment_text);
+	echo apply_filters('comment_text', stripslashes($comment_text));
 }
 
 function comment_excerpt() {
 	global $comment;
 	$comment_text = str_replace('<trackback />', '', $comment->comment_content);
 	$comment_text = str_replace('<pingback />', '', $comment_text);
-	$comment_text = strip_tags($comment_text);
+	$comment_text = strip_tags(stripslashes($comment_text));
 	$blah = explode(' ', $comment_text);
 	if (count($blah) > 20) {
 		$k = 20;
@@ -223,12 +254,12 @@ function comments_rss_link($link_text='Comments RSS', $commentsrssfilename = 'wp
 }
 
 function comments_rss($commentsrssfilename = 'wp-commentsrss2.php') {
-	global $id,$siteurl;
+	global $wp_post_id,$siteurl;
 
 	if ('' != get_settings('permalink_structure')) {
 		$url = trailingslashit(get_permalink()) . 'feed/';
 	} else {
-		$url = $siteurl . '/' . $commentsrssfilename.'?p='.$id;
+		$url = $siteurl . '/' . $commentsrssfilename.'?p='.$wp_post_id;
 	}
 	return $url;
 }
@@ -265,8 +296,8 @@ function permalink_comments_rss() {
 }
 
 function trackback_url($display = true) {
-	global $id,$siteurl;
-	$tb_url = $siteurl . '/wp-trackback.php/' . $id;
+	global $wp_post_id,$siteurl;
+	$tb_url = $siteurl . '/wp-trackback.php/' . $wp_post_id;
 	
 	if ('' != get_settings('permalink_structure')) {
 		$tb_url = trailingslashit(get_permalink()) . 'trackback/';
@@ -281,7 +312,7 @@ function trackback_url($display = true) {
 
 
 function trackback_rdf($timezone = 0) {
-	global $id;
+	global $wp_post_id;
 	if (!stristr($_SERVER['HTTP_USER_AGENT'], 'W3C_Validator')) {
 	echo '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
 	    xmlns:dc="http://purl.org/dc/elements/1.1/"

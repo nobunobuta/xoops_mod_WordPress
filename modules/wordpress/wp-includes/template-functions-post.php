@@ -1,24 +1,4 @@
 <?php
-
-// Default filters
-add_filter('the_title', 'convert_smilies');
-add_filter('the_title', 'convert_chars');
-add_filter('the_title', 'trim');
-
-add_filter('the_title_rss', 'strip_tags');
-
-add_filter('the_content', 'convert_bbcode');
-add_filter('the_content', 'convert_gmcode');
-add_filter('the_content', 'convert_smilies');
-add_filter('the_content', 'convert_chars');
-add_filter('the_content', 'wpautop');
-
-add_filter('the_excerpt', 'convert_bbcode');
-add_filter('the_excerpt', 'convert_gmcode');
-add_filter('the_excerpt', 'convert_smilies');
-add_filter('the_excerpt', 'convert_chars');
-add_filter('the_excerpt', 'wpautop');
-
 function get_the_password_form() {
 	$output = "<form action='" . get_settings('siteurl') . "/wp-pass.php' method='post'>
 	<p>This post is password protected. To view it please enter your password below:</p>
@@ -29,8 +9,8 @@ function get_the_password_form() {
 }
 
 function the_ID() {
-	global $id;
-	echo $id;
+	global $wp_post_id;
+	echo $wp_post_id;
 }
 
 function the_title($before = '', $after = '', $echo = true) {
@@ -112,7 +92,7 @@ function the_content_rss($more_link_text='(more...)', $stripteaser=0, $more_file
 }
 
 function get_the_content($more_link_text='(more...)', $stripteaser=0, $more_file='') {
-	global $id, $post, $more, $c, $withcomments, $page, $pages, $multipage, $numpages;
+	global $wp_post_id, $post, $more, $c, $withcomments, $page, $pages, $multipage, $numpages;
 	global $preview, $cookiehash;
     global $pagenow;
 	$output = '';
@@ -130,7 +110,7 @@ function get_the_content($more_link_text='(more...)', $stripteaser=0, $more_file
 		$file = $pagenow; //$_SERVER['PHP_SELF'];
 	}
 	$content = $pages[$page-1];
-	$content = explode('<!--more-->', $content);
+    $content = explode('<!--more-->', $content, 2);
 	if ((preg_match('/<!--noteaser-->/', $post->post_content) && ((!$multipage) || ($page==1))))
 		$stripteaser = 1;
 	$teaser = $content[0];
@@ -139,9 +119,9 @@ function get_the_content($more_link_text='(more...)', $stripteaser=0, $more_file
 	$output .= $teaser;
 	if (count($content)>1) {
 		if ($more) {
-			$output .= '<a id="more-'.$id.'"></a>'.$content[1];
+			$output .= '<a id="more-'.$wp_post_id.'"></a>'.$content[1];
 		} else {
-			$output .= " <a href='". get_permalink() . "#more-$id'>$more_link_text</a>";
+            $output .= ' <a href="'. get_permalink() . "#more-$wp_post_id\">$more_link_text</a>";
 		}
 	}
 	if ($preview) { // preview fix for javascript bug with foreign languages
@@ -188,7 +168,7 @@ function the_excerpt_rss($cut = 0, $encode_html = 0) {
 }
 
 function get_the_excerpt($fakeit = false) {
-	global $id, $post;
+	global $wp_post_id, $post;
 	global $preview, $cookiehash;
 	$output = '';
 	$output = stripslashes($post->post_excerpt);
@@ -237,7 +217,7 @@ function wp_link_pages($args = '') {
 }
 
 function link_pages($before='<br />', $after='<br />', $next_or_number='number', $nextpagelink='next page', $previouspagelink='previous page', $pagelink='%', $more_file='') {
-	global $id, $page, $numpages, $multipage, $more;
+	global $wp_post_id, $page, $numpages, $multipage, $more;
 	global $pagenow;
 	if ($more_file != '') {
 		$file = $more_file;
@@ -289,7 +269,7 @@ function link_pages($before='<br />', $after='<br />', $next_or_number='number',
 
 
 function previous_post($format='%', $previous='previous post: ', $title='yes', $in_same_cat='no', $limitprev=1, $excluded_categories='') {
-	global  $id, $post, $siteurl, $wpdb ,$wp_id;
+	global  $wp_post_id, $post, $siteurl, $wpdb ,$wp_id;
 	global $p, $posts, $posts_per_page, $s, $single;
 
 	if(($p) || ($posts_per_page == 1) || 1 == $single) {
@@ -326,7 +306,7 @@ function previous_post($format='%', $previous='previous post: ', $title='yes', $
 }
 
 function next_post($format='%', $next='next post: ', $title='yes', $in_same_cat='no', $limitnext=1, $excluded_categories='') {
-	global  $p, $posts, $id, $post, $siteurl, $wpdb ,$wp_id;
+	global  $p, $posts, $wp_post_id, $post, $siteurl, $wpdb ,$wp_id;
 	global $time_difference, $single;
 	if(($p) || ($posts==1) || 1 == $single) {
 
@@ -465,46 +445,44 @@ function posts_nav_link($sep=' :: ', $prelabel='<< Previous Page', $nxtlabel='Ne
 		}
 	}
 }
-if (0) {
-	/*
-	 * Post-meta: Custom per-post fields.
-	 */
-	 
-	function get_post_custom() {
-		global $id, $post_meta_cache;
+/*
+ * Post-meta: Custom per-post fields.
+ */
+ 
+function get_post_custom() {
+	global $wp_post_id, $post_meta_cache,$wp_id;
 
-		return $post_meta_cache[$id];
-	}
+	return $post_meta_cache[$wp_id][$wp_post_id];
+}
 
-	function get_post_custom_keys() {
-		global $id, $post_meta_cache;
-		
-		if (!is_array($post_meta_cache[$id]))
-			return;
-		if ($keys = array_keys($post_meta_cache[$id]))
-			return $keys;
-	}
+function get_post_custom_keys() {
+	global $wp_post_id, $post_meta_cache,$wp_id;
+	
+	if (!is_array($post_meta_cache[$wp_id][$wp_post_id]))
+		return;
+	if ($keys = array_keys($post_meta_cache[$wp_id][$wp_post_id]))
+		return $keys;
+}
 
-	function get_post_custom_values($key='') {
-		global $id, $post_meta_cache;
+function get_post_custom_values($key='') {
+	global $wp_post_id, $post_meta_cache,$wp_id;
 
-		return $post_meta_cache[$id][$key];
-	}
+	return $post_meta_cache[$wp_id][$wp_post_id][$key];
+}
 
-	// this will probably change at some point...
-	function the_meta() {
-		global $id, $post_meta_cache;
-		
-		if ($keys = get_post_custom_keys()) {
-			echo "<ul class='post-meta'>\n";
-			foreach ($keys as $key) {
-				$values = array_map('trim',$post_meta_cache[$id][$key]);
-				$value = implode($values,', ');
-				
-				echo "<li><span class='post-meta-key'>$key:</span> $value</li>\n";
-			}
-			echo "</ul>\n";
+// this will probably change at some point...
+function the_meta() {
+	global $wp_post_id, $post_meta_cache,$wp_id;
+	
+	if ($keys = get_post_custom_keys()) {
+		echo "<ul class='post-meta'>\n";
+		foreach ($keys as $key) {
+			$values = array_map('trim',$post_meta_cache[$wp_id][$wp_post_id][$key]);
+			$value = implode($values,', ');
+			
+			echo "<li><span class='post-meta-key'>$key:</span> $value</li>\n";
 		}
+		echo "</ul>\n";
 	}
 }
 ?>

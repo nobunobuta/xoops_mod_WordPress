@@ -5,6 +5,7 @@ function the_author($idmode = '', $echo = true) {
     if (empty($idmode)) {
         $idmode = $authordata->user_idmode;
     }
+
     if ($idmode == 'nickname')    $id = $authordata->user_nickname;
     if ($idmode == 'login')    $id = $authordata->user_login;
     if ($idmode == 'firstname')    $id = $authordata->user_firstname;
@@ -23,61 +24,60 @@ function the_author_description() {
 	echo $authordata->user_description;
 }
 function the_author_login() {
-	global $id,$authordata;	echo $authordata->user_login;
+	global $authordata;	echo $authordata->user_login;
 }
 
 function the_author_firstname() {
-	global $id,$authordata;	echo $authordata->user_firstname;
+	global $authordata;	echo $authordata->user_firstname;
 }
 
 function the_author_lastname() {
-	global $id,$authordata;	echo $authordata->user_lastname;
+	global $authordata;	echo $authordata->user_lastname;
 }
 
 function the_author_nickname() {
-	global $id,$authordata;	echo $authordata->user_nickname;
+	global $authordata;	echo $authordata->user_nickname;
 }
 
 function the_author_ID() {
-	global $id,$authordata;	echo $authordata->ID;
+	global $authordata;	echo $authordata->ID;
 }
 
 function the_author_email() {
-	global $id,$authordata;	echo antispambot($authordata->user_email);
+	global $authordata;	echo antispambot($authordata->user_email);
 }
 
 function the_author_url() {
-	global $id,$authordata;	echo $authordata->user_url;
+	global $authordata;	echo $authordata->user_url;
 }
 
 function the_author_icq() {
-	global $id,$authordata;	echo $authordata->user_icq;
+	global $authordata;	echo $authordata->user_icq;
 }
 
 function the_author_aim() {
-	global $id,$authordata;	echo str_replace(' ', '+', $authordata->user_aim);
+	global $authordata;	echo str_replace(' ', '+', $authordata->user_aim);
 }
 
 function the_author_yim() {
-	global $id,$authordata;	echo $authordata->user_yim;
+	global $authordata;	echo $authordata->user_yim;
 }
 
 function the_author_msn() {
-	global $id,$authordata;	echo $authordata->user_msn;
+	global $authordata;	echo $authordata->user_msn;
 }
 
 function the_author_posts() {
-	global $id,$postdata;	$posts=get_usernumposts($post->post_author);	echo $posts;
+	global $post;	$posts=get_usernumposts($post->post_author);	echo $posts;
 }
 
 function the_author_posts_link($idmode='') {
-    global $id, $authordata;
-
+    global $authordata;
     echo '<a href="' . get_author_link(0, $authordata->ID, $authordata->user_login) . '" title="' . sprintf("Posts by %s", htmlspecialchars(the_author($idmode, false))) . '">' . stripslashes(the_author($idmode, false)) . '</a>';
 }
 
 function the_author_info_link($idmode='') {
-    global $id, $authordata;
+    global $authordata;
 
     echo '<a href="' . XOOPS_URL . '/userinfo.php?uid=' .the_author('ID',false) . '" title="' . sprintf("Posts by %s", htmlspecialchars(the_author($idmode, false))) . '">' . stripslashes(the_author($idmode, false)) . '</a>';
 }
@@ -128,7 +128,7 @@ function wp_list_authors($args = '') {
     if (!isset($r['feed'])) $r['feed'] = '';
     if (!isset($r['feed_image'])) $r['feed_image'] = '';
 
-	list_authors($r['optioncount'], $r['exclude_admin'], $r['show_fullname'], $r[hide_empty], $r['feed'], $r['feed_image']);
+	list_authors($r['optioncount'], $r['exclude_admin'], $r['show_fullname'], $r['hide_empty'], $r['feed'], $r['feed_image']);
 }
 
 function list_authors($optioncount = false, $exclude_admin = true, $show_fullname = false, $hide_empty = true, $feed = '', $feed_image = '') {
@@ -221,9 +221,7 @@ function list_authors2($optioncount = false, $exclude_admin = true, $idmode = ''
             $link = '<a href="' . get_author_link(0, $author->ID, $author->user_login) . '" title="' . sprintf("Posts by %s", htmlspecialchars($author->user_nickname)) . '">' . stripslashes($name) . '</a>';
 
             if ( (! empty($feed_image)) || (! empty($feed)) ) {
-                
                 $link .= ' ';
-
                 if (empty($feed_image)) {
                     $link .= '(';
                 }

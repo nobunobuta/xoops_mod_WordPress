@@ -10,100 +10,15 @@ if (file_exists("wp-lang/lang_"._LANGCODE.".php")) {
 }
 global $xoopsDB,$xoopsUser,$wpdb, $wp_id, $wp_inblock;
 global $wp_once_called,$blog_charset;;
-$wpj_head = <<<EOD
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>WordPress &rsaquo; Setup Configuration File</title>
-<meta http-equiv="Content-Type" content="text/html; charset=$blog_charset" />
-<style media="screen" type="text/css">
-    <!--
-	body {
-		font-family: "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
-		margin-left: 15%;
-		margin-right: 15%;
-	}
-	#logo {
-		margin: 0;
-		padding: 0;
-		background-image: url(wp-images/wordpress.gif);
-		background-repeat: no-repeat;
-		height: 60px;
-		border-bottom: 1px solid #dcdcdc;
-	}
-	#logo a {
-		display: block;
-		height: 60px;
-	}
-	#logo a span {
-		display: none;
-	}
-	p, li {
-		line-height: 140%;
-	}
-    -->
-	</style>
-</head>
-<body> 
-<h1 id="logo"><a href="http://wordpress.xwd.jp/"><span>WordPress Japan</span></a></h1>
-EOD;
-
-$wpj_foot = <<<EOD
-</body></html>
-EOD;
-
 $use_cache = 1; // No reason not to
-
 /* Including config and functions files */
-$curpath = dirname(__FILE__).'/';
-
-if (!file_exists($curpath . '/wp-config.php'))
-	die($wpj_head . _LANG_WA_HEADER_GUIDE1 . $wpj_foot);
-
 $wp_inblock = 0;
-require($curpath.'/wp-config.php');
+require(dirname(__FILE__).'/wp-config.php');
 
-$path_info = array();
 if ( !empty( $_SERVER['PATH_INFO'] ) ) {
-    // Fetch the rewrite rules.
-    $rewrite = rewrite_rules('matches');
-
-    $pathinfo = $_SERVER['PATH_INFO'];
-    // Trim leading '/'.
-    $pathinfo = preg_replace('!^/!', '', $pathinfo);
-
-    if (! empty($rewrite)) {
-        // Get the name of the file requesting path info.
-        $req_uri = $_SERVER['REQUEST_URI'];
-        $req_uri = str_replace($pathinfo, '', $req_uri);
-        $req_uri = preg_replace("!/+$!", '', $req_uri);
-        $req_uri = explode('/', $req_uri);
-        $req_uri = $req_uri[count($req_uri)-1];
-
-        // Look for matches.
-        $pathinfomatch = $pathinfo;
-        foreach ($rewrite as $match => $query) {
-            // If the request URI is the anchor of the match, prepend it
-            // to the path info.
-            if ((! empty($req_uri)) && (strpos($match, $req_uri) === 0)) {
-                $pathinfomatch = $req_uri . '/' . $pathinfo;
-            }
-
-            if (preg_match("!^$match!", $pathinfomatch, $matches)) {
-                // Got a match.
-                // Trim the query of everything up to the '?'.
-                $query = preg_replace("!^.+\?!", '', $query);
-
-                // Substitute the substring matches into the query.
-                eval("\$query = \"$query\";");
-
-                // Parse the query.
-                parse_str($query, $path_info);
-                break;
-            }
-        }
-    }    
+	permlink_to_param();
 }
+
 $wpvarstoreset = array('m','p','posts','w','c', 'cat','withcomments','s','search','exact', 'sentence','poststart','postend','preview','debug', 'calendar','page','paged','more','tb', 'pb','author','order','orderby', 'year', 'monthnum', 'day', 'name', 'category_name','author_name');
 
 for ($i=0; $i<count($wpvarstoreset); $i += 1) {
@@ -122,20 +37,48 @@ for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 		}
 	}
 }
-/* Sending HTTP headers */
-// It is presumptious to think that WP is the only thing that might change on the page.
-@header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 				// Date in the past
-@header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); // always modified
-@header("Cache-Control: no-store, no-cache, must-revalidate"); 	// HTTP/1.1
-@header("Cache-Control: post-check=0, pre-check=0", false);
-@header("Pragma: no-cache"); 									// HTTP/1.0
-@header ("X-Pingback: $siteurl/xmlrpc.php");
+
+param('m','integer',NO_DEFAULT_PARAM, true);  //Month Param   (YYYY[MM[DD[hh[mm[ss]]]]])
+param('year','integer',NO_DEFAULT_PARAM, true);
+param('monthnum','integer',NO_DEFAULT_PARAM, true);
+param('w','integer',NO_DEFAULT_PARAM, true);  //WeekNum Param
+param('day','integer',NO_DEFAULT_PARAM, true);
+
+param('p','string',NO_DEFAULT_PARAM, true);  //PostID Param ("All" for All);
+param('name','string',NO_DEFAULT_PARAM, true);  //PostName Param
+
+param('cat','string',NO_DEFAULT_PARAM,true);  // Category ID (Start with "-" means Exclude this.).
+param('category_name','string',NO_DEFAULT_PARAM,true);  // Category Name
+
+param('author','string',NO_DEFAULT_PARAM,true);// Author ID (Start with "-" means Exclude this.).
+param('author_name','string',NO_DEFAULT_PARAM,true);// Author Name
+
+param('s','html',NO_DEFAULT_PARAM,true);    //Search String
+param('exact','integer',0, true);   //Search Exactly matching flag
+param('sentence','integer',0,true);   //Search Sentence matching flag
+
+param('poststart','integer',NO_DEFAULT_PARAM,true); // Query Limt Start number
+param('postend','integer',NO_DEFAULT_PARAM,true); // Query Limt End number
+
+param('order','string','DESC',true);
+param('orderby','string','date',true);
+
+param('page','integer',NO_DEFAULT_PARAM,true);   // Content Page number;
+param('paged','integer',NO_DEFAULT_PARAM,true); // Index Page number;
+
+param('c','integer',NO_DEFAULT_PARAM,true);   //With Comment (=1:yes)
+param('withcomments','integer',NO_DEFAULT_PARAM,true); //With Comment (=1:yes)
+param('preview','integer',NO_DEFAULT_PARAM,true); //Preview Flag
+param('debug','integer',NO_DEFAULT_PARAM,true); //Debug Flag
+param('more','integer',NO_DEFAULT_PARAM,true); // Display More Content;
 
 /* Getting settings from db */
-if (isset($doing_rss) && $doing_rss == 1)
+if (isset($doing_rss) && $doing_rss == 1) {
     $posts_per_page=get_settings('posts_per_rss');
-if (!isset($posts_per_page) || $posts_per_page == 0)
+}
+if (!isset($posts_per_page) || $posts_per_page == 0) {
     $posts_per_page = get_settings('posts_per_page');
+}
 $what_to_show = get_settings('what_to_show');
 $archive_mode = get_settings('archive_mode');
 global $dateformat,$timeformat;
@@ -152,6 +95,7 @@ $where = '';
 $limits = '';
 $distinct = '';
 $join = '';
+$search = '';
 
 if ($pagenow != 'post.php') { timer_start(); }
 
@@ -159,9 +103,10 @@ if (isset($showposts) && $showposts) {
     $showposts = (int)$showposts;
 	$posts_per_page = $showposts;
 }
+
 // if a month is specified in the querystring, load that month
-if ($m != '') {
-	$m = ''.intval($m);
+if (isset($m) && $m) {
+	$m = "$m";
 	$where .= ' AND YEAR(post_date)='.substr($m,0,4);
 	if (strlen($m)>5)
 		$where .= ' AND MONTH(post_date)='.substr($m,4,2);
@@ -175,41 +120,39 @@ if ($m != '') {
 		$where .= ' AND SECOND(post_date)='.substr($m,12,2);
 
 }
-
-if ($year != '') {
-	$year = '' . intval($year);
+if (isset($year) && $year) {
+	$year = "$year";
 	$where .= ' AND YEAR(post_date)=' . $year;
 }
 
-if ($monthnum != '') {
-	$monthnum = '' . intval($monthnum);
+if (isset($monthnum) && $monthnum) {
+	$monthnum = "$monthnum";
 	$where .= ' AND MONTH(post_date)=' . $monthnum;
 }
 
-if ($day != '') {
-	$day = '' . intval($day);
+if (isset($day) && $day) {
+	$day = "$day";
 	$where .= ' AND DAYOFMONTH(post_date)=' . $day;
 }
 
-if ($name != '') {
+if (isset($w) && $w) {
+	$w = "$w";
+	$where .= ' AND WEEK(post_date)=' . $w;
+}
+
+if (isset($name) && $name) {
 	$name = preg_replace('/[^a-z0-9-]/', '', $name);
 	$where .= " AND post_name = '$name'";
 }
 
-if ($w != '') {
-	$w = ''.intval($w);
-	$where .= ' AND WEEK(post_date, 1)=' . $w;
-}
-
 // if a post number is specified, load that post
-if (($p != '') && ($p != 'all')) {
-	$p = intval($p);
+if (isset($p) && $p && ($p != 'all')) {
+	$p = "".intval($p)."";
 	$where = ' AND ID = '.$p;
 }
 
 // if a search pattern is specified, load the posts that match
-if (!empty($s)) {
-	//echo $s."<br>";
+if (isset($s) && $s) {
 	$s = addslashes_gpc($s);
 	$search = ' AND (';
 	// puts spaces instead of commas
@@ -217,6 +160,7 @@ if (!empty($s)) {
 	$s = str_replace(',', ' ', $s);
 	$s = str_replace('"', ' ', $s);
 	$s = trim($s);
+	$s = htmlspecialchars($s);
 	if ($exact) {
 		$n = '';
 	} else {
@@ -236,16 +180,14 @@ if (!empty($s)) {
 }
 
 // category stuff
-if ((empty($cat)) || ($cat == 'all') || ($cat == '0')) {
-	$whichcat='';
-} else {
-	$cat = ''.urldecode($cat).'';
+if (isset($cat) && $cat && ($cat != 'all')) {
+	$cat = urldecode($cat);
 	$cat = addslashes_gpc($cat);
 	if (stristr($cat,'-')) {
 		$eq = '!=';
 		$andor = 'AND';
 		$cat = explode('-',$cat);
-		$cat = intval($cat[1]);
+		$cat = $cat[1];
 	} else {
 		$eq = '=';
 		$andor = 'OR';
@@ -258,15 +200,14 @@ if ((empty($cat)) || ($cat == 'all') || ($cat == '0')) {
         $whichcat .= ' '.$andor.' category_id '.$eq.' '.intval($cat_array[$i]);
         $whichcat .= get_category_children($cat_array[$i], ' '.$andor.' category_id '.$eq.' ');
    }
+	$whichcat .= ')';
     if ($eq == '!=') {
 	    $cat = '-'.$cat; //put back the knowledge that we are excluding a category.
     }
-    $whichcat .= ')';
 }
-
 // Category stuff for nice URIs
 
-if ('' != $category_name) {
+if (isset($category_name) && $category_name) {
     if (stristr($category_name,'/')) {
         $category_name = explode('/',$category_name);
         if ($category_name[count($category_name)-1]) {
@@ -278,23 +219,21 @@ if ('' != $category_name) {
 	$category_name = preg_replace('|[^a-z0-9-]|', '', $category_name);
 	$tables = ", {$wpdb->post2cat[$wp_id]}, {$wpdb->categories[$wp_id]}";
 	$join = " LEFT JOIN {$wpdb->post2cat[$wp_id]} ON ({$wpdb->posts[$wp_id]}.ID = {$wpdb->post2cat[$wp_id]}.post_id) LEFT JOIN {$wpdb->categories[$wp_id]} ON ({$wpdb->post2cat[$wp_id]}.category_id = {$wpdb->categories[$wp_id]}.cat_ID) ";
-	$whichcat = " AND (category_nicename = '$category_name') ";
+	$whichcat = " AND (category_nicename = '$category_name'";
+	$cat = $wpdb->get_var("SELECT cat_ID FROM {$wpdb->categories[$wp_id]} WHERE category_nicename = '$category_name'");
     $whichcat .= get_category_children($cat, " OR category_id = ");
-
-		$cat = $wpdb->get_var("SELECT cat_ID FROM {$wpdb->categories[$wp_id]} WHERE category_nicename = '$category_name'");
+	$whichcat .= " )";
 }
 
 // author stuff
-if ((empty($author)) || ($author == 'all') || ($author == '0')) {
-	$whichauthor='';
-} else {
+if (isset($author) && $author && ($author != 'all')) {
 	$author = ''.urldecode($author).'';
 	$author = addslashes_gpc($author);
 	if (stristr($author, '-')) {
 		$eq = '!=';
 		$andor = 'AND';
 		$author = explode('-', $author);
-		$author = ''.intval($author[1]);
+		$author = ''.$author[1];
 	} else {
 		$eq = '=';
 		$andor = 'OR';
@@ -306,9 +245,9 @@ if ((empty($author)) || ($author == 'all') || ($author == '0')) {
 	}
 	$whichauthor .= ')';
 }
-// Author stuff for nice URIs
 
-if ('' != $author_name) {
+// Author stuff for nice URIs
+if (isset($author_name) && $author_name) {
     if (stristr($author_name,'/')) {
         $author_name = explode('/',$author_name);
         if ($author_name[count($author_name)-1]) {
@@ -317,7 +256,6 @@ if ('' != $author_name) {
         $author_name = $author_name[count($author_name)-2];#there was a trailling slash
         }
     }
-//    $author_name = preg_replace('|[^a-z0-9-_]|', '', strtolower($author_name));
     $author_name = rawurldecode($author_name); // For Japanese Author Name;
     $author = $wpdb->get_var("SELECT ID FROM {$wpdb->users[$wp_id]} WHERE user_login='".$author_name."'");
     $whichauthor .= ' AND (post_author = '.intval($author).')';
@@ -352,10 +290,10 @@ if (empty($orderby)) {
 	}
 }
 
-if ((!$whichcat) && (!$m) && (!$p) && (!$w) && (!$s) && empty($poststart) && empty($postend)) {
+if ((!$whichcat) && (empty($m)||(!$m)) && (empty($p)||(!$p)) && (empty($w)||(!$w)) && (empty($s)||(!$s)) && (empty($poststart)||(!$poststart)) && (empty($postend)||(!$postend))) {
 	if ($what_to_show == 'posts') {
 		$limits = ' LIMIT '.$posts_per_page;
-	} elseif ($what_to_show == 'days' && empty($monthnum) && empty($year) && empty($day)) {
+	} elseif ($what_to_show == 'days' && (empty($monthnum)||(!$monthnum)) && (empty($year)||(!$year)) && (empty($day)||(!$day))) {
 		$lastpostdate = get_lastpostdate();
 		$lastpostdate = mysql2date('Y-m-d 00:00:00',$lastpostdate);
 		$lastpostdate = mysql2date('U',$lastpostdate);
@@ -364,8 +302,8 @@ if ((!$whichcat) && (!$m) && (!$p) && (!$w) && (!$s) && empty($poststart) && emp
 	}
 }
 
-if ( !empty($postend) && ($postend > $poststart) && (!$m) && empty($monthnum) && empty($year) && empty($day) &&(!$w) && (!$whichcat) && (!$s) && (!$p)) {
-	if ($what_to_show == 'posts' || ($what_to_show == 'paged' && (!$paged))) {
+if ( !empty($postend) && ($postend > $poststart) && (empty($m)||(!$m)) && (empty($monthnum)||(!$monthnum)) && (empty($year)||(!$year)) && (empty($day)||(!$day)) && (empty($w)||(!$w)) && (!$whichcat) && (empty($s)||(!$s)) && (empty($p)||(!$p))) {
+	if ($what_to_show == 'posts' || ($what_to_show == 'paged' && (empty($paged)||(!$paged)))) {
 		$poststart = intval($poststart);
 		$postend = intval($postend);
 		$limposts = $postend - $poststart;
@@ -382,15 +320,15 @@ if ( !empty($postend) && ($postend > $poststart) && (!$m) && empty($monthnum) &&
 		$where .= ' AND post_date > \''.$otherdate.'\' AND post_date < \''.$startdate.'\'';
 	}
 } else {
-	if (($what_to_show == 'paged') && (!$p) && (!$more)) {
+	if (($what_to_show == 'paged') && (empty($p)||(!$p)) && (empty($more)||(!$more))) {
 		if ($pagenow != 'post.php') {
 			$pgstrt = '';
-			if ($paged) {
+			if (isset($paged) && $paged ) {
 				$pgstrt = (intval($paged) -1) * $posts_per_page . ', ';
 			}
 			$limits = 'LIMIT '.$pgstrt.$posts_per_page;
 		} else {
-			if (($m) || ($p) || ($w) || ($s) || ($whichcat)) {
+			if ((isset($m) && $m) || (isset($p) && $p) || (isset($w) && $w) || (isset($s) && $s) || ($whichcat)) {
 				$limits = '';
 			} else {
 				$pgstrt = '';
@@ -401,12 +339,11 @@ if ( !empty($postend) && ($postend > $poststart) && (!$m) && empty($monthnum) &&
 			}
 		}
 	}
-	elseif (($m) || ($p) || ($w) || ($s) || ($whichcat) || ($author) || $monthnum || $year || $day) {
+	elseif ((isset($m) && $m) || (isset($p) && $p) || (isset($w) && $w) || (isset($s) && $s) || ($whichcat) || (isset($author) && $author) || (isset($monthnum) && $monthnum) || (isset($year) && $year) || (isset($day) && $day)) {
 		$limits = '';
 	}
 }
-
-if ($p == 'all') {
+if (isset($p) && ($p=='all')) {
 	$where = '';
 }
 
@@ -437,7 +374,7 @@ $where .= " GROUP BY {$wpdb->posts[$wp_id]}.ID";
 $request = " SELECT $distinct * FROM {$wpdb->posts[$wp_id]} $join WHERE 1=1".$where." ORDER BY post_$orderby $limits";
 
 
-if ($preview) {
+if (isset($preview) && $preview) {
 	$request = 'SELECT 1-1'; // dummy mysql query for the preview
 	// little funky fix for IEwin, rawk on that code
 	$is_winIE = ((preg_match('/MSIE/',$HTTP_USER_AGENT)) && (preg_match('/Win/',$HTTP_USER_AGENT)));
@@ -452,6 +389,7 @@ $posts = $wpdb->get_results($request);
 // No point in doing all this work if we didn't match any posts.
 if ($posts) {
     // Get the categories for all the posts
+	$post_id_list = array();
     foreach ($posts as $post) {
     	$post_id_list[] = $post->ID;
     }
@@ -478,12 +416,12 @@ if ($posts) {
 	}
 
     if (1 == count($posts)) {
-    	if ($p || $name) {
+		if ((isset($p) && $p) || (isset($name) && $name)) {
     		$more = 1;
     		$c = 1;
     		$single = 1;
     	}
-    	if ($s && empty($paged)) { // If they were doing a search and got one result
+		if (isset($s) && $s && empty($paged)&& !strstr($_SERVER['PHP_SELF'], 'wp-admin/')) { // If they were doing a search and got one result
     		header('Location: ' . get_permalink($posts[0]->ID));
     	}
 }
