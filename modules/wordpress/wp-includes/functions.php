@@ -391,7 +391,7 @@ function user_pass_ok($user_login,$user_pass) {
 	} else {
 		$userdata = $cache_userdata[$user_login];
 	}
-	return ($user_pass == $userdata->user_pass);
+	return (md5(trim($user_pass)) == $userdata->user_pass);
 }
 
 function get_currentuserinfo() { // a bit like get_userdata(), on steroids
@@ -415,21 +415,24 @@ function get_currentuserinfo() { // a bit like get_userdata(), on steroids
 		$user_nickname = $userdata->user_nickname;
 		$user_email = $userdata->user_email;
 		$user_url = $userdata->user_url;
-		$user_pass_md5 = md5($userdata->user_pass);
+//		$user_pass_md5 = md5($userdata->user_pass);
+		$user_pass_md5 = $xoopsUser->pass();
 	}
 }
 
 
 function get_userdata($userid) {
-	global $wpdb, $cache_userdata, $use_cache, $tableusers;
+	global $wpdb, $cache_userdata, $use_cache, $tableusers, $xoopsDB;
 	if ((empty($cache_userdata[$userid])) || (!$use_cache)) {
 		$user = $wpdb->get_row("SELECT * FROM $tableusers WHERE ID = $userid");
+		$xuser = $wpdb->get_row("SELECT * FROM ".$xoopsDB->prefix('users')." WHERE uid=$userid");
         $user->user_nickname = stripslashes($user->user_nickname);
         $user->user_firstname = stripslashes($user->user_firstname);
         $user->user_lastname = stripslashes($user->user_lastname);
         $user->user_firstname =  stripslashes($user->user_firstname);
         $user->user_lastname = stripslashes($user->user_lastname);
 		$user->user_description = stripslashes($user->user_description);
+		$user->user_pass = $xuser->pass;
 		$cache_userdata[$userid] = $user;
 	} else {
 		$user = $cache_userdata[$userid];
@@ -453,9 +456,11 @@ function get_userdata2($userid) { // for team-listing
 }
 
 function get_userdatabylogin($user_login) {
-	global $tableusers, $cache_userdata, $use_cache, $wpdb;
+	global $tableusers, $cache_userdata, $use_cache, $wpdb, $xoopsDB;
 	if ((empty($cache_userdata["$user_login"])) OR (!$use_cache)) {
 		$user = $wpdb->get_row("SELECT * FROM $tableusers WHERE user_login = '$user_login'");
+		$xuser = $wpdb->get_row("SELECT * FROM ".$xoopsDB->prefix('users')." WHERE uname='".trim($user_login)."'");
+		$user->user_pass = $xuser->pass;
 		$cache_userdata["$user_login"] = $user;
 	} else {
 		$user = $cache_userdata["$user_login"];
@@ -1839,10 +1844,27 @@ function get_xoops_option($dirname,$conf_name) {
 	$record= $xoopsDB->fetcharray($result);
 	$mid = $record['mid'];
     
-	$query = "SELECT conf_value FROM ".$xoopsDB->prefix('config')." WHERE conf_modid=".$mid." AND conf_name='".$conf_name."' ";
+	$query = "SELECT conf_value,conf_valuetype FROM ".$xoopsDB->prefix('config')." WHERE conf_modid=".$mid." AND conf_name='".$conf_name."' ";
 	$result = $xoopsDB->query($query);
 	$record= $xoopsDB->fetcharray($result);
 	$value = $record['conf_value'];
+	$valuetype = $record['conf_valuetype'];
+	
+    switch ($valuetype) {
+    case 'int':
+        return intval($value);
+        break;
+    case 'array':
+        return unserialize($value);
+    case 'float':
+        return (float)$value;
+        break;
+    case 'textarea':
+        return $value;
+    default:
+        return $value;
+        break;
+    }
 	
 	return($value);
 }
