@@ -940,7 +940,7 @@ function trackback($trackback_url, $title, $excerpt, $ID, $charset = "") {
 	global  $wpdb,  $blog_charset ,$wp_id;
 	$title = stripslashes($title);
 	$excerpt = stripslashes($excerpt);
-	$blog_name = stripslashes($blog_name);
+	$blog_name = stripslashes(get_settings('blogname'));
 	if ($charset) {
 		if (function_exists('mb_convert_encoding')) {
 			$title = mb_convert_encoding($title,$charset,$blog_charset);
