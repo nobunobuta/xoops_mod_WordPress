@@ -210,7 +210,7 @@ switch ($action) {
       die ("Cheatin' uh ?");
 
     $submit=$HTTP_POST_VARS["submit"];
-    if (isset($submit) && ($submit == "Save")) {
+    if (isset($submit) && ($submit == _LANG_WLC_SAVEBUTTON_TEXT)) {
 
     $cat_id=$HTTP_POST_VARS["cat_id"];
 
