@@ -55,6 +55,7 @@ if ($comment == 'comment' || $comment == '') {
 }
 
 if ((get_settings('use_comment_preview'))&&($action!='confirm')) {
+	$show_cblock =0;
 	include('header.php');
 	$comment = balanceTags($comment, 1);
 	$comment = convert_chars($comment);

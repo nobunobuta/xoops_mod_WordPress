@@ -28,6 +28,7 @@ $option_groups = $wpdb->get_results("
 							SELECT group_id, group_name, group_desc, group_longdesc 
 							FROM {$wpdb->optiongroups[$wp_id]} ORDER BY group_id
 						");
+$submenu['options.php'] = array();
 foreach ($option_groups as $option_group) {
 	$submenu['options.php'][] = array($option_group->group_name, 6,"options.php?option_group_id={$option_group->group_id}");
 }

@@ -16,7 +16,7 @@ if (($standalone == 0)&&($profile == 0)) {
 	$wp_inblock = 0;
 }
 
-require_once('admin-functions.php');
+require_once(ABSPATH . 'wp-admin/admin-functions.php');
 require_once('auth.php');
 function gethelp_link($this_file, $helptag) {
     $url = 'http://wordpress.org/docs/reference/links/#'.$helptag;
