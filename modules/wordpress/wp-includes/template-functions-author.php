@@ -11,6 +11,7 @@ function the_author($idmode = '', $echo = true) {
     if ($idmode == 'lastname')    $id = $authordata->user_lastname;
     if ($idmode == 'namefl')    $id = $authordata->user_firstname.' '.$authordata->user_lastname;
     if ($idmode == 'namelf')    $id = $authordata->user_lastname.' '.$authordata->user_firstname;
+    if ($idmode == 'ID')        $id = $authordata->ID;
     if (!$idmode) $id = $authordata->user_nickname;
 
     if ($echo) echo $id;
@@ -73,6 +74,12 @@ function the_author_posts_link($idmode='') {
     global $id, $authordata;
 
     echo '<a href="' . get_author_link(0, $authordata->ID, $authordata->user_login) . '" title="' . sprintf("Posts by %s", htmlspecialchars(the_author($idmode, false))) . '">' . stripslashes(the_author($idmode, false)) . '</a>';
+}
+
+function the_author_info_link($idmode='') {
+    global $id, $authordata;
+
+    echo '<a href="' . XOOPS_URL . '/userinfo.php?uid=' .the_author('ID',false) . '" title="' . sprintf("Posts by %s", htmlspecialchars(the_author($idmode, false))) . '">' . stripslashes(the_author($idmode, false)) . '</a>';
 }
 
 function get_author_link($echo = false, $author_id, $author_name) {
