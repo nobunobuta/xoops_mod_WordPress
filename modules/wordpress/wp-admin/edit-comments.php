@@ -7,7 +7,7 @@ $showcomments = intval($_GET['showcomments']);
 $comment_per_page = intval($_GET['comments_per_page']);
 $commentstart = intval($_GET['commentstart']);
 $commentend = intval($_GET['commentend']);
-$order = $_GET['order'];
+$commentorder = $_GET['commentorder'];
 
 if (!$showcomments) {
 	if ($comments_per_page) {
