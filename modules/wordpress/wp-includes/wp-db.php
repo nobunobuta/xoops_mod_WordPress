@@ -61,7 +61,7 @@
 				<p>We're having a little trouble selecting the proper database for WordPress.</p>
 				<ul>
 				<li>Are you sure it exists?</li>
-				<li>Your database name is currently specified as <code>" . WP_DB_NAME ."</code>. Is this correct?</li>
+				<li>Your database name is currently specified as <code>" . DB_NAME ."</code>. Is this correct?</li>
 				<li>On some systems the name of your database is prefixed with your username, so it would be like username_wordpress. Could that be the problem?</li>
 				</ul>
 				<p><a href='http://wordpress.xwd.jp/'>WordPress Japan</a></p>");
@@ -408,6 +408,6 @@
 
 	}
 
-$wpdb = new wpdb(WP_DB_USER, WP_DB_PASSWORD, WP_DB_NAME, WP_DB_HOST);
+$wpdb = new wpdb(DB_USER, DB_PASSWORD, DB_NAME, DB_HOST);
 
 ?>
