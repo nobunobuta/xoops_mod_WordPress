@@ -146,7 +146,7 @@ function backslashit($string) {
 
 
 function mysql2date($dateformatstring, $mysqlstring, $use_b2configmonthsdays = 1) {
-	global $month, $weekday;
+	global $month, $weekday,$s_weekday_length,$s_month_length;
 	$m = $mysqlstring;
 	if (empty($m)) {
 		return false;
@@ -156,10 +156,18 @@ function mysql2date($dateformatstring, $mysqlstring, $use_b2configmonthsdays = 1
 		$datemonth = $month[date('m', $i)];
 		$dateweekday = $weekday[date('w', $i)];
 		$dateformatstring = ' '.$dateformatstring;
-		$dateformatstring = preg_replace("/([^\\\])D/", "\\1".backslashit(substr($dateweekday, 0, 3)), $dateformatstring);
+		if (function_exists('mb_substr')) {
+			$dateformatstring = preg_replace("/([^\\\])D/", "\\1".backslashit(mb_substr($dateweekday, 0, $s_weekday_length)), $dateformatstring);
+		} else {
+			$dateformatstring = preg_replace("/([^\\\])D/", "\\1".backslashit(substr($dateweekday, 0, $s_weekday_length)), $dateformatstring);
+		}
 		$dateformatstring = preg_replace("/([^\\\])F/", "\\1".backslashit($datemonth), $dateformatstring);
 		$dateformatstring = preg_replace("/([^\\\])l/", "\\1".backslashit($dateweekday), $dateformatstring);
-		$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(substr($datemonth, 0, 3)), $dateformatstring);
+		if (function_exists('mb_substr')) {
+			$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(mb_substr($datemonth, 0, $s_month_length)), $dateformatstring);
+		} else {
+			$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(substr($datemonth, 0, $s_month_length)), $dateformatstring);
+		}
 		$dateformatstring = substr($dateformatstring, 1, strlen($dateformatstring)-1);
 	}
 	$j = @date($dateformatstring, $i);
@@ -227,13 +235,13 @@ function get_weekstartend($mysqlstring, $start_of_week) {
 
 function convert_chars($content,$flag='obsolete attribute left there for backwards compatibility') { // html/unicode entities output
 
-	global $use_htmltrans, $wp_htmltrans, $wp_htmltranswinuni;
+	global  $wp_htmltrans, $wp_htmltranswinuni;
 
 	// removes metadata tags
 	$content = preg_replace('/<title>(.+?)<\/title>/','',$content);
 	$content = preg_replace('/<category>(.+?)<\/category>/','',$content);
 
-	if ($use_htmltrans) {
+	if (get_settings('use_htmltrans')) {
 
 		// converts lone & characters into &#38; (a.k.a. &amp;)
 		$content = preg_replace('/&[^#](?![a-z]*;)/ie', '"&#38;".substr("\0",1)', $content);
@@ -258,8 +266,8 @@ function convert_chars($content,$flag='obsolete attribute left there for backwar
 }
 
 function convert_bbcode($content) {
-	global $wp_bbcode, $use_bbcode;
-	if ($use_bbcode) {
+	global $wp_bbcode;
+	if (get_settings('use_bbcode')) {
 		$content = preg_replace($wp_bbcode["in"], $wp_bbcode["out"], $content);
 	}
 	$content = convert_bbcode_email($content);
@@ -267,7 +275,6 @@ function convert_bbcode($content) {
 }
 
 function convert_bbcode_email($content) {
-	global $use_bbcode;
 	$bbcode_email["in"] = array(
 		'#\[email](.+?)\[/email]#eis',
 		'#\[email=(.+?)](.+?)\[/email]#eis'
@@ -282,25 +289,24 @@ function convert_bbcode_email($content) {
 }
 
 function convert_gmcode($content) {
-	global $wp_gmcode, $use_gmcode;
-	if ($use_gmcode) {
+	global $wp_gmcode;
+	if (get_settings('use_gmcode')) {
 		$content = preg_replace($wp_gmcode["in"], $wp_gmcode["out"], $content);
 	}
 	return $content;
 }
 
 function convert_smilies($text) {
-	global $smilies_directory, $use_smilies;
+	global $smilies_directory,$wp_id;
 	global $wp_smiliessearch, $wp_smiliesreplace;
-    $output = '';
-	if ($use_smilies) {
+	if (get_settings('use_smilies')) {
 		// HTML loop taken from texturize function, could possible be consolidated
 		$textarr = preg_split("/(<.*>)/U", $text, -1, PREG_SPLIT_DELIM_CAPTURE); // capture the tags as well as in between
 		$stop = count($textarr);// loop stuff
 		for ($i = 0; $i < $stop; $i++) {
 			$content = $textarr[$i];
 			if ((strlen($content) > 0) && ('<' != $content{0})) { // If it's not a tag
-				$content = str_replace($wp_smiliessearch, $wp_smiliesreplace, $content);
+				$content = str_replace($wp_smiliessearch[$wp_id], $wp_smiliesreplace[$wp_id], $content);
 			}
 			$output .= $content;
 		}
@@ -372,11 +378,11 @@ function strip_all_but_one_link($text, $mylink) {
 
 
 function get_lastpostdate() {
-	global $tableposts, $cache_lastpostdate, $use_cache, $time_difference, $pagenow, $wpdb;
+	global  $cache_lastpostdate, $use_cache, $time_difference, $pagenow, $wpdb ,$wp_id;
 	if ((!isset($cache_lastpostdate)) OR (!$use_cache)) {
 		$now = date("Y-m-d H:i:s",(time() + ($time_difference * 3600)));
 
-		$lastpostdate = $wpdb->get_var("SELECT post_date FROM $tableposts WHERE post_date <= '$now' AND post_status = 'publish' ORDER BY post_date DESC LIMIT 1");
+		$lastpostdate = $wpdb->get_var("SELECT post_date FROM {$wpdb->posts[$wp_id]} WHERE post_date <= '$now' AND post_status = 'publish' ORDER BY post_date DESC LIMIT 1");
 		$cache_lastpostdate = $lastpostdate;
 	} else {
 		$lastpostdate = $cache_lastpostdate;
@@ -422,9 +428,9 @@ function get_currentuserinfo() { // a bit like get_userdata(), on steroids
 
 
 function get_userdata($userid) {
-	global $wpdb, $cache_userdata, $use_cache, $tableusers, $xoopsDB;
+	global $wpdb, $cache_userdata, $use_cache, $xoopsDB ,$wp_id;
 	if ((empty($cache_userdata[$userid])) || (!$use_cache)) {
-		$user = $wpdb->get_row("SELECT * FROM $tableusers WHERE ID = $userid");
+		$user = $wpdb->get_row("SELECT * FROM {$wpdb->users[$wp_id]} WHERE ID = $userid");
 		$xuser = $wpdb->get_row("SELECT * FROM ".$xoopsDB->prefix('users')." WHERE uid=$userid");
         $user->user_nickname = stripslashes($user->user_nickname);
         $user->user_firstname = stripslashes($user->user_firstname);
@@ -441,9 +447,9 @@ function get_userdata($userid) {
 }
 
 function get_userdata2($userid) { // for team-listing
-//	global $tableusers, $post;
+//	global  $post;
 //	$user_data['ID'] = $userid;
-	global $tableusers, $post, $xoopsUser;
+	global  $post, $xoopsUser;
 	$user_data['ID'] = $xoopsUser->uid();
 	$user_data['user_login'] = $post->user_login;
 	$user_data['user_firstname'] = $post->user_firstname;
@@ -456,9 +462,9 @@ function get_userdata2($userid) { // for team-listing
 }
 
 function get_userdatabylogin($user_login) {
-	global $tableusers, $cache_userdata, $use_cache, $wpdb, $xoopsDB;
+	global  $cache_userdata, $use_cache, $wpdb, $xoopsDB ,$wp_id;
 	if ((empty($cache_userdata["$user_login"])) OR (!$use_cache)) {
-		$user = $wpdb->get_row("SELECT * FROM $tableusers WHERE user_login = '$user_login'");
+		$user = $wpdb->get_row("SELECT * FROM {$wpdb->users[$wp_id]} WHERE user_login = '$user_login'");
 		$xuser = $wpdb->get_row("SELECT * FROM ".$xoopsDB->prefix('users')." WHERE uname='".trim($user_login)."'");
 		$user->user_pass = $xuser->pass;
 		$cache_userdata["$user_login"] = $user;
@@ -469,9 +475,9 @@ function get_userdatabylogin($user_login) {
 }
 
 function get_userid($user_login) {
-	global $tableusers, $cache_userdata, $use_cache, $wpdb;
+	global  $cache_userdata, $use_cache, $wpdb ,$wp_id;
 	if ((empty($cache_userdata["$user_login"])) OR (!$use_cache)) {
-		$user_id = $wpdb->get_var("SELECT ID FROM $tableusers WHERE user_login = '$user_login'");
+		$user_id = $wpdb->get_var("SELECT ID FROM {$wpdb->users[$wp_id]} WHERE user_login = '$user_login'");
 
 		$cache_userdata["$user_login"] = $user_id;
 	} else {
@@ -481,14 +487,14 @@ function get_userid($user_login) {
 }
 
 function get_usernumposts($userid) {
-	global $tableposts, $tablecomments, $wpdb;
-	return $wpdb->get_var("SELECT COUNT(*) FROM $tableposts WHERE post_author = $userid");
+	global   $wpdb ,$wp_id;
+	return $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts[$wp_id]} WHERE post_author = $userid");
 }
 
 // examine a url (supposedly from this blog) and try to
 // determine the post ID it represents.
 function url_to_postid($url = '') {
-	global $wpdb, $tableposts, $siteurl;
+	global $wpdb,  $siteurl ,$wp_id;
 
 	// Take a link like 'http://example.com/blog/something'
 	// and extract just the '/something':
@@ -551,7 +557,7 @@ function url_to_postid($url = '') {
 	if ($postname) $where .= " AND post_name = '" . $wpdb->escape($postname) . "' ";
 
 	// Run the query to get the post ID:
-	$id = intval($wpdb->get_var("SELECT ID FROM $tableposts WHERE 1 = 1 " . $where));
+	$id = intval($wpdb->get_var("SELECT ID FROM {$wpdb->posts[$wp_id]} WHERE 1 = 1 " . $where));
 
 	return $id;
 }
@@ -560,13 +566,14 @@ function url_to_postid($url = '') {
 /* Options functions */
 
 function get_settings($setting) {
-	global $wpdb, $cache_settings, $use_cache, $REQUEST_URI;
+	global $wpdb, $cache_settings, $use_cache, $REQUEST_URI, $wp_id;
+	if (!isset($use_cache))	$use_cache=1;
 	if (strstr($REQUEST_URI, 'install.php')) return false;
-	if ((empty($cache_settings)) OR (!$use_cache)) {
+	if ((empty($cache_settings[$wp_id])) OR (!$use_cache)) {
 		$settings = get_alloptions();
-		$cache_settings = $settings;
+		$cache_settings[$wp_id] = $settings;
 	} else {
-		$settings = $cache_settings;
+		$settings = $cache_settings[$wp_id];
 	}
     if (!isset($settings->$setting)) {
         return false;
@@ -577,8 +584,8 @@ function get_settings($setting) {
 }
 
 function get_alloptions() {
-    global $tableoptions, $wpdb;
-    $options = $wpdb->get_results("SELECT option_name, option_value FROM $tableoptions");
+    global  $wpdb ,$wp_id;
+    $options = $wpdb->get_results("SELECT option_name, option_value FROM {$wpdb->options[$wp_id]}");
     if ($options) {
         foreach ($options as $option) {
             $all_options->{$option->option_name} = $option->option_value;
@@ -588,21 +595,21 @@ function get_alloptions() {
 }
 
 function update_option($option_name, $newvalue) {
-	global $wpdb, $tableoptions;
+	global $wpdb, $wp_id;
 	// No validation at the moment
-	$wpdb->query("UPDATE $tableoptions SET option_value = '$newvalue' WHERE option_name = '$option_name'");
+	$wpdb->query("UPDATE {$wpdb->options[$wp_id]} SET option_value = '$newvalue' WHERE option_name = '$option_name'");
 }
 
 function add_option() {
 	// Adds an option if it doesn't already exist
-	global $wpdb, $tableoptions;
+	global $wpdb;
 	// TODO
 }
 
 function get_postdata($postid) {
-	global $post, $tableusers, $tablecategories, $tableposts, $tablecomments, $wpdb;
+	global $post,     $wpdb ,$wp_id;
 
-	$post = $wpdb->get_row("SELECT * FROM $tableposts WHERE ID = $postid");
+	$post = $wpdb->get_row("SELECT * FROM {$wpdb->posts[$wp_id]} WHERE ID = $postid");
 
 	$postdata = array (
 		'ID' => $post->ID,
@@ -645,9 +652,9 @@ function get_postdata2($postid=0) { // less flexible, but saves DB queries
 }
 
 function get_commentdata($comment_ID,$no_cache=0,$include_unapproved=false) { // less flexible, but saves DB queries
-	global $postc,$id,$commentdata,$tablecomments, $wpdb;
+	global $postc,$id,$commentdata, $wpdb ,$wp_id;
 	if ($no_cache) {
-		$query = "SELECT * FROM $tablecomments WHERE comment_ID = $comment_ID";
+		$query = "SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_ID = $comment_ID";
 		if (false == $include_unapproved) {
 		    $query .= " AND comment_approved = '1'";
 		}
@@ -674,9 +681,9 @@ function get_commentdata($comment_ID,$no_cache=0,$include_unapproved=false) { //
 }
 
 function get_catname($cat_ID) {
-	global $tablecategories,$cache_catnames,$use_cache, $wpdb;
+	global $cache_catnames,$use_cache, $wpdb ,$wp_id;
 	if ((!$cache_catnames) || (!$use_cache)) {
-        $results = $wpdb->get_results("SELECT * FROM $tablecategories") or die('Oops, couldn\'t query the db for categories.');
+        $results = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]}") or die('Oops, couldn\'t query the db for categories.');
 		foreach ($results as $post) {
 			$cache_catnames[$post->cat_ID] = $post->cat_name;
 		}
@@ -691,14 +698,14 @@ function profile($user_login) {
 }
 
 function dropdown_categories($default = 0) {
-	global $post, $tablecategories, $tablepost2cat, $mode, $wpdb;
-	$categories = $wpdb->get_results("SELECT * FROM $tablecategories ORDER BY cat_name");
+	global $post,   $mode, $wpdb ,$wp_id;
+	$categories = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]} ORDER BY cat_name");
 
 	if ($post->ID) {
 		$postcategories = $wpdb->get_col("
 			SELECT category_id
-			FROM  $tablecategories, $tablepost2cat
-			WHERE $tablepost2cat.category_id = cat_ID AND $tablepost2cat.post_id = $post->ID
+			FROM  {$wpdb->categories[$wp_id]}, {$wpdb->post2cat[$wp_id]}
+			WHERE {$wpdb->post2cat[$wp_id]}.category_id = cat_ID AND {$wpdb->post2cat[$wp_id]}.post_id = $post->ID
 			");
 	} else {
 		$postcategories[] = $default;
@@ -855,11 +862,11 @@ function timer_stop($display=0,$precision=3) { //if called like timer_stop(1), w
 // pings Weblogs.com
 function pingWeblogs($blog_ID = 1) {
 	// original function by Dries Buytaert for Drupal
-	global $use_weblogsping, $blogname,$siteurl,$blogfilename,$my_pingserver;
-	if ((!(($blogname=="my weblog") && ($siteurl=="http://example.com") && ($blogfilename=="wp.php"))) && (!preg_match("/localhost\//",$siteurl)) && ($use_weblogsping)) {
+	global  $siteurl,$my_pingserver;
+	if ((!((get_settings('blogname')=="my weblog") && ($siteurl=="http://example.com"))) && (!preg_match("/localhost\//",$siteurl)) && (get_settings('use_weblogsping'))) {
 		foreach($my_pingserver as $p) {
 			$client = new xmlrpc_client($p['path'],$p['server'],$p['port']);
-			$message = new xmlrpcmsg("weblogUpdates.ping", array(new xmlrpcval($blogname), new xmlrpcval($siteurl."/".$blogfilename)));
+			$message = new xmlrpcmsg("weblogUpdates.ping", array(new xmlrpcval(get_settings('blogname')), new xmlrpcval($siteurl."/index.php")));
 			$result = $client->send($message, 30);
 			unset($client);
 			unset($message);
@@ -876,10 +883,10 @@ function pingWeblogs($blog_ID = 1) {
 
 // pings Weblogs.com/rssUpdates
 function pingWeblogsRss($blog_ID = 1, $rss_url) {
-	global $use_weblogsrssping, $blogname, $rss_url;
-	if ($blogname != 'my weblog' && $rss_url != 'http://example.com/b2rdf.php' && $use_weblogsrssping) {
+	global $use_weblogsrssping,  $rss_url;
+	if (get_settings('blogname') != 'my weblog' && $rss_url != 'http://example.com/b2rdf.php' && $use_weblogsrssping) {
 		$client = new xmlrpc_client('/RPC2', 'rssrpc.weblogs.com', 80);
-		$message = new xmlrpcmsg('rssUpdate', array(new xmlrpcval($blogname), new xmlrpcval($rss_url)));
+		$message = new xmlrpcmsg('rssUpdate', array(new xmlrpcval(get_settings('blogname')), new xmlrpcval($rss_url)));
 		$result = $client->send($message);
 		if (!$result || $result->faultCode()) {
 			return false;
@@ -890,10 +897,10 @@ function pingWeblogsRss($blog_ID = 1, $rss_url) {
 	}
 }
 
-// pings CaféLog.com
+// pings Cafñ­og.com
 function pingCafelog($cafelogID,$title='',$p='') {
-	global $use_cafelogping, $blogname, $siteurl, $blogfilename;
-	if ((!(($blogname=="my weblog") && ($siteurl=="http://example.com") && ($blogfilename=="wp.php"))) && (!preg_match("/localhost\//",$siteurl)) && ($use_cafelogping) && ($cafelogID != '')) {
+	global $use_cafelogping,  $siteurl;
+	if ((!((get_settings('blogname')=="my weblog") && ($siteurl=="http://example.com"))) && (!preg_match("/localhost\//",$siteurl)) && ($use_cafelogping) && ($cafelogID != '')) {
 		$client = new xmlrpc_client("/xmlrpc.php", "cafelog.tidakada.com", 80);
 		$message = new xmlrpcmsg("b2.ping", array(new xmlrpcval($cafelogID), new xmlrpcval($title), new xmlrpcval($p)));
 		$result = $client->send($message);
@@ -908,14 +915,14 @@ function pingCafelog($cafelogID,$title='',$p='') {
 
 // pings Blo.gs
 function pingBlogs($blog_ID="1") {
-	global $use_blodotgsping, $blodotgsping_url, $use_rss, $blogname, $siteurl, $blogfilename;
-	if ((!(($blogname=='my weblog') && ($siteurl=='http://example.com') && ($blogfilename=='wp.php'))) && (!preg_match('/localhost\//',$siteurl)) && ($use_blodotgsping)) {
-		$url = ($blodotgsping_url == 'http://example.com') ? $siteurl.'/'.$blogfilename : $blodotgsping_url;
+	global   $use_rss,  $siteur;
+	if ((!((get_settings('blogname')=='my weblog') && ($siteurl=='http://example.com'))) && (!preg_match('/localhost\//',$siteurl)) && (get_settings('use_blodotgsping'))) {
+		$url = (get_settings('blodotgsping_url') == 'http://example.com') ? $siteurl.'/index.php' : get_settings('blodotgsping_url');
 		$client = new xmlrpc_client('/', 'ping.blo.gs', 80);
 		if ($use_rss) {
-			$message = new xmlrpcmsg('weblogUpdates.extendedPing', array(new xmlrpcval($blogname), new xmlrpcval($url), new xmlrpcval($url), new xmlrpcval($siteurl.'/b2rss.xml')));
+			$message = new xmlrpcmsg('weblogUpdates.extendedPing', array(new xmlrpcval(get_settings('blogname')), new xmlrpcval($url), new xmlrpcval($url), new xmlrpcval($siteurl.'/b2rss.xml')));
 		} else {
-			$message = new xmlrpcmsg('weblogUpdates.ping', array(new xmlrpcval($blogname), new xmlrpcval($url)));
+			$message = new xmlrpcmsg('weblogUpdates.ping', array(new xmlrpcval(get_settings('blogname')), new xmlrpcval($url)));
 		}
 		$result = $client->send($message);
 		if (!$result || $result->faultCode()) {
@@ -929,27 +936,43 @@ function pingBlogs($blog_ID="1") {
 
 
 // Send a Trackback
-function trackback($trackback_url, $title, $excerpt, $ID) {
-	global $blogname, $wpdb, $tableposts, $blog_charset;
-	$title = urlencode(stripslashes($title));
-	$excerpt = urlencode(stripslashes($excerpt));
-	$blog_name = urlencode(stripslashes($blogname));
+function trackback($trackback_url, $title, $excerpt, $ID, $charset = "") {
+	global  $wpdb,  $blog_charset ,$wp_id;
+	$title = stripslashes($title);
+	$excerpt = stripslashes($excerpt);
+	$blog_name = stripslashes($blog_name);
+	if ($charset) {
+		if (function_exists('mb_convert_encoding')) {
+			$title = mb_convert_encoding($title,$charset,$blog_charset);
+			$excerpt = mb_convert_encoding($excerpt,$charset,$blog_charset);
+			$blog_name = mb_convert_encoding($blog_name,$charset,$blog_charset);
+		}
+	} else {
+		$charset = $blog_charset;
+	}
+	$title1 = urlencode($title);
+	$excerpt1 = urlencode($excerpt);
+	$blog_name1 = urlencode($blog_name);
 	$tb_url = $trackback_url;
 	$url = urlencode(get_permalink($ID));
-	$query_string = "title=$title&url=$url&blog_name=$blog_name&excerpt=$excerpt&charset=$blog_charset";
+	$query_string = "title=$title1&url=$url&blog_name=$blog_name1&excerpt=$excerpt1&charset=$charset";
 	$trackback_url = parse_url($trackback_url);
 	$http_request  = 'POST '.$trackback_url['path']." HTTP/1.0\r\n";
 	$http_request .= 'Host: '.$trackback_url['host']."\r\n";
-	$http_request .= 'Content-Type: application/x-www-form-urlencoded'."\r\n";
+	$http_request .= 'Content-Type: application/x-www-form-urlencoded; charset='.$charset."\r\n";
 	$http_request .= 'Content-Length: '.strlen($query_string)."\r\n";
 	$http_request .= "\r\n";
 	$http_request .= $query_string;
 	$fs = @fsockopen($trackback_url['host'], 80);
 	@fputs($fs, $http_request);
-	if(false) {
+	if(true) {
 		$debug_file = 'trackback.log';
 		$fp = fopen($debug_file, 'a');
 		fwrite($fp, "\n*****\nRequest:\n\n$http_request\n\nResponse:\n\n");
+		fwrite($fp, "CHARSET:$charset\n");
+		fwrite($fp, "TITLE:$title\n");
+		fwrite($fp, "TITLE1:".urldecode($title1)."\n");
+		fwrite($fp, "EXCERPT:$excerpt\n");
 		while(!@feof($fs)) {
 			fwrite($fp, @fgets($fs, 4096));
 		}
@@ -957,8 +980,8 @@ function trackback($trackback_url, $title, $excerpt, $ID) {
 		fclose($fp);
 	}
 	@fclose($fs);
-	$wpdb->query("UPDATE $tableposts SET pinged = CONCAT(pinged, '\n', '$tb_url') WHERE ID = $ID");
-	$wpdb->query("UPDATE $tableposts SET to_ping = REPLACE(to_ping, '$tb_url', '') WHERE ID = $ID");
+	$wpdb->query("UPDATE {$wpdb->posts[$wp_id]} SET pinged = CONCAT(pinged, '\n', '$tb_url') WHERE ID = $ID");
+	$wpdb->query("UPDATE {$wpdb->posts[$wp_id]} SET to_ping = REPLACE(to_ping, '$tb_url', '') WHERE ID = $ID");
 	return $result;
 }
 
@@ -1059,7 +1082,7 @@ function debug_fclose($fp) {
 
 function pingback($content, $post_ID) {
 	// original code by Mort (http://mort.mine.nu:8080)
-	global $siteurl, $blogfilename, $wp_version;
+	global $siteurl, $wp_version;
 	$log = debug_fopen('./pingback.log', 'a');
 	$post_links = array();
 	debug_fwrite($log, 'BEGIN '.time()."\n");
@@ -1260,9 +1283,7 @@ function sanitise_html_attributes($text) {
              1.0  First Version
 */
 function balanceTags($text, $is_comment = 0) {
-	global $use_balanceTags;
-
-	if ($use_balanceTags == 0) {
+	if (get_settings('use_balanceTags') == 0) {
 		return $text;
 	}
 
@@ -1358,7 +1379,6 @@ function balanceTags($text, $is_comment = 0) {
 }
 
 function doGeoUrlHeader($posts) {
-    global $use_default_geourl,$default_geourl_lat,$default_geourl_lon;
     if (count($posts) == 1) {
         // there's only one result  see if it has a geo code
         $row = $posts[0];
@@ -1372,11 +1392,11 @@ function doGeoUrlHeader($posts) {
             return;
         }
     } else {
-        if($use_default_geourl) {
+        if(get_settings('use_default_geourl')) {
             // send the default here
-            echo "<meta name=\"ICBM\" content=\"".$default_geourl_lat.", ".$default_geourl_lon."\" />\n";
+            echo "<meta name=\"ICBM\" content=\"".get_settings('default_geourl_lat').", ".get_settings('default_geourl_lon')."\" />\n";
             echo "<meta name=\"DC.title\" content=\"".convert_chars(strip_tags(get_bloginfo("name")),"unicode")."\" />\n";
-            echo "<meta name=\"geo.position\" content=\"".$default_geourl_lat.";".$default_geourl_lon."\" />\n";
+            echo "<meta name=\"geo.position\" content=\"".get_settings('default_geourl_lat').";".get_settings('default_geourl_lon')."\" />\n";
         }
     }
 }
@@ -1396,9 +1416,7 @@ function getRemoteFile($host,$path) {
 }
 
 function pingGeoURL($blog_ID) {
-    global $blodotgsping_url;
-
-    $ourUrl = $blodotgsping_url."/index.php?p=".$blog_ID;
+    $ourUrl = get_settings('blodotgsping_url')."/index.php?p=".$blog_ID;
     $host="geourl.org";
     $path="/ping/?p=".$ourUrl;
     getRemoteFile($host,$path);
@@ -1416,17 +1434,17 @@ function pingGeoURL($blog_ID) {
    returns false on database error or invalid value for $comment_status
  */
 function wp_set_comment_status($comment_id, $comment_status) {
-    global $wpdb, $tablecomments;
+    global $wpdb, $wp_id;
 
     switch($comment_status) {
 		case 'hold':
-			$query = "UPDATE $tablecomments SET comment_approved='0' WHERE comment_ID='$comment_id' LIMIT 1";
+			$query = "UPDATE {$wpdb->comments[$wp_id]} SET comment_approved='0' WHERE comment_ID='$comment_id' LIMIT 1";
 		break;
 		case 'approve':
-			$query = "UPDATE $tablecomments SET comment_approved='1' WHERE comment_ID='$comment_id' LIMIT 1";
+			$query = "UPDATE {$wpdb->comments[$wp_id]} SET comment_approved='1' WHERE comment_ID='$comment_id' LIMIT 1";
 		break;
 		case 'delete':
-			$query = "DELETE FROM $tablecomments WHERE comment_ID='$comment_id' LIMIT 1";
+			$query = "DELETE FROM {$wpdb->comments[$wp_id]} WHERE comment_ID='$comment_id' LIMIT 1";
 		break;
 		default:
 			return false;
@@ -1452,9 +1470,9 @@ function wp_set_comment_status($comment_id, $comment_status) {
    a (boolean) false signals an error
  */
 function wp_get_comment_status($comment_id) {
-    global $wpdb, $tablecomments;
+    global $wpdb, $wp_id;
 
-    $result = $wpdb->get_var("SELECT comment_approved FROM $tablecomments WHERE comment_ID='$comment_id' LIMIT 1");
+    $result = $wpdb->get_var("SELECT comment_approved FROM {$wpdb->comments[$wp_id]} WHERE comment_ID='$comment_id' LIMIT 1");
     if ($result == NULL) {
         return "deleted";
     } else if ($result == "1") {
@@ -1468,19 +1486,18 @@ function wp_get_comment_status($comment_id) {
 
 function wp_notify_postauthor($comment_id, $comment_type='comment') {
 	global $blog_charset;
-    global $wpdb, $tablecomments, $tableposts, $tableusers;
-    global $querystring_start, $querystring_equal, $querystring_separator;
-    global $blogfilename, $blogname, $siteurl;
+    global $wpdb;
+    global  $siteurl ,$wp_id;
 
-    $comment = $wpdb->get_row("SELECT * FROM $tablecomments WHERE comment_ID='$comment_id' LIMIT 1");
-    $post = $wpdb->get_row("SELECT * FROM $tableposts WHERE ID='$comment->comment_post_ID' LIMIT 1");
-    $user = $wpdb->get_row("SELECT * FROM $tableusers WHERE ID='$post->post_author' LIMIT 1");
+    $comment = $wpdb->get_row("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_ID='$comment_id' LIMIT 1");
+    $post = $wpdb->get_row("SELECT * FROM {$wpdb->posts[$wp_id]} WHERE ID='$comment->comment_post_ID' LIMIT 1");
+    $user = $wpdb->get_row("SELECT * FROM {$wpdb->users[$wp_id]} WHERE ID='$post->post_author' LIMIT 1");
 
     if ('' == $user->user_email) return false; // If there's no email to send the comment to
 
 	$comment_author_domain = gethostbyaddr($comment->comment_author_IP);
 
-	$blogname = stripslashes($blogname);
+	$blogname = stripslashes(get_settings('blogname'));
 
 	if ('comment' == $comment_type) {
 		$notify_message  = _LANG_F_NEW_COMMENT." #$comment->comment_post_ID ".stripslashes($post->post_title)."\r\n\r\n";
@@ -1553,16 +1570,15 @@ function wp_notify_postauthor($comment_id, $comment_type='comment') {
    always returns true
  */
 function wp_notify_moderator($comment_id) {
-    global $wpdb, $tablecomments, $tableposts, $tableusers;
-    global $querystring_start, $querystring_equal, $querystring_separator;
-    global $blogfilename, $blogname, $siteurl;
+    global $wpdb;
+    global  $siteurl ,$wp_id;
 
-    $comment = $wpdb->get_row("SELECT * FROM $tablecomments WHERE comment_ID='$comment_id' LIMIT 1");
-    $post = $wpdb->get_row("SELECT * FROM $tableposts WHERE ID='$comment->comment_post_ID' LIMIT 1");
-    $user = $wpdb->get_row("SELECT * FROM $tableusers WHERE ID='$post->post_author' LIMIT 1");
+    $comment = $wpdb->get_row("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_ID='$comment_id' LIMIT 1");
+    $post = $wpdb->get_row("SELECT * FROM {$wpdb->posts[$wp_id]} WHERE ID='$comment->comment_post_ID' LIMIT 1");
+    $user = $wpdb->get_row("SELECT * FROM {$wpdb->users[$wp_id]} WHERE ID='$post->post_author' LIMIT 1");
 
     $comment_author_domain = gethostbyaddr($comment->comment_author_IP);
-    $comments_waiting = $wpdb->get_var("SELECT count(comment_ID) FROM $tablecomments WHERE comment_approved = '0'");
+    $comments_waiting = $wpdb->get_var("SELECT count(comment_ID) FROM {$wpdb->comments[$wp_id]} WHERE comment_approved = '0'");
 
     $notify_message  = _LANG_F_COMMENT_POST." #$comment->comment_post_ID ".stripslashes($post->post_title)._LANG_F_WAITING_APPROVAL."\r\n\r\n";
     $notify_message .= "Author : $comment->comment_author (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
@@ -1575,14 +1591,13 @@ function wp_notify_moderator($comment_id) {
     $notify_message .= "\"$comments_waiting\""._LANG_F_PLEASE_VISIT."\r\n";
     $notify_message .= "$siteurl/wp-admin/moderation.php\r\n";
 
-    $subject = '[' . stripslashes($blogname) . '] Please approve: "' .stripslashes($post->post_title).'"';
-    $admin_email = get_settings("admin_email");
-    $from  = "From: $admin_email";
+    $subject = '[' . stripslashes(get_settings('blogname')) . '] Please approve: "' .stripslashes($post->post_title).'"';
+    $from  = "From: ".get_settings('admin_email');
 
     if (function_exists('mb_send_mail')) {
-	    mb_send_mail($admin_email, $subject, $notify_message, $from);
+	    mb_send_mail(get_settings('admin_email'), $subject, $notify_message, $from);
     } else {
-	    @mail($admin_email, $subject, $notify_message, $from);
+	    @mail(get_settings('admin_email'), $subject, $notify_message, $from);
     }
 
     return true;

@@ -2,7 +2,7 @@
 <div class="wrap">
 <?php
 
-$allowed_users = explode(" ", trim($fileupload_allowedusers));
+$allowed_users = explode(" ", trim(get_settings('fileupload_allowedusers')));
 
 function selected($selected, $current) {
 	if ($selected == $current) echo ' selected="selected"';
@@ -16,14 +16,14 @@ $submitbutton_text = 'Blog this!';
 $toprow_title = 'New Post';
 $form_action = 'post';
 $form_extra = '';
-if ($use_pingback) {
+if (get_settings('use_pingback')) {
 	$form_pingback = '<input type="checkbox" class="checkbox" name="post_pingback" value="1" ';
 	if ($post_pingback) $form_pingback .= 'checked="checked" ';
 	$form_pingback .= 'tabindex="7" id="pingback" />' ._LANG_EF_PING_FORM;
 } else {
 	$form_pingback = '';
 }
-if ($use_trackback) {
+if (get_settings('use_trackback')) {
 	$form_trackback = _LANG_EF_TRACK_FORM.'	<input type="text" name="trackback_url" style="width: 360px" id="trackback" tabindex="7" value="'.$trackback_url.'"/></p>';
 	if ('' != $pinged) {
 		$form_trackback .= '<p>Already pinged:</p><ul>';
@@ -47,6 +47,9 @@ $saveasdraft = '';
 <?php
 if ('bookmarklet' == $mode) {
     echo '<input type="hidden" name="mode" value="bookmarklet" />';
+    if ($target_charset) {
+    	echo '<input type="hidden" name="target_charset" value="'.$target_charset.'" />';
+    }
 }
 ?>
 <input type="hidden" name="user_ID" value="<?php echo $user_ID ?>" />
@@ -82,7 +85,7 @@ window.onload = focusit;
 		<div id="quicktags">
 <?php
 if ($wp_use_spaw==false||!$is_winIE) {
-if ($use_quicktags && 'bookmarklet' != $mode) {
+if (get_settings('use_quicktags') && 'bookmarklet' != $mode) {
 	echo '<a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#quicktags" title="Help with quicktags">'._LANG_EF_AD_POSTQUICK.'</a>: ';
 	include('quicktags.php');
 }
@@ -105,7 +108,7 @@ if ($use_quicktags && 'bookmarklet' != $mode) {
 	$content = strtr ($content, $trans_tbl);
 	$sw = new SPAW_Wysiwyg( 'wp_content', $content, _LANGCODE, 'full', 'default', '70%', '400px' );
 	$sw -> show();
-    foreach($wpsmiliestrans as $smiley => $img) 
+    foreach($wpsmiliestrans[$wp_id] as $smiley => $img) 
     { 
         print '<a href="javascript:bbinsert(document.post,\'\',\''.str_replace("'","\'",$smiley).'\')"><img src="' . $smilies_directory . '/'. $img . '" alt="' . $smiley . '" /></a> '; 
     } 
@@ -118,7 +121,7 @@ echo "<script src=\"quicktags_spaw.js\" language=\"JavaScript\" type=\"text/java
 
 <?php
 if ($wp_use_spaw==false||!$is_winIE) {
-if ($use_quicktags) {
+if (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))) {
 ?>
 <script type="text/javascript" language="JavaScript">
 <!--
@@ -133,8 +136,8 @@ edCanvas = document.getElementById('wp_content');
 <p>
 <?php
 if ($action != 'editcomment') {
-    if ( ($use_fileupload) && ($user_level >= $fileupload_minlevel)
-         && (in_array($user_login, $allowed_users) || (trim($fileupload_allowedusers)=="")) ) { ?>
+    if ( (get_settings('use_fileupload')) && ($user_level >= get_settings('fileupload_minlevel'))
+         && (in_array($user_login, $allowed_users) || (trim(get_settings('fileupload_allowedusers'))=="")) ) { ?>
 <input type="button" value="<? echo _LANG_EFA_STATUS_UPLOAD; ?>" onclick="launchupload();" tabindex="10" />
 <?php }
 }

@@ -77,27 +77,36 @@ window.close()
 			}
 			$tb_contents .= $tb_data;
 		} while(true);
+		if (function_exists('mb_detect_encoding')) {
+			$target_charset = mb_detect_encoding($tb_contents,"auto");
+		}
 		fclose ($fp);
 		if (preg_match_all('#<rdf:RDF[^>]*>(.*?)</rdf:RDF>#si',$tb_contents,$matches,PREG_PATTERN_ORDER)) {
 			$tb_urls = array();
 			$obj = new TrackBack_XML();
-			$tb_body = $matches[1][0];
-			echo $tb_body;
-			list($tb_url,$tb_url_nc) = $obj->parse($tb_body,$popupurl);
-			if ($tb_url !== FALSE) {
-				$trackback_url = $tb_url;
+			foreach($matches[1] as $tb_body) {
+				list($tb_url,$tb_url_nc) = $obj->parse($tb_body,$popupurl);
+				if ($tb_url !== FALSE) {
+					$trackback_url = $tb_url;
+					break;
+				}
 			}
 		}
 	}
 	
-
+if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/wp-admin.css')) {
+		$themes = $xoopsConfig['theme_set'];
+	} else {
+		$themes = "default";
+	}
+	$css_file = $siteurl.'/themes/'.$themes.'/wp-admin.css';
 	
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>WordPress > Bookmarklet</title>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $blog_charset ?>" />
-<link rel="stylesheet" href="wp-admin.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $css_file ?>" type="text/css" />
 <link rel="shortcut icon" href="../wp-images/wp-favicon.png" />
 <script type="text/javascript" language="javascript">
 <!--

@@ -1,4 +1,5 @@
 <?php
+include_once (dirname(__FILE__)."/../../mainfile.php");
 require(dirname(__FILE__) . '/wp-config.php');
 
 // trackback is done by a POST
@@ -10,7 +11,6 @@ $title = $HTTP_POST_VARS['title'];
 $excerpt = $HTTP_POST_VARS['excerpt'];
 $blog_name = $HTTP_POST_VARS['blog_name'];
 $charset = $HTTP_POST_VARS['charset'];
-
 if (empty($title) && empty($tb_url) && empty($blog_name)) {
 	// If it doesn't look like a trackback at all...
 	header('Location: ' . get_permalink($tb_id));
@@ -20,13 +20,26 @@ if ((strlen(''.$tb_id)) && (empty($HTTP_GET_VARS['__mode'])) && (strlen(''.$tb_u
 
 	@header('Content-Type: text/xml');
 
-	if (!$use_trackback)
+	if (!get_settings('use_trackback'))
 		trackback_response(1, 'Sorry, this weblog does not allow you to trackback its posts.');
 
-	$pingstatus = $wpdb->get_var("SELECT ping_status FROM $tableposts WHERE ID = $tb_id");
+	$pingstatus = $wpdb->get_var("SELECT ping_status FROM {$wpdb->posts[$wp_id]} WHERE ID = $tb_id");
 
 	if ('closed' == $pingstatus)
 		trackback_response(1, 'Sorry, trackbacks are closed for this item.');
+	if (($charset !="")&&((mb_http_input("P")=="")||(strtolower(ini_get("mbstring.http_input"))=="pass"))) {
+		$charset = strtoupper(trim($charset));
+	} else {
+		$charset="auto";
+	}
+	if (function_exists('mb_convert_encoding')) {
+		if ($charset == "auto") {
+			$charset = mb_detect_encoding($title.$excerpt.$blog_name,$charset);
+		}
+		$title = mb_convert_encoding($title, $blog_charset, $charset);
+		$excerpt = mb_convert_encoding($excerpt, $blog_charset, $charset);
+		$blog_name = mb_convert_encoding($blog_name, $blog_charset, $charset);
+	}
 
 	$tb_url = addslashes($tb_url);
 	$title = strip_tags($title);
@@ -69,30 +82,17 @@ if ((strlen(''.$tb_id)) && (empty($HTTP_GET_VARS['__mode'])) && (strlen(''.$tb_u
 		$approved = 1;
 	}
 
-	if ($charset=="") {
-		$charset="auto";
-	} else {
-		$charset = strtoupper(trim($charset));
-	}
-	if (function_exists('mb_convert_encoding')) {
-		if ($charset == "auto") {
-			$charset = mb_detect_encoding($comment.$author,$charset);
-		}
-		$comment = mb_convert_encoding($comment, $blog_charset, $charset);
-		$author = mb_convert_encoding($author, $blog_charset, $charset);
-	}
-
-	$result = $wpdb->query("INSERT INTO $tablecomments 
+	$result = $wpdb->query("INSERT INTO {$wpdb->comments[$wp_id]} 
 	(comment_post_ID, comment_author, comment_author_email, comment_author_url, comment_author_IP, comment_date, comment_content, comment_approved)
 	VALUES 
 	('$comment_post_ID', '$author', '$email', '$tb_url', '$user_ip', '$now', '$comment', '$approved')
 	");
 
 	if (!$result) {
-		die ("There is an error with the database, it can't store your comment...<br />Please contact the <a href='mailto:$admin_email'>webmaster</a>.");
+		die ("There is an error with the database, it can't store your comment...<br />Please contact the <a href='mailto:".get_settings('admin_email')."'>webmaster</a>.");
 	} else {
 		$comment_ID = $wpdb->get_var('SELECT last_insert_id()');
-		if ($comments_notify)
+		if (get_settings('comments_notify'))
 			wp_notify_postauthor($comment_ID, 'trackback');
 		trackback_response(0);
 	}

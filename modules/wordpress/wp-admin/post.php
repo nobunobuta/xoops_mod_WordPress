@@ -18,7 +18,7 @@ if (!get_magic_quotes_gpc()) {
     $HTTP_COOKIE_VARS = add_magic_quotes($HTTP_COOKIE_VARS);
 }
 
-$wpvarstoreset = array('action', 'safe_mode', 'withcomments', 'c', 'posts', 'poststart', 'postend', 'wp_content', 'edited_post_title', 'comment_error', 'profile', 'trackback_url', 'excerpt', 'showcomments', 'commentstart', 'commentend', 'commentorder');
+$wpvarstoreset = array('action', 'safe_mode', 'withcomments', 'c', 'posts', 'poststart', 'postend', 'wp_content', 'edited_post_title', 'comment_error', 'profile', 'trackback_url', 'excerpt', 'showcomments', 'commentstart', 'commentend', 'commentorder', 'target_charset');
 
 for ($i=0; $i<count($wpvarstoreset); $i += 1) {
     $wpvar = $wpvarstoreset[$i];
@@ -66,6 +66,7 @@ switch($action) {
 			$post_password = addslashes(stripslashes($HTTP_POST_VARS['post_password']));
 			$post_name = sanitize_title($post_title);
 			$trackback = $HTTP_POST_VARS['trackback_url'];
+			$target_charset = $HTTP_POST_VARS['target_charset'];
 		// Format trackbacks
 		$trackback = preg_replace('|\s+|', '\n', $trackback);
 
@@ -112,13 +113,13 @@ switch($action) {
 
 
         if((get_settings('use_geo_positions')) && (strlen($latstr) > 2) && (strlen($lonstr) > 2) ) {
-		$postquery ="INSERT INTO $tableposts
+		$postquery ="INSERT INTO {$wpdb->posts[$wp_id]}
                 (ID, post_author, post_date, post_content, post_title, post_lat, post_lon, post_excerpt,  post_status, comment_status, ping_status, post_password, post_name, to_ping)
                 VALUES
                 ('0', '$user_ID', '$now', '$content', '$post_title', $post_latf, $post_lonf,'$excerpt', '$post_status', '$comment_status', '$ping_status', '$post_password', '$post_name', '$trackback')
                 ";
         } else {
-		$postquery ="INSERT INTO $tableposts
+		$postquery ="INSERT INTO {$wpdb->posts[$wp_id]}
                 (ID, post_author, post_date, post_content, post_title, post_excerpt,  post_status, comment_status, ping_status, post_password, post_name, to_ping)
                 VALUES
                 ('0', '$user_ID', '$now', '$content', '$post_title', '$excerpt', '$post_status', '$comment_status', '$ping_status', '$post_password', '$post_name', '$trackback')
@@ -127,11 +128,11 @@ switch($action) {
         $postquery =
         $result = $wpdb->query($postquery);
 
-        $post_ID = $wpdb->get_var("SELECT ID FROM $tableposts ORDER BY ID DESC LIMIT 1");
+        $post_ID = $wpdb->get_var("SELECT ID FROM {$wpdb->posts[$wp_id]} ORDER BY ID DESC LIMIT 1");
 // update blank postname
 		if ($post_name == "") {
 			$post_name = "post-".$post_ID;
-			$wpdb->query("UPDATE $tableposts SET post_name='$post_name' WHERE ID = $post_ID");
+			$wpdb->query("UPDATE {$wpdb->posts[$wp_id]} SET post_name='$post_name' WHERE ID = $post_ID");
 		}
 
 		if ('' != $HTTP_POST_VARS['advanced'])
@@ -143,11 +144,11 @@ switch($action) {
 		if (!$post_categories) $post_categories[] = 1;
 		foreach ($post_categories as $post_category) {
 			// Double check it's not there already
-			$exists = $wpdb->get_row("SELECT * FROM $tablepost2cat WHERE post_id = $post_ID AND category_id = $post_category");
+			$exists = $wpdb->get_row("SELECT * FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID AND category_id = $post_category");
 
 			 if (!$exists && $result) { 
 			 	$wpdb->query("
-				INSERT INTO $tablepost2cat
+				INSERT INTO {$wpdb->post2cat[$wp_id]}
 				(post_id, category_id)
 				VALUES
 				($post_ID, $post_category)
@@ -176,8 +177,8 @@ switch($action) {
 			apply_filters('action_publish_post', $post_ID);
 
 			// Time for trackbacks
-			$to_ping = $wpdb->get_var("SELECT to_ping FROM $tableposts WHERE ID = $post_ID");
-			$pinged = $wpdb->get_var("SELECT pinged FROM $tableposts WHERE ID = $post_ID");
+			$to_ping = $wpdb->get_var("SELECT to_ping FROM {$wpdb->posts[$wp_id]} WHERE ID = $post_ID");
+			$pinged = $wpdb->get_var("SELECT pinged FROM {$wpdb->posts[$wp_id]} WHERE ID = $post_ID");
 			$pinged = explode("\n", $pinged);
 			if ('' != $to_ping) {
 				if (strlen($excerpt) > 0) {
@@ -187,6 +188,7 @@ switch($action) {
 				}
 				$excerpt = stripslashes($the_excerpt);
 				$to_pings = explode("\n", $to_ping);
+				$ping_charset = $target_charset;
 				foreach ($to_pings as $tb_ping) {
 					$tb_ping = trim($tb_ping);
 					if (!in_array($tb_ping, $pinged)) {
@@ -230,7 +232,7 @@ switch($action) {
             include('edit-form-advanced.php');
         } else {
 ?>
-            <p><?php echo _LANG_P_NEWCOMER_MESS." : <a href=\"mailto:$admin_email?subject=Promotion\">E-Mail</a>"; ?></p>
+            <p><?php echo _LANG_P_NEWCOMER_MESS." : <a href=\"mailto:".get_settings('admin_email')."?subject=Promotion\">E-Mail</a>"; ?></p>
 <?php
         }
         break;
@@ -301,7 +303,7 @@ switch($action) {
         }
 
         $result = $wpdb->query("
-			UPDATE $tableposts SET
+			UPDATE {$wpdb->posts[$wp_id]} SET
 				post_content = '$content',
 				post_excerpt = '$excerpt',
 				post_title = '$post_title'"
@@ -318,18 +320,18 @@ switch($action) {
 
 		// Now it's category time!
 		// First the old categories
-		$old_categories = $wpdb->get_col("SELECT category_id FROM $tablepost2cat WHERE post_id = $post_ID");
+		$old_categories = $wpdb->get_col("SELECT category_id FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID");
 		
 		// Delete any?
 		foreach ($old_categories as $old_cat) {
 			if (!in_array($old_cat, $post_categories)) // If a category was there before but isn't now
-				$wpdb->query("DELETE FROM $tablepost2cat WHERE category_id = $old_cat AND post_id = $post_ID LIMIT 1");
+				$wpdb->query("DELETE FROM {$wpdb->post2cat[$wp_id]} WHERE category_id = $old_cat AND post_id = $post_ID LIMIT 1");
 		}
 		
 		// Add any?
 		foreach ($post_categories as $new_cat) {
 			if (!in_array($new_cat, $old_categories))
-				$wpdb->query("INSERT INTO $tablepost2cat (post_id, category_id) VALUES ($post_ID, $new_cat)");
+				$wpdb->query("INSERT INTO {$wpdb->post2cat[$wp_id]} (post_id, category_id) VALUES ($post_ID, $new_cat)");
 		}
 		
         if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
@@ -343,8 +345,8 @@ switch($action) {
 		} // end if moving from draft/private to published
         if ($post_status == 'publish') {
 			// Trackback time.
-			$to_ping = trim($wpdb->get_var("SELECT to_ping FROM $tableposts WHERE ID = $post_ID"));
-			$pinged = trim($wpdb->get_var("SELECT pinged FROM $tableposts WHERE ID = $post_ID"));
+			$to_ping = trim($wpdb->get_var("SELECT to_ping FROM {$wpdb->posts[$wp_id]} WHERE ID = $post_ID"));
+			$pinged = trim($wpdb->get_var("SELECT pinged FROM {$wpdb->posts[$wp_id]} WHERE ID = $post_ID"));
 			$pinged = explode("\n", $pinged);
 			if ('' != $to_ping) {
 				if (strlen($excerpt) > 0) {
@@ -387,7 +389,7 @@ switch($action) {
             die ('You don&#8217;t have the right to delete <strong>'.$authordata[1].'</strong>&#8217;s posts.');
 
         // send geoURL ping to "erase" from their DB
-        $query = "SELECT post_lat from $tableposts WHERE ID=$post_id";
+        $query = "SELECT post_lat from {$wpdb->posts[$wp_id]} WHERE ID=$post_id";
         $rows = $wpdb->query($query); 
         $myrow = $rows[0];
         $latf = $myrow->post_lat;
@@ -395,13 +397,13 @@ switch($action) {
             pingGeoUrl($post);
         }
 
-        $result = $wpdb->query("DELETE FROM $tableposts WHERE ID=$post_id");
+        $result = $wpdb->query("DELETE FROM {$wpdb->posts[$wp_id]} WHERE ID=$post_id");
         if (!$result)
-            die('Error in deleting... contact the <a href="mailto:$admin_email">webmaster</a>.');
+            die('Error in deleting... contact the <a href="mailto:'.get_settings('admin_email').'">webmaster</a>.');
 
-        $result = $wpdb->query("DELETE FROM $tablecomments WHERE comment_post_ID=$post_id");
+        $result = $wpdb->query("DELETE FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID=$post_id");
 
-		$categories = $wpdb->query("DELETE FROM $tablepost2cat WHERE post_id = $post_id");
+		$categories = $wpdb->query("DELETE FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_id");
 
         if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
             sleep($sleep_after_edit);
@@ -626,7 +628,7 @@ switch($action) {
         $content = format_to_post($content);
 
         $result = $wpdb->query("
-			UPDATE $tablecomments SET
+			UPDATE {$wpdb->comments[$wp_id]} SET
 				comment_content = '$content',
 				comment_author = '$newcomment_author',
 				comment_author_email = '$newcomment_author_email',
@@ -650,7 +652,7 @@ switch($action) {
 
 				$action = 'post';
 				get_currentuserinfo();
-				$drafts = $wpdb->get_results("SELECT ID, post_title FROM $tableposts WHERE post_status = 'draft' AND post_author = $user_ID");
+				$drafts = $wpdb->get_results("SELECT ID, post_title FROM {$wpdb->posts[$wp_id]} WHERE post_status = 'draft' AND post_author = $user_ID");
 				if ($drafts) {
 					?>
 					<div class="wrap">
@@ -685,12 +687,12 @@ switch($action) {
 <p>
 
 <?php
-$bookmarklet_height= ($use_trackback) ? 460 : 420;
+$bookmarklet_height= (get_settings('use_trackback')) ? 460 : 420;
 
 if ($is_NS4 || $is_gecko) {
 ?>
     <a href="javascript:if(navigator.userAgent.indexOf('Safari') >= 0){Q=getSelection();}else{Q=document.selection?document.selection.createRange().text:document.getSelection();}void(window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?text='+escape(Q)+'&popupurl='+escape(location.href)+'&popuptitle='+escape(document.title),'WordPress bookmarklet','scrollbars=yes,width=600,height=460,left=100,top=150,status=yes'));">Press It 
-    - <?php echo $blogname ?></a> 
+    - <?php echo get_settings('blogname') ?></a> 
     <?php
 } else if ($is_winIE) {
 	if ($wp_use_spaw) {
@@ -700,7 +702,7 @@ if ($is_NS4 || $is_gecko) {
 	}
 ?>
     <a href="javascript:Q='';if(top.frames.length==0)Q=document.selection.createRange().<?php echo $range_text ?>;void(btw=window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?text='+escape(Q)+'<?php echo $bookmarklet_tbpb ?>&popupurl='+escape(location.href)+'&popuptitle='+escape(document.title),'bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=50,status=yes'));btw.focus();">Press it 
-    - <?php echo $blogname ?></a> 
+    - <?php echo get_settings('blogname') ?></a> 
     <script type="text/javascript" language="JavaScript">
 <!--
 function oneclickbookmarklet(blah) {
@@ -716,12 +718,12 @@ function oneclickbookmarklet(blah) {
 } else if ($is_opera) {
 ?>
     <a href="javascript:void(window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?popupurl='+escape(location.href)+'&popuptitle='+escape(document.title)+'<?php echo $bookmarklet_tbpb ?>','bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));">Press it 
-    - <?php echo $blogname ?></a> 
+    - <?php echo get_settings('blogname') ?></a> 
     <?php
 } else if ($is_macIE) {
 ?>
     <a href="javascript:Q='';if(top.frames.length==0);void(btw=window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?text='+escape(document.getSelection())+'&popupurl='+escape(location.href)+'&popuptitle='+escape(document.title)+'<?php echo $bookmarklet_tbpb ?>','bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));btw.focus();">Press it 
-    - <?php echo $blogname ?></a> 
+    - <?php echo get_settings('blogname') ?></a> 
     <?php
 }
 ?>
@@ -733,7 +735,7 @@ function oneclickbookmarklet(blah) {
 
 ?>
 <div class="wrap">
-            <p><?php echo _LANG_P_NEWCOMER_MESS." : <a href=\"mailto:$admin_email?subject=Promotion\">E-Mail</a>"; ?></p>
+            <p><?php echo _LANG_P_NEWCOMER_MESS." : <a href=\"mailto:".get_settings('admin_email')."?subject=Promotion\">E-Mail</a>"; ?></p>
 </div>
 <?php
 

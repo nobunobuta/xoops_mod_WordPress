@@ -2,7 +2,7 @@
 <div class="wrap">
 <?php
 
-$allowed_users = explode(" ", trim($fileupload_allowedusers));
+$allowed_users = explode(" ", trim(get_settings('fileupload_allowedusers')));
 
 function selected($selected, $current) {
 	if ($selected == $current) echo ' selected="selected"';
@@ -20,7 +20,7 @@ $form_extra = "' />\n<input type='hidden' name='post_ID' value='$post->ID";
 $colspan = 2;
 $form_pingback = '<input type="hidden" name="post_pingback" value="0" />';
 $form_prevstatus = '<input type="hidden" name="prev_status" value="'.$post_status.'" />';
-if ($use_trackback) {
+if (get_settings('use_trackback')) {
 	$form_trackback = _LANG_EF_TRACK_FORM.'	<input type="text" name="trackback_url" style="width: 415px" id="trackback" tabindex="7" value="'. str_replace("\n", ' ', $to_ping) .'" /></p>';
 	if ('' != $pinged) {
 		$form_trackback .= '<p>Already pinged:</p><ul>';
@@ -95,7 +95,8 @@ window.onload = focusit;
 		<div id="quicktags">
 <?php
 if ($wp_use_spaw==false) {
-if ($use_quicktags) {
+
+if (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))) {
 	echo '<a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#quicktags" title="Help with quicktags"><?php echo _LANG_EF_AD_POSTQUICK; ?></a>: ';
 	include('quicktags.php');
 }
@@ -119,7 +120,7 @@ if ($use_quicktags) {
 
 	$sw = new SPAW_Wysiwyg( 'wp_content', $content, _LANGCODE , 'full', 'default', '70%', '400px'  );
 	$sw -> show();
-    foreach($wpsmiliestrans as $smiley => $img) 
+    foreach($wpsmiliestrans[$wp_id] as $smiley => $img) 
     { 
         print '<a href="javascript:bbinsert(document.post,\'\',\''.str_replace("'","\'",$smiley).'\')"><img src="' . $smilies_directory . '/'. $img . '" alt="' . $smiley . '" /></a> '; 
     } 
@@ -131,7 +132,7 @@ if ($use_quicktags) {
 
 <?php
 if ($wp_use_spaw==false) {
-if ($use_quicktags) {
+if (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))) {
 ?>
 <script type="text/javascript" language="JavaScript">
 <!--
@@ -164,8 +165,8 @@ if ($action != 'editcomment') {
 <p>
 <?php
 if ($action != 'editcomment') {
-    if ( ($use_fileupload) && ($user_level >= $fileupload_minlevel)
-         && (in_array($user_login, $allowed_users) || (trim($fileupload_allowedusers)=="")) ) { ?>
+    if ( (get_settings('use_fileupload')) && ($user_level >= get_settings('fileupload_minlevel'))
+         && (in_array($user_login, $allowed_users) || (trim(get_settings('fileupload_allowedusers'))=="")) ) { ?>
 <input type="button" value="<? echo _LANG_EFA_STATUS_UPLOAD; ?>" onclick="launchupload();" tabindex="10" />
 <?php }
 }
