@@ -25,7 +25,7 @@ $weekday[4]='Thursday';
 $weekday[5]='Friday';
 $weekday[6]='Saturday';
 
-$s_weekday_length = 3;
+$s_weekday_length = 3; //曜日を省略形で表示するときの文字数 "Sunday"は"Sun"になる。"日曜日"を"日"にする場合は1を指定。
 */
 // 日本語環境で月名を英語で出したいとき。
 /*
@@ -42,7 +42,7 @@ $month['10']='October';
 $month['11']='November';
 $month['12']='December';
 
-$s_month_length = 3;
-$wp_month_format = '%MONTH %YEAR';
+$s_month_length = 3; //月名を省略形で表示するときの文字数 "January"は"Jan"になる。
+$wp_month_format = '%MONTH %YEAR'; 年月表示の表示形式
 */
 ?>
