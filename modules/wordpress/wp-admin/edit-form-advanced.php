@@ -112,7 +112,11 @@ if ($use_quicktags) {
 } else {
 // For Spaw Editor
     include_once "spaw/spaw_control.class.php";
-	$content = html_entity_decode($content);
+//	$content = html_entity_decode($content);
+	$trans_tbl = get_html_translation_table (HTML_SPECIALCHARS);
+	$trans_tbl = array_flip ($trans_tbl);
+	$content = strtr ($content, $trans_tbl);
+
 	$sw = new SPAW_Wysiwyg( 'wp_content', $content, 'jp', 'full', 'default' );
 	$sw -> show();
     foreach($wpsmiliestrans as $smiley => $img) 
@@ -157,7 +161,16 @@ if ($action != 'editcomment') {
 <?php echo $form_pingback ?>
 <?php echo $form_prevstatus ?>
 
-<p><?php echo $saveasdraft; ?> <input type="submit" name="submit" value="<?php echo _LANG_EF_AD_DRAFT; ?>" tabindex="6" /> 
+<p>
+<?php
+if ($action != 'editcomment') {
+    if ( ($use_fileupload) && ($user_level >= $fileupload_minlevel)
+         && (in_array($user_login, $allowed_users) || (trim($fileupload_allowedusers)=="")) ) { ?>
+<input type="button" value="<? echo _LANG_EFA_STATUS_UPLOAD; ?>" onclick="launchupload();" tabindex="10" />
+<?php }
+}
+?>
+<?php echo $saveasdraft; ?> <input type="submit" name="submit" value="<?php echo _LANG_EF_AD_DRAFT; ?>" tabindex="6" /> 
   <input name="publish" type="submit" id="publish" tabindex="10" value="<?php echo _LANG_EF_AD_PUBLISH; ?>" /> 
   <input name="referredby" type="hidden" id="referredby" value="<?php echo $HTTP_SERVER_VARS['HTTP_REFERER']; ?>" />
 </p>
