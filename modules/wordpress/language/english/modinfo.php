@@ -60,5 +60,8 @@ define("_MI_WORDPRESS_BDESC7","WordPress Recent Comments");
 
 define("_MI_WORDPRESS_BNAME8","WordPress%s Contents");
 define("_MI_WORDPRESS_BDESC8","WordPress Contents");
+
+define("_MI_WORDPRESS_AD_MENU1","WordPress Option");
+define("_MI_WORDPRESS_AD_MENU2","Blocks/Groups");
 }
 ?>

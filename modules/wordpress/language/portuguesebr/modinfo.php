@@ -68,5 +68,6 @@ define("_MI_WORDPRESS_BNAME8","Último post do WordPress%s");
 define("_MI_WORDPRESS_BDESC8","Último post do WordPress");
 
 define("_MI_WORDPRESS_AD_MENU1","Configurações do WordPress");
+define("_MI_WORDPRESS_AD_MENU2","Blocks/Groups");
 }
 ?>
