@@ -24,7 +24,7 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 
 		if ($wp_num == "") {
 			$wp_id = $wp_num;
-			$wp_inblock = 1;
+			$wp_inblock = 2;
 			require(dirname(__FILE__).'/../wp-config.php');
 			$wp_inblock = 0;
 		}
@@ -152,7 +152,7 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 			global $wp_bbcode,  $wp_gmcode,   $wp_htmltrans, $wp_htmltranswinuni;
 			global $wp_id, $wp_inblock, $xoopsConfig, $previousday, $time_difference ,$day;
 			$wp_id = "'.$i.'";
-			$wp_inblock = 1;
+			$wp_inblock = 2;
 			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
 			$wp_inblock = 0;
 			return (b_wp_contents_show($options,"'.$i.'"));

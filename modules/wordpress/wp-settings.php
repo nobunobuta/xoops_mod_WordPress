@@ -64,23 +64,24 @@ $cookiehash = md5($siteurl);
 
 require (ABSPATH . WPINC . '/vars.php');
 
-if (!defined('XOOPS_PULUGIN'.$wp_id)) {
-	define('XOOPS_PULUGIN'.$wp_id,1);
-	if (!strstr($_SERVER['PHP_SELF'], 'wp-admin/plugins.php') && get_settings('active_plugins')) {
-		$current_plugins = explode("\n", (get_settings('active_plugins')));
-		foreach ($current_plugins as $plugin) {
-			if (file_exists(ABSPATH . 'wp-content/plugins/' . $plugin)) {
-				include(ABSPATH . 'wp-content/plugins/' . $plugin);
+if ($wp_inblock!=1) {
+	if (!defined('XOOPS_PULUGIN'.$wp_id)) {
+		define('XOOPS_PULUGIN'.$wp_id,1);
+		if (!strstr($_SERVER['PHP_SELF'], 'wp-admin/plugins.php') && get_settings('active_plugins')) {
+			$current_plugins = explode("\n", (get_settings('active_plugins')));
+			foreach ($current_plugins as $plugin) {
+				if (file_exists(ABSPATH . 'wp-content/plugins/' . $plugin)) {
+					include(ABSPATH . 'wp-content/plugins/' . $plugin);
+				}
 			}
 		}
-	}
-	if (!defined('SHUTDOWN_ACTION_HOOK')) {
-		define('SHUTDOWN_ACTION_HOOK','1');
-		function shutdown_action_hook() {
-			do_action('shutdown', '');
+		if (!defined('SHUTDOWN_ACTION_HOOK')) {
+			define('SHUTDOWN_ACTION_HOOK','1');
+			function shutdown_action_hook() {
+				do_action('shutdown', '');
+			}
+			register_shutdown_function('shutdown_action_hook');
 		}
-		register_shutdown_function('shutdown_action_hook');
 	}
 }
-
 ?>
