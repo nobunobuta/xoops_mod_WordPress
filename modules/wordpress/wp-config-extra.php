@@ -35,25 +35,16 @@ $month['12']=_WP_CAL_DECEMBER;
 // here's the conversion table, you can modify it if you know what you're doing
 global $wpsmiliestrans;
 if (get_xoops_option('wordpress','wp_use_xoops_smilies')) {
-    $wpsmiliestrans = array(
-		':-D'   => 'smil3dbd4d4e4c4f2.gif',
-		':-)'   => 'smil3dbd4d6422f04.gif',
-		':-('   => 'smil3dbd4d75edb5e.gif',
-		':-o'   => 'smil3dbd4d8676346.gif',
-		':-?'   => 'smil3dbd4d99c6eaa.gif',
-		'8-)'   => 'smil3dbd4daabd491.gif',
-		':lol:'   => 'smil3dbd4dbc14f3f.gif',
-		':-x'   => 'smil3dbd4dcd7b9f4.gif',
-		':-P'   => 'smil3dbd4ddd6835f.gif',
-		':oops:'   => 'smil3dbd4df1944ee.gif',
-		':cry:'   => 'smil3dbd4e02c5440.gif',
-		':evil:'   => 'smil3dbd4e1748cc9.gif',
-		':roll:'   => 'smil3dbd4e29bbcc7.gif',
-		';-)'   => 'smil3dbd4e398ff7b.gif',
-		':pint:'   => 'smil3dbd4e4c2e742.gif',
-		':hammer:'   => 'smil3dbd4e5e7563a.gif',
-		':idea:'   => 'smil3dbd4e7853679.gif',
-    );
+	// Get smilies infomation from XOOPS DB
+	$db =& Database::getInstance();
+	$getsmiles = $db->query("SELECT id, code, smile_url FROM ".$db->prefix("smiles")." ORDER BY id");
+	if (($numsmiles = $db->getRowsNum($getsmiles)) == "0") {
+		//EMPTY
+	} else {
+		while ($smiles = $db->fetchArray($getsmiles)) {
+			$wpsmiliestrans[$smiles['code']] = $smiles['smile_url'];
+		}
+	}
 } else {
 	$wpsmiliestrans = array(
 	    ' :)'        => 'icon_smile.gif',
