@@ -1,8 +1,13 @@
 <?php
+function b_wp_contents_edit($options)
+{
+	$form = "";
+	$form .= "Number of posts to show: ";
+	$form .= "<input type='text' name='options[]' value='".$options[0]."' /><br />";
+	return $form;
+
+}
 function b_wp_contents_show($options) {
-//	global $xoopsDB,$xoopsUser;
-//	global $tableoptions,$tableusers;
-//	global $id, $posts, $post, $day, $previousday, $newday;
 	$id=1;
 	global $posts, $post, $day, $previousday, $newday;
 	global $dateformat, $time_difference, $siteurl, $blogfilename;
@@ -11,12 +16,18 @@ function b_wp_contents_show($options) {
 	global $tableposts,$tablepost2cat,$tablecomments,$tablecategories;
 	global $smilies_directory, $use_smilies, $wp_smiliessearch, $wp_smiliesreplace;
 	global $wp_bbcode, $use_bbcode, $wp_gmcode, $use_gmcode, $use_htmltrans, $wp_htmltrans, $wp_htmltranswinuni;
-
+	global $posts_per_page;
+	
+	$num_posts =  (empty($options[0]))? get_settings('posts_per_page') : $options[0];
 	require_once (dirname(__FILE__).'/../wp-blog-header.php');
 	$blog = 1;
 	$block = array();
 	$block['siteurl'] = $siteurl;
+	$i = 0;
 	foreach ($posts as $post) {
+		$i++;
+		if ($i > $num_posts) continue;
+		
 		$content = array();
 		start_wp();
 		$content['date'] = the_date('','<h2>','</h2>', false);
