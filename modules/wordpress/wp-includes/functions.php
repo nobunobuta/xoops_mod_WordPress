@@ -1244,6 +1244,7 @@ function apply_filters($tag, $string) {
 		ksort($wp_filter[$wp_id][$tag]);
 		foreach ($wp_filter[$wp_id][$tag] as $priority => $functions) {
 			foreach($functions as $function) {
+//					if ($tag == "the_content") echo $function."<br>\n";
 					$string = $function($string);
 			}
 		}
@@ -1270,13 +1271,14 @@ function remove_filter($tag, $function_to_remove, $priority = 10) {
 			}
 		}
 		if (!count($new_function_list)) {
-			if (!empty($wp_filter[$tag]["$priority"])) {
-				unset($wp_filter[$tag]["$priority"]);
+			if (!empty($wp_filter[$wp_id][$tag]["$priority"])) {
+				unset($wp_filter[$wp_id][$tag]["$priority"]);
 			}
 		} else {
-			$wp_filter[$tag]["$priority"] = $new_function_list;
+			$wp_filter[$wp_id][$tag]["$priority"] = $new_function_list;
 		}
 	}
+	//die(var_dump($wp_filter));
 	return true;
 }
 // The *_action functions are just aliases for the *_filter functions, they take special strings instead of generic content
