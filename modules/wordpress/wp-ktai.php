@@ -155,13 +155,13 @@ function find_post($num) {
 
 function get_number_of_comments($ID) {
 	global $tablecomments,$wpdb;
-	$number = $wpdb->get_var("SELECT count(*) FROM $tablecomments WHERE comment_post_ID = $ID");
+	$number = $wpdb->get_var("SELECT count(*) FROM $tablecomments WHERE comment_post_ID = $ID AND comment_approved = '1'");
 	return $number;
 }
 
 function get_comments($ID) {
 	global $tablecomments,$wpdb,$CommentSort;
-	$comments = $wpdb->get_results("SELECT * FROM $tablecomments WHERE comment_post_ID = $ID ORDER BY comment_date $CommentSort");
+	$comments = $wpdb->get_results("SELECT * FROM $tablecomments WHERE comment_post_ID = $ID AND comment_approved = '1' ORDER BY comment_date $CommentSort");
 	return $comments;
 }
 
@@ -180,8 +180,8 @@ switch ($_REQUEST["view"]) {
 	case "image" :
 		//画像表示
 		$orgimg = $_REQUEST["url"];
-
-		if (eregi('.jpeg',$orgimg) || eregi('.jpg',$orgimg)) {
+		$imginfo = getimagesize($orgimg);
+		if (eregi('.jpeg',$orgimg) || eregi('.jpg',$orgimg) || $imginfo[2]==IMAGETYPE_JPEG ) {
 			header("Content-type: image/jpeg");
 			header("Cache-control: no-cache");
 
@@ -207,7 +207,7 @@ switch ($_REQUEST["view"]) {
 
 			imagedestroy($newimage);
 			
-		}else if (eregi('.gif',$orgimg)) {
+		}else if (eregi('.gif',$orgimg)|| $imginfo[2]==IMAGETYPE_GIF) {
 			//GIFファイルは無理やりjpegに変換して表示します。
 			header("Content-type: image/jpeg");
 			header("Cache-control: no-cache");
