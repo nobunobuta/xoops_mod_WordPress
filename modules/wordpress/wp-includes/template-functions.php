@@ -1039,7 +1039,7 @@ function the_excerpt_rss($cut = 0, $encode_html = 0) {
 	} elseif ($encode_html == 0) {
 		$output = make_url_footnote($output);
 	} elseif ($encode_html == 2) {
-		$output = strip_tags($output);
+		$output = htmlspecialchars(strip_tags($output));
 	}
 	if ($cut) {
         $excerpt = '';
