@@ -6,6 +6,7 @@ require_once('../wp-config.php');
 
 $title = 'Manage Links';
 $this_file = 'link-manager.php';
+$parent_file = 'link-manager.php';
 
 function xfn_check($class, $value = '', $type = 'check') {
 	global $link_rel;

@@ -2,7 +2,7 @@
 
 $title = 'Add Link';
 $this_file = 'link-manager.php';
-
+$parent_file = 'link-manager.php';
 function category_dropdown($fieldname, $selected = 0) {
     global $wpdb,  $wp_id;
 
@@ -54,10 +54,10 @@ for ($i=0; $i<count($wpvarstoreset); $i += 1) {
         }
     }
 }
-$link_url = stripslashes($HTTP_GET_VARS['linkurl']);
-$link_name = htmlentities(stripslashes(urldecode($HTTP_GET_VARS['name'])));
-
 require('admin-header.php');
+@$link_url = stripslashes($HTTP_GET_VARS['linkurl']);
+@$link_name = htmlentities(stripslashes(urldecode($HTTP_GET_VARS['name'])));
+
 ?>
 <ul id="adminmenu2">
 	<li><a href="link-manager.php"><?php echo _LANG_WLA_MANAGE_LINK; ?></a></li>

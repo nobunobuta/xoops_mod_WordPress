@@ -1,4 +1,6 @@
 <?php
+if (!defined('WP_LANGUAGE_XOOPS_MODINFO_READ')) {
+define ('WP_LANGUAGE_XOOPS_MODINFO_READ','1');
 // Module Info
 
 // The name of this module
@@ -58,4 +60,5 @@ define("_MI_WORDPRESS_BDESC7","WordPress Recent Comments");
 
 define("_MI_WORDPRESS_BNAME8","WordPress%s Contents");
 define("_MI_WORDPRESS_BDESC8","WordPress Contents");
+}
 ?>

@@ -16,10 +16,10 @@ foreach ($menu as $item) {
 		if ($user_level >= $item[0]) echo "\n\t<li><a href='{$item[1]}'$class>{$item[2]}</a></li>";
 	}
 }
+	if ($parent_file && ('profile.php' == $parent_file)) $class = ' class="current"';
 
 ?>
-
-	<li><a href="profile.php">My Profile</a></li>
+	<li><a href="profile.php" <?php echo $class ?>>My Profile</a></li>
 	<li><a href="<?php echo "$siteurl/index.php"; ?>">View site</a></li>
 <!--
 	<li class="last"><a href="<?php echo $siteurl ?>/wp-login.php?action=logout">Logout (<?php echo stripslashes($user_nickname) ?>)</a></li>

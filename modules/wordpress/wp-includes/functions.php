@@ -711,7 +711,7 @@ function dropdown_categories($default = 0) {
 	} else {
 		$postcategories[] = $default;
 	}
-
+	$i =0;
 	foreach($categories as $category) {
 		++$i;
 		$category->cat_name = stripslashes($category->cat_name);

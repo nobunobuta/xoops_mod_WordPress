@@ -1,4 +1,5 @@
-<?php $title = "Profile";
+<?php
+$title = "Profile";
 /* <Profile | My Profile> */
 
 function add_magic_quotes($array) {
@@ -206,7 +207,7 @@ break;
 
 
 default:
-
+	$parent_file = 'profile.php';
 	include_once('admin-header.php');
 	$profiledata=get_userdata($user_ID);
 

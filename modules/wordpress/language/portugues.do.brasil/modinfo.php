@@ -1,4 +1,6 @@
 <?php
+if (!defined('WP_LANGUAGE_XOOPS_MODINFO_READ')) {
+define ('WP_LANGUAGE_XOOPS_MODINFO_READ','1');
 /**
  * Module: WordPress ME
  * Author: nobunobu <http://www.kowa.org>
@@ -66,4 +68,5 @@ define("_MI_WORDPRESS_BNAME8","Último Post do WordPress%s");
 define("_MI_WORDPRESS_BDESC8","Último Post do WordPress");
 
 define("_MI_WORDPRESS_AD_MENU1","Configurações do WordPress");
+}
 ?>

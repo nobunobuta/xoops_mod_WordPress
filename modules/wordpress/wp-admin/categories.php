@@ -1,5 +1,6 @@
 <?php
 $title = 'Categories';
+$parent_file = 'categories.php';
 /* <Categories> */
 
 function add_magic_quotes($array) {

@@ -1,5 +1,6 @@
 <?php
 /* <Edit> */
+$parent_file = 'post.php';
 
 function add_magic_quotes($array) {
     foreach ($array as $k => $v) {
@@ -205,8 +206,8 @@ switch($action) {
         break;
 
     case 'edit':
-        $title = 'Edit';
-
+		$parent_file = 'edit.php';
+        $title = 'Edit Post';
         $standalone = 0;
         require_once('admin-header.php');
 

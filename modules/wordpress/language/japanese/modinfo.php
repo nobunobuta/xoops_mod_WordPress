@@ -1,4 +1,6 @@
 <?php
+if (!defined('WP_LANGUAGE_XOOPS_MODINFO_READ')) {
+define ('WP_LANGUAGE_XOOPS_MODINFO_READ','1');
 // Module Info
 
 // The name of this module
@@ -60,4 +62,5 @@ define("_MI_WORDPRESS_BNAME8","WordPress%s 記事ブロック");
 define("_MI_WORDPRESS_BDESC8","WordPress 記事ブロック");
 
 define("_MI_WORDPRESS_AD_MENU1","WordPressオプション");
+}
 ?>

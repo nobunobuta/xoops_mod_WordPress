@@ -121,12 +121,9 @@ label {
 	margin: 6px 0;
 }
 
-#adminmenu2 .current {
-	background-color: #F0FAFF;
-}
-
-#adminmenu .last, #adminmenu2 .last {
-	border-right: none;
+#adminmenu {
+	margin-left: 7px;
+	padding: 0 2px;
 }
 
 #adminmenu a {
@@ -143,27 +140,56 @@ label {
 	border-right: 2px solid #4a4a4a;
 }
 
-#adminmenu a:hover, .current, {
+#adminmenu a:hover {
 	border-bottom: 1px solid #cecece;
 	border-top: 2px solid #4a4a4a;
 	border-right: 1px solid #cecece;
 	border-left: 2px solid #4a4a4a;
 }
 
+#adminmenu .current,#adminmenu a.current:hover {
+	background-color: #996633;
+	border-top: 1px solid #cecece;
+	border-bottom: 2px solid #4a4a4a;
+	border-left: 1px solid #cecece;
+	border-right: 2px solid #4a4a4a;
+}
+
+#adminmenu2 {
+	border-bottom: none;
+	margin-left: 7px;
+}
+
 #adminmenu2 a {
-	border: 1px solid #fff;
-	color: #333;
-	font-size: 14px;
-	font-weight: normal;
+	background-color: #66AABB;
+	border-top: 1px solid #cecece;
+	border-bottom: 2px solid #2a2a2a;
+	border-left: 1px solid #cecece;
+	border-right: 2px solid #2a2a2a;
+	color: #ffffff;
+	text-decoration: none;
+	font-family: helvetica,arial,sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 0 0.4em;
 	margin: 0;
 	padding: 1px 5px;
 	text-decoration: none;
 }
 
 #adminmenu2 a:hover {
-	background: #f6f6f6;
-	border: 1px solid #9d9d9d;
-	color: #171717;
+	border-bottom: 1px solid #cecece;
+	border-top: 2px solid #4a4a4a;
+	border-right: 1px solid #cecece;
+	border-left: 2px solid #4a4a4a;
+}
+
+#adminmenu2 .current,#adminmenu2 a.current:hover {
+	background-color: #CC9966;
+	border-top: 1px solid #cecece;
+	border-bottom: 2px solid #2a2a2a;
+	border-left: 1px solid #cecece;
+	border-right: 2px solid #2a2a2a;
 }
 
 #adminmenu li, #adminmenu2 li {
@@ -173,24 +199,15 @@ label {
 	text-align: center;
 }
 
-#adminmenu {
-	margin-left: 7px;
-	padding: 0 2px;
+#adminmenu .last, #adminmenu2 .last {
+	border-right: none;
 }
 
-#adminmenu2 {
-	border-bottom: none;
-	margin-left: 7px;
-}
-
-#adminmenu2 a {
-	font-size: 14px;
-}
 #categorydiv {
 	line-height: 130%;
 	width: 12em;
+
 }
-/*
 #categorydiv {
 	line-height: 130%;
 	margin-right: 200px;
@@ -198,7 +215,7 @@ label {
 	right: 5%;
 	width: 9em;
 }
-*/
+
 #categorydiv input, #poststatusdiv input, #commentstatusdiv input, #pingstatusdiv input {
 	border: none;
 }

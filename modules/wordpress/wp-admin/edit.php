@@ -1,5 +1,6 @@
 <?php
 $title = 'Edit Posts';
+$parent_file = 'edit.php';
 require_once('admin-header.php');
 
 $showposts = $HTTP_GET_VARS['showposts'];

@@ -17,7 +17,7 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 		global $wpdb, $siteurl, $post, $use_cache;
 		global $smilies_directory,  $wp_smiliessearch, $wp_smiliesreplace;
 		global $wp_bbcode,  $wp_gmcode,   $wp_htmltrans, $wp_htmltranswinuni;
-		global $wp_id, $wp_inblock, $xoopsConfig, $previousday;
+		global $wp_id, $wp_inblock, $xoopsConfig, $previousday, $time_difference ;
 		
 		$id=1;
 		$use_cache = 1;

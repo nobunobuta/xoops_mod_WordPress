@@ -1,5 +1,7 @@
 <?php
 $title = 'Users';
+$parent_file = 'users.php';
+
 /* <Team> */
 	
 $wpvarstoreset = array('action','standalone','redirect','profile');
