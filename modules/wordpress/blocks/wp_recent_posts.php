@@ -2,6 +2,8 @@
 function b_wp_recent_posts_show($options)
 {
 	$id=1;
+	global $dateformat, $time_difference, $siteurl, $blogfilename;
+    global $querystring_start, $querystring_equal, $querystring_separator, $month, $wpdb, $start_of_week;
 	require_once(dirname(__FILE__).'/../wp-blog-header.php');
 	global $wpdb, $tablecomments, $tableposts;
 	$no_posts = 10;
