@@ -1,4 +1,5 @@
 <?php /* Don't remove this line */ if (!defined('XOOPS_ROOT_PATH')) { exit; }?>
+<?php //This is WordPress main content Template ?>
 <div id="wpMainContent">
 <?php if ($posts) { foreach ($posts as $post) { start_wp(); ?>
 

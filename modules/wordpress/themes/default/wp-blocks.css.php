@@ -25,6 +25,22 @@ $wp_block_style = <<<EOD
 	margin-bottom: 5px;
 }
 
+#wpBlockContent$wp_num a {
+	color: #9B9FAE;
+}
+
+#wpBlockContent$wp_num a img {
+	border: none;
+}
+
+#wpBlockContent$wp_num a:visited {
+	color: #9B9FAE;
+}
+
+#wpBlockContent$wp_num a:hover {
+	color: #7AA0CF;
+}
+
 #wpBlockContent$wp_num .storytitle {
 	margin: 0;
 }
@@ -34,7 +50,7 @@ $wp_block_style = <<<EOD
 }
 
 #wpBlockContent$wp_num .meta {
-	font-size: .75em;
+	font-size: 0.9em;
 }
 
 #wpBlockContent$wp_num .meta,#wpBlockContent$wp_num .meta a {
@@ -68,7 +84,7 @@ $wp_block_style = <<<EOD
 }
 
 #wpBlockContent$wp_num p,#wpBlockContent$wp_num  li,#wpBlockContent$wp_num .feedback {
-	font: 80%/175% "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
+	font: 95%/175% "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
 }
 
 #wpBlockContent$wp_num blockquote {

@@ -1,4 +1,5 @@
 <?php /* Don't remove this line */ if (!defined('XOOPS_ROOT_PATH')) { exit; }?>
+<?php //This is Comment listing and form Template ?>
 <h2 id="comments"><?php echo _LANG_WPCM_COM_TITLE; ?></h2>
 
 <p><?php comments_rss_link('<abbr title="Really Simple Syndication">RSS</abbr> feed for comments on this post.'); ?></p>

@@ -1,4 +1,5 @@
 <?php /* Don't remove this line */ if (!defined('XOOPS_ROOT_PATH')) { exit; }?>
+<?php //This is WordPress main content XOOPS block Template ?>
 <?php start_wp(); ?>
 <?php the_date('','<h2>','</h2>'); ?>
 	
