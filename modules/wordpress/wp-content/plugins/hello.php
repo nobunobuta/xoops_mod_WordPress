@@ -42,15 +42,17 @@ $lyrics = explode("\n", $lyrics);
 // And then randomly choose a line
 global $chosen;
 $chosen = wptexturize( $lyrics[ mt_rand(0, count($lyrics) ) ] );
+
+// Now we set that function up to execute when the admin_footer action is called
+add_action('admin_footer', 'hello_dolly');
+
+if (!defined('WP_PLUGIN_HELLO')) {
+define('WP_PLUGIN_HELLO',1);
 // This just echoes the chosen line, we'll position it later
 function hello_dolly() {
 	global $chosen;
 	echo "<p id='dolly'>$chosen</p>";
 }
-
-// Now we set that function up to execute when the admin_footer action is called
-add_action('admin_footer', 'hello_dolly');
-
 // We need some CSS to position the paragraph
 function dolly_css() {
 	echo "
@@ -66,7 +68,7 @@ margin: 0; padding: 0;
 	</style>
 	";
 }
-
+}
 add_action('admin_head', 'dolly_css');
 
 ?>

@@ -7,6 +7,8 @@ Description:PukiWiki Render
 Author: nobunobu
 Author URI: http://www.kowa.org/
 */
+if (!defined('WP_PLUGIN_PUKIWIKI')) {
+define('WP_PLUGIN_PUKIWIKI',1);
 function pukiwiki($text) {
 	include (dirname(__FILE__).'/modPukiWiki/PukiWiki.php') ;
 
@@ -25,6 +27,7 @@ function pukiwiki($text) {
 function pukiwiki_com($text) {
 	$text=preg_replace("/^\<strong\>(.*?)\<\/strong\>\n/","''\\1''~\n",$text);
 	return pukiwiki($text);
+}
 }
 remove_filter('the_content', 'wpautop');
 remove_filter('the_content', 'wptexturize');

@@ -50,6 +50,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+if (!defined('WP_PLUGIN_TEXTILE1')) {
+define('WP_PLUGIN_TEXTILE1',1);
 
 	function textile($text) {
 	$text = stripslashes($text);
@@ -373,7 +375,7 @@ function linkit($text,$title,$url){
 
     return $out;
 }
-
+}
 // And now for the filters
 remove_filter('the_content', 'wpautop');
 remove_filter('the_excerpt', 'wpautop');

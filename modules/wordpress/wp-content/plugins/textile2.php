@@ -61,6 +61,8 @@ $textile_s = "(?:$cspn?$rspn?|$rspn?$cspn?)";
 $textile_c = "(?:$clas?$styl?$lnge?|$styl?$lnge?$clas?|$lnge?$styl?$clas?)";
 $pnct = '[\!"#\$%&\'()\*\+,\-\./:;<=>\?@\[\\\]\^_`{\|}\~]';
 
+if (!defined('WP_PLUGIN_TEXTILE2')) {
+define('WP_PLUGIN_TEXTILE2',1);
 function textile($text,$lite='') {
 
 	if (get_magic_quotes_gpc()==1)
@@ -764,7 +766,7 @@ function cmap()
             return '';
         }
     }
-
+}
 // WordPress users.  If you want to change what is textiled, do so here!
 // Default filters we don't want because of Textile 2
 remove_filter('the_content', 'wpautop');

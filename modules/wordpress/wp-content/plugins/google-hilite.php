@@ -7,7 +7,8 @@ Version: 1.2
 Author: Ryan Boren
 Author URI: http://rboren.nu
 */ 
-
+if (!defined('WP_PLUGIN_GOOGLE_HILITE')) {
+define('WP_PLUGIN_GOOGLE_HILITE',1);
 /* Highlighting code c/o Ryan Boren */
 function get_search_query_terms($engine = 'google') {
     global $s, $s_array, $blog_charset;
@@ -134,7 +135,7 @@ function hilite_head() {
 </style>
 ";
 }
-
+}
 // Highlight text and comments:
 add_filter('the_content', 'hilite');
 add_filter('comment_text', 'hilite');

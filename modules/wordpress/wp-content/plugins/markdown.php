@@ -44,6 +44,8 @@ $g_urls;
 $g_titles;
 $g_html_blocks;
 
+if (!defined('WP_PLUGIN_MARKDOWN')) {
+define('WP_PLUGIN_MARKDOWN',1);
 function Markdown($text) {
 	global $g_urls, $g_titles, $g_html_blocks;
 	$g_urls = array();
@@ -777,7 +779,7 @@ function _Detab($text) {
 function _UnslashQuotes($text) {
 	return str_replace('\"', '"', $text);
 }
-
+}
 // And now for the filters
 remove_filter('the_content', 'wpautop');
 remove_filter('the_excerpt', 'wpautop');
