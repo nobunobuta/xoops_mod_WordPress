@@ -10,8 +10,6 @@
 		管理メニューのメッセージ修正
 
 	* wp-includes/functions.php:
-	* wp-includes/functions.php:
-	* xmlrpc.php:
 	* xmlrpc.php:
 		Loggingを専用ディレクトリに出力
 
