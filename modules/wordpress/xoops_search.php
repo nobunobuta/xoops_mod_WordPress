@@ -25,10 +25,8 @@ function wp_xoops_search($queryarray, $andor, $limit, $offset, $userid){
 
 	$ret = array();
 	$i = 0;
-//	if (!$queryarray) $queryarray = array();
-//	$word_url = rawurlencode(join(' ',$queryarray));
 	while($myrow = $xoopsDB->fetchArray($result)){
-		$ret[$i]['link'] = rawurlencode( str_replace($siteurl."/","",get_permalink(($myrow['ID']))));
+		$ret[$i]['link'] = str_replace($siteurl."/","",get_permalink(($myrow['ID'])));
 		$ret[$i]['title'] = htmlspecialchars($myrow['post_title'], ENT_QUOTES);
 		$ret[$i]['image'] = "wp-images/search.png";
 		$date_str = $myrow['post_date'];
