@@ -49,7 +49,9 @@ if( ! defined( 'WP_ARCHIVES_MONTHLY_INCLUDED' ) ) {
 		ob_start();
 		if ($block_style == 0) {
 		// Simple Listing
+			echo "<ul>\n";
 			get_archives('monthly','','html', '','',$with_count);
+			echo "</ul>\n";
 		} else {
 		// Dropdown Listing
 			echo '<form name="archiveform'.$wp_num.'" action="">';
