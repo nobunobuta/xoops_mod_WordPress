@@ -165,7 +165,7 @@ class PukiWikiLink
 		$this->name = $name;
 		$this->body = $body;
 		$this->type = $type;
-		if ($type != 'InterWikiName' and preg_match('/\.(gif|png|jpe?g)$/i',$alias))
+		if (PukiWikiFunc::is_url($alias) && preg_match('/\.(gif|png|jpe?g)$/i',$alias))  //BugTrack 669
 		{
 			$alias = htmlspecialchars($alias);
 			$alias = "<img src=\"$alias\" alt=\"$name\" />";
@@ -177,6 +177,7 @@ class PukiWikiLink
 				$converter = new PukiWikiInlineConverter(array('plugin'));
 			}
 			$alias = PukiWikiConfig::applyRules($converter->convert($alias,$page));
+			$alias = preg_replace('#</?a[^>]*>#i','',$alias);  //BugTrack 669
 		}
 		$this->alias = $alias;
 		
@@ -598,7 +599,7 @@ class PukiWikiLink_autolink extends PukiWikiLink
 		}
 		// AutoLinkデータを予めチェックするようにした by nao-pon
 		//@list($auto,$auto_a,$forceignorepages) = file(MOD_PUKI_WIKI_CACHE_DIR.'autolink.dat');
-		@list($auto,$auto_a,$forceignorepages) = $autolink_data;
+		@list($auto, $auto_a, $forceignorepages) = $autolink_data;
 		$this->auto = $auto;
 		$this->auto_a = $auto_a; 
 		$this->forceignorepages = explode("\t",trim($forceignorepages));
