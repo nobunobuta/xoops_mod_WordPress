@@ -1,3 +1,55 @@
+2004-05-14  0.0.1g
+	* wp-config.php:
+	* wp-admin/edit-form-advanced.php:
+	* wp-admin/edit-form.php:
+	* wp-admin/post.php:
+	* wp-admin/quicktags_spaw.js:
+	* wp-admin/spaw/*:
+		IEでの記事入力編集時におけるSPAW対応
+
+	* wp-admin/bookmarklet.php:
+		SPAW使用時に、選択範囲の引用に元ページのHTMLを使用
+		引用元ページからTrackBackURLを自動検知
+
+	* admin/index.php:
+	* admin/menu.php:
+	* language/japanese/admin.php:
+	* language/japanese/modinfo.php:
+	* xoops_version.php:
+		XOOPS管理者メニューを追加し、以下のオプションを設定可能に
+		・SPAWコントロールの使用の可否（デフォルトは使用せず）
+		・XOOPSユーザの初期権限設定で編集権限をもつグループの指定
+		・XOOPSユーザの初期権限設定で管理権限をもつグループの指定
+
+	* wp-admin/auth.php:
+		XOOPS管理者メニューの設定内容による初期権限設定
+
+	* wp-config.php:
+		XOOPS管理者メニューの設定内容によるSPAW編集機能の仕様可否の設定
+
+	* wp-includes/functions.php:
+		XOOPS管理者メニューの設定内容の取得関数の追加
+
+	* blocks/wp_archives_monthly.php:
+	* blocks/wp_calendar.php:
+	* blocks/wp_categories.php:
+	* blocks/wp_contents.php:
+	* blocks/wp_links.php:
+	* blocks/wp_recent_comments.php:
+	* blocks/wp_recent_posts.php:
+	* blocks/wp_search.php:
+		ブロック組合せ使用時の不具合対応
+
+	* logo.gif（削除）:
+	* wp-images/module_logo.png:
+	* xoops_version.php:
+		WordPressモジュールロゴ変更
+
+	* wp-admin/spaw/class/script.js.php:
+	* wp-admin/spaw/config/spaw_control.config.php:
+	* wp-admin/spaw/dialogs/img_library.php:
+		SPAWによる編集時の画像添付を、WordPressの画像アップロードとThumbnail作成方式に対応
+
 2004-05-09  0.0.1f
 	* blocks/wp_contents.php:
 		記事ブロック単独使用時の不具合対応
