@@ -116,36 +116,26 @@ if ( $op == "list" ) {
 	xoops_cp_footer();
 	exit();
 }
-
 if ( $op == "order" ) {
 	foreach (array_keys($bid) as $i) {
+		if( $side[$i] < 0 ) {
+			$visible[$i] = 0 ;
+			$side[$i] = -1 ;
+		} else {
+			$visible[$i] = 1 ;
+		}
+
+		$bmodule[$i] = (isset($bmodule[$i]) && is_array($bmodule[$i])) ? $bmodule[$i] : array(-1) ;
+
+		myblocksadmin_update_block($i, $side[$i], $weight[$i], $visible[$i], $title[$i], '', '', $bcachetime[$i], $bmodule[$i], array());
+
 //		if ( $oldweight[$i] != $weight[$i] || $oldvisible[$i] != $visible[$i] || $oldside[$i] != $side[$i] )
 //		order_block($bid[$i], $weight[$i], $visible[$i], $side[$i]); GIJ
-		$myblock = new XoopsBlock($i);
-		$myblock->setVar('weight', $weight[$i]);
-		$myblock->setVar('visible', $visible[$i]);
-		$myblock->setVar('side', $side[$i]);
-		if( empty( $title[$i] ) && isset( $storyid[$i] ) ) {
-			$id = $storyid[$i] ;
-			$db =& Database::getInstance();
-			$mydirname = $myblock->getVar('dirname') ;
-			$mytablename = $db->prefix( $mydirname ) ;
-			$result = $db->query( "SELECT title FROM $mytablename WHERE storyid='$id'" ) ;
-			list( $title ) = $db->fetchRow( $result ) ;
-			$myblock->setVar('title', $title);
-			$options = explode( '|' , $myblock->getVar('options') ) ;
-			$options[1] = $id ;
-			$myblock->setVar('options', implode( '|' , $options ) );
-		} else {
-			$myblock->setVar('title', $title[$i]);
-		}
-		$myblock->store();
 	}
 //	redirect_header("admin.php?fct=blocksadmin",1,_AM_DBUPDATED); GIJ
 	redirect_header("myblocksadmin.php",1,_AM_DBUPDATED);
 	exit();
 }
-
 if ( $op == "save" ) {
 	save_block($bside, $bweight, $bvisible, $btitle, $bcontent, $bctype, $bmodule, $bcachetime);
 	exit();
@@ -255,11 +245,6 @@ if ( $op == "delete" ) {
 
 	$myblock = new XoopsBlock($bid);
 
-	// check if this is TinyD's content block
-//	if( $myblock->getVar('show_func') != 'b_tinycontent_content_show' ) {
-//		redirect_header( 'myblocksadmin.php' , 1 , 'invalid block' ) ;
-//	}
-
 	if ( $myblock->getVar('block_type') == 'S' ) {
 		$message = _AM_SYSTEMCANT;
 		redirect_header('admin.php?fct=blocksadmin',4,$message);
@@ -272,7 +257,6 @@ if ( $op == "delete" ) {
 		xoops_confirm(array('fct' => 'blocksadmin', 'op' => 'delete_ok', 'bid' => $myblock->getVar('bid')), 'admin.php', sprintf(_AM_RUSUREDEL,$myblock->getVar('title')));
 	}
 
-//	delete_block($bid);
     xoops_cp_footer();
 	exit();
 }
@@ -280,7 +264,6 @@ if ( $op == "delete" ) {
 
 if ( $op == "edit" ) {
     xoops_cp_header();
-//	edit_block($bid);
 
 	$myblock = new XoopsBlock($bid);
 	$db =& Database::getInstance();
@@ -305,11 +288,6 @@ if ($op == 'clone') {
 	xoops_cp_header();
 	$myblock = new XoopsBlock($bid);
 
-	// check if this is TinyD's content block
-//	if( $myblock->getVar('show_func') != 'b_tinycontent_content_show' ) {
-//		redirect_header( 'myblocksadmin.php' , 1 , 'invalid block' ) ;
-//	}
-
 	$db =& Database::getInstance();
 	$sql = 'SELECT module_id FROM '.$db->prefix('block_module_link').' WHERE block_id='.intval($bid);
 	$result = $db->query($sql);
@@ -330,15 +308,10 @@ if ($op == 'clone') {
 if ($op == 'clone_ok') {
 	$block = new XoopsBlock($bid);
 
-	// check if this is TinyD's content block
-//	if( $block->getVar('show_func') != 'b_tinycontent_content_show' ) {
-//		redirect_header( 'myblocksadmin.php' , 1 , 'invalid block' ) ;
-//	}
-
 	if( empty($options) ) $options = array();
-	else if( ! is_array( $options ) ) $options = explode( '|' , $options ) ;
+	elseif( ! is_array( $options ) ) $options = explode( '|' , $options ) ;
 
-	$clone =& $block->clone();
+	$clone =&$block->clone)();
 	if (empty($bmodule)) {
 		xoops_cp_header();
 		xoops_error(sprintf(_AM_NOTSELNG, _AM_VISIBLEIN));
@@ -349,8 +322,6 @@ if ($op == 'clone_ok') {
 	$clone->setVar('weight', $bweight);
 	$clone->setVar('visible', $bvisible);
 	$clone->setVar('title', $btitle);
-	//$clone->setVar('content', $bcontent);
-	//$clone->setVar('title', $btitle);
 	$clone->setVar('bcachetime', $bcachetime);
 	if ( isset($options) && (count($options) > 0) ) {
 		$options = implode('|', $options);
@@ -365,30 +336,11 @@ if ($op == 'clone_ok') {
 		xoops_cp_footer();
 		exit();
 	}
-/*	if ($clone->getVar('template') != '') {
-		$tplfile_handler =& xoops_gethandler('tplfile');
-		$btemplate =& $tplfile_handler->find($GLOBALS['xoopsConfig']['template_set'], 'block', $bid);
-		if (count($btemplate) > 0) {
-			$tplclone =& $btemplate[0]->clone();
-			$tplclone->setVar('tpl_id', 0);
-			$tplclone->setVar('tpl_refid', $newid);
-			$tplman->insert($tplclone);
-		}
-	} */
 	$db =& Database::getInstance();
 	foreach ($bmodule as $bmid) {
 		$sql = 'INSERT INTO '.$db->prefix('block_module_link').' (block_id, module_id) VALUES ('.$newid.', '.$bmid.')';
 		$db->query($sql);
 	}
-
-/*	global $xoopsUser;
-	$groups =& $xoopsUser->getGroups();
-	$count = count($groups);
-	for ($i = 0; $i < $count; $i++) {
-		$sql = "INSERT INTO ".$db->prefix('group_permission')." (gperm_groupid, gperm_itemid, gperm_modid, gperm_name) VALUES (".$groups[$i].", ".$newid.", 1, 'block_read')";
-		$db->query($sql);
-	}
-*/
 
 	$sql = "SELECT gperm_groupid FROM ".$db->prefix('group_permission')." WHERE gperm_name='block_read' AND gperm_modid='1' AND gperm_itemid='$bid'" ;
 	$result = $db->query($sql);
@@ -400,7 +352,76 @@ if ($op == 'clone_ok') {
 	redirect_header('myblocksadmin.php',1,_AM_DBUPDATED);
 }
 
-
-
+	// import from modules/system/admin/blocksadmin/blocksadmin.php
+	function myblocksadmin_update_block($bid, $bside, $bweight, $bvisible, $btitle, $bcontent, $bctype, $bcachetime, $bmodule, $options=array())
+	{
+		global $xoopsConfig;
+		if (empty($bmodule)) {
+			xoops_cp_header();
+			xoops_error(sprintf(_AM_NOTSELNG, _AM_VISIBLEIN));
+			xoops_cp_footer();
+			exit();
+		}
+		$myblock = new XoopsBlock($bid);
+		if( $bside >= 0 ) $myblock->setVar('side', $bside);
+		$myblock->setVar('weight', $bweight);
+		$myblock->setVar('visible', $bvisible);
+		$myblock->setVar('title', $btitle);
+		$myblock->setVar('content', $bcontent);
+		$myblock->setVar('bcachetime', $bcachetime);
+		if ( isset($options) && (count($options) > 0) ) {
+			$options = implode('|', $options);
+			$myblock->setVar('options', $options);
+		}
+		if ($myblock->getVar('block_type') == 'C') {
+			switch ($bctype) {
+			case 'H':
+				$name = _AM_CUSTOMHTML;
+				break;
+			case 'P':
+				$name = _AM_CUSTOMPHP;
+				break;
+			case 'S':
+				$name = _AM_CUSTOMSMILE;
+				break;
+			default:
+				$name = _AM_CUSTOMNOSMILE;
+				break;
+			}
+			$myblock->setVar('name', $name);
+			$myblock->setVar('c_type', $bctype);
+		} else {
+			$myblock->setVar('c_type', 'H');
+		}
+		$msg = _AM_DBUPDATED;
+		if ($myblock->store() != false) {
+			$db =& Database::getInstance();
+			$sql = sprintf("DELETE FROM %s WHERE block_id = %u", $db->prefix('block_module_link'), $bid);
+			$db->query($sql);
+			foreach ($bmodule as $bmid) {
+				$sql = sprintf("INSERT INTO %s (block_id, module_id) VALUES (%u, %d)", $db->prefix('block_module_link'), $bid, intval($bmid));
+				$db->query($sql);
+			}
+			include_once XOOPS_ROOT_PATH.'/class/template.php';
+			$xoopsTpl = new XoopsTpl();
+			$xoopsTpl->xoops_setCaching(2);
+			if ($myblock->getVar('template') != '') {
+				if ($xoopsTpl->is_cached('db:'.$myblock->getVar('template'))) {
+					if (!$xoopsTpl->clear_cache('db:'.$myblock->getVar('template'))) {
+						$msg = 'Unable to clear cache for block ID'.$bid;
+					}
+				}
+			} else {
+				if ($xoopsTpl->is_cached('db:system_dummy.html', 'block'.$bid)) {
+					if (!$xoopsTpl->clear_cache('db:system_dummy.html', 'block'.$bid)) {
+						$msg = 'Unable to clear cache for block ID'.$bid;
+					}
+				}
+			}
+		} else {
+			$msg = 'Failed update of block. ID:'.$bid;
+		}
+		return $msg ;
+	}
 
 ?>

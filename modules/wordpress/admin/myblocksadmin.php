@@ -44,44 +44,42 @@ while( $myrow = $db->fetchArray($result) ) {
 
 function list_blocks()
 {
-	global $xoopsUser , $xoopsConfig , $xoopsDB , $xoopsModule ;
-	global $block_arr , $xoops_system_url ;
+	global $block_arr ;
+
+	// cachetime options
+	$cachetimes = array('0' => _NOCACHE, '30' => sprintf(_SECONDS, 30), '60' => _MINUTE, '300' => sprintf(_MINUTES, 5), '1800' => sprintf(_MINUTES, 30), '3600' => _HOUR, '18000' => sprintf(_HOURS, 5), '86400' => _DAY, '259200' => sprintf(_DAYS, 3), '604800' => _WEEK, '2592000' => _MONTH);
 
 	// displaying TH
 	echo "
 	<form action='admin.php' name='blockadmin' method='post'>
-		<table width='90%' class='outer' cellpadding='4' cellspacing='1'>
+		<table width='95%' class='outer' cellpadding='4' cellspacing='1'>
 		<tr valign='middle'>
-			<th width='20%'>"._AM_BLKDESC."</th>
 			<th>"._AM_TITLE."</th>
 			<th align='center' nowrap='nowrap'>"._AM_SIDE."</th>
 			<th align='center'>"._AM_WEIGHT."</th>
-			<th align='center'>"._AM_VISIBLE."</th>
-			<th align='center'>"._AM_ACTION."</th>
+			<th align='center'>"._AM_VISIBLEIN."</th>
+			<th align='center'>"._AM_BCACHETIME."</th>
+			<th align='right'>"._AM_ACTION."</th>
 		</tr>\n" ;
-
-	$mydirname = $xoopsModule->dirname() ;
 
 	// blocks displaying loop
 	$class = 'even' ;
 	foreach( array_keys( $block_arr ) as $i ) {
-		$sel0 = $sel1 = $ssel0 = $ssel1 = $ssel2 = $ssel3 = $ssel4 = "";
+		$sseln = $ssel0 = $ssel1 = $ssel2 = $ssel3 = $ssel4 = "";
 
 		$weight = $block_arr[$i]->getVar("weight") ;
+		$title = $block_arr[$i]->getVar("title") ;
 		$name = $block_arr[$i]->getVar("name") ;
+		$bcachetime = $block_arr[$i]->getVar("bcachetime") ;
 		$bid = $block_arr[$i]->getVar("bid") ;
-
-		$title4edit = "<input type='text' name='title[$bid]' value='".$block_arr[$i]->getVar("title")."' size='20' />" ;
 		$appendix_operations = "<a href='admin.php?fct=blocksadmin&amp;op=clone&amp;bid=$bid'>"._CLONE."</a>" ;
 		if( $block_arr[$i]->getVar('block_type') == 'D' ) $appendix_operations .= "&nbsp;<a href='admin.php?fct=blocksadmin&amp;op=delete&amp;bid=$bid'>"._DELETE."</a>" ;
 
-		if ( $block_arr[$i]->getVar("visible") == 1 ) {
-			$sel1 = " checked='checked' style='background-color:#00FF00;'";
-		} else {
-			$sel0 = " checked='checked' style='background-color:#FF0000;'";
-		}
 
-		switch( $block_arr[$i]->getVar("side") ) {
+		// visible and side
+		if ( $block_arr[$i]->getVar("visible") != 1 ) {
+			$sseln = " checked='checked' style='background-color:#FF0000;'";
+		} else switch( $block_arr[$i]->getVar("side") ) {
 			default :
 			case XOOPS_SIDEBLOCK_LEFT :
 				$ssel0 = " checked='checked' style='background-color:#00FF00;'";
@@ -100,21 +98,67 @@ function list_blocks()
 				break ;
 		}
 
+		// bcachetime
+		$cachetime_options = '' ;
+		foreach( $cachetimes as $cachetime => $cachetime_name ) {
+			if( $bcachetime == $cachetime ) {
+				$cachetime_options .= "<option value='$cachetime' selected='selected'>$cachetime_name</option>\n" ;
+			} else {
+				$cachetime_options .= "<option value='$cachetime'>$cachetime_name</option>\n" ;
+			}
+		}
+
+		// target modules
+		$db =& Database::getInstance();
+		$result = $db->query( "SELECT module_id FROM ".$db->prefix('block_module_link')." WHERE block_id='$bid'" ) ;
+		$selected_mids = array();
+		while ( list( $selected_mid ) = $db->fetchRow( $result ) ) {
+			$selected_mids[] = intval( $selected_mid ) ;
+		}
+		$module_handler =& xoops_gethandler('module');
+		$criteria = new CriteriaCompo(new Criteria('hasmain', 1));
+		$criteria->add(new Criteria('isactive', 1));
+		$module_list =& $module_handler->getList($criteria);
+		$module_list[-1] = _AM_TOPPAGE;
+		$module_list[0] = _AM_ALLPAGES;
+		ksort($module_list);
+		$module_options = '' ;
+		foreach( $module_list as $mid => $mname ) {
+			if( in_array( $mid , $selected_mids ) ) {
+				$module_options .= "<option value='$mid' selected='selected'>$mname</option>\n" ;
+			} else {
+				$module_options .= "<option value='$mid'>$mname</option>\n" ;
+			}
+		}
+
+		// displaying part
 		echo "
-		<tr valign='top'>
-			<td class='$class'>$name</td>
-			<td class='$class'>$title4edit</td>
+		<tr valign='middle'>
+			<td class='$class'>
+				$name
+				<br />
+				<input type='text' name='title[$bid]' value='$title' size='20' />
+			</td>
 			<td class='$class' align='center' nowrap='nowrap'>
 				<input type='radio' name='side[$bid]' value='".XOOPS_SIDEBLOCK_LEFT."'$ssel0 />-<input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_LEFT."'$ssel2 /><input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_CENTER."'$ssel3 /><input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_RIGHT."'$ssel4 />-<input type='radio' name='side[$bid]' value='".XOOPS_SIDEBLOCK_RIGHT."'$ssel1 />
+				<br />
+				<input type='radio' name='side[$bid]' value='-1'$sseln />
+				"._NONE."
 			</td>
 			<td class='$class' align='center'>
 				<input type='text' name=weight[$bid] value='$weight' size='5' maxlength='5' style='text-align:right;' />
 			</td>
-			<td class='$class' align='center' nowrap='nowrap'>
-				<input type='radio' name='visible[$bid]' value='1'$sel1>"._YES."
-				<input type='radio' name='visible[$bid]' value='0'$sel0>"._NO."
+			<td class='$class' align='center'>
+				<select name='bmodule[$bid][]' size='4' multiple='multiple'>
+					$module_options
+				</select>
 			</td>
-			<td class='$class' align='left'>
+			<td class='$class' align='center'>
+				<select name='bcachetime[$bid]' size='1'>
+					$cachetime_options
+				</select>
+			</td>
+			<td class='$class' align='leftt'>
 				<a href='admin.php?fct=blocksadmin&amp;op=edit&amp;bid=$bid'>"._EDIT."</a>
 				$appendix_operations
 				<input type='hidden' name='bid[$bid]' value='$bid' />
@@ -135,7 +179,6 @@ function list_blocks()
 		</table>
 	</form>\n" ;
 }
-
 
 function list_groups()
 {
