@@ -1,6 +1,6 @@
 <?php
 /* ÈþÆý */
-include_once ("../../mainfile.php");
+include_once (dirname(__FILE__)."/../../mainfile.php");
 if (!defined('_LANGCODE')) {
 	define("_LANGCODE","en");
 }
