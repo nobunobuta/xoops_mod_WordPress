@@ -956,9 +956,8 @@ function trackback($trackback_url, $title, $excerpt, $ID) {
 		}
 		fwrite($fp, "\n\n");
 		fclose($fp);
-
-		@fclose($fs);
 	}
+	@fclose($fs);
 	$wpdb->query("UPDATE $tableposts SET pinged = CONCAT(pinged, '\n', '$tb_url') WHERE ID = $ID");
 	$wpdb->query("UPDATE $tableposts SET to_ping = REPLACE(to_ping, '$tb_url', '') WHERE ID = $ID");
 	return $result;
