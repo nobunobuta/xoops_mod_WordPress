@@ -1,7 +1,10 @@
 <?PHP
 function wp_xoops_search($queryarray, $andor, $limit, $offset, $userid){
-	require_once(dirname(__FILE__).'/wp-config.php');
 	global $xoopsDB,$siteurl;
+    global $querystring_start, $querystring_equal, $querystring_separator, $month, $wpdb, $start_of_week;
+
+	require_once(dirname(__FILE__).'/wp-config.php');
+
 	$now = date('Y-m-d H:i:s',(time() + ($time_difference * 3600)));
 	$where = "(post_status = 'publish') AND (post_date <= '".$now."')";
 	
