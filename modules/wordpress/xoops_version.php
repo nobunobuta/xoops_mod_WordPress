@@ -3,7 +3,7 @@ $modversion['name'] = 'WordPress';
 $modversion['dirname'] = 'wordpress';
 
 $modversion['description'] = $modversion['name'];
-$modversion['version'] = "0.1";
+$modversion['version'] = "0.01b";
 $modversion['credits'] = "";
 $modversion['author'] = '<a href="http://www.kowa.org/" target="_blank">nobunobu</a>';
 $modversion['help'] = "help.html";
