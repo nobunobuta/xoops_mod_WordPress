@@ -117,10 +117,7 @@ if (!empty($commentstatus->post_password) && $_COOKIE['wp-postpass_'.$cookiehash
 }
 ?>
 
-<!-- // this is just the end of the motor - don't touch that line either :) -->
-<?php //} ?> 
 <p class="credit"><?php timer_stop(1); ?> <cite>Powered by <a href="http://wordpress.org"><strong>Wordpress</strong></a></cite></p>
-<?php // Seen at http://www.mijnkopthee.nl/log2/archive/2003/05/28/esc(18) ?>
 <script type="text/javascript">
 <!--
 document.onkeypress = function esc(e) {	
