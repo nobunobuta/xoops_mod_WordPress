@@ -965,7 +965,7 @@ function trackback($trackback_url, $title, $excerpt, $ID, $charset = "") {
 	$http_request .= $query_string;
 	$fs = @fsockopen($trackback_url['host'], 80);
 	@fputs($fs, $http_request);
-	if(true) {
+	if(false) {
 		$debug_file = 'trackback.log';
 		$fp = fopen($debug_file, 'a');
 		fwrite($fp, "\n*****\nRequest:\n\n$http_request\n\nResponse:\n\n");

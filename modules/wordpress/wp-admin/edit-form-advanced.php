@@ -21,7 +21,7 @@ $colspan = 2;
 $form_pingback = '<input type="hidden" name="post_pingback" value="0" />';
 $form_prevstatus = '<input type="hidden" name="prev_status" value="'.$post_status.'" />';
 if (get_settings('use_trackback')) {
-	$form_trackback = _LANG_EF_TRACK_FORM.'	<input type="text" name="trackback_url" style="width: 415px" id="trackback" tabindex="7" value="'. str_replace("\n", ' ', $to_ping) .'" /></p>';
+	$form_trackback = _LANG_EF_TRACK_FORM.'	<input type="text" name="trackback_url" style="width: 415px" id="trackback" tabindex="7" value="'. str_replace("\n", ' ', $to_ping) .'" />&nbsp;&nbsp;&nbsp;Use UTF-8:<input value="1" type="checkbox" name="useutf8" id="useutf8" /></p>';
 	if ('' != $pinged) {
 		$form_trackback .= '<p>Already pinged:</p><ul>';
 		$already_pinged = explode("\n", trim($pinged));

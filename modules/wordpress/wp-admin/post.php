@@ -18,7 +18,7 @@ if (!get_magic_quotes_gpc()) {
     $HTTP_COOKIE_VARS = add_magic_quotes($HTTP_COOKIE_VARS);
 }
 
-$wpvarstoreset = array('action', 'safe_mode', 'withcomments', 'c', 'posts', 'poststart', 'postend', 'wp_content', 'edited_post_title', 'comment_error', 'profile', 'trackback_url', 'excerpt', 'showcomments', 'commentstart', 'commentend', 'commentorder', 'target_charset');
+$wpvarstoreset = array('action', 'safe_mode', 'withcomments', 'c', 'posts', 'poststart', 'postend', 'wp_content', 'edited_post_title', 'comment_error', 'profile', 'trackback_url', 'excerpt', 'showcomments', 'commentstart', 'commentend', 'commentorder', 'target_charset', 'use-utf8');
 
 for ($i=0; $i<count($wpvarstoreset); $i += 1) {
     $wpvar = $wpvarstoreset[$i];
@@ -67,6 +67,7 @@ switch($action) {
 			$post_name = sanitize_title($post_title);
 			$trackback = $HTTP_POST_VARS['trackback_url'];
 			$target_charset = $HTTP_POST_VARS['target_charset'];
+			$useutf8 = $HTTP_POST_VARS['useutf8'];
 		// Format trackbacks
 		$trackback = preg_replace('|\s+|', '\n', $trackback);
 
@@ -188,11 +189,12 @@ switch($action) {
 				}
 				$excerpt = stripslashes($the_excerpt);
 				$to_pings = explode("\n", $to_ping);
+				if ($useutf8=="1") $target_charset = 'UTF-8';
 				$ping_charset = $target_charset;
 				foreach ($to_pings as $tb_ping) {
 					$tb_ping = trim($tb_ping);
 					if (!in_array($tb_ping, $pinged)) {
-					 trackback($tb_ping, stripslashes($post_title), $excerpt, $post_ID);
+					 trackback($tb_ping, stripslashes($post_title), $excerpt, $post_ID, $ping_charset);
 					}
 				}
 			}
@@ -281,6 +283,7 @@ switch($action) {
 				$post_name = "post-".$post_ID;
 			}
 			$trackback = $HTTP_POST_VARS['trackback_url'];
+			$useutf8 = $HTTP_POST_VARS['useutf8'];
 		// Format trackbacks
 		$trackback = preg_replace('|\s+|', '\n', $trackback);
 		
@@ -356,10 +359,15 @@ switch($action) {
 				}
 				$excerpt = stripslashes($the_excerpt);
 				$to_pings = explode("\n", $to_ping);
+				if ($useutf8=="1") {
+					$ping_charset = 'UTF-8';
+				} else {
+					$ping_charset = '';
+				}
 				foreach ($to_pings as $tb_ping) {
 					$tb_ping = trim($tb_ping);
 					if (!in_array($tb_ping, $pinged)) {
-					 trackback($tb_ping, stripslashes($post_title), $excerpt, $post_ID);
+					 trackback($tb_ping, stripslashes($post_title), $excerpt, $post_ID, $ping_charset);
 					}
 				}
 			}

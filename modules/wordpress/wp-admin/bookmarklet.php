@@ -172,7 +172,7 @@ class TrackBack_XML
 	function parse($buf,$url)
 	{
 		// ½é´ü²½
-		$this->url = $url;
+		$this->url = preg_replace('|/+$|', '', $url);
 		$this->tb_url = FALSE;
 		$this->tb_url_nc = FALSE;
 		
@@ -208,14 +208,14 @@ class TrackBack_XML
 			switch ($key)
 			{
 				case 'RDF:ABOUT':
-					$about = $value;
+					$about = preg_replace('|/+$|', '', $value);
 					break;
 				case 'DC:IDENTIFER':
 				case 'DC:IDENTIFIER':
-					$url = $value;
+					$url = preg_replace('|/+$|', '', $value);
 					break;
 				case 'TRACKBACK:PING':
-					$tb_url = $value;
+					$tb_url = preg_replace('|/+$|', '', $value);
 					break;
 			}
 		}

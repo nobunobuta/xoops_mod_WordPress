@@ -24,7 +24,11 @@ if (get_settings('use_pingback')) {
 	$form_pingback = '';
 }
 if (get_settings('use_trackback')) {
-	$form_trackback = _LANG_EF_TRACK_FORM.'	<input type="text" name="trackback_url" style="width: 360px" id="trackback" tabindex="7" value="'.$trackback_url.'"/></p>';
+	$form_trackback = _LANG_EF_TRACK_FORM.'	<input type="text" name="trackback_url" style="width: 360px" id="trackback" tabindex="7" value="'.$trackback_url.'"/>';
+	if ('bookmarklet' != $mode) {
+		$form_trackback .= '&nbsp;&nbsp;&nbsp;Use UTF-8:<input value="1" type="checkbox" name="useutf8" id="useutf8" />';
+	}
+	$form_trackback .= '</p>';
 	if ('' != $pinged) {
 		$form_trackback .= '<p>Already pinged:</p><ul>';
 		$already_pinged = explode("\n", trim($pinged));
