@@ -3,9 +3,9 @@ if (isset($_GET['action'])) {
 	$standalone = 1;
 	require_once('admin-header.php');
 
-	wp_refcheck("/wp-admin");
-
 	if ('activate' == $_GET['action']) {
+		wp_refcheck("/wp-admin");
+
 		$current = "\n" . get_settings('active_plugins') . "\n";
 		$current = preg_replace("|(\n)+\s*|", "\n", $current);
 		$current = trim($current) . "\n " . trim($_GET['plugin']);
@@ -16,6 +16,8 @@ if (isset($_GET['action'])) {
 	}
 	
 	if ('deactivate' == $_GET['action']) {
+		wp_refcheck("/wp-admin");
+
 		$current = "\n" . get_settings('active_plugins') . "\n";
 		$current = str_replace("\n" . $_GET['plugin'], '', $current);
 		$current = preg_replace("|(\n)+\s*|", "\n", $current);
@@ -44,8 +46,6 @@ foreach ($check_plugins as $check_plugin) {
 			update_option('active_plugins', trim($current));
 	}
 }
-
-
 
 ?>
 
