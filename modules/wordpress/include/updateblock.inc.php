@@ -41,6 +41,7 @@ if($_POST) {
 							$modversion['blocks'][$n_funcnum]['options'] = implode("|",$def_vals);
 							$msgs[] = "Duplicateted Block options for <b>".$fblock['name']."</b> will be kept and add new option value. (value = <b>".$modversion['blocks'][$fblock['func_num']]['options']."</b>)";
 						} else {
+							$modversion['blocks'][$n_funcnum]['options'] = implode("|",$def_vals);
 							$msgs[] = "Duplicateted Block options for <b>".$fblock['name']."</b> will be reset to default, because number of options decrease. (value = <b>".$modversion['blocks'][$n_funcnum]['options']."</b>)";
 						}
 					}
