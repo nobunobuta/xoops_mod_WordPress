@@ -3,7 +3,7 @@ $modversion['name'] = _MI_WORDPRESS_NAME;
 $modversion['dirname'] = 'wordpress';
 
 $modversion['description'] = _MI_WORDPRESS_DESC;
-$modversion['version'] = "0.02b";
+$modversion['version'] = "0.02c";
 $modversion['credits'] = "";
 $modversion['author'] = _MI_WORDPRESS_AUTHOR;
 $modversion['help'] = "help.html";

@@ -1,3 +1,23 @@
+2004-05-19  0.0.2b
+	* blocks/wp_archives_monthly.php:
+	* blocks/wp_calendar.php:
+	* blocks/wp_categories.php:
+	* blocks/wp_contents.php:
+	* blocks/wp_links.php:
+	* blocks/wp_recent_comments.php:
+	* blocks/wp_recent_posts.php:
+	* blocks/wp_search.php:
+		記事表示ブロックで、スマイリーマークやbbcodeなどの変換が出来ていなかった。
+
+	* header.php:
+	* wp-admin/admin-header.php:
+		タイトルバーに表示するタイトルの表記方法を若干修正
+
+	* wp-includes/functions.php:
+	* wp-trackback.php:
+		日本語を含まないblog名からのTrackバックで文字化けをおこしていた。
+		(TrackBack送信時にもcharsetが送れていなかった）
+
 2004-05-18  0.0.2b
 	* wp-admin/edit-form-comment.php:
 		textareaのIDがXOOPSの既定で使用しているIDと重複していたのを修正
