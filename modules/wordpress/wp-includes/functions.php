@@ -853,15 +853,10 @@ function pingWeblogs($blog_ID = 1) {
 	// original function by Dries Buytaert for Drupal
 	global $use_weblogsping, $blogname,$siteurl,$blogfilename,$my_pingserver;
 	if ((!(($blogname=="my weblog") && ($siteurl=="http://example.com") && ($blogfilename=="wp.php"))) && (!preg_match("/localhost\//",$siteurl)) && ($use_weblogsping)) {
-//		$client = new xmlrpc_client("/RPC2", "rpc.weblogs.com", 80);
-//		$message = new xmlrpcmsg("weblogUpdates.ping", array(new xmlrpcval($blogname), new xmlrpcval($siteurl."/".$blogfilename)));
-//		$result = $client->send($message);
-
 		foreach($my_pingserver as $p) {
 			$client = new xmlrpc_client($p['path'],$p['server'],$p['port']);
-//			echo $p['server']."<br/>";
 			$message = new xmlrpcmsg("weblogUpdates.ping", array(new xmlrpcval($blogname), new xmlrpcval($siteurl."/".$blogfilename)));
-			$result = $client->send($message);
+			$result = $client->send($message, 30);
 			unset($client);
 			unset($message);
 		}
@@ -1468,6 +1463,7 @@ function wp_get_comment_status($comment_id) {
 }
 
 function wp_notify_postauthor($comment_id, $comment_type='comment') {
+	global $blog_charset;
     global $wpdb, $tablecomments, $tableposts, $tableusers;
     global $querystring_start, $querystring_equal, $querystring_separator;
     global $blogfilename, $blogname, $siteurl;
