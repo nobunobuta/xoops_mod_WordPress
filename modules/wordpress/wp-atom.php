@@ -1,17 +1,15 @@
 <?php 
 $blog = 1;
 $doing_rss = 1;
+include_once (dirname(__FILE__)."/../../mainfile.php");
 header('Content-type: application/atom+xml', true);
 require('wp-blog-header.php');
-if (!isset($rss_language)) { $rss_language = 'en'; }
-if (!isset($rss_encoded_html)) { $rss_encoded_html = 0; }
-if (!isset($rss_excerpt_length) || ($rss_encoded_html == 1)) { $rss_excerpt_length = 0; }
 ?>
 <?php echo '<?xml version="1.0" encoding="'.$blog_charset.'"?'.'>'; ?>
 <feed version="0.3"
   xmlns="http://purl.org/atom/ns#"
   xmlns:dc="http://purl.org/dc/elements/1.1/"
-  xml:lang="<?php echo $rss_language ?>">
+  xml:lang="<?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?>">
 	<title><?php bloginfo_rss('name') ?></title>
 	<link rel="alternate" type="text/html" href="<?php bloginfo_rss('url') ?>" />
 	<tagline><?php bloginfo_rss("description") ?></tagline>
@@ -32,15 +30,15 @@ if (!isset($rss_excerpt_length) || ($rss_encoded_html == 1)) { $rss_excerpt_leng
 		<?php the_category_rss('rdf') ?>
 <?php $more = 1; if ($rss_use_excerpt) {
 ?>
-		<summary type="text/html"><?php the_excerpt_rss($rss_excerpt_length, 2) ?></summary>
+		<summary type="text/html"><?php the_excerpt_rss(get_settings('rss_excerpt_length'), 2) ?></summary>
 <?php
 } else { // use content
 ?>
-		<summary type="text/html"><?php the_content_rss('', 0, '', $rss_excerpt_length, 2) ?></summary>
+		<summary type="text/html"><?php the_content_rss('', 0, '', get_settings('rss_excerpt_length'), 2) ?></summary>
 <?php
 } // end else use content
 ?>
 		<content type="text/html" mode="escaped" xml:base="<?php permalink_single_rss() ?>"><![CDATA[<?php the_content('', 0, '') ?>]]></content>
 	</entry>
-	<?php $items_count++; if (($items_count == $posts_per_rss) && empty($m)) { break; } } } ?>
+	<?php $items_count++; if (($items_count == get_settings('posts_per_rss')) && empty($m)) { break; } } } ?>
 </feed>

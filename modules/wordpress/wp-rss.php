@@ -1,27 +1,9 @@
-<?php /* These first lines are the first part of a CafeLog template.
-         In every template you do, you got to copy them before the CafeLog 'loop' */
+<?php
 $blog = 1; // enter your blog's ID
 $doing_rss = 1;
 header('Content-type: text/xml', true);
+include_once (dirname(__FILE__)."/../../mainfile.php");
 require('wp-blog-header.php');
-
-/* This doesn't take into account edits
-// Get the time of the most recent article
-$maxdate = $wpdb->get_var("SELECT max(post_date) FROM $tableposts");
-$unixtime = strtotime($maxdate);
-
-// format timestamp for Last-Modified header
-$clast = gmdate("D, d M Y H:i:s \G\M\T", $unixtime);
-$cetag = (isset($clast)) ? md5($clast) : '';
-
-// send it in a Last-Modified header
-header("Last-Modified: " . $clast, true);
-header("Etag: " . $cetag, true);
-*/
-
-if (!isset($rss_language)) { $rss_language = 'en'; }
-if (!isset($rss_encoded_html)) { $rss_encoded_html = 0; }
-if (!isset($rss_excerpt_length) || ($rss_encoded_html == 1)) { $rss_excerpt_length = 0; }
 ?>
 <?php echo '<?xml version="1.0" encoding="'.$blog_charset.'"?'.'>'; ?>
 <!-- generator="wordpress/<?php echo $wp_version ?>" -->
@@ -32,9 +14,9 @@ if (!isset($rss_excerpt_length) || ($rss_encoded_html == 1)) { $rss_excerpt_leng
         <description><?php bloginfo_rss("description") ?></description>
         <lastBuildDate><?php echo gmdate("D, d M Y H:i:s"); ?> GMT</lastBuildDate>
         <docs>http://backend.userland.com/rss092</docs>
-        <managingEditor><?php echo antispambot($admin_email) ?></managingEditor>
-        <webMaster><?php echo antispambot($admin_email) ?></webMaster>
-        <language><?php echo $rss_language ?></language>
+        <managingEditor><?php echo antispambot(get_settings('admin_email')) ?></managingEditor>
+        <webMaster><?php echo antispambot(get_settings('admin_email')) ?></webMaster>
+        <language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></language>
 
 <?php $items_count = 0; if ($posts) { foreach ($posts as $post) { start_wp(); ?>
         <item>
@@ -46,16 +28,16 @@ if (!isset($rss_excerpt_length) || ($rss_encoded_html == 1)) { $rss_excerpt_leng
 $more = 1; 
 if ($rss_use_excerpt) {
 ?>
-            <description><?php the_excerpt_rss($rss_excerpt_length, $rss_encoded_html) ?></description>
+            <description><?php the_excerpt_rss(get_settings('rss_excerpt_length'), get_settings('rss_encoded_html')) ?></description>
 <?php
 } else { // use content
 ?>
-            <description><?php the_content_rss('', 0, '', $rss_excerpt_length, $rss_encoded_html) ?></description>
+            <description><?php the_content_rss('', 0, '', get_settings('rss_excerpt_length'), get_settings('rss_encoded_html')) ?></description>
 <?php
 } // end else use content
 ?>
             <link><?php permalink_single_rss() ?></link>
         </item>
-<?php $items_count++; if (($items_count == $posts_per_rss) && empty($m)) { break; } } } ?>
+<?php $items_count++; if (($items_count == get_settings('posts_per_rss')) && empty($m)) { break; } } } ?>
     </channel>
 </rss>

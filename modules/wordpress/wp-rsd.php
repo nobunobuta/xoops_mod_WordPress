@@ -2,6 +2,7 @@
 header('Content-type: text/xml', true);
 $blog = 1; // enter your blog's ID
 $doing_rss = 1;
+include_once (dirname(__FILE__)."/../../mainfile.php");
 require('wp-blog-header.php');
 echo '<?xml version="1.0"?>'; 
 ?>
