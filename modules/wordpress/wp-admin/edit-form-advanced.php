@@ -71,8 +71,8 @@ window.onload = focusit;
     </fieldset>
     <fieldset id="commentstatusdiv">
       <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#comments" title="Help on comment status"><?php echo _LANG_EFA_AD_COMMENTS; ?></a></legend> 
-	  <div><label for="comment_status_open" class="selectit"><input id="comment_status_open" name="comment_status" type="radio" value="open" <?php checked($comment_status, 'open'); ?> /> Open</label> 
-	  <label for="comment_status_closed" class="selectit"><input id="comment_status_closed" name="comment_status" type="radio" value="closed" <?php checked($comment_status, 'closed'); ?> /> <?php echo _LANG_EFA_STATUS_OPEN; ?></label></div>
+	  <div><label for="comment_status_open" class="selectit"><input id="comment_status_open" name="comment_status" type="radio" value="open" <?php checked($comment_status, 'open'); ?> />  <?php echo _LANG_EFA_STATUS_OPEN; ?></label> 
+	  <label for="comment_status_closed" class="selectit"><input id="comment_status_closed" name="comment_status" type="radio" value="closed" <?php checked($comment_status, 'closed'); ?> /> <?php echo _LANG_EFA_STATUS_CLOSE; ?></label></div>
     </fieldset>
     <fieldset id="pingstatusdiv">
       <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#pings" title="Help on ping status"><?php echo _LANG_EFA_AD_PINGS; ?></a></legend> 
