@@ -1,3 +1,36 @@
+2004-07-20  0.2.3
+	* admin/users.php
+		ユーザー削除機能を復活
+
+	* admin/menu.php:
+	* language/english/modinfo.php:
+	* language/german/modinfo.php:
+	* language/japanese/modinfo.php:
+	* language/portuguesebr/modinfo.php:
+		管理メニューのメッセージ修正
+
+	* wp-includes/functions.php:
+	* wp-includes/functions.php:
+	* xmlrpc.php:
+	* xmlrpc.php:
+		Loggingを専用ディレクトリに出力
+
+	* wp-mail.php:
+		require経由での呼出に対応
+
+	* blocks/wp_calendar.php:
+		カレンダの月が変わらなくなっていた
+
+	* wp-admin/post.php:
+		コメントの編集が出来なくなっていた
+
+	* blocks/wp_categories.php:
+		ブロックの動作が不正だった
+
+	* language/german/main.php:
+	* language/german/modinfo.php:
+		Could not Install on German environment
+
 2004-07-08  0.2.2
 	* blocks/wp_contents.php:
 	* blocks/wp_recent_posts.php:

@@ -55,6 +55,14 @@ XOOPS_ROOT_PATH
 ------------
 ChangeLog
 ------------
+0.2.3  [2004-07-20]
+Fixed Bugs)
+-Could not change Month with calendar block.
+-Some odd action in category block.
+-Could not edit comment message.
+-Could not Install on German environment
+-Re-enable User deleting function
+
 0.2.2  [2004-07-08]
 Fixed Bugs)
 -Can't Receive Trackback, if PHP mbstring extension is not installed.
