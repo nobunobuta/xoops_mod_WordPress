@@ -34,7 +34,7 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 		$dateformat = stripslashes(get_settings('date_format'));
 		$timeformat = stripslashes(get_settings('time_format'));
 		
-		$now = date('Y-m-d H:i:s',(time() + ($time_difference * 3600)));
+		$now = date('Y-m-d H:i:s',(time() + (get_settings('time_difference') * 3600)));
 		$request = "SELECT DISTINCT * FROM {$wpdb->posts[$wp_id]} ";
 		$request .= " LEFT JOIN {$wpdb->post2cat[$wp_id]} ON ({$wpdb->posts[$wp_id]}.ID = {$wpdb->post2cat[$wp_id]}.post_id) ";
 		$request .= "WHERE post_status = 'publish' ";
