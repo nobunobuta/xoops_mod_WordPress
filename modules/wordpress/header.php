@@ -27,7 +27,12 @@ ob_start();
 echo  bloginfo('name');
 $blog_name =  ob_get_contents();
 ob_end_clean();
-$module_title = $blog_name ." &raquo;".single_post_title(' :: ',false).single_cat_title(' :: ',false).single_month_title(' :: ',false);
+$module_title =single_post_title(' :: ',false).single_cat_title(' :: ',false).single_month_title(' :: ',false);
+if (trim($module_title) == "") {
+	$module_title = $blog_name;
+}else{
+	$module_title = $blog_name ." : ".$module_title;
+}
 global $xoopsTpl;
 if ($xoopsTpl){
 	$xoopsTpl->assign("xoops_pagetitle",$module_title);

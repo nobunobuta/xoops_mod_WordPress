@@ -52,7 +52,7 @@ if ($standalone == 0) {
 		echo  bloginfo('name');
 		$blog_name =  ob_get_contents();
 		ob_end_clean();
-		$module_title = $blog_name ." &raquo;".$title;
+		$module_title = $blog_name ." : ".$title;
 		$xoopsTpl->assign('xoops_module_header', '<link rel="stylesheet" href="wp-admin.css" type="text/css" />');
 		$xoopsTpl->assign("xoops_pagetitle",$module_title);
 	}else{
