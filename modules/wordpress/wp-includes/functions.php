@@ -1016,7 +1016,7 @@ function xmlrpc_getpostcategory($content) {
 		$post_category = preg_replace('/<\/category>/si', '', $post_category);
 
 	} else {
-		$post_category = get_settings('post_default_category');
+		$post_category = $post_default_category;
 	}
 	return $post_category;
 }

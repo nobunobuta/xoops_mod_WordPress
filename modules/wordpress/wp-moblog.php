@@ -241,13 +241,15 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		$user_level = $result->user_level;
 		$post_author = $result->ID;
 		if ($user_level > 0) {
-			$default_category= '1';
 			$post_title = xmlrpc_getposttitle($content);
-			$post_category = xmlrpc_getpostcategory($content);
-
 			if ($post_title == '') {
 				$post_title = $subject;
 			}
+
+			$post_category = get_settings('default_category');
+			if (preg_match('/<category>(.+?)<\/category>/is', $content, $matchcat)) {
+				$post_category = xmlrpc_getpostcategory($content);
+			} 
 			if ($post_category == '') {
 				$post_category = get_settings('default_post_category');
 			}
