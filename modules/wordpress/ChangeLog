@@ -1,3 +1,60 @@
+2004-07-04  0.2.1
+	* blocks/wp_recent_comments.php:
+	* blocks/wp_recent_posts.php:
+	* wp-images/atom.gif:
+	* wp-images/rdf.gif:
+	* wp-images/rdf.png:
+	* wp-images/rss.gif:
+	* wp-images/rss.png:
+	* wp-images/rss2.gif:
+	* wp-images/rss_comment.gif:
+	* wp-images/xml.gif:
+	* xoops_version.php:
+		RSS,RDF,ATOM リンクアイコンを最新記事XOOPSブロックに追加
+
+	* wp-atom.php:
+	* wp-commentsrss2.php:
+	* wp-includes/template-functions.php:
+	* wp-rdf.php:
+	* wp-rss.php:
+	* wp-rss2.php:
+		RSSやATOMを日本語の場合はUTF-8にて出力するように変更
+
+	* wp-includes/functions.php:
+		TrackBackURLに？を含む場合にうまくトラックバック出来なかった
+
+	* themes/default/wp-admin.css:
+		Safariでの投稿画面レイアウト崩れへの対処
+
+	* templates/blocks/wp_block_contents.html:
+		スタイルの２重出力抑止
+
+	* blocks/wp_contents.php:
+		時差のパラメータ取得にバグ
+
+	* wp-commentsrss2.php:
+		Comment RSSの文字コード設定の不具合対応他
+
+	* wp-includes/kses.php:
+		Comment許可タグ変数取得の不具合対応
+
+	* language/english/main.php:
+		Some messages are added.
+
+	* language/german/admin.php:
+	* language/german/index.html:
+	* language/german/main.php:
+	* language/german/modinfo.php:
+	* wp-lang/lang_de.php:
+		German Language Files are made by Joker (http://localfoo.info/)
+
+	* language/portuguesebr/admin.php:
+	* language/portuguesebr/index.html:
+	* language/portuguesebr/main.php:
+	* language/portuguesebr/modinfo.php:
+	* wp-lang/lang_pt_BR.php:
+		New Brazilian Portuguese language files, updated by Yuji
+
 2004-06-26  0.2.0
 	* Almost all files
 		モジュールの複製可能化
