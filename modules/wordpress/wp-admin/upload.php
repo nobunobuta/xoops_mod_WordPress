@@ -102,8 +102,8 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
 <!-- // idocs.com's popup tutorial rules !
 function targetopener(blah, closeme, closeonly) {
 	if (! (window.focus && window.opener))return true;
-	window.opener.focus();
-	if (! closeonly)window.opener.document.post.content.value += blah;
+//	window.opener.focus();
+	if (! closeonly)window.opener.document.post.wp_content.value += blah;
 	if (closeme)window.close();
 	return false;
 }
