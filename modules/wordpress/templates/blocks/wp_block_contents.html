@@ -2,6 +2,7 @@
 	<{$block.style}>
 </style>
 <div id='<{$block.divid}>'>
+<{if $block.use_theme_template == 0}>
   <{foreach item=content from=$block.contents}>
     <{if $content.date != ""}>
         <h2><{$content.date}></h2>
@@ -23,4 +24,7 @@
 -->
         </div>
   <{/foreach}>
+<{else}>
+  <{$block.template_content}>
+<{/if}>
 </div>

@@ -37,6 +37,9 @@ define("_MI_WPADMINAUTHGRP_CFG_DESC","O(s) grupo(s) que têm autorização para alt
 
 define("_MI_WP_USE_XOOPS_SMILE","Usar os Smilies-Padrão do XOOPS");
 define("_MI_WP_USE_XOOPS_SMILE_DESC","");
+
+define("_MI_WP_USE_THEME_TEMPLATE","Use Template file under theme directory, when display content XOOPS block.");
+define("_MI_WP_USE_THEME_TEMPLATE_DESC","Use Template file(content_block-template.php) under theme directory, when display content XOOPS block.");
 // Block Name
 define("_MI_WORDPRESS_BNAME1","Calendário do WordPress%s");
 define("_MI_WORDPRESS_BDESC1","Calendário do WordPress");

@@ -30,6 +30,7 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 		}
 
 		global $dateformat,$timeformat;
+		
 		$dateformat = stripslashes(get_settings('date_format'));
 		$timeformat = stripslashes(get_settings('time_format'));
 		
@@ -43,55 +44,73 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 		
 		$blog = 1;
 		$block = array();
+		$block['use_theme_template'] = get_xoops_option('wordpress'.$wp_num,'use_theme_template');
+		
 		if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/wp-blocks.css.php')) {
 			$themes = $xoopsConfig['theme_set'];
 		} else {
 			$themes = "default";
 		}
 		include_once(XOOPS_ROOT_PATH."/modules/wordpress". (($wp_id=='-')?'':$wp_id) ."/themes/".$themes."/wp-blocks.css.php");
+		
+		if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/content_block-template.php')) {
+			$themes = $xoopsConfig['theme_set'];
+		} else {
+			$themes = "default";
+		}
+		$template_fname = XOOPS_ROOT_PATH."/modules/wordpress". (($wp_id=='-')?'':$wp_id) ."/themes/".$themes."/content_block-template.php";
+		
 		$block['style'] =$wp_block_style;
 		$block['divid'] = 'wpBlockContent'.$wp_num;
+		$block['template_content'] = "";
 		$i = 0;
 		$previousday = 0;
 		foreach ($lposts as $post) {
-			$content = array();
-			start_wp();
-			$content['date'] = the_date($dateformat,'','', false);
-			$content['time'] = the_time('', false);
-			$content['title'] = the_title('','', false);
-			$content['permlink'] = get_permalink();
-	//
-			ob_start();
-			the_author();
-			$content['author'] = ob_get_contents();
-			ob_end_clean();
-	//
-			ob_start();
-			the_category();
-			$content['category'] = ob_get_contents();
-			ob_end_clean();
-	//	
-			ob_start();
-			the_content();
-			$content['body'] = ob_get_contents();
-			ob_end_clean();
-	//
-			ob_start();
-			link_pages('<br />Pages: ', '<br />', 'number');
-			$content['linkpage'] = ob_get_contents();
-			ob_end_clean();
-	//
-			ob_start();
-			comments_popup_link(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS);
-			$content['comments'] = ob_get_contents();
-			ob_end_clean();
-	//
-			ob_start();
-			trackback_rdf();
-			$content['trackback'] = ob_get_contents();
-			ob_end_clean();
-	//
-			$block['contents'][] = $content;
+			if ($block['use_theme_template'] == 0) {
+				$content = array();
+				start_wp();
+				$content['date'] = the_date($dateformat,'','', false);
+				$content['time'] = the_time('', false);
+				$content['title'] = the_title('','', false);
+				$content['permlink'] = get_permalink();
+		//
+				ob_start();
+				the_author();
+				$content['author'] = ob_get_contents();
+				ob_end_clean();
+		//
+				ob_start();
+				the_category();
+				$content['category'] = ob_get_contents();
+				ob_end_clean();
+		//	
+				ob_start();
+				the_content();
+				$content['body'] = ob_get_contents();
+				ob_end_clean();
+		//
+				ob_start();
+				link_pages('<br />Pages: ', '<br />', 'number');
+				$content['linkpage'] = ob_get_contents();
+				ob_end_clean();
+		//
+				ob_start();
+				comments_popup_link(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS);
+				$content['comments'] = ob_get_contents();
+				ob_end_clean();
+		//
+				ob_start();
+				trackback_rdf();
+				$content['trackback'] = ob_get_contents();
+				ob_end_clean();
+		//
+				$block['contents'][] = $content;
+			} else {
+				ob_start();
+				include $template_fname;
+				$block['template_content'] .= ob_get_contents();
+				ob_end_clean();
+			}
 		}
 		$previousday = 0;
 		return $block;

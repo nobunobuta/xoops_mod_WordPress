@@ -91,6 +91,15 @@ $modversion['config'][4] = array(
 	'default'		=> 0 ,
 );
 
+$modversion['config'][5] = array(
+	'name'			=> 'use_theme_template' ,
+	'title'			=> '_MI_WP_USE_THEME_TEMPLATE' ,
+	'description'	=> '_MI_WP_USE_THEME_TEMPLATE_DESC' ,
+	'formtype'		=> 'yesno' ,
+	'valuetype'		=> 'int' ,
+	'default'		=> 0 ,
+);
+
 $modversion['blocks'][1]['file'] = "wp_calendar.php";
 $modversion['blocks'][1]['name'] = sprintf( _MI_WORDPRESS_BNAME1 , $my_wp_dirnumber );
 $modversion['blocks'][1]['description'] = _MI_WORDPRESS_BDESC1;
@@ -139,7 +148,7 @@ $modversion['blocks'][8]['name'] = sprintf( _MI_WORDPRESS_BNAME8 , $my_wp_dirnum
 $modversion['blocks'][8]['description'] = _MI_WORDPRESS_BDESC8;
 $modversion['blocks'][8]['show_func'] = "b_wp{$my_wp_dirnumber}_contents_show";
 $modversion['blocks'][8]['edit_func'] = "b_wp{$my_wp_dirnumber}_contents_edit";
-$modversion['blocks'][8]['options'] = "10";
+$modversion['blocks'][8]['options'] = "5";
 $modversion['blocks'][8]['template'] = "wp_block_contents.html";
 
 //Hacked by nobunobu  Keep Block option values when update
