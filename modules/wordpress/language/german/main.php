@@ -37,5 +37,7 @@ define("_WP_TPL_FILED_UNDER",'Blog aus der Kategorie: ');
 define("_WP_TPL_EDIT_THIS",'Bearbeiten');
 define("_WP_TPL_EDIT_THISC",'Bearbeiten');
 define("_WP_TPL_MORE",'(mehr...)');
+
+define("_WP_POST_NOTITLE",'(No Title)');
 }
 ?>

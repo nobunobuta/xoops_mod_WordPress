@@ -135,6 +135,8 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 				if ($lcomment->ID != $new_post_ID) { // next post 
 					if ($new_post_ID != -1) { $output .= "\t</ul>\n</li>\n"; } 
 					$post_title = stripslashes($lcomment->post_title); 
+					if (trim($post_title)=="")
+						$post_title = _WP_POST_NOTITLE;
 					$comment_content = strip_tags($lcomment->comment_content);
 					$comment_content = stripslashes($comment_content);
 					if (function_exists('mb_substr')) {

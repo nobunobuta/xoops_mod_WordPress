@@ -148,6 +148,8 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 					}
 				}
 				$post_title = stripslashes($lpost->post_title);
+				if (trim($post_title)=="")
+					$post_title = _WP_POST_NOTITLE;
 				$permalink = get_permalink($lpost->ID);
 				$output .= '<li><span class="post-title"><a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '">' . $post_title . '</a></span>'.$newstr.'<br />';
 				$output .= "</li>\n";

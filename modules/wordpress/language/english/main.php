@@ -38,5 +38,7 @@ define("_WP_TPL_FILED_UNDER",'Filed under: ');
 define("_WP_TPL_EDIT_THIS",'Edit This');
 define("_WP_TPL_EDIT_THISC",'Edit This');
 define("_WP_TPL_MORE",'(more...)');
+
+define("_WP_POST_NOTITLE",'(No Title)');
 }
 ?>

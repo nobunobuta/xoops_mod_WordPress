@@ -37,5 +37,7 @@ define("_WP_TPL_FILED_UNDER",'カテゴリー: ');
 define("_WP_TPL_EDIT_THIS",'記事編集');
 define("_WP_TPL_EDIT_THISC",'コメント編集');
 define("_WP_TPL_MORE",'(続き...)');
+
+define("_WP_POST_NOTITLE",'[無題]');
 }
 ?>

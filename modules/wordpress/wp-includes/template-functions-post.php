@@ -1,6 +1,7 @@
 <?php
 
 // Default filters
+add_filter('the_title', 'convert_smilies');
 add_filter('the_title', 'convert_chars');
 add_filter('the_title', 'trim');
 
@@ -34,10 +35,8 @@ function the_ID() {
 
 function the_title($before = '', $after = '', $echo = true) {
 	$title = get_the_title();
-	$title = convert_smilies($title);
 	if (!empty($title)) {
-		$title = convert_chars($before.$title.$after);
-		$title = apply_filters('the_title', $title);
+		$title = apply_filters('the_title', $before . $title . $after);
         if ($echo)
             echo $title;
         else
@@ -55,6 +54,8 @@ function the_title_rss() {
 function get_the_title() {
 	global $post;
 	$output = stripslashes($post->post_title);
+	if (trim($output)=="")
+		$output = _WP_POST_NOTITLE;
 	if (!empty($post->post_password)) { // if there's a password
 		$output = 'Protected: ' . $output;
 	}
@@ -164,8 +165,7 @@ function the_excerpt_rss($cut = 0, $encode_html = 0) {
     } elseif ($encode_html == 0) {
         $output = make_url_footnote($output);
     } elseif ($encode_html == 2) {
-        $output = strip_tags($output);
-        $output = str_replace('&', '&amp;', $output);
+        $output = htmlspecialchars(strip_tags($output));
     }
     if ($cut) {
         $excerpt = '';
