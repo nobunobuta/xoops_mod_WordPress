@@ -1,11 +1,25 @@
 <?php 
 $blog = 1;
 $doing_rss = 1;
+header("Content-type: application/xml");
 include_once (dirname(__FILE__)."/../../mainfile.php");
-header('Content-type: text/xml', true);
+error_reporting(E_ERROR);
+if ($HTTP_GET_VARS['num']) $showposts = $HTTP_GET_VARS['num'];
 require('wp-blog-header.php');
+if (isset($showposts) && $showposts) {
+    $showposts = (int)$showposts;
+	$posts_per_page = $showposts;
+} else {
+	$posts_per_page = get_settings('posts_per_rss');
+}
+
+if (function_exists('mb_convert_encoding')) {
+	$rss_charset = 'utf-8';
+}else{
+	$rss_charset = $blog_charset;
+}
 ?>
-<?php echo '<?xml version="1.0" encoding="'.$blog_charset.'"?'.'>'; ?>
+<?php echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>'; ?>
 <!-- generator="wordpress/<?php echo $wp_version ?>" -->
 <rss version="2.0" 
 	xmlns:content="http://purl.org/rss/1.0/modules/content/">
@@ -25,10 +39,10 @@ require('wp-blog-header.php');
 		<link><?php permalink_single_rss() ?></link>
 		<comments><?php comments_link(); ?></comments>
 		<pubDate><?php the_time('r'); ?></pubDate>
-		<author><?php the_author() ?> (mailto:<?php the_author_email() ?>)</author>
+		<author><?php the_author_rss() ?> (mailto:<?php the_author_email() ?>)</author>
 		<?php the_category_rss() ?>
-		<guid isPermaLink="false"><?php echo $id; ?>@<?php bloginfo_rss("url") ?></guid>
-<?php $more = 1; if ($rss_use_excerpt) {
+		<guid isPermaLink="true"><?php permalink_single_rss() ?></guid>
+<?php $more = 1; if (get_settings('rss_use_excerpt')) {
 ?>
 		<description><?php the_excerpt_rss(get_settings('rss_excerpt_length'), 2) ?></description>
 <?php
@@ -38,7 +52,7 @@ require('wp-blog-header.php');
 <?php
 } // end else use content
 ?>
-		<content:encoded><![CDATA[<?php the_content('', 0, '') ?>]]></content:encoded>
+		<content:encoded><![CDATA[<?php the_content_rss('', 0, '',0, 3) ?>]]></content:encoded>
 	</item>
 	<?php $items_count++; if (($items_count == get_settings('posts_per_rss')) && empty($m)) { break; } } } ?>
 </channel>

@@ -6,11 +6,17 @@
 /* These first lines are the first part of a WordPress template.
 		   In every template you do, you got to copy them before the CafeLog 'loop' */
 $blog=1; // enter your blog's ID
-header('Content-type: text/xml');
+header("Content-type: application/xml");
 include_once (dirname(__FILE__)."/../../mainfile.php");
+error_reporting(E_ERROR);
 require('wp-blog-header.php');
+if (function_exists('mb_convert_encoding')) {
+	$rss_charset = 'utf-8';
+}else{
+	$rss_charset = $blog_charset;
+}
 
-echo '<?xml version="1.0" encoding="'.$blog_charset.'"?'.'>';
+echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>';
 ?>
 <!-- generator="wordpress/<?php echo $wp_version ?>" -->
 <rss version="2.0" 
@@ -96,7 +102,7 @@ foreach ($posts as $post) { start_wp();
 			else {
 			?>
 		<description><?php comment_text_rss() ?></description>
-		<content:encoded><![CDATA[<?php comment_text() ?>]]></content:encoded>
+		<content:encoded><![CDATA[<?php comment_text_rss(true) ?>]]></content:encoded>
 			<?php } // close check for password ?>
 	</item>
 <?php 

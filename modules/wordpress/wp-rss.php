@@ -1,11 +1,25 @@
 <?php
 $blog = 1; // enter your blog's ID
 $doing_rss = 1;
-header('Content-type: text/xml', true);
+header("Content-type: application/xml");
 include_once (dirname(__FILE__)."/../../mainfile.php");
+error_reporting(E_ERROR);
+if ($HTTP_GET_VARS['num']) $showposts = $HTTP_GET_VARS['num'];
 require('wp-blog-header.php');
+if (isset($showposts) && $showposts) {
+    $showposts = (int)$showposts;
+	$posts_per_page = $showposts;
+} else {
+	$posts_per_page = get_settings('posts_per_rss');
+}
+
+if (function_exists('mb_convert_encoding')) {
+	$rss_charset = 'utf-8';
+}else{
+	$rss_charset = $blog_charset;
+}
 ?>
-<?php echo '<?xml version="1.0" encoding="'.$blog_charset.'"?'.'>'; ?>
+<?php echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>'; ?>
 <!-- generator="wordpress/<?php echo $wp_version ?>" -->
 <rss version="0.92">
     <channel>
@@ -26,7 +40,7 @@ require('wp-blog-header.php');
 // so that it doesn't appear at all in the RSS
 //          echo "<category>"; the_category_unicode(); echo "</category>";
 $more = 1; 
-if ($rss_use_excerpt) {
+if (get_settings('rss_use_excerpt')) {
 ?>
             <description><?php the_excerpt_rss(get_settings('rss_excerpt_length'), get_settings('rss_encoded_html')) ?></description>
 <?php
@@ -38,6 +52,6 @@ if ($rss_use_excerpt) {
 ?>
             <link><?php permalink_single_rss() ?></link>
         </item>
-<?php $items_count++; if (($items_count == get_settings('posts_per_rss')) && empty($m)) { break; } } } ?>
+<?php $items_count++; if (($items_count ==$posts_per_page) && empty($m)) { break; } } } ?>
     </channel>
 </rss>

@@ -1,12 +1,26 @@
 <?php /* RDF 1.0 generator, original version by garym@teledyn.com */
 $blog = 1; // enter your blog's ID
 $doing_rss = 1;
-header('Content-type: text/xml', true);
+header("Content-type: application/xml");
 include_once (dirname(__FILE__)."/../../mainfile.php");
+error_reporting(E_ERROR);
+if ($HTTP_GET_VARS['num']) $showposts = $HTTP_GET_VARS['num'];
 require('wp-blog-header.php');
+if (isset($showposts) && $showposts) {
+    $showposts = (int)$showposts;
+	$posts_per_page = $showposts;
+} else {
+	$posts_per_page = get_settings('posts_per_rss');
+}
+
 add_filter('the_content', 'trim');
+if (function_exists('mb_convert_encoding')) {
+	$rss_charset = 'utf-8';
+}else{
+	$rss_charset = $blog_charset;
+}
 ?>
-<?php echo '<?xml version="1.0" encoding="'.$blog_charset.'"?'.'>'; ?>
+<?php echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>'; ?>
 <!-- generator="wordpress/<?php echo $wp_version ?>" -->
 <rdf:RDF
 	xmlns="http://purl.org/rss/1.0/"
@@ -22,7 +36,11 @@ add_filter('the_content', 'trim');
 	<description><?php bloginfo_rss('description') ?></description>
 	<dc:language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></dc:language>
 	<dc:date><?php echo gmdate('Y-m-d\TH:i:s'); ?></dc:date>
+<?php if (function_exists('mb_convert_encoding')) { ?>
+	<dc:creator><?php echo antispambot(mb_convert_encoding(get_settings('admin_email'),"UTF-8",$blog_charset)) ?></dc:creator>
+<?php } else { ?>
 	<dc:creator><?php echo antispambot(get_settings('admin_email')) ?></dc:creator>
+<?php } ?>
 	<admin:generatorAgent rdf:resource="http://wordpress.xwd.jp/?v=<?php echo $wp_version ?>"/>
 	<admin:errorReportsTo rdf:resource="mailto:<?php echo antispambot(get_settings('admin_email')) ?>"/>
 	<sy:updatePeriod>hourly</sy:updatePeriod>
@@ -32,7 +50,7 @@ add_filter('the_content', 'trim');
 		<rdf:Seq>
 		<?php $items_count = 0; if ($posts) { foreach ($posts as $post) { start_wp(); ?>
 			<rdf:li rdf:resource="<?php permalink_single_rss() ?>"/>
-		<?php $wp_items[] = $row; $items_count++; if (($items_count == get_settings('posts_per_rss')) && empty($m)) { break; } } } ?>
+		<?php /*$wp_items[] = $row;*/ $items_count++; if (($items_count == get_settings('posts_per_rss')) && empty($m)) { break; } } } ?>
 		</rdf:Seq>
 	</items>
 </channel>
@@ -41,9 +59,9 @@ add_filter('the_content', 'trim');
 	<title><?php the_title_rss() ?></title>
 	<link><?php permalink_single_rss() ?></link>
 	<dc:date><?php the_time('Y-m-d\TH:i:s'); ?></dc:date>
-	<dc:creator><?php the_author() ?> (mailto:<?php the_author_email() ?>)</dc:creator>
+	<dc:creator><?php the_author_rss() ?> (mailto:<?php the_author_email() ?>)</dc:creator>
 	<?php the_category_rss('rdf') ?>
-<?php $more = 1; if ($rss_use_excerpt) {
+<?php $more = 1; if (get_settings('rss_use_excerpt')) {
 ?>
 	<description><?php the_excerpt_rss(get_settings('rss_excerpt_length'), 2) ?></description>
 <?php
@@ -53,7 +71,7 @@ add_filter('the_content', 'trim');
 <?php
 } // end else use content
 ?>
-	<content:encoded><![CDATA[<?php the_content('', 0, '') ?>]]></content:encoded>
+	<content:encoded><![CDATA[<?php the_content_rss('', 0, '', 0, 3) ?>]]></content:encoded>
 </item>
 <?php } }  ?>
 </rdf:RDF>

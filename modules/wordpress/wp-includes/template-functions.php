@@ -19,8 +19,14 @@ function bloginfo($show='') {
 }
 
 function bloginfo_rss($show='') {
+	global $blog_charset;
+	
 	$info = strip_tags(get_bloginfo($show));
-	echo convert_chars($info, 'unicode');
+	if (function_exists('mb_convert_encoding')) {
+		echo mb_convert_encoding(convert_chars($info, 'unicode'),"UTF-8", $blog_charset);
+	} else {
+		echo convert_chars($info, 'unicode');
+	}
 }
 
 function bloginfo_unicode($show='') {
@@ -784,16 +790,21 @@ function print_DegreeConfluence_Url() {
 
 /***** Author tags *****/
 
-function the_author() {
-	global $id, $authordata;
-	$i = $authordata->user_idmode;
-	if ($i == 'nickname')	echo $authordata->user_nickname;
-	if ($i == 'login')	echo $authordata->user_login;
-	if ($i == 'firstname')	echo $authordata->user_firstname;
-	if ($i == 'lastname')	echo $authordata->user_lastname;
-	if ($i == 'namefl')	echo $authordata->user_firstname.' '.$authordata->user_lastname;
-	if ($i == 'namelf')	echo $authordata->user_lastname.' '.$authordata->user_firstname;
-	if (!$i) echo $authordata->user_nickname;
+function the_author($idmode = '', $echo = true) {
+    global $authordata;
+    if (empty($idmode)) {
+        $idmode = $authordata->user_idmode;
+    }
+    if ($idmode == 'nickname')    $id = $authordata->user_nickname;
+    if ($idmode == 'login')    $id = $authordata->user_login;
+    if ($idmode == 'firstname')    $id = $authordata->user_firstname;
+    if ($idmode == 'lastname')    $id = $authordata->user_lastname;
+    if ($idmode == 'namefl')    $id = $authordata->user_firstname.' '.$authordata->user_lastname;
+    if ($idmode == 'namelf')    $id = $authordata->user_lastname.' '.$authordata->user_firstname;
+    if (!$idmode) $id = $authordata->user_nickname;
+
+    if ($echo) echo $id;
+    return $id;
 }
 function the_author_description() {
 	global $authordata;
@@ -847,6 +858,17 @@ function the_author_posts() {
 	global $id,$postdata;	$posts=get_usernumposts($post->post_author);	echo $posts;
 }
 
+function the_author_rss()
+{
+	global $blog_charset;
+
+	if (function_exists('mb_convert_encoding')) {
+		echo mb_convert_encoding(the_author('',false),"UTF-8", $blog_charset);
+	} else {
+		the_author();
+	}
+}
+
 /***** // Author tags *****/
 
 
@@ -881,10 +903,16 @@ function the_title($before = '', $after = '', $echo = true) {
 	}
 }
 function the_title_rss() {
+	global $blog_charset;
+
 	$title = get_the_title();
 	$title = strip_tags($title);
 	if (trim($title)) {
-		echo convert_chars($title, 'unicode');
+		if (function_exists('mb_convert_encoding')) {
+			echo mb_convert_encoding(convert_chars($title, 'unicode'),"UTF-8", $blog_charset);
+		} else {
+			echo convert_chars($title, 'unicode');
+		}
 	}
 }
 function the_title_unicode($before='',$after='') {
@@ -917,6 +945,8 @@ function the_content($more_link_text=_WP_TPL_MORE, $stripteaser=0, $more_file=''
 }
 
 function the_content_rss($more_link_text=_WP_TPL_MORE, $stripteaser=0, $more_file='', $cut = 0, $encode_html = 0) {
+	global $blog_charset;
+	
 	$content = get_the_content($more_link_text, $stripteaser, $more_file);
 	$content = convert_bbcode($content);
 	$content = convert_gmcode($content);
@@ -931,6 +961,9 @@ function the_content_rss($more_link_text=_WP_TPL_MORE, $stripteaser=0, $more_fil
 		$content = make_url_footnote($content);
 	} elseif ($encode_html == 2) {
 		$content = htmlspecialchars(strip_tags($content));
+	} elseif ($encode_html == 3) {
+		$content = convert_smilies($content);
+		$cut = 0;
 	}
 	if ($cut) {
 		$blah = explode(' ', $content);
@@ -947,7 +980,11 @@ function the_content_rss($more_link_text=_WP_TPL_MORE, $stripteaser=0, $more_fil
 		$excerpt .= ($use_dotdotdot) ? '...' : '';
 		$content = $excerpt;
 	}
-	echo $content;
+	if (function_exists('mb_convert_encoding')) {
+		echo mb_convert_encoding($content, "UTF-8", $blog_charset);
+	} else {
+		echo $content;
+	}
 }
 
 function the_content_unicode($more_link_text=_WP_TPL_MORE, $stripteaser=0, $more_file='') {
@@ -1010,6 +1047,8 @@ function the_excerpt() {
 }
 
 function the_excerpt_rss($cut = 0, $encode_html = 0) {
+	global $blog_charset;
+	
 	$output = get_the_excerpt(true);
 	$output = convert_bbcode($output);
 	$output = convert_gmcode($output);
@@ -1041,7 +1080,11 @@ function the_excerpt_rss($cut = 0, $encode_html = 0) {
 		$excerpt .= ($use_dotdotdot) ? '...' : '';
 		$output = $excerpt;
 	}
-	echo $output;
+	if (function_exists('mb_convert_encoding')) {
+		echo mb_convert_encoding($output,"UTF-8", $blog_charset);
+	} else {
+		echo $output;
+	}
 }
 
 function the_excerpt_unicode() {
@@ -1385,13 +1428,23 @@ function the_category($seperator = '') {
 }
 
 function the_category_rss($type = 'rss') {
+	global $blog_charset;
+
 	$categories = get_the_category();
 	foreach ($categories as $category) {
 		$category->cat_name = stripslashes(convert_chars($category->cat_name));
-		if ('rdf' == $type) {
-			echo "\n<dc:subject>$category->cat_name</dc:subject>";
+		if (function_exists('mb_convert_encoding')) {
+			if ('rdf' == $type) {
+				echo mb_convert_encoding("\n<dc:subject>$category->cat_name</dc:subject>","UTF-8", $blog_charset);
+			} else {
+				echo mb_convert_encoding("\n<category>$category->cat_name</category>","UTF-8", $blog_charset);
+			}
 		} else {
-			echo "\n<category>$category->cat_name</category>";
+			if ('rdf' == $type) {
+				echo "\n<dc:subject>$category->cat_name</dc:subject>";
+			} else {
+				echo "\n<category>$category->cat_name</category>";
+			}
 		}
 	}
 
@@ -1781,16 +1834,26 @@ function comments_rss_link($link_text='Comments RSS', $commentsrssfilename = 'wp
 }
 
 function comment_author_rss() {
+	global $blog_charset;
 	global $comment;
 	if (!empty($comment->comment_author)) {
-		echo htmlspecialchars(strip_tags(stripslashes($comment->comment_author)));
+		if (function_exists('mb_convert_encoding')) {
+			echo mb_convert_encoding(htmlspecialchars(strip_tags(stripslashes($comment->comment_author))),"UTF-8", $blog_charset);
+		} else {
+			echo htmlspecialchars(strip_tags(stripslashes($comment->comment_author)));
+		}
 	}
 	else {
-		echo "Anonymous";
+		if (function_exists('mb_convert_encoding')) {
+			echo mb_convert_encoding("Anonymous","UTF-8", $blog_charset);
+		} else {
+			echo "Anonymous";
+		}
 	}
 }
 
-function comment_text_rss() {
+function comment_text_rss($with_html=false) {
+	global $blog_charset;
 	global $comment;
 	$comment_text = stripslashes($comment->comment_content);
 	$comment_text = str_replace('<trackback />', '', $comment_text);
@@ -1800,9 +1863,15 @@ function comment_text_rss() {
 	$comment_text = convert_gmcode($comment_text);
 	$comment_text = convert_smilies($comment_text);
 	$comment_text = apply_filters('comment_text', $comment_text);
-	$comment_text = strip_tags($comment_text);
-	$comment_text = htmlspecialchars($comment_text);
-	echo $comment_text;
+	if (!$with_html) {
+		$comment_text = strip_tags($comment_text);
+		$comment_text = htmlspecialchars($comment_text);
+	}
+	if (function_exists('mb_convert_encoding')) {
+		echo mb_convert_encoding($comment_text,"UTF-8", $blog_charset);
+	} else {
+		echo $comment_text;
+	}
 }
 
 function comment_link_rss() {
