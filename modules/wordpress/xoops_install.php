@@ -5,11 +5,16 @@ function xoops_module_install_WordPress(&$module)
 	$db =& Database::getInstance();
 
 	$url = XOOPS_URL."/modules/".$module->getVar('dirname');
+	$path = XOOPS_ROOT_PATH."/modules/".$module->getVar('dirname');
     $query= "UPDATE ".$db->prefix("wp_options")." set option_value='$url' where option_id=1"; //siteurl
     $q = $db->query($query);
     $query= "UPDATE ".$db->prefix("wp_options")." set option_value='$url' where option_id=28"; //blodotgsping_url
     $q = $db->query($query);
     $query= "UPDATE ".$db->prefix("wp_options")." set option_value='$url/wp-images/smilies' where option_id=17"; //smilies_directory
+    $q = $db->query($query);
+    $query= "UPDATE ".$db->prefix("wp_options")." set option_value='$path/attach' where option_id=32"; //upload url
+    $q = $db->query($query);
+    $query= "UPDATE ".$db->prefix("wp_options")." set option_value='$url/attach' where option_id=33"; //upload url
     $q = $db->query($query);
 
 	$now = date('Y-m-d H:i:s');
