@@ -1,0 +1,35 @@
+WordPress XOOPS port is released.
+
+It's based on "WordPress 1.0.2" and "WordPress ME 1.0.3" (Multi Language Edition for Japanese)
+
+There currently is not any English documentation for this module. If you know about the original WordPress, you will be able to use this module easily. If you don't, please see the documents on the WordPress Homepage.
+
+To install this module, you don't need to run install.php, like WordPress needs it. All you have to do is, copy all files into your XOOPS Module directory and execute XOOPS module install menu as normal.
+
+------------
+ChangeLog
+------------
+0.1.3 [2004-06-06]
+Added Features)
+-When using Blog-by-Email, It can get image files from attached with a Text E-mail and embbeded with an HTML E-mail.
+
+Fixed Bugs)
+-_LANG_WPF_SUBT_EDIT was not defined in English language file.
+-Illeagal character is mis-typed in the "Recent Posts" block source.
+-URL string in Xoops search results were encoded illeagally.
+
+0.1.2 [2004-06-02]
+Added Features)
+-Added Block admin menu with myblocksadmin.php
+-Added some display options for XOOPS blocks
+-Enable searching with XOOPS search block
+-Brazilian Portuguese language files are added.(Translated by Yuji. Thanks!!)
+
+Fixed Bugs)
+-Default category setting for posting via E-mail
+-Some searching function in a Edit screen were in trouble, when register global off.
+-If blog content contains like "&" char, WordPress generated invalid formatted RSS
+-Invalid messages appeared at comment status selection radio button.
+
+0.1.1 [2004-05-29]
+First release that can be used in an English environment.
