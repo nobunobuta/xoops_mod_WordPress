@@ -1,11 +1,11 @@
 <?php
-$modversion['name'] = 'WordPress';
+$modversion['name'] = _MI_WORDPRESS_NAME;
 $modversion['dirname'] = 'wordpress';
 
-$modversion['description'] = $modversion['name'];
+$modversion['description'] = _MI_WORDPRESS_DESC;
 $modversion['version'] = "0.01b";
 $modversion['credits'] = "";
-$modversion['author'] = '<a href="http://www.kowa.org/" target="_blank">nobunobu</a>';
+$modversion['author'] = _MI_WORDPRESS_AUTHOR;
 $modversion['help'] = "help.html";
 $modversion['license'] = "GPL see LICENSE";
 $modversion['official'] = 0;
@@ -35,42 +35,42 @@ $modversion['tables'] = array(
 $modversion['hasAdmin'] = 0;
 $modversion['hasMain'] = 1;
 //if($xoopsUser){
-	$modversion['sub'][1]['name'] = 'Blog¤ò½ñ¤¯';
+	$modversion['sub'][1]['name'] = _MI_WORDPRESS_SMNAME1;
 	$modversion['sub'][1]['url'] = "wp-admin/post.php";
 //}
 
 $modversion['blocks'][1]['file'] = "wp_calendar.php";
-$modversion['blocks'][1]['name'] = "WordPress Calendar";
-$modversion['blocks'][1]['description'] = "WordPress Calendar";
+$modversion['blocks'][1]['name'] =  _MI_WORDPRESS_BNAME1;
+$modversion['blocks'][1]['description'] = _MI_WORDPRESS_BDESC1;
 $modversion['blocks'][1]['show_func'] = "b_wp_calendar_show";
 
 $modversion['blocks'][2]['file'] = "wp_archives_monthly.php";
-$modversion['blocks'][2]['name'] = "WordPress Monthly Archives";
-$modversion['blocks'][2]['description'] = "WordPress Monthly Archives";
+$modversion['blocks'][2]['name'] = _MI_WORDPRESS_BNAME2;
+$modversion['blocks'][2]['description'] = _MI_WORDPRESS_BDESC2;
 $modversion['blocks'][2]['show_func'] = "b_wp_archives_monthly_show";
 
 $modversion['blocks'][3]['file'] = "wp_categories.php";
-$modversion['blocks'][3]['name'] = "WordPress Categories Listing";
-$modversion['blocks'][3]['description'] = "WordPress Categories Listing";
+$modversion['blocks'][3]['name'] =_MI_WORDPRESS_BNAME3;
+$modversion['blocks'][3]['description'] = _MI_WORDPRESS_BDESC3;
 $modversion['blocks'][3]['show_func'] = "b_wp_categories_show";
 
 $modversion['blocks'][4]['file'] = "wp_links.php";
-$modversion['blocks'][4]['name'] = "WordPress Link Listing";
-$modversion['blocks'][4]['description'] = "WordPress Link Listing";
+$modversion['blocks'][4]['name'] =_MI_WORDPRESS_BNAME4;
+$modversion['blocks'][4]['description'] = _MI_WORDPRESS_BDESC4;
 $modversion['blocks'][4]['show_func'] = "b_wp_links_show";
 
 $modversion['blocks'][5]['file'] = "wp_search.php";
-$modversion['blocks'][5]['name'] = "WordPress Blog Search";
-$modversion['blocks'][5]['description'] = "WordPress Blog Search";
+$modversion['blocks'][5]['name'] = _MI_WORDPRESS_BNAME5;
+$modversion['blocks'][5]['description'] = _MI_WORDPRESS_BDESC5;
 $modversion['blocks'][5]['show_func'] = "b_wp_search_show";
 
 $modversion['blocks'][6]['file'] = "wp_recent_posts.php";
-$modversion['blocks'][6]['name'] = "WordPress Recent Posts";
-$modversion['blocks'][6]['description'] = "WordPress Recent Posts";
+$modversion['blocks'][6]['name'] = _MI_WORDPRESS_BNAME6;
+$modversion['blocks'][6]['description'] = _MI_WORDPRESS_BDESC6;
 $modversion['blocks'][6]['show_func'] = "b_wp_recent_posts_show";
 
 $modversion['blocks'][7]['file'] = "wp_recent_comments.php";
-$modversion['blocks'][7]['name'] = "WordPress Recent Comments";
-$modversion['blocks'][7]['description'] = "WordPress Recent Comments";
+$modversion['blocks'][7]['name'] = _MI_WORDPRESS_BNAME7;
+$modversion['blocks'][7]['description'] = _MI_WORDPRESS_BDESC7;
 $modversion['blocks'][7]['show_func'] = "b_wp_recent_comments_show";
 ?>
