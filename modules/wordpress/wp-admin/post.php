@@ -128,6 +128,11 @@ switch($action) {
         $result = $wpdb->query($postquery);
 
         $post_ID = $wpdb->get_var("SELECT ID FROM $tableposts ORDER BY ID DESC LIMIT 1");
+// update blank postname
+		if ($post_name == "") {
+			$post_name = "post-".$post_ID;
+			$wpdb->query("UPDATE $tableposts SET post_name='$post_name' WHERE ID = $post_ID");
+		}
 
 		if ('' != $HTTP_POST_VARS['advanced'])
 			$location = "post.php?action=edit&post=$post_ID";
@@ -270,6 +275,9 @@ switch($action) {
 			if (empty($ping_status)) $post_status = get_settings('default_ping_status');
 			$post_password = addslashes($HTTP_POST_VARS['post_password']);
 			$post_name = sanitize_title($post_title);
+			if ($post_name == "") {
+				$post_name = "post-".$post_ID;
+			}
 			$trackback = $HTTP_POST_VARS['trackback_url'];
 		// Format trackbacks
 		$trackback = preg_replace('|\s+|', '\n', $trackback);
