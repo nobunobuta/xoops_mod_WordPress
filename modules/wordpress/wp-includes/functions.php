@@ -1263,14 +1263,20 @@ function add_filter($tag, $function_to_add, $priority = 10) {
 function remove_filter($tag, $function_to_remove, $priority = 10) {
 	global $wp_filter, $wp_id;;
 	if (@in_array($function_to_remove, $wp_filter[$wp_id][$tag]["$priority"])) {
+		$new_function_list = array();
 		foreach ($wp_filter[$wp_id][$tag]["$priority"] as $function) {
 			if ($function_to_remove != $function) {
 				$new_function_list[] = $function;
 			}
 		}
-		$wp_filter[$wp_id][$tag]["$priority"] = $new_function_list;
+		if (!count($new_function_list)) {
+			if (!empty($wp_filter[$tag]["$priority"])) {
+				unset($wp_filter[$tag]["$priority"]);
+			}
+		} else {
+			$wp_filter[$tag]["$priority"] = $new_function_list;
+		}
 	}
-	//die(var_dump($wp_filter));
 	return true;
 }
 // The *_action functions are just aliases for the *_filter functions, they take special strings instead of generic content
@@ -1494,8 +1500,8 @@ function check_comment($author, $email, $url, $comment, $user_ip) {
 
 // Check for hacks file if the option is enabled
 if (get_settings('hack_file')) {
-	if (file_exists(ABSPATH . '/my-hacks.php'))
-		require(ABSPATH . '/my-hacks.php');
+	if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'.(($wp_id=='-') ?'':$wp_id) . '/my-hacks.php'))
+		require(XOOPS_ROOT_PATH.'/modules/wordpress'.(($wp_id=='-') ?'':$wp_id) . '/my-hacks.php');
 }
 
 function get_xoops_option($dirname,$conf_name) {
