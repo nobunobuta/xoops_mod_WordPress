@@ -1,4 +1,4 @@
-<?
+<?php
 if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 
 	define( 'WP_RECENT_COMMENTS_INCLUDED' , 1 ) ;

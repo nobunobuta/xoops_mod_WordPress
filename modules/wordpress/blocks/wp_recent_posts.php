@@ -1,4 +1,4 @@
-<?
+<?php
 if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 
 	define( 'WP_RECENT_POSTS_INCLUDED' , 1 ) ;
@@ -143,7 +143,7 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 				}
 				$post_title = stripslashes($lpost->post_title);
 				$permalink = get_permalink($lpost->ID);
-				$output .= '&nbsp;<strong><big>&middot;</big></strong>&nbsp;<a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '">' . $post_title . '</a>'.$newstr.'<br>';
+				$output .= '&nbsp;<strong><big>&middot;</big></strong>&nbsp;<a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '">' . $post_title . '</a>'.$newstr.'<br />';
 			}
 		}
 		if ($show_rss_icon || $show_rdf_icon || $show_rss2_icon || $show_atom_icon) {
