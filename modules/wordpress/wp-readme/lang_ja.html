@@ -1,0 +1,461 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>WordPress&mdash;ReadMe</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=euc-jp">
+  <style type="text/css" media="screen">
+    <!--
+	body {
+		font-family: "ヒラギノ角ゴ Pro W3", Osaka, Verdana, "ＭＳ Ｐゴシック", sans-serif;
+		margin-left: 15%;
+		margin-right: 15%;
+	}
+	#logo {
+		margin: 0;
+		padding: 0;
+		background-image: url(../wp-images/wordpress.gif);
+		background-repeat: no-repeat;
+		height: 60px;
+		border-bottom: 1px solid #dcdcdc;
+	}
+	#logo a {
+		display: block;
+		height: 60px;
+	}
+	#logo a span {
+		display: none;
+	}
+	h1 {
+		color: #006;
+		font-size: 18px;
+		font-weight: lighter;
+	}
+	h2 {
+		font-size: 16px;
+	}
+	
+	.tag {
+		background: #FFFF99
+		color: #000;
+		}
+	
+	p, li {
+		line-height: 140%;
+		padding-bottom: 2px;
+	}
+	.file {
+		background: #d4f5ff;
+		color: #000;
+	}
+	
+	.tag {
+		background: #FFFF99;
+		color: #000;
+		}
+	ul, ol {
+		padding: 5px 5px 5px 20px;
+	}
+	
+	.params {
+		border: 1px solid #ccc;
+		font: 12px arial,helvetica,sans-serif;
+		margin: 5px;
+		margin-left: 20px;
+		margin-right: 80px;
+		padding: 5px;
+	}
+    -->
+	</style>
+</head>
+<body>
+<h1 id="logo"><a href="http://wordpress.xwd.jp/"><span>WordPress Japan</span></a></h1>
+<br>
+バージョン 1.0.3<br>
+<p style="text-align: center;">ウェブログ / ニュース パブリッシング ツール<br>
+</p>
+<p><a href="#requirements">動作環境</a>
+- <a href="#installation">インス
+トール</a> - <a href="#templates">テンプレート</a>
+- <a href="#usage">クエリ文字列の
+用法</a> - <a href="#xmlrpc">XML-RPC
+(Blogging API)</a> - <a href="#postviaemail">メールでの投稿</a>
+- <a href="#notes">注記</a><br>
+</p>
+<h1 id="requirements">動作環境：</h1>
+<ul>
+  <li><strong>PHP4</strong> (バージョン 4.0.6 以上)</li>
+  <li><strong>MySQL</strong> (バージョン 3.23.23 以上)</li>
+  <li>... それとあなたのサイトに <a href="http://wordpress.org">http://wordpress.org</a>
+へのリンクを。</li>
+</ul>
+<p>このリンクは <a href="http://wordpress.org">WordPress</a>
+を普及させる手助けになりますし、またその唯一の手段でもあります。<br>
+</p>
+<p>WordPress は <a href="http://cafelog.com/">b2</a>
+を正式に引き継いだウェブログツールで、Michel V がスタートさせました。開発作業は引き続き <a
+ href="http://wordpress.org/about/">WordPress の開発者たち</a>によって行われています。
+WordPress に支援をしていただけるのなら、どうか<a href="http://wordpress.org/donate/">寄付</a>を
+お考え下さい。 </p>
+<p>このドキュメントは今のところまだ未完成であり、WordPress の進展に従い頻繁に更新していきます。また、<a
+ href="http://wordpress.org/docs/">オンライン・ドキュメント（英語）</a> も&nbsp; <a
+ href="http://wiki.wordpress.org">wiki（英語）</a> と同時に書き進められています。<br>
+（<a href="http://wordpress.xwd.jp/wiki/">日本語ドキュメント：WPJ Wiki</a>）<br>
+</p>
+<h1 id="installation">インストール：</h1>
+<h2>新規ユーザ：５分でインストール</h2>
+<ol>
+  <li>空のディレクトリに zip ファイルを展開します。<br>
+  </li>
+  <li>すべてをアップロードします。このリリースは、あなたのルートフォルダに設置するように設計されています。ルートフォルダとは、
+WordPress
+で動作するページが置かれるフォルダのことです。<br>
+  </li>
+  <li>（オプション）もし利用するのなら、 weblogs.com
+キャッシュファイルはウェブサーバによる書き込みができるように設定する必要があります。<span class="file"><code>weblogs.com.changes.cache</code></span>
+ファイルのパーミッションを "666" (<a
+ href="http://www.evolt.org/article/A_quick_and_dirty_chmod_Tutorial/18/541/">CHMOD
+666</a>)&nbsp; に設定して下さい。 </li>
+  <li>
+    <p>ブラウザで <span class="file">wp-admin/install-config.php</span>&nbsp;
+を開きます。これによりインストールに必要な設定ファイルを作成します。データベース名、ユーザ名、パスワード、そしてホスト名が必要になります。<br>
+    </p>
+    <p>もしくは、テキストエディタで <span class="file">wp-config-sample.php</span>
+を開き、コメントで指示されているとおりにデータベース名、ユーザ名、パスワード、そしてホスト名を挿入する方法があります。（ <code>/*</code>
+あるいは <code>//</code> で始まる行がコメントです）そしてこのファイル名を <span class="file">wp-config.php</span>
+に変更して保存し、アップロードします。<br>
+    </p>
+  </li>
+  <li>ブラウザで <span class="file"><a href="wp-admin/install.php">/wp-admin/install.php</a></span>
+を開いてください。このインストーラがあなたのブログ用に MySQL
+データベースをセットアップします。<strong>注意：最初のログイン用のパスワードがインストーラによって与えられます。</strong>
+エラーが発生した場合は <span class="file">wp-config.php</span>
+ファイルを再確認して、再度このインストーラを試して下さい。それでも失敗する場合は、その失敗に関する情報（エラー
+メッセージ等）とあなたのセットアップ情報（あなたの使用しているサーバの PHP と MySQL のバージョン
+、インストールに使用したブラウザ名）などの全ての情報とともに、インストールに失敗した旨を<a
+ href="http://wordpress.org/support/">サポートフォーラム（英語）</a>に投稿して下さい。 </li>
+  <li>その後このインストールスクリプトはあなたをログインページに案内します。ユーザ名 "admin"
+とインストール中に生成されたパスワードを使ってログインして下さい。そして 'My Profile'
+の項目をクリックしてパスワードを変更して下さい。このログインページへは <span class="file"><a
+ href="file:///Users/tai/Desktop/WP/wp-login.php">wp-login.php</a></span>
+からもアクセスすることができます。</li>
+</ol>
+<h2><strong>使用上のヒント：</strong></h2>
+<ul>
+  <li>なにか投稿したいと思った時はいつでも、ブラウザを起動して <span class="file"><a
+ href="wp-login.php">wp-login.php</a></span> を
+開き、ログインして投稿します。</li>
+  <li>bookmarklet やサイドバー (IE5+/NS6+) を使用して投稿することもできます。</li>
+  <li>あるいは、Blogger、MetaWeblog、そして
+MovableType の API を通じて投稿することもできます。詳しくは<a
+ href="file:///Users/tai/Desktop/WP/readme_jp.html#xmlrpc">こちらをクリック</a>し
+て下さい。</li>
+  <li>デフォルトでは、あなたのサイトのブログは <span class="file">index.php</span>
+に位置します。この <span class="file">index.php</span> は手の込んだ
+.CSS-ベースのテンプレートです。また、<span class="file">wp.php</span>
+という名称の、非.CSS テンプレートを使用することもできます。両方のファイルともあなたの好きなファイル名に変更することができます（php
+拡張子をつけるかサーバによって php ファイルとして認識されるようにして下さい）。</li>
+</ul>
+<h2><strong>すべてのアップグレードの前に：
+</strong></h2>
+<ul>
+  <li>何を行うにしてもまずその前に、あなたのデータベースを<strong>バックアップ</strong>して下さい。</li>
+  <li>まだしてなければ、あなたのデータベースを<strong>バックアップ</strong>するよう、私たちは強くお
+すすめします。</li>
+  <li>データベースを<strong>バックアップ</strong>しましたか？ホントに？よかった！</li>
+  <li>どのようにしたらよいのか分からない場合は、<a
+ href="http://wordpress.org/support/10/1384">こ
+のスクリプト</a>がお役に立つでしょう。</li>
+</ul>
+<h2><strong>これまでのバージョンから v1.0.2 へのアップグレード：
+</strong></h2>
+<ul>
+  <li><strong>データベースをバックアップする。</strong>そうです、今すぐに。</li>
+  <li>ブラウザで <span class="file"><a href="wp-admin/upgrade.php">/wp-
+admin/upgrade.php</a></span> を開く。</li>
+  <li>ひょっとしてもっと何かしたかったですか？これだけです！<br>
+  </li>
+</ul>
+<h2>v1.0.2 へのアップグレード注意事項：<br>
+</h2>
+<ul>
+  <li>テンプレートには新しい <span class="file">index.php</span> の使用を<strong>強く</strong>お
+すすめします。古い <span class="file">index.php</span>
+を単純にアップグレードする方法はおすすめしません。
+もちろんこれには少し手間がかかりますが、<span class="postbody">そうすれば結果にもっと満足できるはず！</span></li>
+  <h2>b2 v0.6.1/v0.6.2.2 から&nbsp;WordPress v1.0.2 へのアップグレード：<br>
+  </h2>
+  <ul>
+    <li>何を行うにしてもまずその前に、あなたのデータベースを<strong>バックアップ</strong>して下さい。そうです、今すぐ
+に。</li>
+    <li>"５分でインストール" の項で説明されているとおりに <span class="file"><code>wp-config.php</code></span>
+を設定します。</li>
+    <li>あとは、すべてのファイルを新しいバージョンのファイルと置き換えて <span class="file">wp-admin/upgrade.php</span>
+を実行するだけです。これでアップグレードが完了しているはずです。</li>
+    <li>またインポートスクリプトが <span class="file">wp-admin/import-b2.php</span>
+にあります。</li>
+    <li>もし b2 のもっと古いバージョンを使用しているのなら、一足飛びに WordPress に移行する前に、最低でも 0.6.1
+にアップグレードした方がよいでしょう。</li>
+    <li><span class="postbody">新しいテンプレートはさらに改善され、構造が少し変更されていますので、ゼロから始めて
+元の自分のデザインに少しずつ近づけていくための時間をかける価値はあるかもしれません。</span></li>
+    <li> WordPress に関する問題は<a href="http://wordpress.org/support/">サポート
+フォーラム（英語）</a> / <a href="http://phpbb.xwd.jp/">WPJ フォーラム（日本語）</a>で話し合うよ
+うにして下さい。<br>
+    </li>
+  </ul>
+  <h2>Movable Type、Textpattern、GreyMatter、Blogger から&nbsp;WordPress
+v1.0.2
+へのアップグレード<br>
+  </h2>
+  <ul>
+    <li>まず最初にデータベースを<strong>バックアップする</strong>、って言いましたっけ？</li>
+    <li>これらのブログツールそれぞれにインポート用のスクリプトが用意されていて、すべて wp-admin
+ディレクトリにあります。スクリプトを実行する前に必ずあなたのデータベース情報を設定して下さい。</li>
+    <li>インポートの詳しい方法はインポートスクリプトの実行中に説明されます。</li>
+    <li>Textpattern: <span class="file"><a
+ href="wp-admin/import-textpattern.php">wp-admin/import-textpattern.php</a></span>
+を実行します<br>
+    </li>
+    <li>GreyMatter:&nbsp; <span class="file"><a
+ href="wp-admin/import-greymatter.php">wp-admin/import-greymatter.php</a></span>
+を実行します</li>
+    <li>Blogger: <span class="file"><a
+ href="wp-admin/import-blogger.php">wp-admin/import-blogger.php</a></span>
+を実行します</li>
+    <li>Movable Type: <a href="wp-admin/import-mt.php" class="file">wp-admin/import-mt.php</a>
+を実行します</li>
+  </ul>
+  <h1 id="templates">テンプレート：<br>
+  </h1>
+  <p>WordPress のテンプレートについては、<a
+ href="http://wordpress.org/docs/template/">オンラ
+イン文書（英語）</a>をご覧下さい。（訳注：<a
+ href="http://wordpress.xwd.jp/wiki/index.php?Templates">日本語訳はこちら</a>）<br>
+  </p>
+  <h1 id="usage">クエリ文字列の用法：</h1>
+  <p>WordPress はクエリ文字列に大きく依存しています。<span class="postbody">こうした変数は URL
+と共に受け渡されます</span>（ク
+エリ文字列の変数を受け渡す場合、最初の変数名は '?' クエスチョン・マークを伴い、それに続く別の変数は '&amp;'
+記号を伴うことに留意して下さい）。<br>
+  </p>
+  <p>たいていの場合これに関して何かをする必要はありませんが、もしどのように機能するのか知りたければ、以下を参考にして下さい：<br>
+  </p>
+  <p>クエリ文字列の使い方：</p>
+  <p>index.php<strong>?m=200107</strong> ：２００１年７月の投稿を表示します。<br>
+  </p>
+  <p>index.php<strong>?m=20010701</strong> ：２００１年７月１日以降のすべての投稿を表示します。<br>
+  </p>
+  <p>index.php<strong>?w=20</strong>
+：その年の２０週目の投稿を表示します。１月１日を含む週が第１週です（PHP
+による）。<br>
+  </p>
+  <p>index.php<strong>?p=50</strong> ：データベースで #50 とラベルされている投稿を表示します。<br>
+  </p>
+  <p>index.php<strong>?s=blue+house</strong> ：検索語句 "blue house"
+と一致する投稿を表示します。<br>
+簡単な検索ボックス用のコードを以下に示します：<br>
+  </p>
+  <p><code>&lt;form name="searchform" action="&lt;?php echo $PHP_SELF
+?&gt;" method="get"&gt;<br>
+&lt;input type="text" name="s" /&gt;<br>
+&lt;input type="submit" name="submit" value="search" /&gt;<br>
+&lt;/form&gt; </code></p>
+  <p>index.php<strong>?cat=1</strong>
+：カテゴリ番号１（１はデフォルト）に属する投稿すべてを表示します。カテゴリは&nbsp;WordPress の管理画面から追加 / 名称変更
+/ 削除することができます。<br>
+  </p>
+  <p>index.php<strong>?author=1</strong> ：ユーザ番号１（Auther ID）の投稿すべてを表示します。<br>
+  </p>
+  <p>index.php<strong>?p=50&amp;c=1：</strong>その投稿に対するコメントやコメントを投稿するための
+フォームが表示
+されま
+す。<br>
+この変数は必ず <strong>p=</strong> を伴います。<br>
+使用例：index.php<strong>?p=50&amp;c=1</strong> </p>
+  <p>index.php<strong>?p=50&amp;page=1</strong>：投稿番号５０の最初のページを表示します。これも各
+エントリ毎
+に <strong>p=</strong> を伴います。 </p>
+  <p>これらの変数を組み合わせることも出来ます。例：<br>
+index.php<strong>?m=200107&amp;s=hotdog</strong>：検索語 "hotdog"
+に一致する、２００１年７月の投稿を表示します。<br>
+  </p>
+  <h1 id="xmlrpc">XML-RPC インターフェース：<br>
+  </h1>
+  <p>WordPress は XMLRPC インターフェースを備えています。現在サポートしている API は <a
+ href="http://www.blogger.com/developers/api/1_docs/">Blogger API</a>、<a
+ href="http://www.xmlrpc.com/metaWeblogApi">metaWeblog API</a>、そして <a
+ href="http://www.movabletype.org/docs/mtmanual_programmatic.html">MovableType
+API</a> です。将来の weblog/CMS システムを広範囲にカバーするような新しい API
+に関する話し合いが持たれています。その準備が整い次第、WordPress はその API をサポートします。<br>
+  </p>
+  <p><a href="http://www.blogger.com/developers/api/1_docs/">Blogger
+API</a> は WordPress で完全にエミュレートするようになりましたが、ほんの少しだけ次のような違いがあります：<br>
+  </p>
+  <ul>
+    <li>番号 'zero（ゼロ）' を伴って <em>blogger.getRecentPosts</em> を使用すると、その
+blog のすべての投稿を返します</li>
+    <li><em>blogger.getTemplate</em> はあなたのファイル $blogfilename（config
+で指定されている）を取得し、<em>blogger.setTemplate</em> は編集したデータでそれを上書きします</li>
+    <li><em>blogger.getUsersBlogs</em> はダミー関数で '1' と$blogname を返します。これは
+WordPress が今のところ一つの blog しかサポートしていないからです。<br>
+    </li>
+  </ul>
+  <p><em>blogger.newPost</em> を使うと、あなたのポストはタイトルなしでカテゴリー ID １に投稿されます。<br>
+  </p>
+  <p>しかし &lt;title&gt;私のタイトル&lt;/title&gt; や
+&lt;category&gt;2&lt;category&gt; を投稿の本文に含めると、その投稿はタイトルが '私のタイトル'
+になり、カテゴリー ID は 2 になります（カテゴリーの ID
+番号を調べるには管理画面のカテゴリーのセクションを参照して下さい）。そしてそれが投稿されると、その投稿の本文からは余計な情報（タイトルやカテゴ
+リ）が削除されます。<br>
+  </p>
+  <p><a href="http://www.xmlrpc.com/metaWeblogApi">metaWeblog</a> と <a
+ href="http://www.movabletype.org/docs/mtmanual_programmatic.html">MovableType</a>
+の API は今のところ次の例外をのぞいた物がサポートされています：<br>
+  </p>
+  <ul>
+    <li>metaWeblog.newMediaObject、mt.getRecentPostTitles、そして
+mt.getTrackbackPings がまだ実装されていません</li>
+    <li>mt.supportedTextFilters はダミーの控え関数で空の文字列を返します</li>
+    <li>MovableType API ではキーワードがサポートされていません<br>
+    </li>
+  </ul>
+  <br>
+  <a href="http://www.movabletype.org/docs/mtmanual_programmatic.html">MovableType
+API</a> の追記された(
+Extended )エントリは WordPress の
+&lt;!--more--&gt; タグと変換されます。
+  <p>次のようなツールを使用して WordPress に投稿できるようになりました：<br>
+  <a href="http://blogbuddy.sourceforge.net">BlogBuddy</a>、<a
+ href="http://bloggar.com/">Bloggar</a>、<a
+ href="http://www.ubique.ch/wapblogger/">WapBlogger</a>（Wap&nbsp;
+規格携帯電話からの投稿！）、<a href="http://radio.userland.com">Radio Userland</a>（これは
+Radio のメール-to-ブログ機能を使用できるということです）、<a href="http://www.zempt.com/">Zempt</a>、<a
+ href="http://www.newzcrawler.com/">NewzCrawler</a>、そして Blogging API
+をサポートするその他のツール！(^^)<br>
+  </p>
+  <p>仮に http://example.com/me/wp-login.php にある
+WordPress にログインしたとすると、
+あなたの XMLRPC サーバ / パスは次のようになります：<br>
+  </p>
+  <ul>
+    <li>サーバ：http://example.com/ （いくつかのツールはホスト名の部分
+'example.com' だけを必要とするかもしれません）</li>
+    <li>パス：/me/xmlrpc.php</li>
+    <li>完全な URL（念のため）： http://example.com/me/xmlrpc.php</li>
+  </ul>
+  <p>また b2 特有のメソッドもあります：b2.getCategories：これは３つの文字列（blog_ID ( '1'
+を使用)、ユーザ名、パスワード）とともにリクエストします。すると、カテゴリー ID (categoryID) とカテゴリー名
+(categoryName) 文字列からなる配列を返します。<br>
+  </p>
+  <h1 id="postviaemail">メールでの投稿：</h1>
+  <p>メールクライアントから記事を投稿することが出来ます！<br>
+しかしまず初めにオプション画面でオプションを設定しなくてはなりません。ここであなたの POP3
+メールアカウントの値を正しく入力します（このインターフェースがサポートしているのは POP3 のみで IMAP はまだです、ゴメン）。<br>
+  </p>
+  <p>このオプションの設定がすめば、設定された一定の時間毎にあなたのウェブサーバに wp-mail.php
+を実行させることが出来ます。（ホストの能力にもよりますが、このスクリプトはリソースを集中的に使用しますので一分毎に実行したりしないように。さもな
+いとサーバから追い出されます）<br>
+  </p>
+  <p>このスクリプトは Cron のジョブとして実行できます。あなたのホストが Cron
+をサポートしていなければ、様々なウェブサイト・モニタリング・サービスを調べてあなたの wp-mail.php URL&nbsp;
+をチェックさせることも出来ます。<br>
+  </p>
+  <h2>予備的なアドバイス：</h2>
+  <p>HTML 形式のメールでも機能しますが（このスクリプトはすべての html
+タグを取り除いてしまいますが、、）、テキストのみでの送信を強くお勧めします（Outlook
+や Outlook Express は 'html' が初期設定になっていて、これだと問題を引き起こすかもしれません）。<br>
+  </p>
+  <p>また、いつも使用しているメールアドレスではなく、このスクリプト用に新しくメールアドレスを作成するようお勧めします。もしいつものメールア
+ドレスを使
+用していて、このスクリプトがおかしくなってすべてのメールがあなたのブログに投稿されたり、あるいはすべてのメールが削除されても、私は責任を取れませ
+ん。<br>
+  </p>
+  <p>念のため（"送信済み" フォルダの中にあるあなたのログイン ID
+とパスワードを誰かに見つけてほしくなければ）、あなたのブログに送信した "送信済み" フォルダにあるメールも削除して下さい。 </p>
+  <p>このスクリプトはあなたのウェブログへの投稿に成功したメールを <b><i>削除</i> </b>します。もし投稿がうまくいかなけれ
+ば、その
+メールは削除されません。<br>
+  </p>
+  <h2>投稿の方法：</h2>
+  <p>ではなにか投稿してみましょう。メールは次のようになります：<br>
+  </p>
+  <div class="params"> <b>To(宛先):</b> address@example.com <span
+ style="color: rgb(153, 153, 153);">(config ファイルで設定したもの)</span><br>
+  <b>Subject(件名):</b> blog:投稿のタイトル <span
+ style="color: rgb(153, 153, 153);">('blog:' は
+config ファイルで変更できます)</span><br>
+  <b>本文:</b><br>
+ログインID:パスワード <span style="color: rgb(153, 153, 153);">(例: <i>Jack:Starwars</i>)</span><br>
+投稿の内容、などなどなど。<br>
+さらに、かくかくしかじか。 ___ </div>
+  <p>件名は 'blog:' か config ファイルで設定した文字列で始めなくてはなりません（このスクリプトがあなたのメールボックスの<b>す
+べて
+の</b>メールをチェックしないようにするためです）。<br>
+  </p>
+  <p>本文の最初の行は必ず "ログインID:パスワード" にします。これ以外であればこのスクリプトはそのメールを読み込みません。<br>
+  </p>
+  <p>もし '___'（もしくは config ファイルで設定した本文終了文字列 - body
+terminator）を使わなければ、このスクリプトは本文全体を投稿します。もし Yahoo や Hotmail
+でメールを送る場合にはこれは望ましくないでしょう（あの宣伝をあなたのブログに残したくはないでしょう？）。<br>
+  </p>
+  <h2>携帯電話からのメールの場合：</h2>
+  <p>いくつかの携帯電話サービスプロバイダーでは携帯電話や PDA
+でメールを送ることができますが、こうした装置では改行ができないことがあります。こうした場合、オプションで<i> use_phoneemail
+=
+true </i>に設定し、次のようにメールを書いて下さい：<br>
+  </p>
+  <div class="params"><b>To(宛先):</b> address@example.com<br>
+  <b>Subject(件名):</b> blog:the post's title <b>:::</b><br>
+  <b>本文:</b><br>
+ログインID:パスワード <b>:::</b> 投稿の内容、かくかくしかじか。___ </div>
+  <p>"件名"と"ログインID:パスワード"の後に ':::'（もしくは config ファイルに設定した文字列）を追加します。<br>
+  </p>
+  <p>いくつかの携帯電話サービスプロバイダーでは件名を設定できないかもしれません。その場合は本文の最初の文を件名にして、次のようなメールを送
+ります：<br>
+  </p>
+  <div class="params"><b>To(宛先):</b> address@example.com<br>
+  <b>Body(本文):</b><br>
+blog:投稿のタイトル <b>:::</b> ログインID:パスワード <b>:::</b> 投稿の内容、かくかくしかじか。___ </div>
+  <h1 id="notes">注記：</h1>
+  <p>複数ユーザに関して：</p>
+  <p>新しいユーザは <span class="file">wp-register.php</span>
+で登録することができます。その後、（admin - 管理者として）管理画面「チーム」ページの登録した名前の横の "+"
+マークをクリックしてその登録者のレベルを１以上にアップグレードします。するとその新規ユーザが投稿できるようになります。あるユーザを投稿できなくす
+るには、そのユーザのレベルが０になるまで "-" マークをクリックします。<br>
+  </p>
+  <p>ヒント：config ファイルですべてのユーザ登録を無効にできるようになりました。<br>
+  </p>
+  <p><strong>ユーザレベル：</strong></p>
+  <ul>
+    <li>0 - 新規ユーザ：投稿できません。</li>
+    <li>1 - ユーザ：投稿と自分の投稿の編集 / 削除ができます。</li>
+    <li>3 以上 - admin（管理者）：投稿と他の人の投稿の編集 / 削除、そしてオプションの変更ができます。</li>
+    <li>1 より上のユーザは誰でも、自分より下のレベルのユーザの投稿を編集 /
+削除したり、そのユーザのレベルを変更することができます。例：レベル 2 のユーザは admin（管理者）ではありませんが、レベル 1
+ユーザの投稿を編集することができ、また新規ユーザのレベルを 0 から 1 に上げることができます。<br>
+    </li>
+  </ul>
+  <p>通常は自分以外のユーザのレベルを１にしてチームを組むといいでしょう。;)<br>
+  </p>
+  <p><strong></strong><strong>ヒント：</strong>
+オプション画面でオプションを変更することにより、登録後すぐにその新規ユーザの投稿が可能になります。<br>
+  </p>
+  <p>あなたのブログで自分以外のユーザをいっさい登録させないようにするには、自分のアカウントを登録後に wp-register.php
+を削除して下さい。 </p>
+  <h1>最後の注記：</h1>
+  <ul>
+    <li>提案、アイディア、コメントをお持ちだったり、あるいはバグを見つけたのなら、<a
+ href="http://wordpress.org/support/">サポートフォーラム（英語）</a>に参加してみませんか？（訳注：日本
+語でのフォーラムもあります：<a href="http://phpbb.xwd.jp/">WPJ フォーラム</a>）</li>
+    <li>PHP のコードが分かる方なら、WordPress
+の構造がさらに多くの機能やセクションを追加できるほどの十分な柔軟性を備えていることが理
+解できると思います。</li>
+  </ul>
+  <h1>著作権に関する注記：</h1>
+  <ul>
+    <li>サードパーティのコードが使用されている箇所には、そのコードのコメントにクレジットが記されています。</li>
+    <li> WordPress は GPL（license.txt 参照）に基づいてリリースされています。<br>
+    </li>
+  </ul>
+</ul>
+</body>
+</html>
