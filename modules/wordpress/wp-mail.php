@@ -69,7 +69,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				$content_type = trim($line);
 				$content_type = substr($content_type, 14, strlen($content_type)-14);
 				$content_type = explode(';', $content_type);
-				$content_type = $content_type[0];
+				$content_type = strtolower($content_type[0]);
 			}
 			if (($content_type == 'multipart/mixed') && (preg_match('/boundary="/', $line)) && ($att_boundary == '')) {
 				$att_boundary = trim($line);
@@ -166,28 +166,28 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		if ($hatt_boundary != "") {
 			$contents = explode('--'.$hatt_boundary, $content);
 			$content = $contents[1];
-			if (preg_match('/Content-Type: multipart\/alternative\;[^"]*"([^"]*)"/',$content,$matches)) {
+			if (preg_match('/Content-Type: multipart\/alternative\;[^"]*"([^"]*)"/i',$content,$matches)) {
 				$boundary = trim($matches[0]);
 				$boundary = explode('"', $boundary);
 				$boundary = $boundary[1];
 				$content = explode('--'.$boundary, $content);
 				$content = $content[2];
 			}
-			$charset = preg_match("/charset=\"([^\"]*)\"/",$content,$matches);
+			$charset = preg_match("/charset=\"([^\"]*)\"/i",$content,$matches);
 			if ($charset) $charset = $matches[1];
 			$content = explode('Content-Transfer-Encoding: quoted-printable', $content);
 			$content = strip_tags($content[1], '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td>');
 		} else if ($boundary != "") {
 			$content = explode('--'.$boundary, $content);
 			$content = $content[2];
-			if (preg_match('/Content-Type: multipart\/related\;[^"]*"([^"]*)"/',$content,$matches)) {
+			if (preg_match('/Content-Type: multipart\/related\;[^"]*"([^"]*)"/i',$content,$matches)) {
 				$hatt_boundary = trim($matches[0]);
 				$hatt_boundary = explode('"', $hatt_boundary);
 				$hatt_boundary = $hatt_boundary[1];
 				$contents = explode('--'.$hatt_boundary, $content);
 				$content = $contents[1];
 			}
-			$charset = preg_match("/charset=\"([^\"]*)\"/",$content,$matches);
+			$charset = preg_match("/charset=\"([^\"]*)\"/i",$content,$matches);
 			if ($charset) $charset = $matches[1];
 			$content = explode('Content-Transfer-Encoding: quoted-printable', $content);
 			$content = strip_tags($content[1], '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td>');
@@ -435,7 +435,7 @@ function wp_getattach($content,$prefix="",$create_thumbs=0)
 			fputs($temp_fp, $tmp);
 			fclose($temp_fp);
 			if ($create_thumbs) {
-				wp_create_thumbnail("attach/" .$temp_file,160,"");
+				wp_create_thumbnail("attach/" .$temp_file,180,"");
 			}
 		}
 		echo "$temp_file <br/>";
