@@ -51,16 +51,29 @@ logIO("I",$HTTP_RAW_POST_DATA);
  * These really should be moved into wp-includes/functions.php,
  * and re-used throughout the code, where possible. -- emc3
  */
+function miniHTMLtoWiki($str) {
+	$str = preg_replace("/<br \/>/","~\n　",$str);
+	$str = preg_replace("/<blockquote>/",">\n　",$str);
+	$str = preg_replace("/<\/blockquote>/", "\n<", $str);
+	$str = preg_replace("/^([^　><])/","　$1", $str);
+	$str = preg_replace("/<a href=\"([^\"]*)\">(.*?)<\/a>/", "[[$2:$1]]", $str);
+	return $str;
+}
 
 /*
  * generic function for inserting data into the posts table.
  */
 function wp_insert_post($postarr = array()) {
-	global $wpdb, $wp_id, $blog_charset;
+	global $wpdb, $wp_id, $blog_charset, $kousagi;
 
 	// export array as variables
 	extract($postarr);
 
+	//Simple HTML to PukiWiki Format(for kousagi only)
+	if ($kousagi == 2) {
+		$post_content = miniHTMLtoWiki($post_content);
+		$post_excerpt = miniHTMLtoWiki($post_excerpt);
+	}
 	// Charset Encoding
 	$post_content = mb_conv($post_content, $blog_charset, "auto");
 	$post_title = mb_conv($post_title, $blog_charset, "auto");
