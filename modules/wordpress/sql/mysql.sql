@@ -1,5 +1,5 @@
 #
-# テーブルの構造 `wp_categories`
+# Table Structure `wp_categories`
 #
 
 CREATE TABLE wp_categories (
@@ -14,7 +14,7 @@ CREATE TABLE wp_categories (
 ) ;
 
 #
-# テーブルのダンプデータ `wp_categories`
+# Table Dump data `wp_categories`
 #
 
 INSERT INTO wp_categories (`cat_ID`, `cat_name`, `category_nicename`, `category_description`, `category_parent`) VALUES (1, 'General', 'general', '', 0);
@@ -22,7 +22,7 @@ INSERT INTO wp_categories (`cat_ID`, `cat_name`, `category_nicename`, `category_
 # --------------------------------------------------------
 
 #
-# テーブルの構造 wp_comments
+# Table Structure wp_comments
 #
 
 CREATE TABLE wp_comments (
@@ -41,15 +41,10 @@ CREATE TABLE wp_comments (
   KEY `comment_post_ID` (`comment_post_ID`)
 );
 
-#
-# テーブルのダンプデータ `wp_comments`
-#
-##INSERT INTO wp_comments (`comment_post_ID`, `comment_author`, `comment_author_email`, `comment_author_url`, `comment_author_IP`, `comment_date`, `comment_content`) VALUES ('1', 'NobuNobu Xoops', 'mail@example.com', 'http://www.kowa.org/', '127.0.0.1', '2004-04-01 01:00:00', 'Hi, this is a comment.<br />To delete a comment, just log in, and view the posts'' comments, there you will have the option to edit or delete them.');
-
 # --------------------------------------------------------
 
 #
-# テーブルの構造 `wp_linkcategories`
+# Table Structure `wp_linkcategories`
 #
 
 CREATE TABLE wp_linkcategories (
@@ -70,7 +65,7 @@ CREATE TABLE wp_linkcategories (
 );
 
 #
-# テーブルのダンプデータ `wp_linkcategories`
+# Table Dump data `wp_linkcategories`
 #
 
 INSERT INTO wp_linkcategories (`cat_id`, `cat_name`, `auto_toggle`, `show_images`, `show_description`, `show_rating`, `show_updated`, `sort_order`, `sort_desc`, `text_before_link`, `text_after_link`, `text_after_all`, `list_limit`) VALUES (1, 'Links', 'N', 'Y', 'Y', 'Y', 'Y', 'name', 'N', '<li>', '<br />', '</li>', -1);
@@ -78,7 +73,7 @@ INSERT INTO wp_linkcategories (`cat_id`, `cat_name`, `auto_toggle`, `show_images
 # --------------------------------------------------------
 
 #
-# テーブルの構造 wp_links
+# Table Structure wp_links
 #
 
 CREATE TABLE wp_links (
@@ -102,7 +97,7 @@ CREATE TABLE wp_links (
 );
 
 #
-# テーブルのダンプデータ wp_links
+# Table Dump data wp_links
 #
 
 INSERT INTO wp_links (`link_id`, `link_url`, `link_name`, `link_image`, `link_target`, `link_category`, `link_description`, `link_visible`, `link_owner`, `link_rating`, `link_updated`, `link_rel`, `link_notes`, `link_rss`) VALUES (1, 'http://cafelog.net/', 'Cafelog.NET', '', '', 1, '', 'Y', 1, 0, '0000-00-00 00:00:00', '', '', '');
@@ -114,7 +109,7 @@ INSERT INTO wp_links (`link_id`, `link_url`, `link_name`, `link_image`, `link_ta
 # --------------------------------------------------------
 
 #
-# テーブルの構造 wp_optiongroup_options
+# Table Structure wp_optiongroup_options
 #
 
 CREATE TABLE wp_optiongroup_options (
@@ -125,7 +120,7 @@ CREATE TABLE wp_optiongroup_options (
 );
 
 #
-# テーブルのダンプデータ wp_optiongroup_options
+# Table Dump data wp_optiongroup_options
 #
 
 INSERT INTO wp_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (1, 48, 1);
@@ -220,7 +215,7 @@ INSERT INTO wp_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 9
 # --------------------------------------------------------
 
 #
-# テーブルの構造 wp_optiongroups
+# Table Structure wp_optiongroups
 #
 
 CREATE TABLE wp_optiongroups (
@@ -232,7 +227,7 @@ CREATE TABLE wp_optiongroups (
 );
 
 #
-# テーブルのダンプデータ wp_optiongroups
+# Table Dump data wp_optiongroups
 #
 
 INSERT INTO wp_optiongroups (`group_id`, `group_name`, `group_desc`, `group_longdesc`) VALUES (1, 'Other Options', '_LANG_INST_BASE_HELP1', NULL);
@@ -248,7 +243,7 @@ INSERT INTO wp_optiongroups (`group_id`, `group_name`, `group_desc`, `group_long
 # --------------------------------------------------------
 
 #
-# テーブルの構造 wp_options
+# Table Structure wp_options
 #
 
 CREATE TABLE wp_options (
@@ -266,7 +261,7 @@ CREATE TABLE wp_options (
 );
 
 #
-# テーブルのダンプデータ wp_options
+# Table Dump data wp_options
 #
 
 INSERT INTO wp_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (1, 0, 'siteurl', 'Y', 3, 'http://example.com', 30, 8, '_LANG_INST_BASE_VALUE1', 8);
@@ -317,8 +312,8 @@ INSERT INTO wp_options (`option_id`, `blog_id`, `option_name`, `option_can_overr
 INSERT INTO wp_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (49, 0, 'what_to_show', 'Y', 5, 'posts', 20, 8, '_LANG_INST_BASE_VALUE49', 4);
 INSERT INTO wp_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (50, 0, 'archive_mode', 'Y', 5, 'monthly', 20, 8, '_LANG_INST_BASE_VALUE50', 4);
 INSERT INTO wp_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (51, 0, 'time_difference', 'Y', 6, '0', 20, 8, '_LANG_INST_BASE_VALUE51', 4);
-INSERT INTO wp_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (52, 0, 'date_format', 'Y', 3, 'Y年n月j日(l)', 20, 8, '_LANG_INST_BASE_VALUE52', 4);
-INSERT INTO wp_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (53, 0, 'time_format', 'Y', 3, 'H時i分s秒', 20, 8, '_LANG_INST_BASE_VALUE53', 4);
+##INSERT INTO wp_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (52, 0, 'date_format', 'Y', 3, 'Y年n月j日(l)', 20, 8, '_LANG_INST_BASE_VALUE52', 4);
+##INSERT INTO wp_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (53, 0, 'time_format', 'Y', 3, 'H時i分s秒', 20, 8, '_LANG_INST_BASE_VALUE53', 4);
 INSERT INTO wp_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (55, 0, 'default_post_status', 'Y', 5, 'publish', 20, 8, '_LANG_INST_BASE_VALUE55', 8);
 INSERT INTO wp_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (56, 0, 'default_comment_status', 'Y', 5, 'open', 20, 8, '_LANG_INST_BASE_VALUE56', 8);
 INSERT INTO wp_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (57, 0, 'default_ping_status', 'Y', 5, 'open', 20, 8, '_LANG_INST_BASE_VALUE57', 8);
@@ -361,7 +356,7 @@ INSERT INTO wp_options (`option_id`, `blog_id`, `option_name`, `option_can_overr
 # --------------------------------------------------------
 
 #
-# テーブルの構造 wp_optiontypes
+# Table Structure wp_optiontypes
 #
 
 CREATE TABLE wp_optiontypes (
@@ -371,7 +366,7 @@ CREATE TABLE wp_optiontypes (
 );
 
 #
-# テーブルのダンプデータ wp_optiontypes
+# Table Dump data wp_optiontypes
 #
 
 INSERT INTO wp_optiontypes (`optiontype_id`, `optiontype_name`) VALUES (1, 'integer');
@@ -386,7 +381,7 @@ INSERT INTO wp_optiontypes (`optiontype_id`, `optiontype_name`) VALUES (8, 'floa
 # --------------------------------------------------------
 
 #
-# テーブルの構造 wp_optionvalues
+# Table Structure wp_optionvalues
 #
 
 CREATE TABLE wp_optionvalues (
@@ -401,7 +396,7 @@ CREATE TABLE wp_optionvalues (
 );
 
 #
-# テーブルのダンプデータ wp_optionvalues
+# Table Dump data wp_optionvalues
 #
 
 INSERT INTO wp_optionvalues (`option_id`, `optionvalue`, `optionvalue_desc`, `optionvalue_max`, `optionvalue_min`, `optionvalue_seq`) VALUES (49, 'days', 'days', NULL, NULL, 1);
@@ -424,7 +419,6 @@ INSERT INTO wp_optionvalues (`option_id`, `optionvalue`, `optionvalue_desc`, `op
 INSERT INTO wp_optionvalues (`option_id`, `optionvalue`, `optionvalue_desc`, `optionvalue_max`, `optionvalue_min`, `optionvalue_seq`) VALUES (57, 'closed', 'Closed', NULL, NULL, 2);
 INSERT INTO wp_optionvalues (`option_id`, `optionvalue`, `optionvalue_desc`, `optionvalue_max`, `optionvalue_min`, `optionvalue_seq`) VALUES (58, '1', 'Checked', NULL, NULL, 1);
 INSERT INTO wp_optionvalues (`option_id`, `optionvalue`, `optionvalue_desc`, `optionvalue_max`, `optionvalue_min`, `optionvalue_seq`) VALUES (58, '0', 'Unchecked', NULL, NULL, 2);
-INSERT INTO wp_optionvalues (`option_id`, `optionvalue`, `optionvalue_desc`, `optionvalue_max`, `optionvalue_min`, `optionvalue_seq`) VALUES (59, 'SELECT cat_id AS value, cat_name AS label FROM xoops_wp_categories order by cat_name', '', NULL, NULL, 1);
 INSERT INTO wp_optionvalues (`option_id`, `optionvalue`, `optionvalue_desc`, `optionvalue_max`, `optionvalue_min`, `optionvalue_seq`) VALUES (62, 'number', 'Number', NULL, NULL, 1);
 INSERT INTO wp_optionvalues (`option_id`, `optionvalue`, `optionvalue_desc`, `optionvalue_max`, `optionvalue_min`, `optionvalue_seq`) VALUES (62, 'char', 'Character', NULL, NULL, 2);
 INSERT INTO wp_optionvalues (`option_id`, `optionvalue`, `optionvalue_desc`, `optionvalue_max`, `optionvalue_min`, `optionvalue_seq`) VALUES (62, 'image', 'Image', NULL, NULL, 3);
@@ -434,7 +428,7 @@ INSERT INTO wp_optionvalues (`option_id`, `optionvalue`, `optionvalue_desc`, `op
 # --------------------------------------------------------
 
 #
-# テーブルの構造 wp_post2cat
+# Table Structure wp_post2cat
 #
 
 CREATE TABLE wp_post2cat (
@@ -446,7 +440,7 @@ CREATE TABLE wp_post2cat (
 );
 
 #
-# テーブルのダンプデータ wp_post2cat
+# Table Dump data wp_post2cat
 #
 
 INSERT INTO wp_post2cat (`rel_id`, `post_id`, `category_id`) VALUES (1, 1, 1);
@@ -454,7 +448,7 @@ INSERT INTO wp_post2cat (`rel_id`, `post_id`, `category_id`) VALUES (1, 1, 1);
 # --------------------------------------------------------
 
 #
-# テーブルの構造 wp_posts
+# Table Structure wp_posts
 #
 
 CREATE TABLE wp_posts (
@@ -481,16 +475,11 @@ CREATE TABLE wp_posts (
   KEY `post_status` (`post_status`)
 );
 
-#
-# テーブルのダンプデータ wp_posts
-#
-
-##INSERT INTO wp_posts (`post_author`, `post_date`, `post_content`, `post_title`, `post_category`) VALUES ('1', '2004-04-01 00:00:00', 'Welcome to WordPress. This is the first post. Edit or delete it, then start blogging!', 'Hello world!', '1');
 
 # --------------------------------------------------------
 
 #
-# テーブルの構造 wp_users
+# Table Structure wp_users
 #
 
 CREATE TABLE wp_users (
