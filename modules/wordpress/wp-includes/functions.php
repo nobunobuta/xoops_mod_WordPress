@@ -1812,4 +1812,36 @@ if (get_settings('hack_file')) {
 	if (file_exists(ABSPATH . '/my-hacks.php'))
 		require(ABSPATH . '/my-hacks.php');
 }
+
+function get_xoops_option($dirname,$conf_name) {
+	global $xoopsDB;
+
+    $query = "SELECT mid FROM ".$xoopsDB->prefix('modules')." WHERE dirname='".$dirname."' ";
+	$result = $xoopsDB->query($query);
+	$record= $xoopsDB->fetcharray($result);
+	$mid = $record['mid'];
+    
+	$query = "SELECT conf_value, conf_valuetype FROM ".$xoopsDB->prefix('config')." WHERE conf_modid=".$mid." AND conf_name='".$conf_name."' ";
+	$result = $xoopsDB->query($query);
+	$record= $xoopsDB->fetcharray($result);
+	$value = $record['conf_value'];
+
+        switch ($record['conf_valuetype']) {
+        case 'int':
+            return intval($value);
+            break;
+        case 'array':
+            return unserialize($value);
+        	break;
+        case 'float':
+            return (float)$value;
+            break;
+        case 'textarea':
+            return $value;
+        	break;
+        default:
+            return $value;
+            break;
+        }
+}
 ?>
