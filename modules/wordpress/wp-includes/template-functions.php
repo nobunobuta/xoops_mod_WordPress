@@ -373,9 +373,15 @@ function get_calendar($daylength = 1) {
 	<tr>';
 
 	if ($previous) {
+		if (function_exists('mb_substr')) {
+			$smonth_name = mb_substr($month[zeroise($previous->month, 2)], 0, 3);
+		} else {
+			$smonth_name = substr($month[zeroise($previous->month, 2)], 0, 3);
+		}
+		$month_str = ereg_replace('%MONTH',$month[zeroise($previous->month, 2)],_WP_MONTH_FORMAT);
+		$month_str = ereg_replace('%YEAR',date('Y', mktime(0, 0 , 0, $previous->month, 1, $previous->year)),$month_str);
 		echo "\n\t\t".'<td abbr="' . $month[zeroise($previous->month, 2)] . '" colspan="3" id="prev"><a href="' .
-				get_month_link($previous->year, $previous->month) . '" title="View posts for ' . $month[zeroise($previous->month, 2)] . ' ' .
-				date('Y', mktime(0, 0 , 0, $previous->month, 1, $previous->year)) . '">&laquo; ' . substr($month[zeroise($previous->month, 2)], 0, 3) . '</a></td>';
+				get_month_link($previous->year, $previous->month) . '" title="View posts for ' . $month_str . '">&laquo; ' . $smonth_name . '</a></td>';
 	} else {
 		echo "\n\t\t".'<td colspan="3" id="prev" class="pad">&nbsp;</td>';
 	}
@@ -383,9 +389,15 @@ function get_calendar($daylength = 1) {
 	echo "\n\t\t".'<td class="pad">&nbsp;</td>';
 
 	if ($next) {
+		if (function_exists('mb_substr')) {
+			$smonth_name = mb_substr($month[zeroise($next->month, 2)], 0, 3);
+		} else {
+			$smonth_name = substr($month[zeroise($next->month, 2)], 0, 3);
+		}
+		$month_str = ereg_replace('%MONTH',$month[zeroise($next->month, 2)],_WP_MONTH_FORMAT);
+		$month_str = ereg_replace('%YEAR',date('Y', mktime(0, 0 , 0, $next->month, 1, $next->year)),$month_str);
 		echo "\n\t\t".'<td abbr="' . $month[zeroise($next->month, 2)] . '" colspan="3" id="next"><a href="' .
-				get_month_link($next->year, $next->month) . '" title="View posts for ' . $month[zeroise($next->month, 2)] . ' ' .
-				date('Y', mktime(0, 0 , 0, $next->month, 1, $next->year)) . '">' . substr($month[zeroise($next->month, 2)], 0, 3) . ' &raquo;</a></td>';
+				get_month_link($next->year, $next->month) . '" title="View posts for ' . $month_str . '">' . $smonth_name . ' &raquo;</a></td>';
 	} else {
 		echo "\n\t\t".'<td colspan="3" id="next" class="pad">&nbsp;</td>';
 	}
