@@ -1,8 +1,9 @@
 <?php
 function b_wp_contents_show($options) {
 	global $xoopsDB,$xoopsUser,$wpdb,$siteurl;
-	global $id,$posts,$post, $day, $previousday, $dateformat, $newday;;
 	global $tableoptions,$tableposts,$tableusers,$tablecategories,$tablecomments,$tablepost2cat;
+    global $querystring_start, $querystring_equal, $querystring_separator;
+	global $id, $posts, $post, $day, $previousday, $dateformat, $newday;
 	require_once (dirname(__FILE__).'/../wp-blog-header.php');
 	$blog = 1;
 	$block = array();
