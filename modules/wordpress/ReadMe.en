@@ -55,6 +55,12 @@ XOOPS_ROOT_PATH
 ------------
 ChangeLog
 ------------
+0.2.2  [2004-07-08]
+Fixed Bugs)
+-Can't Receive Trackback, if PHP mbstring extension is not installed.
+-RSS2 ICON is displayed as RSS0.92 ICON
+-RSS charset is forced to UTF-8 under ISO8859-1 charset environment, if PHP mbstring extention is installed,
+
 0.2.1  [2004-07-04]
 Added Features)
 -RSS ICON can display in XOOPS Block

@@ -1,3 +1,36 @@
+2004-07-08  0.2.2
+	* blocks/wp_contents.php:
+	* blocks/wp_recent_posts.php:
+	* wp-admin/users.php:
+	* wp-atom.php:
+	* wp-commentsrss2.php:
+	* wp-includes/functions.php:
+	* wp-includes/template-functions.php:
+	* wp-rdf.php:
+	* wp-rss.php:
+	* wp-rss2.php:
+		RSS,RDFの文字コード決定ロジックを変更。
+
+	* wp-trackback.php:
+		Trackback受信が、mbstring extention不在の場合に受けられないようになっていた。
+
+	* wp-admin/categories.php:
+	* wp-admin/edit-comments.php:
+	* wp-admin/edit.php:
+	* wp-admin/link-categories.php:
+	* wp-admin/link-manager.php:
+	* wp-admin/options-permalink.php:
+	* wp-admin/options.php:
+	* wp-admin/post.php:
+	* wp-admin/profile.php:
+	* wp-blog-header.php:
+	* wp-includes/links.php:
+	* xoops_search.php:
+		ＤＢ操作関連の細かな不具合の修正
+
+	* wp-mail.php:
+		Windowsサーバで添付ファイルがきちんと保存されない不具合に対応
+
 2004-07-04  0.2.1
 	* blocks/wp_recent_comments.php:
 	* blocks/wp_recent_posts.php:
