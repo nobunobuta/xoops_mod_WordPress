@@ -976,7 +976,7 @@ function trackback($trackback_url, $title, $excerpt, $ID, $charset = "") {
 	$fs = @fsockopen($trackback_url['host'], 80);
 	@fputs($fs, $http_request);
 	if(false) {
-		$debug_file = 'trackback.log';
+		$debug_file = '../log/trackback.log';
 		$fp = fopen($debug_file, 'a');
 		fwrite($fp, "\n*****\nRequest:\n\n$http_request\n\nResponse:\n\n");
 		fwrite($fp, "CHARSET:$charset\n");
@@ -1855,12 +1855,6 @@ function mb_conv($str,$to,$from)
 	return $retstr;
 }
 
-// Check for hacks file if the option is enabled
-if (get_settings('hack_file')) {
-	if (file_exists(ABSPATH . '/my-hacks.php'))
-		require(ABSPATH . '/my-hacks.php');
-}
-
 function get_xoops_option($dirname,$conf_name) {
 	global $xoopsDB;
 
@@ -1955,4 +1949,11 @@ function wp_get_rss_charset() {
 	}
 	return $rss_charset;
 }
+
+// Check for hacks file if the option is enabled
+if (get_settings('hack_file')) {
+	if (file_exists(ABSPATH . '/my-hacks.php'))
+		require(ABSPATH . '/my-hacks.php');
+}
+
 ?>

@@ -17,12 +17,12 @@ $post_autobr = 0;
 $post_default_title = ""; // posts submitted via the xmlrpc interface get that title
 $post_default_category = 1; // posts submitted via the xmlrpc interface go into that category
 
-$xmlrpc_logging = 1;
+$xmlrpc_logging = 0;
 
 function logIO($io,$msg) {
 	global $xmlrpc_logging;
 	if ($xmlrpc_logging) {
-		$fp = fopen("./xmlrpc.log","a+");
+		$fp = fopen("log/xmlrpc.log","a+");
 		$date = date("Y-m-d H:i:s ");
 		$iot = ($io == "I") ? " Input: " : " Output: ";
 		fwrite($fp, "\n\n".$date.$iot.$msg);
