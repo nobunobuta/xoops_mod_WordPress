@@ -4,9 +4,9 @@ if (!defined('_LANGCODE')) {
 	define("_LANGCODE","en");
 }
 if (file_exists("wp-lang/lang_"._LANGCODE.".php")) {
-	require("wp-lang/lang_"._LANGCODE.".php");
+	require_once("wp-lang/lang_"._LANGCODE.".php");
 } else {
-	require("wp-lang/lang_en.php");
+	require_once("wp-lang/lang_en.php");
 }
 global $xoopsDB,$xoopsUser,$wpdb, $wp_id, $wp_inblock;
 global $wp_once_called;

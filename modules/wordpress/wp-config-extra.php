@@ -2,9 +2,9 @@
 // this file contains customizable arrays for smilies, weekdays and month names.
 global $xoopsConfig;
 if ( file_exists(dirname(__FILE__)."/language/".$xoopsConfig['language']."/main.php") ) {
-	include dirname(__FILE__)."/language/".$xoopsConfig['language']."/main.php";
+	include_once dirname(__FILE__)."/language/".$xoopsConfig['language']."/main.php";
 } else {
-	include dirname(__FILE__)."/language/english/main.php";
+	include_once dirname(__FILE__)."/language/english/main.php";
 }
 
 global $weekday, $s_weekday_length;

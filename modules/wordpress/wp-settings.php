@@ -7,7 +7,7 @@ $HTTP_USER_AGENT = getenv('HTTP_USER_AGENT'); /* visitor's browser */
 //error_reporting(E_ALL ^ E_NOTICE);
 global $siteurl;
 
-define('WPINC', 'wp-includes');
+if(!defined('WPINC')) define('WPINC', 'wp-includes');
 require_once (ABSPATH . WPINC . '/wp-db.php');
 // Table names
 $wpdb->posts[$wp_id]               = $table_prefix[$wp_id] . 'posts';

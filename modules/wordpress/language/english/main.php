@@ -1,4 +1,6 @@
 <?php
+if (!defined('WP_LANGUAGE_XOOPS_MAIN_READ')) {
+define ('WP_LANGUAGE_XOOPS_MAIN_READ','1');
 define("_WP_CAL_SUNDAY", "Sunday");
 define("_WP_CAL_MONDAY", "Monday");
 define("_WP_CAL_TUESDAY", "Tuesday");
@@ -34,4 +36,5 @@ define("_WP_TPL_FILED_UNDER",'Filed under: ');
 define("_WP_TPL_EDIT_THIS",'Edit This');
 define("_WP_TPL_EDIT_THISC",'Edit This');
 define("_WP_TPL_MORE",'(more...)');
+}
 ?>

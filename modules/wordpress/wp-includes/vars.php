@@ -140,7 +140,7 @@ $pagenow = explode('/', $PHP_SELF);
 $pagenow = trim($pagenow[(sizeof($pagenow)-1)]);
 $pagenow = explode('?', $pagenow);
 $pagenow = $pagenow[0];
-if (($querystring_start == '/') && ($pagenow != 'post.php')) {
+if ($pagenow != 'post.php') {
 	$pagenow = $siteurl.'/index.php';
 }
 

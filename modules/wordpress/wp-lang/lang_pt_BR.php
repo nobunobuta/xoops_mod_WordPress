@@ -1,4 +1,7 @@
 <?php
+$blog_charset = 'iso-8859-1';
+if (!defined('WP_LANGUAGE_FILE_READ')) {
+define ('WP_LANGUAGE_FILE_READ','1');
 /* This is Multilingual correspondence file */
 /* Brazilian Portuguese Translation: Marcelo Yuji Himoro <http://www.yuji.eu.org> */
 
@@ -6,8 +9,6 @@
 Author : Otsukare
 URL : http://wordpress.xwd.jp/
 -------------------------------------- */
-
-$blog_charset = 'iso-8859-1';
 
 /* File Name wp-settings.php */
 define('_LANG_WA_SETTING_GUIDE','<p>O WordPress ME ainda não está instalado. Clique <a href=\'wp-admin/install.php\'>aqui</a> para iniciar a instalação.</p>');
@@ -677,5 +678,5 @@ define('_LANG_INST_BASE_VALUE91','Se o seu arquivo de destino deve ser Gzip ou n
 define('_LANG_INST_BASE_VALUE92','Altere este valor para verdadeiro se você planeja usar arquivos hackeados. Aqui você poderá guardar códigos hackeados que não serão sobreescritos quando você atualizar. O arquivo deve estar na pasta raiz do wordpress e se chamar <code>my-hacks.php</code>');
 define('_LANG_INST_BASE_VALUE93','blog_charset');
 define('_LANG_INST_BASE_VALUE94','Diferença em horas entre o fuso horário do servidor e o seu.');
-
+}
 ?>

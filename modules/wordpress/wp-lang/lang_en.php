@@ -1,13 +1,13 @@
 <?php
+$blog_charset = 'iso-8859-1';
+if (!defined('WP_LANGUAGE_FILE_READ')) {
+define ('WP_LANGUAGE_FILE_READ','1');
 /* This is Multilingual correspondence file */
 
 /* Copylight 2004 -----------------------
 Author : Otsukare
 URL : http://wordpress.xwd.jp/
 -------------------------------------- */
-
-$blog_charset = 'iso-8859-1';
-
 /* File Name wp-settings.php */
 define('_LANG_WA_SETTING_GUIDE','<p>It doesn\'t look like you\'ve installed WP yet. Try running <a href=\'wp-admin/install.php\'>install.php</a>.</p>');
 
@@ -669,5 +669,5 @@ define('_LANG_INST_BASE_VALUE91','Whether your output should be gzipped or not. 
 define('_LANG_INST_BASE_VALUE92','Set this to true if you plan to use a hacks file. This is a place for you to store code hacks that won&#8217;t be overwritten when you upgrade. The file must be in your wordpress root and called <code>my-hacks.php</code>');
 define('_LANG_INST_BASE_VALUE93','blog_charset');
 define('_LANG_INST_BASE_VALUE94','The difference in hours between GMT and your timezone');
-
+}
 ?>

@@ -1,4 +1,8 @@
 <?php
+$blog_charset = 'euc-jp';
+
+if (!defined('WP_LANGUAGE_FILE_READ')) {
+define ('WP_LANGUAGE_FILE_READ','1');
 /* This is Multilingual correspondence file */
 /* 美乳 */
 
@@ -6,8 +10,6 @@
 Author : Otsukare
 URL : http://wordpress.xwd.jp/
 -------------------------------------- */
-
-$blog_charset = 'euc-jp';
 
 /* File Name wp-settings.php */
 define('_LANG_WA_SETTING_GUIDE','<p>WordPress ME はまだインストールされていません<br /><a href="wp-admin/install.php">こちらをクリック</a>してインストールを実行してください。</p>');
@@ -680,5 +682,5 @@ define('_LANG_INST_BASE_VALUE91','ファイル出力時にgzipを有効にするかどうかを選択
 define('_LANG_INST_BASE_VALUE92','Hackファイルを使用する場合はここを[true]にしてください。 HackファイルはWordPressのルート上に置いて、my-hacks.phpのように呼び出します。 これはアップグレード時に上書きされないようにするためのものです。');
 define('_LANG_INST_BASE_VALUE93','Blogのキャラクターセット (<a href="http://developer.apple.com/documentation/macos8/TextIntlSvcs/TextEncodingConversionManager/TEC1.5/TEC.b0.html">文字コードリスト</a>');
 define('_LANG_INST_BASE_VALUE94','グリニッジ標準時(GMT)からの時差');
-
+}
 ?>

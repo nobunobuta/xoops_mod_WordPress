@@ -1,4 +1,6 @@
 <?php
+if (!defined('WP_LANGUAGE_XOOPS_MAIN_READ')) {
+define ('WP_LANGUAGE_XOOPS_MAIN_READ','1');
 /**
  * Module: WordPress ME
  * Author: nobunobu <http://www.kowa.org>
@@ -41,4 +43,5 @@ define("_WP_TPL_FILED_UNDER",'Categorias: ');
 define("_WP_TPL_EDIT_THIS",'Editar');
 define("_WP_TPL_EDIT_THISC",'Editar');
 define("_WP_TPL_MORE",'(maiores...)');
+}
 ?>

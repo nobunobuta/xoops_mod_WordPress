@@ -1,4 +1,6 @@
 <?php
+if (!defined('WP_LANGUAGE_XOOPS_MAIN_READ')) {
+define ('WP_LANGUAGE_XOOPS_MAIN_READ','1');
 define("_WP_CAL_SUNDAY", "日曜日");
 define("_WP_CAL_MONDAY", "月曜日");
 define("_WP_CAL_TUESDAY", "火曜日");
@@ -35,4 +37,5 @@ define("_WP_TPL_FILED_UNDER",'カテゴリー: ');
 define("_WP_TPL_EDIT_THIS",'記事編集');
 define("_WP_TPL_EDIT_THISC",'コメント編集');
 define("_WP_TPL_MORE",'(続き...)');
+}
 ?>
