@@ -5,15 +5,16 @@
 	echo number_format(timer_stop(), 2)." seconds";
 ?>
 </p>
+</div>
 <?php
-/*
-</body>
-</html>
-*/
 if ($standalone == 0) {
 	if ($profile == 0) {
 		include(XOOPS_ROOT_PATH.'/footer.php');
 	}
+} else {
+?>
+</body>
+</html>
+<?php
 }
-
 ?>

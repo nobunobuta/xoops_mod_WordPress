@@ -2,113 +2,113 @@
 	height: 100%; /* kill peekaboo bug in IE */
 }
 
-a img {
+#wpAdminMain a img {
 	border: none;
 }
 
-a.delete:hover {
+#wpAdminMain a.delete:hover {
 	background: #c00;
 	color: #fff;
 }
 
-a.edit, a.delete, a.edit:hover, a.delete:hover {
+#wpAdminMain a.edit,#wpAdminMain  a.delete,#wpAdminMain  a.edit:hover,#wpAdminMain  a.delete:hover {
 	border-bottom: none;
 	display: block;
 	padding: 5px 0;
 	text-align: center;
 }
 
-a.edit:hover {
+#wpAdminMain a.edit:hover {
 	background: #ccc;
 	color: #036;
 }
 
-fieldset {
+#wpAdminMain fieldset {
 	border: 1px solid #ccc;
 	padding: 2px;
 }
 
-fieldset label.selectit {
+#wpAdminMain fieldset label.selectit {
 	background: #f0f0f0;
 	display: block;
 	font-size: 11px;
 	padding: 0 2px;
 }
 
-fieldset label.selectit:hover {
+#wpAdminMain fieldset label.selectit:hover {
 	background: #dadada;
 }
 
-fieldset legend {
+#wpAdminMain fieldset legend {
 	padding: .1em;
 }
 
-fieldset:hover {
+#wpAdminMain fieldset:hover {
 	border: 1px solid #999;
 }
 
-form, label input {
+#wpAdminMain form,#wpAdminMain  label input {
 	margin: 0;
 	padding: 0;
 }
 
-h2 {
+#wpAdminMain h2 {
 	color: #0080C0;
-//	margin: 15px 10px;
+	margin: 15px 10px;
 }
 
-label {
+#wpAdminMain label {
 	cursor: pointer;
 }
 
-.alternate {
+#wpAdminMain .alternate {
 	background: #eee;
 }
 
-.anchors {
+#wpAdminMain .anchors {
 	margin: 10px 20px 10px 20px;
 }
 
-.checkbox {
+#wpAdminMain .checkbox {
 	background: #fff;
 	border: none;
 	margin: 0;
 	padding: 0;
 }
 
-.post-categories {
+#wpAdminMain .post-categories {
 	display: inline;
 	margin: 0;
 	padding: 0;
 }
 
-.post-categories li, #ed_toolbar {
+#wpAdminMain .post-categories li,#wpAdminMain  #ed_toolbar {
 	display: inline;
 }
 
-.quicktags, .search {
+#wpAdminMain .quicktags,#wpAdminMain  .search {
 	background: #ccc;
 	color: #000;
 	font: 12px "ƒqƒ‰ƒMƒmŠpƒS Pro W3", Osaka, Verdana, "‚l‚r ‚oƒSƒVƒbƒN", sans-serif;
 }
 
-.unapproved {
+#wpAdminMain .unapproved {
 	color: #888;
 }
 
-.unapproved a:link {
+#wpAdminMain .unapproved a:link {
 	color: #b9bcff;
 }
 
-.unapproved a:visited {
+#wpAdminMain .unapproved a:visited {
 	color: #696dff;
 }
 
-.unapproved a:hover {
+#wpAdminMain .unapproved a:hover {
 	color: #009ef0;
 }
 
-.wrap {
+#wpAdminMain .wrap {
 	border: 1px solid #0080C0;
 	background: #F2F8F9;
 	margin: 20px auto 10px auto;
@@ -116,17 +116,17 @@ label {
 	width: 95%;
 }
 
-.wrap h2 {
+#wpAdminMain .wrap h2 {
 	font-size: 18px;
 	margin: 6px 0;
 }
 
-#adminmenu {
+#wpAdminMain #adminmenu {
 	margin-left: 7px;
 	padding: 0 2px;
 }
 
-#adminmenu a {
+#wpAdminMain #adminmenu a {
 	background-color: #336699;
 	color: #ffffff;
 	text-decoration: none;
@@ -140,14 +140,14 @@ label {
 	border-right: 2px solid #4a4a4a;
 }
 
-#adminmenu a:hover {
+#wpAdminMain #adminmenu a:hover {
 	border-bottom: 1px solid #cecece;
 	border-top: 2px solid #4a4a4a;
 	border-right: 1px solid #cecece;
 	border-left: 2px solid #4a4a4a;
 }
 
-#adminmenu .current,#adminmenu a.current:hover {
+#wpAdminMain #adminmenu .current,#wpAdminMain #adminmenu a.current:hover {
 	background-color: #996633;
 	border-top: 1px solid #cecece;
 	border-bottom: 2px solid #4a4a4a;
@@ -155,12 +155,12 @@ label {
 	border-right: 2px solid #4a4a4a;
 }
 
-#adminmenu2 {
+#wpAdminMain #adminmenu2 {
 	border-bottom: none;
 	margin-left: 7px;
 }
 
-#adminmenu2 a {
+#wpAdminMain #adminmenu2 a {
 	background-color: #66AABB;
 	border-top: 1px solid #cecece;
 	border-bottom: 2px solid #2a2a2a;
@@ -177,14 +177,14 @@ label {
 	text-decoration: none;
 }
 
-#adminmenu2 a:hover {
+#wpAdminMain #adminmenu2 a:hover {
 	border-bottom: 1px solid #cecece;
 	border-top: 2px solid #4a4a4a;
 	border-right: 1px solid #cecece;
 	border-left: 2px solid #4a4a4a;
 }
 
-#adminmenu2 .current,#adminmenu2 a.current:hover {
+#wpAdminMain #adminmenu2 .current,#wpAdminMain #adminmenu2 a.current:hover {
 	background-color: #CC9966;
 	border-top: 1px solid #cecece;
 	border-bottom: 2px solid #2a2a2a;
@@ -192,53 +192,46 @@ label {
 	border-right: 2px solid #2a2a2a;
 }
 
-#adminmenu li, #adminmenu2 li {
+#wpAdminMain #adminmenu li,#wpAdminMain  #adminmenu2 li {
 	display: inline;
 	line-height: 2.0em;
 	list-style: none;
 	text-align: center;
 }
 
-#adminmenu .last, #adminmenu2 .last {
+#wpAdminMain #adminmenu .last,#wpAdminMain  #adminmenu2 .last {
 	border-right: none;
 }
 
-#categorydiv {
+#wpAdminMain #categorydiv {
 	line-height: 130%;
 	width: 12em;
 
 }
-#categorydiv {
-	line-height: 130%;
-	margin-right: 200px;
-	position: absolute;
-	right: 5%;
-	width: 9em;
-}
 
-#categorydiv input, #poststatusdiv input, #commentstatusdiv input, #pingstatusdiv input {
+#wpAdminMain #categorydiv input,#wpAdminMain #poststatusdiv input,#wpAdminMain #commentstatusdiv input, #wpAdminMain #pingstatusdiv input {
 	border: none;
 }
 
-#ed_button {
+#wpAdminMain #ed_button {
 	padding: 1px;
 }
 
-#ed_del {
+#wpAdminMain #ed_del {
 	text-decoration: line-through;
 }
 
-#ed_em {
+#wpAdminMain #ed_em {
 	font-style: italic;
 	width: 25px;
 }
 
-#ed_strong {
+#wpAdminMain #ed_strong {
 	font-weight: bold;
 	width: 25px;
 }
 
-#login {
+#wpAdminMain #login {
 	background: url(../../wp-images/wp-small.png) #fff no-repeat top center;
 	border: 1px solid #dcdcdc;
 	color: #333;
@@ -253,7 +246,7 @@ label {
 	width: 250px;
 }
 
-#login textarea, #login input, #login select {
+#wpAdminMain #login textarea,#wpAdminMain  #login input,#wpAdminMain  #login select {
 	background: #f7f7f7;
 	border-color: #ccc;
 	border-style: solid;
@@ -262,66 +255,66 @@ label {
 	padding: 2px;
 }
 
-#metainfo {
+#wpAdminMain #metainfo {
 	clear: both;
 }
 
-#postdiv {
+#wpAdminMain #postdiv {
     clear: both;
 }
 
-#poststatusdiv, #commentstatusdiv, #pingstatusdiv {
+#wpAdminMain #poststatusdiv, #wpAdminMain #commentstatusdiv, #wpAdminMain #pingstatusdiv {
 	width: 6.5em;
 }
 
-#poststuff {
+#wpAdminMain #poststuff {
 	margin-right: 11em;
 }
 
-#poststuff textarea {
+#wpAdminMain #poststuff textarea {
 	width: 99%;
 }
 
-#profile {
+#wpAdminMain #profile {
 	margin: 10px;
 }
 
-#profile .left {
+#wpAdminMain #profile .left {
 	border-right: 1px dashed #ccc;
 	float: left;
 	margin-right: 5px;
 	padding-right: 5px;
 }
 
-#profile label {
+#wpAdminMain #profile label {
 	float: left;
 	padding-right: 3px;
 	text-align: right;
 	width: 85px;
 }
 
-#profile p {
+#wpAdminMain #profile p {
 	margin: 0 0 4px 0;
 }
 
-#quicktags {
+#wpAdminMain #quicktags {
 	text-align: right;
 }
 
-#titlediv, #poststatusdiv, #commentstatusdiv, #pingstatusdiv, #postpassworddiv, #namediv, #uridiv, #emaildiv {
+#wpAdminMain #titlediv, #wpAdminMain #poststatusdiv, #wpAdminMain #commentstatusdiv, #wpAdminMain #pingstatusdiv, #wpAdminMain #postpassworddiv, #wpAdminMain #namediv, #wpAdminMain #uridiv, #wpAdminMain #emaildiv {
 
 	float: left;
 	height: 6em;
 	margin-right: 5px;
 }
 
-#wphead {
+#wpAdminMain #wphead {
 	height: 50px;
 	margin: 0;
 	padding: 0;
 }
 
-#wphead a {
+#wpAdminMain #wphead a {
 	background: url(../../wp-images/wordpress.gif) no-repeat;
 	border-bottom: none;
 	display: block;
@@ -330,6 +323,6 @@ label {
 	margin: 3px 0 0 5px;
 	text-decoration: none;
 }
-#wphead a span {
+#wpAdminMain #wphead a span {
 	display: none;
 }
