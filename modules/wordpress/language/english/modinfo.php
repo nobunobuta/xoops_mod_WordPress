@@ -38,4 +38,6 @@ define("_MI_WORDPRESS_BDESC6","WordPress Recent Posts");
 define("_MI_WORDPRESS_BNAME7","WordPress Recent Comments");
 define("_MI_WORDPRESS_BDESC7","WordPress Recent Comments");
 
+define("_MI_WORDPRESS_BNAME8","WordPress Contents");
+define("_MI_WORDPRESS_BDESC8","WordPress Contents");
 ?>

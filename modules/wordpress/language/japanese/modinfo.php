@@ -37,4 +37,7 @@ define("_MI_WORDPRESS_BDESC6","WordPress 最近の投稿");
 
 define("_MI_WORDPRESS_BNAME7","WordPress 最近のコメント");
 define("_MI_WORDPRESS_BDESC7","WordPress 最近のコメント");
+
+define("_MI_WORDPRESS_BNAME8","WordPress 記事ブロック");
+define("_MI_WORDPRESS_BDESC8","WordPress 記事ブロック");
 ?>
