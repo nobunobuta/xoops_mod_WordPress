@@ -34,14 +34,14 @@ if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) 
 </head>
 <body id="wpMainContent">
 
-<h1 id="header"><a href="" title="<?php echo get_settings('blogname') ?>"><?php echo get_settings('blogname') ?></a></h1>
+<h1 id="header"><a href="" title="<?php echo get_settings('blogname'); ?>"><?php echo get_settings('blogname'); ?></a></h1>
 
 <h2 id="comments"><?php echo _LANG_WPCM_COM_TITLE; ?></h2>
 
 <p><?php comments_rss_link('<abbr title="Really Simple Syndication">RSS</abbr> feed for comments on this post.'); ?></p>
 
 <?php if ('open' == $post->ping_status) { ?>
-<p><?php echo _LANG_WPCM_COM_TRACK; ?><em><?php trackback_url() ?></em></p>
+<p><?php echo _LANG_WPCM_COM_TRACK; ?><em><?php trackback_url(); ?></em></p>
 <?php } ?>
 
 <?php
@@ -49,18 +49,19 @@ if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) 
 $comment_author = (isset($_COOKIE['comment_author_'.$cookiehash])) ? trim($_COOKIE['comment_author_'.$cookiehash]) : '';
 $comment_author_email = (isset($_COOKIE['comment_author_email_'.$cookiehash])) ? trim($_COOKIE['comment_author_email_'.$cookiehash]) : '';
 $comment_author_url = (isset($_COOKIE['comment_author_url_'.$cookiehash])) ? trim($_COOKIE['comment_author_url_'.$cookiehash]) : '';
-	$comments = $wpdb->get_results("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $id AND comment_approved = '1' ORDER BY comment_date");
-	$commentstatus = $wpdb->get_row("SELECT comment_status, post_password FROM {$wpdb->posts[$wp_id]} WHERE ID = $id");
+$comments = $wpdb->get_results("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $id AND comment_approved = '1' ORDER BY comment_date");
+$commentstatus = $wpdb->get_row("SELECT comment_status, post_password FROM {$wpdb->posts[$wp_id]} WHERE ID = $id");
 if (!empty($commentstatus->post_password) && $_COOKIE['wp-postpass_'.$cookiehash] != $commentstatus->post_password) {  // and it doesn't match the cookie
 	echo(get_the_password_form());
-} else { ?>
+} else { 
+?>
 
 <?php if ($comments) { ?>
 <ol id="commentlist">
 <?php foreach ($comments as $comment) { ?>
 	<li id="comment-<?php comment_ID() ?>">
-	<?php comment_text() ?>
-	<p><cite><?php comment_type(); ?> by <?php comment_author_link() ?> &#8212; <?php comment_date() ?> @ <a href="#comment-<?php comment_ID() ?>"><?php comment_time() ?></a></cite></p>
+	<?php comment_text(); ?>
+	<p><cite><?php comment_type(); ?> by <?php comment_author_link(); ?> &#8212; <?php comment_date() ?> @ <a href="#comment-<?php comment_ID() ?>"><?php comment_time() ?></a></cite></p>
 	</li>
 
 <?php } // end for each comment ?>
@@ -107,15 +108,12 @@ if (!empty($commentstatus->post_password) && $_COOKIE['wp-postpass_'.$cookiehash
 </form>
 <?php } else { // comments are closed ?>
 <p><?php echo _LANG_WPCM_THIS_TIME; ?></p>
-<?php }
-} // end password check
-?>
+<?php } ?>
+<?php } // end password check ?>
 
 <div><strong><a href="javascript:window.close()">Close this window</a>.</strong></div>
 
-<?php // if you delete this the sky will fall on your head
-}
-?>
+<?php } // if you delete this the sky will fall on your head ?>
 
 <p class="credit"><?php timer_stop(1); ?> <cite>Powered by <a href="http://wordpress.org"><strong>Wordpress</strong></a></cite></p>
 <script type="text/javascript">
