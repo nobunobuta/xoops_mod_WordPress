@@ -518,4 +518,4 @@ CREATE TABLE wp8_postmeta (
    PRIMARY KEY (`meta_id`),
    KEY `post_id` (`post_id`),
    KEY `meta_key` (`meta_key`)
-)";
+);
