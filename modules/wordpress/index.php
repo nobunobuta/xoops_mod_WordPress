@@ -13,7 +13,7 @@ include("header.php");
 	
 <div class="post">
 	 <h3 class="storytitle" id="post-<?php the_ID(); ?>"><a href="<?php echo get_permalink() ?>" rel="bookmark" title="Permanent Link: <?php the_title(); ?>"><?php the_title(); ?></a></h3>
-	<div class="meta">Filed under: <?php the_category() ?> - <?php the_author() ?> @ <?php the_time() ?> <?php edit_post_link(); ?></div>
+	<div class="meta"><?php echo _WP_TPL_FILED_UNDER ?><?php the_category() ?> - <?php the_author() ?> @ <?php the_time() ?> <?php edit_post_link(); ?></div>
 	
 	<div class="storycontent">
 		<?php the_content(); ?>
@@ -22,7 +22,7 @@ include("header.php");
 	
 	<div class="feedback">
 		<?php link_pages('<br />Pages: ', '<br />', 'number'); ?> 
-		<?php comments_popup_link('Comments (0)', 'Comments (1)', 'Comments (%)'); ?> 
+		<?php comments_popup_link(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS); ?> 
 	</div>
 	
 	<!--

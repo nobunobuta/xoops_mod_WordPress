@@ -83,7 +83,7 @@ if (!empty($commentstatus->post_password) && $HTTP_COOKIE_VARS['wp-postpass_'.$c
 	</p>
 
 	<p>
-	  <input name="submit" type="submit" tabindex="5" value="Say it!" />
+	  <input name="submit" type="submit" tabindex="5" value=_LANG_WPCM_COM_SAYIT />
 	</p>
 </form>
 <?php } else { // comments are closed ?>

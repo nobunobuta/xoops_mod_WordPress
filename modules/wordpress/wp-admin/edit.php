@@ -189,7 +189,7 @@ echo $posts_nav_bar;
 		foreach ($arc_result as $arc_row) {
 			$arc_year  = $arc_row["YEAR(post_date)"];
 			$arc_month = $arc_row["MONTH(post_date)"];
-       		$month_str = ereg_replace('%MONTH',$month[zeroise($arc_month,2)],MONTH_FORMAT);
+       		$month_str = ereg_replace('%MONTH',$month[zeroise($arc_month,2)],_WP_MONTH_FORMAT);
 			$month_str = ereg_replace('%YEAR',$arc_year,$month_str);
 			echo "<option value=\"$arc_year".zeroise($arc_month,2)."\">";
 			echo $month_str;

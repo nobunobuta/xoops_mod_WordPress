@@ -45,7 +45,7 @@ function b_wp_contents_show($options) {
 		ob_end_clean();
 //
 		ob_start();
-		comments_popup_link('Comments (0)', 'Comments (1)', 'Comments (%)');
+		comments_popup_link(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS);
 		$content['comments'] = ob_get_contents();
 		ob_end_clean();
 //
