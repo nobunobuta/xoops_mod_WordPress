@@ -617,7 +617,7 @@ switch($action) {
             die ('Cheatin&#8217; uh?');
 
         $comment_ID = $HTTP_POST_VARS['comment_ID'];
-        $comment_ID = intval($commnet_ID);
+        $comment_ID = intval($comment_ID);
         $comment_post_ID = $HTTP_POST_VARS['comment_post_ID'];
         $newcomment_author = $HTTP_POST_VARS['newcomment_author'];
         $newcomment_author_email = $HTTP_POST_VARS['newcomment_author_email'];
@@ -643,7 +643,6 @@ switch($action) {
         }
 		$content = balanceTags($HTTP_POST_VARS['wp_content']);
         $content = format_to_post($content);
-
         $result = $wpdb->query("
 			UPDATE {$wpdb->comments[$wp_id]} SET
 				comment_content = '$content',
