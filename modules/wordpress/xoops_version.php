@@ -3,7 +3,7 @@ $modversion['name'] = _MI_WORDPRESS_NAME;
 $modversion['dirname'] = 'wordpress';
 
 $modversion['description'] = _MI_WORDPRESS_DESC;
-$modversion['version'] = "0.01g";
+$modversion['version'] = "0.01b";
 $modversion['credits'] = "";
 $modversion['author'] = _MI_WORDPRESS_AUTHOR;
 $modversion['help'] = "help.html";
@@ -33,12 +33,42 @@ $modversion['tables'] = array(
 
 //Admin things
 $modversion['hasAdmin'] = 1;
+$modversion['adminindex'] = "admin/index.php";
+$modversion['adminmenu'] = "admin/menu.php";
+//$modversion['adminindex'] = "wp-admin/options.php";
 $modversion['hasMain'] = 1;
-$modversion['adminindex'] = "wp-admin/options.php";
+$modversion['hasconfig'] = 1;
 //if($xoopsUser){
 	$modversion['sub'][1]['name'] = _MI_WORDPRESS_SMNAME1;
 	$modversion['sub'][1]['url'] = "wp-admin/post.php";
 //}
+
+$modversion['config'][1] = array(
+	'name'			=> 'wp_use_spaw' ,
+	'title'			=> '_MI_WPUSESPAW_CFG_MSG' ,
+	'description'	=> '_MI_WPUSESPAW_CFG_DESC' ,
+	'formtype'		=> 'yesno' ,
+	'valuetype'		=> 'int' ,
+	'default'		=> 0 ,
+);
+
+$modversion['config'][2] = array(
+	'name'			=> 'wp_edit_authgrp' ,
+	'title'			=> '_MI_WPEDITAUTHGRP_CFG_MSG' ,
+	'description'	=> '_MI_WPEDITAUTHGRP_CFG_DESC' ,
+	'formtype'		=> 'group_multi' ,
+	'valuetype'		=> 'array' ,
+	'default'		=> array(1) ,
+);
+
+$modversion['config'][3] = array(
+	'name'			=> 'wp_admin_authgrp' ,
+	'title'			=> '_MI_WPADMINAUTHGRP_CFG_MSG' ,
+	'description'	=> '_MI_WPADMINAUTHGRP_CFG_DESC' ,
+	'formtype'		=> 'group_multi' ,
+	'valuetype'		=> 'array' ,
+	'default'		=> array(1) ,
+);
 
 $modversion['blocks'][1]['file'] = "wp_calendar.php";
 $modversion['blocks'][1]['name'] =  _MI_WORDPRESS_BNAME1;
