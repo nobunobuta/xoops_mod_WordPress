@@ -1,3 +1,129 @@
+2004-10-24  0.3.3
+	* admin/myblocksadmin.php:
+	* include/blocksadmin.inc.php:
+		ブロック管理画面の一覧に表示画面選択リストを表示
+
+	* blocks/wp_archives_monthly.php:
+	* blocks/wp_authors.php:
+	* blocks/wp_categories.php:
+	* blocks/wp_links.php:
+	* blocks/wp_recent_comments.php:
+		ブロック用のスタイルシート呼出処理の追加
+		一覧スタイル指定用クラスを追加
+
+	* blocks/wp_recent_comments.php:
+		ブロック出力オプションの追加
+
+	* blocks/wp_recent_posts.php:
+	* themes/default/wp-blocks.css.php:
+		一覧スタイル指定用クラスを追加
+
+	* blocks/wp_recent_comments.php:
+	* blocks/wp_recent_posts.php:
+	* language/english/blocks.php:
+	* language/english/main.php:
+	* language/german/blocks.php:
+	* language/german/main.php:
+	* language/japanese/blocks.php:
+	* language/japanese/main.php:
+	* language/portuguesebr/blocks.php:
+	* language/portuguesebr/main.php:
+	* wp-includes/template-functions-post.php:
+		タイトルが入力されていない場合［無題］とか(No Tltle)とかを表示するように修正
+
+	* templates/blocks/wp_block_contents.html:
+	* wp-includes/functions.php:
+		CSSの埋め込み部分をCSSに対応していないブラウザ用にHTMLコメントとして扱われる用に修正
+
+	* themes/default/wp-layout.css:
+		一部のCSSスタイル設定不具合対応
+
+	* wp-admin/admin-header.php:
+		管理画面表示時に、CenterBlock及びRightBlockを非表示に
+
+	* wp-admin/bookmarklet.js.php:
+	* wp-admin/bookmarklet.php:
+	* wp-admin/post.php:
+	* wp-admin/profile.php:
+		IEのコンテキストメニューによるBookmarklet機能がIE6.0SP1以降でも動作するように修正
+
+	* wp-admin/admin-header.php:
+	* wp-admin/bookmarklet.php:
+	* wp-admin/categories.php:
+	* wp-admin/edit.php:
+	* wp-admin/link-add.php:
+	* wp-includes/functions-formatting.php:
+		パラメータのサニタイズ強化
+
+	* wp-admin/edit-comments.php:
+		並べ替えオプションパラメータ受け渡し不具合対応
+
+	* wp-admin/menu.ja.txt:
+	* wp-admin/menu.php:
+		WordPress管理メインメニューの日本語化一部対応
+
+	* wp-admin/spaw/class/script.js.php:
+	* wp-admin/spaw/config/spaw_control.config.php:
+	* wp-admin/spaw/dialogs/img_library.php:
+		SPAWによる画像添付時にXOOPS Image Manager及びMyAlbumモジュールの画像参照対応
+
+	* wp-admin/upload.php:
+		画像サムネール作成のGD2 GD自動切り替え対応
+
+	* wp-admin/xoops_version.php:
+		wp-adminディレクトリ下での事項もWordPressモジュール内と認識させるためにダミーのxoops_version.phpを配置
+
+	* wp-blog-header.php:
+	* wp-includes/template-functions-author.php:
+		日本語ログイン名への対応強化
+
+	* wp-includes/class-xmlrpc.php:
+		PING送信時のタイムアウト設定追加
+
+	* wp-includes/functions.php:
+		PING送信を若干効率化
+
+	* wp-includes/template-functions-author.php:
+		XOOPSのProfileへのリンクを可能に（function the_author_info_link($idmode='') を追加）
+
+	* wp-ktai.php:
+		拡張子のない画像のタイプ判定に対応
+		未承認コメントを表示しないように修正
+
+	* wp-mail.php:
+		POP用グローバル変数名の変更
+		エラーメッセージの出力方法の調整
+		モブログ投稿不具合に対応
+		画像サムネール作成のGD2 GD自動切り替え対応
+
+	* wp-mail.php:
+	* wp-mail-conf.php.dist:
+		勝手に実行されないように実行キーワードの指定を可能に
+
+	* wp-settings.php:
+		複数ブログ設置時のプラグイン２重読み込み抑止
+
+	* xmlrpc.php:
+		こうさぎでPukiWikiプラグインを有効にしたBlogへの投稿機能の手直し
+		投稿時の各略称設定に対応
+
+	* xoops_search.php:
+		サーバ時差指定値を利用
+
+	* xoops_version.php:
+		ブロック出力オプションの追加
+
+	* wp-content/plugins/modPukiWiki/*
+		modPukiWikiの最新版適用
+
+	* ReadMe.ja-eucjp:
+	* themes/default/wp-admin.css:
+	* wp-comments-popup.php:
+		一部手直し
+
+	* weblogs.com.changes.cache:
+		不用ファイルの削除
+
 2004-09-05  0.3.2
 	* wp-admin/edit-form-advanced.php:
 	* wp-admin/edit-form.php:

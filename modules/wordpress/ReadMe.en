@@ -1,10 +1,15 @@
+Description: 
 WordPress XOOPS port is released.
 
 It's based on "WordPress 1.0.2" and "WordPress ME 1.0.3" (Multi Language Edition for Japanese)
+From Release0.3.0, some new functions in WordPress1.2 are added.
 
 There currently is not any English documentation for this module. If you know about the original WordPress, you will be able to use this module easily. If you don't, please see the documents on the WordPress Homepage.
 
-With this module, you can use following XOOPS blocks.
+Features:
+Can post a blog with spaw editor 
+Can specify special ping server 
+Can use following XOOPS blocks:
 -WordPress Calendar
 -WordPress Monthly Archives
 -WordPress Categories Listing
@@ -14,11 +19,9 @@ With this module, you can use following XOOPS blocks.
 -WordPress Recent Comments
 -WordPress Contents
 
-I did following original enhancements for this module.
--Can post a blog with spaw editor.
--Can specify special ping server.
-
-To install this module, you don't need to run install.php, like WordPress needs it. All you have to do is, copy all files into your XOOPS Module directory and execute XOOPS module install menu as normal.
+System Requirements:
+To install this module, you don't need to run install.php, like WordPress needs it. All you have to do is, copy all files into your XOOPS Module directory and execute XOOPS module install menu as normal. 
+With some release prior to Release 0.2.1, Trackback receiveing will fail, if you don't have mb_string extension. Please update with new Release. 
 
 From WordPress Release0.2.0, Directory strucure is changed a little.
 
@@ -55,8 +58,23 @@ XOOPS_ROOT_PATH
 ------------
 ChangeLog
 ------------
-0.3.2  [2004-09-05]
+0.3.3  [2004-10-24]
+Added Features)
+-Add Option to Recent Comment Block
+  Posted Date On/Off
+  Comment Type(Comment,Trackback,Pingback) On/Off
+-With SPAW Editor, you can get an image from XOOPS Image Manager and MyAlbum Module(by GIJOE)
+-Blog posted with no title will be displayed as "(No Title)"
+-Add some style class in listing blocks.
+  Please refer themes/default/wp-blocks.css.php, if you customized your block stylesheet.
+
 Fixed Bugs)
+-Some bugs in Moblog function
+-Some bugs relate with PukiWiki plugin is fixed
+-Some function didn't sanitize some GET paramaters.
+-Some trouble with multiple blog with some plugins.
+
+0.3.2  [2004-09-05]
 -Could not post with Apple-Mail
 -Some bugs relate with PukiWiki plugin is fixed
 -Comment popup function option is fixed
