@@ -4,6 +4,13 @@
 $HTTP_RAW_POST_DATA = $GLOBALS['HTTP_RAW_POST_DATA'];
 $HTTP_RAW_POST_DATA = trim($HTTP_RAW_POST_DATA);
 
+#Temporally fix for kousagi
+if (!empty($_GET['kousagi']) {
+	$kousagi = true;
+} else {
+	$kousagi = false;
+}
+
 include('wp-config.php');
 
 require_once(ABSPATH.WPINC."/class-xmlrpc.php");
@@ -328,7 +335,7 @@ function trackback_url_list($tb_list, $post_id) {
 		$excerpt = strip_tags($post_excerpt?$post_excerpt:$post_content);
 		
 		if (strlen($excerpt) > 255) {
-			$exerpt = substr($excerpt,0,252) . '...';
+			$excerpt = substr($excerpt,0,252) . '...';
 		}
 				
 		$trackback_urls = explode(',', $tb_list);
@@ -1202,8 +1209,13 @@ function bloggersettemplate($m) {
  *  http://dougal.gunters.org/
  *
  **********************/
+#Temporally fix for kousagi
+if ($kousagi) {
+	$mwnewpost_sig =  array(array($xmlrpcInt,$xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcStruct,$xmlrpcInt));
+} else {
+	$mwnewpost_sig =  array(array($xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcStruct,$xmlrpcBoolean));
+}
 
-$mwnewpost_sig =  array(array($xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcStruct,$xmlrpcBoolean));
 $mwnewpost_doc = 'Add a post, MetaWeblog API-style';
 
 function mwnewpost($params) {
