@@ -7,7 +7,7 @@ if( ! defined( 'WP_SEARCH_INCLUDED' ) ) {
 	{
 		$act_url = XOOPS_URL."/modules/wordpress".$wp_num."/";
 		$block['content'] = <<<EOD
-		<form id="searchform$wp_num" method="get" action="$act_url">
+		<form name="searchform$wp_num" id="searchform$wp_num" method="get" action="$act_url">
 		<div>
 			<input type="text" name="s" size="12" /> <input type="submit" name="submit" value="search" />
 		</div>

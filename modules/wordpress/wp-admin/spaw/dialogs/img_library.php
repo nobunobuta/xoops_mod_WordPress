@@ -37,7 +37,7 @@ $value_found = false;
 function is_array_value($value, $key, $_imglib)
 {
   global $value_found,$lib;
-  // echo $value.'-'.$_imglib.'<br>';
+  // echo $value.'-'.$_imglib.'<br />';
   
   if (in_array($_imglib,$value)){
     $value_found=true;
@@ -290,7 +290,7 @@ if( isset( $_FILES['img_file']['size'] ) && $_FILES['img_file']['size'] > 0 )
       echo '<span class="error">';
       foreach ($errors as $err)
       {
-        echo $err.'<br>';
+        echo $err.'<br />';
       }
       echo '</span>';
     }
@@ -299,7 +299,7 @@ if( isset( $_FILES['img_file']['size'] ) && $_FILES['img_file']['size'] > 0 )
   <?php 
   if ($d) {
   ?>
-    <b><?php echo $l->m('upload')?>:</b> <input type="file" name="img_file" class="input"><br>
+    <b><?php echo $l->m('upload')?>:</b> <input type="file" name="img_file" class="input"><br />
     <input type="submit" name="btnupload" class="bt" value="<?php echo $l->m('upload_button')?>">
   <?php 
   }

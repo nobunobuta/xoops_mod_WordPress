@@ -108,7 +108,7 @@ if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
 			$link = $file.'?cat=';
 			ob_start();
 			block_style_get($wp_num);
-			echo '<form name="listcatform'.$wp_num.'" action="">';
+			echo '<form name="listcatform'.$wp_num.'" id="listcatform'.$wp_num.'" action="#">';
 			$select_str = '<select name="cat" onchange="window.location = (document.forms.listcatform'.$wp_num.'.cat[document.forms.listcatform'.$wp_num.'.cat.selectedIndex].value);"> ';
 			dropdown_cats(1,_WP_LIST_CAT_ALL,$sorting_key,$sorting_order,0,$with_count,0,false,0,0,true,0,true,0);
 			echo '</form>';

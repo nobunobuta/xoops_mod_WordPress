@@ -44,7 +44,7 @@ switch($action) {
 		wp_refcheck("/wp-admin/plugins.php");
 
 		if ($user_level < 10) {
-			die("You have no right to edit the options for this blog.<br>Ask for a promotion from your <a href=\"mailto:".get_settings('admin_email')."\">blog admin</a> :)");
+			die("You have no right to edit the options for this blog.<br />Ask for a promotion from your <a href=\"mailto:".get_settings('admin_email')."\">blog admin</a> :)");
 		}
 ?>
 <p>Welcome to the WordPress Blacklist installer/updater utility. To get started, we just need one bit of information.</p>

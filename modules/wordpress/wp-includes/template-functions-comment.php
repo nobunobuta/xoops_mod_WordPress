@@ -75,6 +75,7 @@ function comments_popup_link($zero='No Comments', $one='1 Comment', $more='% Com
             $comments_popup_link .= comments_link('', false);
             $comments_popup_link .=  '"';
         }
+        $comments_popup_link .= ' title="Comment for \'\''.apply_filters('the_title',$GLOBALS['post']->post_title).'\'\'"';
         if (!empty($CSSclass)) {
             $comments_popup_link .=  ' class="'.$CSSclass.'"';
         }

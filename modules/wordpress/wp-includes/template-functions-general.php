@@ -493,7 +493,7 @@ function get_calendar($daylength = 1, $echo=true) {
 	
 	$month_str = ereg_replace('%MONTH',$GLOBALS['month'][zeroise($thismonth, 2)],$GLOBALS['wp_month_format']);
 	$month_str = ereg_replace('%YEAR',date('Y', $unixmonth),$month_str);
-	$get_calendar = "<table id='wp-calendar'>\n<caption>$month_str</caption>\n<thead>\n\t<tr>";
+	$get_calendar = "<table id='wp-calendar' summary='wp-calendar'>\n<caption>$month_str</caption>\n<thead>\n\t<tr>";
 	foreach ($GLOBALS['weekday'] as $wd) {
 		if (function_exists('mb_substr')) {
 			$get_calendar .="\n\t\t<th abbr='$wd' scope='col' title='$wd'>".mb_substr($wd, 0, $daylength, $GLOBALS['blog_charset']).'</th>';

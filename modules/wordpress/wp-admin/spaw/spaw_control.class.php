@@ -240,7 +240,7 @@ class SPAW_Wysiwyg {
       $buf.= '<input type="hidden" id="SPAW_'.$n.'_theme" value="'.$this->theme.'">';
       $buf.= '<input type="hidden" id="SPAW_'.$n.'_borders" value="on">';
 
-  	  $buf.= '<iframe id="'.$n.'_rEdit" style="width:100%; height:'.$this->getHeight().'; direction:'.$this->lang->getDir().';" onLoad="SPAW_editorInit(\''.$n.'\',\''.htmlspecialchars($this->getCssStyleSheet()).'\',\''.$this->lang->getDir().'\');" class="SPAW_'.$this->theme.'_editarea" frameborder="no" style="direction : "></iframe><br>';
+  	  $buf.= '<iframe id="'.$n.'_rEdit" style="width:100%; height:'.$this->getHeight().'; direction:'.$this->lang->getDir().';" onLoad="SPAW_editorInit(\''.$n.'\',\''.htmlspecialchars($this->getCssStyleSheet()).'\',\''.$this->lang->getDir().'\');" class="SPAW_'.$this->theme.'_editarea" frameborder="no" style="direction : "></iframe><br />';
       
       $buf.= "\n<script language=\"javascript\">\n<!--\n";
       

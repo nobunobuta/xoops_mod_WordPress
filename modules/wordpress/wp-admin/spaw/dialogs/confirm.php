@@ -58,12 +58,12 @@ $l->setBlock($block);
 <body onLoad="Init()" dir="<?php echo $l->getDir();?>">
 
 <p align="center">
-<br>
+<br />
 <?php echo $l->m($message)?>
-<br><br>
+<br /><br />
 <form name="colorpicker">
 <input type="button" value="<?php echo $l->m('ok')?>" onClick="okClick()" class="bt">
-<input type="button" value="<?php echo $l->m('cancel')?>" onClick="cancelClick()" class="bt"><br><br>
+<input type="button" value="<?php echo $l->m('cancel')?>" onClick="cancelClick()" class="bt"><br /><br />
 </form>
 </p>
 

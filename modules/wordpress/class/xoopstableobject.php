@@ -105,7 +105,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 				$delim = ', ';
 			}
 			$callstr .= ');';
-	//		echo "$callstr<br>";
+	//		echo "$callstr<br />";
 			eval($callstr);
 		}
 		
@@ -241,7 +241,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 		function getErrors($html=true, $clear=true)
 		{
 			$error_str = "";
-			$delim = $html ? "<br>\n" : "\n";
+			$delim = $html ? "<br />\n" : "\n";
 			if (count($this->_errors)) {
 				$error_str = implode($delim, $this->_errors);
 			}

@@ -325,7 +325,7 @@ switch(get_param('action')) {
 						'post' => $post_id,
 						);
 		$delete_confirm += $xoopsWPTicket->getTicketArray(__LINE__);
-		$msg = _LANG_P_CONFIRM_DELETE."<br>'".$postObject->getVar('post_title')."'";
+		$msg = _LANG_P_CONFIRM_DELETE."<br />'".$postObject->getVar('post_title')."'";
 		xoops_confirm($delete_confirm, $this_file, $msg);
 		include('admin-footer.php');
 		break;

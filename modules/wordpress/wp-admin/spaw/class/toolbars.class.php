@@ -199,7 +199,7 @@ class SPAW_Toolbars
         // vertical toolbar
         $tb_pos_start = '<table border="0" cellpadding="0" cellspacing="0"><tr>';
         $tb_pos_end = '</tr></table>';
-        $tb_item_sep = '<br>';
+        $tb_item_sep = '<br />';
       }
       $buf = $tb_pos_start;
       while (list(,$tb) = each($this->toolbars[$pos.'_'.$mode]))
