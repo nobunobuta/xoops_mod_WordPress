@@ -23,7 +23,7 @@
 	<?php trackback_rdf(); ?>
 	-->
 
-<?php include(ABSPATH . 'wp-comments.php'); ?>
+<?php include(dirname(dirname(dirname(__FILE__))) . '/wp-comments.php'); ?>
 </div>
 
 <?php } } else { // end foreach, end if any posts ?>
