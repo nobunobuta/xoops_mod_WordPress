@@ -28,6 +28,9 @@ define("_MI_WPEDITAUTHGRP_CFG_DESC","¥æ¡¼¥¶ÅÐÏ¿»þ¤ËÅê¹Æ¸¢¸Â(WordPress¤Î¥æ¡¼¥¶¥ì¥
 
 define("_MI_WPADMINAUTHGRP_CFG_MSG","½é´ü¸¢¸Â¤¬´ÉÍý¸¢¸Â¤ò¤â¤Ä¥°¥ë¡¼¥×");
 define("_MI_WPADMINAUTHGRP_CFG_DESC","¥æ¡¼¥¶ÅÐÏ¿»þ¤Ë´ÉÍý¸¢¸Â(WordPress¤Î¥æ¡¼¥¶¥ì¥Ù¥ë£±£°¡Ë¤Î¤ò¤â¤Ä¥°¥ë¡¼¥×");
+
+define("_MI_WP_USE_XOOPS_SMILE","XOOPS¤Î¥¹¥Þ¥¤¥ë¥¢¥¤¥³¥ó¤ò»ÈÍÑ");
+define("_MI_WP_USE_XOOPS_SMILE_DESC","¥¹¥Þ¥¤¥ë¥¢¥¤¥³¥ó¤òXOOPS¤Ç»ÈÍÑ¤·¤Æ¤¤¤ë¤â¤Î¤ËÃÖ¤­´¹¤¨¤ë¡£");
 // Block Name
 define("_MI_WORDPRESS_BNAME1","WordPress ¥«¥ì¥ó¥À¡¼");
 define("_MI_WORDPRESS_BDESC1","WordPress ¥«¥ì¥ó¥À¡¼");

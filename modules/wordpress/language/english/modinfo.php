@@ -28,6 +28,9 @@ define("_MI_WPEDITAUTHGRP_CFG_DESC","Select groups, who initially can post and e
 
 define("_MI_WPADMINAUTHGRP_CFG_MSG","Administrator groups");
 define("_MI_WPADMINAUTHGRP_CFG_DESC","Select groups, who initially can change WordPress options.<br/>(WordPress user level 10)");
+
+define("_MI_WP_USE_XOOPS_SMILE","Use XOOPS Default Smilies");
+define("_MI_WP_USE_XOOPS_SMILE_DESC","");
 // Block Name
 define("_MI_WORDPRESS_BNAME1","WordPress Calendar");
 define("_MI_WORDPRESS_BDESC1","WordPress Calendar");

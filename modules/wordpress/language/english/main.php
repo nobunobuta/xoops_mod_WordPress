@@ -1,23 +1,31 @@
 <?php
-define("_CAL_SUNDAY", "Sunday");
-define("_CAL_MONDAY", "Monday");
-define("_CAL_TUESDAY", "Tuesday");
-define("_CAL_WEDNESDAY", "Wednesday");
-define("_CAL_THURSDAY", "Thursday");
-define("_CAL_FRIDAY", "Friday");
-define("_CAL_SATURDAY", "Saturday");
-define("_CAL_JANUARY", "January");
-define("_CAL_FEBRUARY", "February");
-define("_CAL_MARCH", "March");
-define("_CAL_APRIL", "April");
-define("_CAL_MAY", "May");
-define("_CAL_JUNE", "June");
-define("_CAL_JULY", "July");
-define("_CAL_AUGUST", "August");
-define("_CAL_SEPTEMBER", "September");
-define("_CAL_OCTOBER", "October");
-define("_CAL_NOVEMBER", "November");
-define("_CAL_DECEMBER", "December");
+define("_WP_CAL_SUNDAY", "Sunday");
+define("_WP_CAL_MONDAY", "Monday");
+define("_WP_CAL_TUESDAY", "Tuesday");
+define("_WP_CAL_WEDNESDAY", "Wednesday");
+define("_WP_CAL_THURSDAY", "Thursday");
+define("_WP_CAL_FRIDAY", "Friday");
+define("_WP_CAL_SATURDAY", "Saturday");
+define("_WP_CAL_JANUARY", "January");
+define("_WP_CAL_FEBRUARY", "February");
+define("_WP_CAL_MARCH", "March");
+define("_WP_CAL_APRIL", "April");
+define("_WP_CAL_MAY", "May");
+define("_WP_CAL_JUNE", "June");
+define("_WP_CAL_JULY", "July");
+define("_WP_CAL_AUGUST", "August");
+define("_WP_CAL_SEPTEMBER", "September");
+define("_WP_CAL_OCTOBER", "October");
+define("_WP_CAL_NOVEMBER", "November");
+define("_WP_CAL_DECEMBER", "December");
 
-define("MONTH_FORMAT","%MONTH %YEAR");
+define("_WP_MONTH_FORMAT","%MONTH %YEAR");
+define("_WP_BY_MONTHLY","By Monthly");
+
+define("_WP_TPL_COMMENT0",'Comments (0)');
+define("_WP_TPL_COMMENT1",'Comments (1)');
+define("_WP_TPL_COMMENTS",'Comments (%)');
+define("_WP_TPL_FILED_UNDER",'Filed under: ');
+define("_WP_TPL_EDIT_THIS",'Edit This');
+define("_WP_TPL_EDIT_THISC",'Edit This');
 ?>
