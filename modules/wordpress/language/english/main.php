@@ -28,6 +28,8 @@ define("_WP_CAL_SMONTH_LEN", 3);
 
 define("_WP_MONTH_FORMAT","%MONTH %YEAR");
 define("_WP_BY_MONTHLY","By Monthly");
+define("_WP_LIST_CAT_ALL","All Categories");
+
 
 define("_WP_TPL_COMMENT0",'Comments (0)');
 define("_WP_TPL_COMMENT1",'Comments (1)');
