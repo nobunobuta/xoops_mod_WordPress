@@ -16,7 +16,7 @@ $post_autobr = 0;
 $post_default_title = ""; // posts submitted via the xmlrpc interface get that title
 $post_default_category = 1; // posts submitted via the xmlrpc interface go into that category
 
-$xmlrpc_logging = 0;
+$xmlrpc_logging = 1;
 
 function logIO($io,$msg) {
 	global $xmlrpc_logging;
@@ -52,10 +52,15 @@ function wp_insert_post($postarr = array()) {
 
 	// export array as variables
 	extract($postarr);
-	
+
+	// Charset Encoding
+	$post_content = mb_conv($post_content, $blog_charset, "auto");
+	$post_title = mb_conv($post_title, $blog_charset, "auto");
+	$post_excerpt = mb_conv($post_excerpt, $blog_charset, "auto");
 	// Do some escapes for safety
 	$post_content = $wpdb->escape($post_content);
 	$post_title = $wpdb->escape($post_title);
+	$post_excerpt = $wpdb->escape($post_excerpt);
 	
 	$post_cat = $post_category[0];
 	
@@ -104,22 +109,29 @@ function wp_update_post($postarr = array()) {
 	// Now overwrite any changed values being passed in
 	extract($postarr);
 	
+	// Charset Encoding
+	$post_content = mb_conv($post_content, $blog_charset, "auto");
+	$post_title = mb_conv($post_title, $blog_charset, "auto");
+	$post_excerpt = mb_conv($post_excerpt, $blog_charset, "auto");
 	// Do some escapes for safety
 	$post_content = $wpdb->escape($post_content);
 	$post_title = $wpdb->escape($post_title);
 	$post_excerpt = $wpdb->escape($post_excerpt);
+
 	
 	$sql = "UPDATE $tableposts 
 		SET post_content = '$post_content',
 		post_title = '$post_title',
-		post_category = $post_category[0],
-		post_status = '$post_status',
-		post_date = '$post_date',
 		post_excerpt = '$post_excerpt',
 		ping_status = '$ping_status',
 		comment_status = '$comment_status'
 		WHERE ID = $ID";
-		
+
+//	logIO("O",$sql);
+//	post_category = $post_category[0],
+//	post_status = '$post_status',
+//	post_date = '$post_date',
+	
 	$result = $wpdb->query($sql);
 
 	wp_set_post_cats('',$ID,$post_category);
@@ -131,7 +143,7 @@ function wp_get_post_cats($blogid = '1', $post_ID = 0) {
 	global $wpdb, $tablepost2cat;
 	
 	$sql = "SELECT category_id FROM $tablepost2cat WHERE post_id = $post_ID ORDER BY category_id";
-
+	logIO("O",$sql);
 	$result = $wpdb->get_col($sql);
 
 	return $result;
@@ -318,7 +330,7 @@ function trackback_url_list($tb_list, $post_id) {
 		if (strlen($excerpt) > 255) {
 			$exerpt = substr($excerpt,0,252) . '...';
 		}
-		
+				
 		$trackback_urls = explode(',', $tb_list);
 		foreach($trackback_urls as $tb_url) {
 		    $tb_url = trim($tb_url);
@@ -462,7 +474,7 @@ function b2getcategories($m) {
 			$cat_ID = $row->cat_ID;
 
 			$struct[$i] = new xmlrpcval(array("categoryID" => new xmlrpcval($cat_ID),
-										  "categoryName" => new xmlrpcval($cat_name)
+										  "categoryName" => new xmlrpcval(mb_conv($cat_name,"UTF-8","auto"))
 										  ),"struct");
 			$i = $i + 1;
 		}
@@ -851,7 +863,7 @@ function bloggergetusersblogs($m) {
 	$struct = new xmlrpcval(array("isAdmin" => new xmlrpcval($is_admin,"boolean"),
 									"url" => new xmlrpcval($siteurl."/".$blogfilename),
 									"blogid" => new xmlrpcval("1"),
-									"blogName" => new xmlrpcval($blogname)
+									"blogName" => new xmlrpcval(mb_conv($blogname,"UTF-8","auto"))
 									),"struct");
     $resp = new xmlrpcval(array($struct), "array");
 
@@ -1218,7 +1230,7 @@ function mwnewpost($params) {
 	$blogid = $xblogid->scalarval();
 	$username = $xuser->scalarval();
 	$password = $xpass->scalarval();
-	$contentstruct = xmlrpc_decode($xcontent);
+	$contentstruct = xmlrpc_decode1($xcontent);
 	$post_status = $xpublish->scalarval()?'publish':'draft';
 
 	// Check login
@@ -1233,7 +1245,9 @@ function mwnewpost($params) {
 
 
 		$post_title = $contentstruct['title'];
+		logIO("O",$contentstruct['title']);
 		$post_content = format_to_post($contentstruct['description']);
+		logIO("O",$contentstruct['description']);
 
 		$post_excerpt = $contentstruct['mt_excerpt'];
 		$post_more = $contentstruct['mt_text_more'];
@@ -1253,7 +1267,7 @@ function mwnewpost($params) {
 		$catnames = $contentstruct['categories'];
 		if ($catnames) {
 			foreach ($catnames as $cat) {
-				$post_category[] = get_cat_ID($cat);
+				$post_category[] = get_cat_ID(mb_conv($cat),"EUC-JP","auto");
 			}
 		} else {
 			$post_category[] = 1;
@@ -1307,7 +1321,7 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 	$ID = $xpostid->scalarval();
 	$username = $xuser->scalarval();
 	$password = $xpass->scalarval();
-	$contentstruct = xmlrpc_decode($xcontent);
+	$contentstruct = xmlrpc_decode1($xcontent);
 	$postdata = wp_get_single_post($ID);
 
 	if (!$postdata)
@@ -1338,6 +1352,7 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 		$post_title = $contentstruct['title'];
 		$post_content = format_to_post($contentstruct['description']);
 		$catnames = $contentstruct['categories'];
+		logIO("O","Cat Count".count($catnames));
 		foreach ($catnames as $cat) {
 			$post_category[] = get_cat_ID($cat);
 		}
@@ -1416,10 +1431,12 @@ function mwgetpost ($params) {	// ($postid, $user, $pass)
 			$post_date = strtotime($postdata['Date']);
 			$post_date = date("Ymd", $post_date)."T".date("H:i:s", $post_date);
 			
-			$catids = wp_get_post_cats($post_ID);
+			$catids = wp_get_post_cats('1',$post_ID);
+			logIO("O","CateGory No:".count($catids));	
 			foreach($catids as $catid) {
 				$catname = get_cat_name($catid);
-				$catnameenc = new xmlrpcval($catname);
+				logIO("O","CateGory:".$catname);
+				$catnameenc = new xmlrpcval(mb_conv($catname,"UTF-8","auto"));
 				$catlist[] = $catnameenc;
 			}			
 			$post = get_extended($postdata['Content']);
@@ -1428,18 +1445,18 @@ function mwgetpost ($params) {	// ($postid, $user, $pass)
 
 			$resp = array(
 				'link' => new xmlrpcval(post_permalink($post_ID)),
-				'title' => new xmlrpcval($postdata["Title"]),
-				'description' => new xmlrpcval($post['main']),
+				'title' => new xmlrpcval(mb_conv($postdata["Title"],"UTF-8","auto")),
+				'description' => new xmlrpcval(mb_conv($post['main'],"UTF-8","auto")),
 				'dateCreated' => new xmlrpcval($post_date,'dateTime.iso8601'),
 				'userid' => new xmlrpcval($postdata["Author_ID"]),
 				'postid' => new xmlrpcval($postdata["ID"]),
-				'content' => new xmlrpcval($postdata["Content"]),
+				'content' => new xmlrpcval(mb_conv($postdata["Content"],"UTF-8","auto")),
 				'permalink' => new xmlrpcval(post_permalink($post_ID)),
 				'categories' => new xmlrpcval($catlist,'array'),
-				'mt_excerpt' => new xmlrpcval($postdata['Excerpt']),
+				'mt_excerpt' => new xmlrpcval(mb_conv($postdata['Excerpt'],"UTF-8","auto")),
 				'mt_allow_comments' => new xmlrpcval($allow_comments,'int'),
 				'mt_allow_pings' => new xmlrpcval($allow_pings,'int'),
-				'mt_text_more' => new xmlrpcval($post['extended'])
+				'mt_text_more' => new xmlrpcval(mb_conv($post['extended'],"UTF-8","auto")),
 			);
 			
 			$resp = new xmlrpcval($resp,'struct');
@@ -1502,15 +1519,15 @@ function mwrecentposts ($params) {	// ($blogid, $user, $pass, $num)
 			
 			$categories = new xmlrpcval(array(new xmlrpcval($pcat)),'array');
 
-			$post = get_extended($entry['post_content']);
+			$post = get_extended(mb_conv($entry['post_content'],"UTF-8","auto"));
 
 			$postid = new xmlrpcval($entry['ID']);
-			$title = new xmlrpcval(stripslashes($entry['post_title']));
-			$description = new xmlrpcval(stripslashes($post['main']));
+			$title = new xmlrpcval(stripslashes(mb_conv($entry['post_title'],"UTF-8","auto")));
+			$description = new xmlrpcval(stripslashes(mb_conv($post['main'],"UTF-8","auto")));
 			$link = new xmlrpcval(post_permalink($entry['ID']));
 			$permalink = $link;
 
-			$extended = new xmlrpcval(stripslashes($post['extended']));
+			$extended = new xmlrpcval(stripslashes(mb_conv($post['extended'],"UTF-8","auto")));
 
 			$allow_comments = new xmlrpcval((('open' == $entry['comment_status'])?1:0),'int');
 			$allow_pings = new xmlrpcval((('open' == $entry['ping_status'])?1:0),'int');
@@ -1553,16 +1570,16 @@ function mwgetcats ($params) {	// ($blogid, $user, $pass)
 	global $siteurl,$blogfilename;
 	
 	$blog_URL = $siteurl . '/' . $blogfilename;
-	
+//	logIO("O",$blog_URL);
 	if ($cats = $wpdb->get_results("SELECT cat_ID,cat_name FROM $tablecategories",ARRAY_A)) {
 		foreach ($cats as $cat) {
 			$struct['categoryId'] = $cat['cat_ID'];
-			$struct['description'] = $cat['cat_name'];
-			$struct['categoryName'] = $cat['cat_name'];
+			$struct['description'] = mb_conv($cat['cat_name'],"UTF-8","EUC-JP");
+			$struct['categoryName'] = mb_conv($cat['cat_name'],"UTF-8","EUC-JP");
 			$struct['htmlUrl'] = htmlspecialchars($blog_URL . $querystring_start . 'cat' . $querystring_equal . $cat['cat_ID']);
 			$struct['rssUrl'] = ''; // will probably hack alexking's stuff in here
 			
-			$arr[] = xmlrpc_encode($struct);
+			$arr[] = xmlrpc_encode1($struct);
 		}
 	}
 	
@@ -1658,7 +1675,7 @@ function mt_getPostCategories($params) {
 			$struct['categoryId'] = $catid;
 			$struct['categoryName'] = get_cat_name($catid);
 
-			$resp_struct[] = xmlrpc_encode($struct);
+			$resp_struct[] = xmlrpc_encode1($struct);
 			$struct['isPrimary'] = false;
 		}
 		
@@ -1687,7 +1704,7 @@ function mt_setPostCategories($params) {
 	$post_ID = $xpostid->scalarval();
 	$username = $xuser->scalarval();
 	$password = $xpass->scalarval();
-	$cats = xmlrpc_decode($xcats);
+	$cats = xmlrpc_decode1($xcats);
 	
 	foreach($cats as $cat) {
 		$catids[] = $cat['categoryId'];
@@ -1754,20 +1771,18 @@ function mt_getRecentPostTitles($params) {
 	if (user_pass_ok($username,$password)) {
 		$sql = "SELECT post_date, post_author, ID, post_title FROM $tableposts ORDER BY post_date DESC LIMIT $numposts";
 		$posts = $wpdb->get_results($sql,ARRAY_A);
-		
+		$result = array();
 		foreach($posts as $post) {
+
 			$post_date = strtotime($post['post_date']);
 			$post_date = date("Ymd", $post_date)."T".date("H:i:s", $post_date);
-
 			$struct['dateCreated'] = new xmlrpcval($post_date, 'dateTime.iso8601');
-			$struct['userid'] = new xmlrpcval($post['post_author'], 'string');
+			$struct['userid'] = new xmlrpcval(mb_conv($post['post_author'],"UTF-8","auto"), 'string');
 			$struct['postid'] = new xmlrpcval($post['ID'], 'string');
-			$struct['title'] = new xmlrpcval($post['post_title'], 'string');
-			
-			$result[] = $struct;
+			$struct['title'] = new xmlrpcval(mb_conv($post['post_title'],"UTF-8","auto"), 'string');
+			$result[] = new xmlrpcval($struct,'struct');
 		}
-		
-		return new xmlrpcresp(new xmlrpcval($results,'array'));
+		return new xmlrpcresp(new xmlrpcval($result,'array'));
 
 	} else {
 		return new xmlrpcresp(0, $xmlrpcerruser+3, // user error 3
@@ -1796,12 +1811,81 @@ function mt_getTrackbackPings($params) {
 	$struct['pingURL'] = '';
 	$struct['pingIP'] = '';
 	
-	$xmlstruct = xmlrpc_encode($struct);
+	$xmlstruct = xmlrpc_encode1($struct);
 	
 	return new xmlrpcresp(new xmlrpcval(array($xmlstruct),'array'));
 }
 
 
+$mt_getpost_sig =  array(array($xmlrpcStruct,$xmlrpcString,$xmlrpcString,$xmlrpcString));
+$mt_getpost_doc = 'Get a post, MetaWeblog API-style';
+
+function mt_getpost ($params) {	// ($postid, $user, $pass) 
+	global $xmlrpcerruser;
+	
+	$xpostid = $params->getParam(0);
+	$xuser = $params->getParam(1);
+	$xpass = $params->getParam(2);
+	
+	$post_ID = $xpostid->scalarval();
+	$username = $xuser->scalarval();
+	$password = $xpass->scalarval();
+
+	// Check login
+	if (user_pass_ok($username,$password)) {
+		$postdata = get_postdata($post_ID);
+
+		if ($postdata["Date"] != "") {
+
+			// why were we converting to GMT here? spec doesn't call for that.
+			//$post_date = mysql2date("U", $postdata["Date"]);
+			//$post_date = gmdate("Ymd", $post_date)."T".gmdate("H:i:s", $post_date);
+			$post_date = strtotime($postdata['Date']);
+			$post_date = date("Ymd", $post_date)."T".date("H:i:s", $post_date);
+			
+			$catids = wp_get_post_cats('1',$post_ID);
+			logIO("O","CateGory No:".count($catids));	
+			foreach($catids as $catid) {
+				$catname = get_cat_name($catid);
+				logIO("O","CateGory:".$catname);
+				$catnameenc = new xmlrpcval(mb_conv($catname,"UTF-8","auto"));
+				$catlist[] = $catnameenc;
+			}			
+			$post = get_extended($postdata['Content']);
+			$allow_comments = ('open' == $postdata['comment_status'])?1:0;
+			$allow_pings = ('open' == $postdata['ping_status'])?1:0;
+
+			$resp = array(
+				'link' => new xmlrpcval(post_permalink($post_ID)),
+				'title' => new xmlrpcval(mb_conv($postdata["Title"],"UTF-8","auto")),
+				'description' => new xmlrpcval(mb_conv($post['main'],"UTF-8","auto")),
+				'dateCreated' => new xmlrpcval($post_date,'dateTime.iso8601'),
+				'userid' => new xmlrpcval($postdata["Author_ID"]),
+				'postid' => new xmlrpcval($postdata["ID"]),
+				'content' => new xmlrpcval(mb_conv($postdata["Content"],"UTF-8","auto")),
+				'permalink' => new xmlrpcval(post_permalink($post_ID)),
+				'categories' => new xmlrpcval($catlist,'array'),
+				'mt_keywords' => new xmlrpcval("{$catids[0]}"),
+				'mt_excerpt' => new xmlrpcval(mb_conv($postdata['Excerpt'],"UTF-8","auto")),
+				'mt_allow_comments' => new xmlrpcval($allow_comments,'int'),
+				'mt_allow_pings' => new xmlrpcval($allow_pings,'int'),
+				'mt_convert_breaks' => new xmlrpcval('true'),
+				'mt_text_more' => new xmlrpcval(mb_conv($post['extended'],"UTF-8","auto")),
+			);
+			
+			$resp = new xmlrpcval($resp,'struct');
+			
+			return new xmlrpcresp($resp);
+		} else {
+		return new xmlrpcresp(0, $xmlrpcerruser+3, // user error 4
+			"No such post #$post_ID");
+		}
+	} else {
+		return new xmlrpcresp(0, $xmlrpcerruser+3, // user error 3
+	   'Wrong username/password combination '.$username.' / '.starify($password));
+	}
+
+}
 
 /**** /MovableType API ****/
 
@@ -2505,10 +2589,8 @@ function i_whichToolkit($m) {
 						 "toolkitName" => $xmlrpcName,
 						 "toolkitVersion" => $xmlrpcVersion,
 						 "toolkitOperatingSystem" => $SERVER_SOFTWARE);
-	return new xmlrpcresp ( xmlrpc_encode($ret));
+	return new xmlrpcresp ( xmlrpc_encode1($ret));
 }
-
-
 
 /**** SERVER FUNCTIONS ARRAY ****/
 
@@ -2589,6 +2671,11 @@ $dispatch_map =  array( "blogger.newPost" =>
 							 array("function" => "mwnewmedia",
 										 "signature" => $mwnewmedia_sig,
 										 "docstring" => $mwnewmedia_doc),
+
+							 "mt.getPost" =>
+							 array("function" => "mt_getpost",
+										 "signature" => $mt_getpost_sig,
+										 "docstring" => $mt_getpost_doc),
 
 							 "mt.getCategoryList" =>
 							 array("function" => "mwgetcats",

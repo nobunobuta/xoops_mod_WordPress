@@ -1055,8 +1055,8 @@ function iso8601_decode($idate, $utc=0) {
 *                                                               *
 * author: Dan Libby (dan@libby.com)                             *
 ****************************************************************/
-if (!function_exists('xmlrpc_decode')) {
-	function xmlrpc_decode($xmlrpc_val) {
+//if (!function_exists('xmlrpc_decode')) {
+	function xmlrpc_decode1($xmlrpc_val) {
 	   $kind = $xmlrpc_val->kindOf();
 
 	   if($kind == "scalar") {
@@ -1067,7 +1067,7 @@ if (!function_exists('xmlrpc_decode')) {
 		  $arr = array();
 
 		  for($i = 0; $i < $size; $i++) {
-			 $arr[]=xmlrpc_decode($xmlrpc_val->arraymem($i));
+			 $arr[]=xmlrpc_decode1($xmlrpc_val->arraymem($i));
 		  }
 		  return $arr; 
 	   }
@@ -1076,12 +1076,12 @@ if (!function_exists('xmlrpc_decode')) {
 		  $arr = array();
 
 		  while(list($key,$value)=$xmlrpc_val->structeach()) {
-			 $arr[$key] = xmlrpc_decode($value);
+			 $arr[$key] = xmlrpc_decode1($value);
 		  }
 		  return $arr;
 	   }
 	}
-}
+//}
 
 /****************************************************************
 * xmlrpc_encode takes native php types and encodes them into    *
@@ -1095,8 +1095,8 @@ if (!function_exists('xmlrpc_decode')) {
 *                                                               *
 * author: Dan Libby (dan@libby.com)                             *
 ****************************************************************/
-if (!function_exists('xmlrpc_encode')) {
-	function xmlrpc_encode($php_val) {
+//if (!function_exists('xmlrpc_encode')) {
+	function xmlrpc_encode1($php_val) {
 	   global $xmlrpcInt;
 	   global $xmlrpcDouble;
 	   global $xmlrpcString;
@@ -1112,7 +1112,7 @@ if (!function_exists('xmlrpc_encode')) {
 		  case "object":
 			 $arr = array();
 			 while (list($k,$v) = each($php_val)) {
-				$arr[$k] = xmlrpc_encode($v);
+				$arr[$k] = xmlrpc_encode1($v);
 			 }
 			 $xmlrpc_val->addStruct($arr);
 			 break;
@@ -1141,7 +1141,7 @@ if (!function_exists('xmlrpc_encode')) {
 	   }
 	   return $xmlrpc_val;
 	}
-}
+//}
 
 
 
