@@ -134,7 +134,7 @@ $modversion['blocks'][6]['name'] = sprintf( _MI_WORDPRESS_BNAME6 , $my_wp_dirnum
 $modversion['blocks'][6]['description'] = _MI_WORDPRESS_BDESC6;
 $modversion['blocks'][6]['show_func'] = "b_wp{$my_wp_dirnumber}_recent_posts_show";
 $modversion['blocks'][6]['edit_func'] = "b_wp{$my_wp_dirnumber}_recent_posts_edit";
-$modversion['blocks'][6]['options'] = "10|1|0|0|0|0|all|0";
+$modversion['blocks'][6]['options'] = "10|1|0|0|0|0||all|0";
 
 $modversion['blocks'][7]['file'] = "wp_recent_comments.php";
 $modversion['blocks'][7]['name'] = sprintf( _MI_WORDPRESS_BNAME7 , $my_wp_dirnumber );
