@@ -185,7 +185,7 @@ function get_archives_link($url, $text, $format = "html", $before = "", $after =
 	if ('link' == $format) {
 		return "\t".'<link rel="archives" title="'.$text.'" href="'.$url.'" />'."\n";
 	} else if ('option' == $format) {
-		return '<option value="'.$url.'">'.$text.'</option>'."\n";
+		return '<option value="'.$url.'">'.$text.$after.'</option>'."\n";
 	} else if ('html' == $format) {
 		return "\t".'<li><a href="'.$url.'" title="'.$text.'">'.$text.'</a>'.$after.'</li>'."\n";
 	} else { // custom
@@ -237,11 +237,11 @@ function get_archives($type='', $limit='', $format='html', $before = "", $after 
             foreach ($arcresults as $arcresult) {
                 $url  = get_month_link($arcresult->year,   $arcresult->month);
                 if ($show_post_count) {
-               		$text = ereg_replace('%MONTH',$month[zeroise($arcresult->month,2)],MONTH_FORMAT);
+               		$text = ereg_replace('%MONTH',$month[zeroise($arcresult->month,2)],_WP_MONTH_FORMAT);
 					$text = ereg_replace('%YEAR',sprintf("%d",$arcresult->year),$text);
                     $after = "&nbsp;($arcresult->posts)";
                 } else {
-               		$text = ereg_replace('%MONTH',$month[zeroise($arcresult->month,2)],MONTH_FORMAT);
+                	$text = ereg_replace('%MONTH',$month[zeroise($arcresult->month,2)],_WP_MONTH_FORMAT);
 					$text = ereg_replace('%YEAR',sprintf("%d",$arcresult->year),$text);
                 }
                 echo get_archives_link($url, $text, $format, $before, $after);
@@ -351,7 +351,7 @@ function get_calendar($daylength = 1) {
 			AND post_status = 'publish'
 							  ORDER  BY post_date ASC
 							  LIMIT 1");
-	$month_str = ereg_replace('%MONTH',$month[zeroise($thismonth, 2)],MONTH_FORMAT);
+	$month_str = ereg_replace('%MONTH',$month[zeroise($thismonth, 2)],_WP_MONTH_FORMAT);
 	$month_str = ereg_replace('%YEAR',date('Y', $unixmonth),$month_str);
 	echo '<table id="wp-calendar">
 	<caption>' . $month_str . '</caption>
@@ -561,7 +561,7 @@ function get_day_link($year, $month, $day) {
 	}
 }
 
-function edit_post_link($link = 'Edit This', $before = '', $after = '') {
+function edit_post_link($link = _WP_TPL_EDIT_THIS, $before = '', $after = '') {
 	global $user_level, $post, $siteurl;
 
 	get_currentuserinfo();
@@ -1379,8 +1379,7 @@ function the_category($seperator = '') {
 		echo '<ul class="post-categories">';
 		foreach ($categories as $category) {
 			$category->cat_name = stripslashes($category->cat_name);
-			echo "\n\t<li><a href='" . get_category_link(0, $category->category_id, htmlspecialchars($category->cat_name)) . "' title='View all posts in $category->cat_name'>$category->cat_name</a></li>";
-//			echo "\n\t<li><a href='" . get_category_link(0, $category->category_id, $category->category_nicename) . "' title='View all posts in $category->cat_name'>$category->cat_name</a></li>";
+			echo "\n\t<li><a href='" . get_category_link(0, $category->category_id, $category->category_nicename) . "' title='View all posts in $category->cat_name'>$category->cat_name</a></li>";
 		}
 		echo '</ul>';
 	} else {
@@ -1388,8 +1387,7 @@ function the_category($seperator = '') {
 		foreach ($categories as $category) {
 			$category->cat_name = stripslashes($category->cat_name);
 			if (0 < $i) echo $seperator . ' ';
-			echo "<a href='" . get_category_link(0, $category->category_id, htmlspecialchars($category->cat_name)) . "' title='View all posts in $category->cat_name'>$category->cat_name</a>";
-//			echo "<a href='" . get_category_link(0, $category->category_id, $category->category_nicename) . "' title='View all posts in $category->cat_name'>$category->cat_name</a>";
+			echo "<a href='" . get_category_link(0, $category->category_id, $category->category_nicename) . "' title='View all posts in $category->cat_name'>$category->cat_name</a>";
 			++$i;
 		}
 	}
@@ -1456,20 +1454,20 @@ function category_description($category = 0) {
 // out of the WordPress loop
 function dropdown_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_order = 'asc',
                        $optiondates = 0, $optioncount = 0, $hide_empty = 1) {
-    global $cat, $tablecategories, $tableposts, $wpdb;
+    global $cat, $tablecategories, $tableposts, $tablepost2cat, $wpdb;
     $sort_column = 'cat_'.$sort_column;
 
-    $query  = " SELECT cat_ID, cat_name,";
-    $query .= "  COUNT($tableposts.ID) AS cat_count,";
-    $query .= "  DAYOFMONTH(MAX(post_date)) AS lastday, MONTH(MAX(post_date)) AS lastmonth";
-    $query .= " FROM $tablecategories LEFT JOIN $tableposts ON cat_ID = post_category";
-    $query .= " WHERE cat_ID > 0 ";
-    $query .= " GROUP BY post_category ";
+    $query  = "SELECT cat_ID, cat_name, category_nicename,category_parent,
+        COUNT($tablepost2cat.post_id) AS cat_count,
+        DAYOFMONTH(MAX(post_date)) AS lastday, MONTH(MAX(post_date)) AS lastmonth
+        FROM $tablecategories LEFT JOIN $tablepost2cat ON (cat_ID = category_id)
+        LEFT JOIN $tableposts ON (ID = post_id)
+        WHERE cat_ID > 0";
+    $query .= " GROUP BY cat_ID ";
     if (intval($hide_empty) == 1) {
         $query .= " HAVING cat_count > 0";
     }
     $query .= " ORDER BY $sort_column $sort_order, post_date DESC";
-
 	$categories = $wpdb->get_results($query);
 	echo "<select name='cat' class='postform'>\n";
 	if (intval($optionall) == 1) {
@@ -1539,8 +1537,7 @@ function list_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_orde
 	}
 
 	foreach ($categories as $category) {
-//        $link = '<a href="'.get_category_link(0, $category->cat_ID, $category->category_nicename).'" ';
-        $link = '<a href="'.get_category_link(0, $category->cat_ID, htmlspecialchars($category->cat_name)).'" ';
+        $link = '<a href="'.get_category_link(0, $category->cat_ID, $category->category_nicename).'" ';
         if ($use_desc_for_title == 0 || empty($category->category_description)) {
 	        $link .= 'title="View all posts filed under ' . htmlspecialchars($category->cat_name) . '"';
 	    }
