@@ -48,7 +48,7 @@ logIO("I",$HTTP_RAW_POST_DATA);
  * generic function for inserting data into the posts table.
  */
 function wp_insert_post($postarr = array()) {
-	global $wpdb, $tableposts;
+	global $wpdb, $tableposts, $blog_charset;
 
 	// export array as variables
 	extract($postarr);
@@ -101,7 +101,7 @@ function wp_get_recent_posts($num = 10) {
 }
 
 function wp_update_post($postarr = array()) {
-	global $wpdb, $tableposts;
+	global $wpdb, $tableposts, $blog_charset;
 
 	// First get all of the original fields
 	extract(wp_get_single_post($postarr['ID']));	
