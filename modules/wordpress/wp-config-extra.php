@@ -100,11 +100,11 @@ if (get_xoops_option('wordpress'.(($wp_id=='-')?'':$wp_id),'wp_use_xoops_smilies
 	);
 }
 
-if (file_exists(ABSPATH.'/themes/'.$xoopsConfig['theme_set'].'/wp-config-custom.php')) {
+if (file_exists(dirname(__FILE__).'/themes/'.$xoopsConfig['theme_set'].'/wp-config-custom.php')) {
 	$themes = $xoopsConfig['theme_set'];
 } else {
 	$themes = "default";
 }
-include(ABSPATH.'/themes/'.$themes.'/wp-config-custom.php');
+include(dirname(__FILE__).'/themes/'.$themes.'/wp-config-custom.php');
 
 ?>

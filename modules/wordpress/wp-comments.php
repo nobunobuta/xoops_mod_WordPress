@@ -15,11 +15,11 @@
 
         $comments = $wpdb->get_results("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = '$id' AND comment_approved = '1' ORDER BY comment_date");
 
-		if (file_exists(ABSPATH.'themes/'.$xoopsConfig['theme_set'].'/comments-template.php')) {
+		if (file_exists(dirname(__FILE__).'/themes/'.$xoopsConfig['theme_set'].'/comments-template.php')) {
 			$themes = $xoopsConfig['theme_set'];
 		} else {
 			$themes = "default";
 		}
-		include(ABSPATH.'themes/'.$themes.'/comments-template.php');
+		include(dirname(__FILE__).'/themes/'.$themes.'/comments-template.php');
 	}
 ?>
