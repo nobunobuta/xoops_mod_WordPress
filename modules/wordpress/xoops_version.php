@@ -35,14 +35,15 @@ $modversion['tables'] = array(
 $modversion['hasAdmin'] = 1;
 $modversion['adminindex'] = "admin/index.php";
 $modversion['adminmenu'] = "admin/menu.php";
-//$modversion['adminindex'] = "wp-admin/options.php";
+
 $modversion['hasMain'] = 1;
-$modversion['hasconfig'] = 1;
-//if($xoopsUser){
+global $xoopsUser;
+if($xoopsUser){
 	$modversion['sub'][1]['name'] = _MI_WORDPRESS_SMNAME1;
 	$modversion['sub'][1]['url'] = "wp-admin/post.php";
-//}
+}
 
+$modversion['hasconfig'] = 1;
 $modversion['config'][1] = array(
 	'name'			=> 'wp_use_spaw' ,
 	'title'			=> '_MI_WPUSESPAW_CFG_MSG' ,
