@@ -55,6 +55,25 @@ XOOPS_ROOT_PATH
 ------------
 ChangeLog
 ------------
+0.3.0  [2004-08-02]
+Added Features)
+-Add some features from WordPress1.2
+  Enable to use WordPress Plugins (Some plugin needs to be modified when it use DB access)
+  Enhanced PermaLink (You must re-generate .htaccess)
+  Hierarchical category (experimental)
+  Filter by author
+-Add Authors XOOPS block
+-Add Option to Recent Post Block
+  Filter by category
+  New! marking
+-Enhanced Xoops Block management function.
+  Block cloning.(Thanks GIJOE)
+-Add Module Icons for eace cloned modules.
+-Enable to down Level 10 User's level.
+Fixed Featuers)
+-Some Trouble when use cloned modules.
+-Some JavaScript trouble in admin functions.
+
 0.2.3  [2004-07-20]
 Fixed Bugs)
 -Could not change Month with calendar block.

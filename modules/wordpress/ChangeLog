@@ -1,3 +1,141 @@
+2004-08-02  0.3.0
+	* wp-includes/template-functions-author.php:
+	* wp-includes/template-functions-category.php:
+	* wp-includes/template-functions-comment.php:
+	* wp-includes/template-functions-general.php:
+	* wp-includes/template-functions-geo.php:
+	* wp-includes/template-functions-links.php:
+	* wp-includes/template-functions-post.php:
+	* wp-includes/template-functions.php:
+		テンプレート関数群をWordPress1.2に一部準拠し、ファイル構成も準拠して分割
+
+	* themes/default/content_block-template.php:
+	* themes/default/index-template.php:
+		テンプレート関数群をWordPress1.2に一部準拠しテンプレートのデフォルトに反映
+
+	* wp-includes/functions.php:
+		WordPress1.2のプラグインに対応する関数を追加しファイル構成も準拠して分割
+
+	* wp-admin/admin-footer.php:
+	* wp-admin/admin-header.php:
+		WordPress1.2のプラグインに対応するアクションを追加
+	
+	* wp-content/plugins/hello.php
+	* wp-content/plugins/google-hilite.php
+	* wp-content/plugins/markdown.php
+	* wp-content/plugins/textile1.php
+	* wp-content/plugins/textile2.php
+		WordPress1.2 ME標準添付のプラグインファイルを追加
+
+	* wp-admin/menu.txt:
+	* wp-admin/plugins.php:
+		WordPress1.2のプラグインの設定画面とメニューを追加
+
+	* wp-includes/vars.php:
+		WordPress1.2のフィルターに対応
+
+	* wp-admin/options-permalink.php:
+	* wp-feed.php:
+		パーマネントリンクの構成をWordPress1.2に準拠
+
+	* wp-blog-header.php:
+		パーマネントリンクの構成をWordPress1.2に準拠するため、投稿者名による検索に対応。
+
+	* blocks/wp_categories.php:
+	* themes/default/wp-admin.css:
+	* wp-admin/admin-functions.php:
+	* wp-admin/admin-header.php:
+	* wp-admin/categories.php:
+	* wp-admin/edit-form-advanced.php:
+	* wp-admin/edit-form-comment.php:
+	* wp-admin/edit-form.php:
+	* wp-admin/post.php:
+	* wp-blog-header.php:
+	* wp-includes/functions.php:
+	* wp-includes/template-functions-category.php:
+		WordPress1.2のカテゴリーの階層化に対応
+
+	* blocks/wp_authors.php:
+	* xoops_version.php:
+	* wp-includes/template-functions-author.php:
+		投稿者一覧XOOPSブロックの追加
+
+	* blocks/wp_recent_posts.php:
+	* xoops_version.php:
+		最新投稿ブロックでNew表示オプションの追加
+		最新投稿ブロックでカテゴリーによる絞り込みに対応
+
+	* wp-admin/users.php:
+		XOOPSの初期管理ユーザ以外のレベル10のユーザのレベルダウンに対応
+
+	* blocks/wp_contents.php:
+		WordPress1.2で使用しているキャッシュの初期化を追加
+
+	* admin/admin.php:
+	* admin/blockform.php:
+	* admin/index.php:
+	* admin/menu.php:
+	* admin/myblocksadmin.php:
+	* admin/mymenu.php:
+		ブロック管理画面でブロックの複製に対応(Thanks GIJOE)
+
+	* include/updateblock.inc.php:
+	* xoops_version.php:
+		モジュールアップデート時の複製ブロックパラメータの保存に対応(Hack)
+
+	* wp-images/wordpress.png:
+	* wp-images/wordpress0.png:
+	* wp-images/wordpress1.png:
+	* wp-images/wordpress2.png:
+	* wp-images/wordpress3.png:
+	* wp-images/wordpress4.png:
+	* wp-images/wordpress5.png:
+	* wp-images/wordpress6.png:
+	* wp-images/wordpress7.png:
+	* wp-images/wordpress8.png:
+	* wp-images/wordpress9.png:
+		複製モジュール固有のアイコンを用意
+
+	* wp-lang/lang_de.php:
+	* wp-lang/lang_en.php:
+	* wp-lang/lang_ja.php:
+	* wp-lang/lang_pt_BR.php:
+	* language/english/modinfo.php:
+	* language/german/modinfo.php:
+	* language/japanese/modinfo.php:
+	* language/portuguesebr/modinfo.php:
+		New Language Files
+		 (Brazilian Portuguese language files, updated by Yuji)
+
+	* 多くのファイル:
+		$HTTP_GET_VARSを$_GETなどのスーパーグローバル変数に置き換え
+
+	* blocks/wp_contents.php:
+		グローバル変数の後始末をしていなかったた事による不具合に対応
+
+	* index.php:
+		複数ブログ設置時のテンプレート・スタイルシート取得先がおかしいバグに対応
+
+	* wp-includes/template-functions-category.php:
+	* wp-includes/template-functions.php:
+		カテゴリー一覧でDescriptionでの並び替えができなかったバグに対応
+
+	* wp-includes/kses.php:
+		コメント表示時のの文字化け対応
+
+	* xmlrpc.php:
+		「こうさぎ」からのへの暫定対応
+
+	* wp-admin/admin-header.php:
+	* wp-admin/link-add.php:
+	* wp-admin/link-manager.php:
+		WordPress管理画面でのJavaScriptの動作不具合に対応
+
+	* wp-includes/functions-formatting.php:
+	* header.php:
+	* header.php:
+		print.cssの取得先指定の誤り修正
+
 2004-07-20  0.2.3
 	* admin/users.php
 		ユーザー削除機能を復活
