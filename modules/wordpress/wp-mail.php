@@ -59,28 +59,20 @@ function wp_mail_receive() {
 			if ($bodysignal) {
 				$content .= $line;
 			} else {
-				if (preg_match('/Content-Type: /i', $line)) {
-					$content_type = trim($line);
-					$content_type = substr($content_type, 14, strlen($content_type)-14);
-					$content_type = explode(';', $content_type);
-					$content_type = strtolower($content_type[0]);
+				if (preg_match('/^Content-Type:\s+(.*?)\;\s+boundary=(?:")?([^;"\s\n]*?)(?:")?\s*(?:$|;)/i', $line,$match)) {
+					$content_type = $match[1];
+					$content_type = strtolower($match[1]);
 				} 
-				if (($content_type == 'multipart/mixed') && (preg_match('/boundary="/', $line)) && ($att_boundary == '')) {
-					$att_boundary = trim($line);
-					$att_boundary = explode('"', $att_boundary);
-					$att_boundary = $att_boundary[1];
+				if (($content_type == 'multipart/mixed') && ($match[2]) && ($att_boundary == '')) {
+					$att_boundary = trim($match[2]);
 				} 
 
-				if (($content_type == 'multipart/alternative') && (preg_match('/boundary="/', $line)) && ($boundary == '')) {
-					$boundary = trim($line);
-					$boundary = explode('"', $boundary);
-					$boundary = $boundary[1];
+				if (($content_type == 'multipart/alternative') && ($match[2]) && ($boundary == '')) {
+					$boundary = trim($match[2]);
 				} 
 
-				if (($content_type == 'multipart/related') && (preg_match('/boundary="/', $line)) && ($hatt_boundary == '')) {
-					$hatt_boundary = trim($line);
-					$hatt_boundary = explode('"', $hatt_boundary);
-					$hatt_boundary = $hatt_boundary[1];
+				if (($content_type == 'multipart/related') && ($match[2]) && ($hatt_boundary == '')) {
+					$hatt_boundary = trim($match[2]);
 				} 
 
 				if (preg_match('/Subject: /', $line)) {
@@ -156,7 +148,7 @@ function wp_mail_receive() {
 
 			$attachment = false;
 
-			if ($att_boundary != "") {
+			if ($att_boundary) {
 				$contents = explode('--' . $att_boundary, $content);
 				$content = $contents[1];
 				$ncharset = preg_match("/\s?charset=\"?([A-Za-z0-9\-]*)\"?/i", $content, $matches);
@@ -164,27 +156,23 @@ function wp_mail_receive() {
 				$content = explode("\r\n\r\n", $content, 2);
 				$content = $content[1];
 			} 
-			if ($hatt_boundary != "") {
+			if ($hatt_boundary) {
 				$contents = explode('--' . $hatt_boundary, $content);
 				$content = $contents[1];
-				if (preg_match('/Content-Type: multipart\/alternative\;[^"]*"([^"]*)"/i', $content, $matches)) {
-					$boundary = trim($matches[0]);
-					$boundary = explode('"', $boundary);
-					$boundary = $boundary[1];
+				if (preg_match('/Content-Type: multipart\/alternative\;\s*boundary\=(?:")?([^";\s\n]*?)(?:")?\s*(?:;|\n|$)"/i', $content, $matches)) {
+					$boundary = trim($matches[1]);
 					$content = explode('--' . $boundary, $content);
 					$content = $content[2];
 				} 
 				$ncharset = preg_match("/charset=\"?([^\"]*)\"?/i", $content, $matches);
 				if ($ncharset) $charset = $matches[1];
-				$content = explode('Content-Transfer-Encoding: quoted-printable', $content);
+					$content = explode('Content-Transfer-Encoding: quoted-printable', $content);
 				$content = strip_tags($content[1], '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td>');
-			} else if ($boundary != "") {
+			} else if ($boundary) {
 				$content = explode('--' . $boundary, $content);
 				$content = $content[2];
-				if (preg_match('/Content-Type: multipart\/related\;[^"]*"([^"]*)"/i', $content, $matches)) {
-					$hatt_boundary = trim($matches[0]);
-					$hatt_boundary = explode('"', $hatt_boundary);
-					$hatt_boundary = $hatt_boundary[1];
+				if (preg_match('/Content-Type: multipart\/related\;\s*boundary=(?:")?([^";\s\n]*?)(?:")?\s*(?:;|\n|$)/i', $content, $matches)) {
+					$hatt_boundary = trim($matches[1]);
 					$contents = explode('--' . $hatt_boundary, $content);
 					$content = $contents[1];
 				} 
@@ -198,6 +186,10 @@ function wp_mail_receive() {
 			echo "<p><b>att_boundary:</b> $att_boundary, <b>hatt_boundary:</b> $hatt_boundary</p>\n";
 			echo "<p><b>charset:<b>$charset</p>\n"; 
 			// echo "<p><b>Raw content:</b><br /><pre>".$content.'</pre></p>';
+
+			if (($charset == "") || trim($charset == "ISO-2022-JP")) $charset = "JIS";
+			if (trim($charset) == "Shift_JIS") $charset = "SJIS";
+
 			$btpos = strpos($content, get_settings('bodyterminator'));
 			if ($btpos) {
 				$content = substr($content, 0, $btpos);
@@ -246,23 +238,28 @@ function wp_mail_receive() {
 			$blah = explode(':', $userpassstring);
 			$user_login = $blah[0];
 			$user_pass = $blah[1];
-
+			if (function_exists('mb_convert_encoding')) {
+				$user_login = mb_convert_encoding(trim($user_login), $blog_charset, $charset);
+			} else {
+				$user_login = trim($user_login);
+			}
+			
 			$content = $contentfirstline . str_replace($firstline, '', $content);
 			$content = trim($content); 
 			// Please uncomment following line, only if you want to check user and password.
 			// echo "<p><b>Login:</b> $user_login, <b>Pass:</b> $user_pass</p>";
 			if ($xoopsDB) {
-				$sql = "SELECT ID, user_level FROM {$wpdb->users[$wp_id]} WHERE user_login='" . trim($user_login) . "' ORDER BY ID DESC LIMIT 1";
+				$sql = "SELECT ID, user_level FROM {$wpdb->users[$wp_id]} WHERE user_login='$user_login' ORDER BY ID DESC LIMIT 1";
 				$result = $wpdb->get_row($sql);
 				if (!$result) {
-					echo "<p><b>Wrong login</b></p></div>\n";
+					echo "<p><b>Wrong Login.</b></p></div>\n";
 					continue;
 				} else {
-					$sql = "SELECT * FROM " . $xoopsDB->prefix('users') . " WHERE uname='" . trim($user_login) . "' AND pass='" . md5(trim($user_pass)) . "' ORDER BY uid DESC LIMIT 1";
+					$sql = "SELECT * FROM " . $xoopsDB->prefix('users') . " WHERE uname='$user_login' AND pass='" . md5(trim($user_pass)) . "' ORDER BY uid DESC LIMIT 1";
 					$result1 = $wpdb->get_row($sql);
 
 					if (!$result1) {
-						echo "<p><b>Wrong password.</b></p></div>\n";
+						echo "<p><b>Wrong login or password.</b></p></div>\n";
 						continue;
 					} 
 				} 
@@ -319,8 +316,6 @@ function wp_mail_receive() {
 					} 
 
 					$content = preg_replace("|\n([^\n])|", " $1", $content);
-					if (($charset == "") || trim($charset == "ISO-2022-JP")) $charset = "JIS";
-					if (trim($charset) == "Shift_JIS") $charset = "SJIS";
 					$content = preg_replace("/\=([0-9a-fA-F]{2,2})/e", "pack('c',base_convert('\\1',16,10))", $content);
 					if (function_exists('mb_convert_encoding')) {
 						$content = addslashes(mb_convert_encoding(trim($content), $blog_charset, $charset));
@@ -527,7 +522,18 @@ if ( function_exists('debug_backtrace') ) {
 }
 
 ob_start();
+if ($output_debugging_info) {
+	header("Content-Type: text/html; charset=EUC-JP");
+}
+echo <<< EOD
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=EUC-JP" />
+</head><body>
+EOD;
 wp_mail_receive();
+echo "</body></html>";
 if ($output_debugging_info) {
 	ob_end_flush();
 } else {
