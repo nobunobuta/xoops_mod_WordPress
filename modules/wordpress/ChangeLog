@@ -1,3 +1,23 @@
+2004-05-04  0.0.1c
+	* sql/mysql.sql:
+	* xoops_install.php:
+		日本語文字列を含むmysql.sqlがうまく動作しないため、言語依存のSQLは、xoops_install.phpに移す。
+
+	* language/english/index.html:
+	* language/english/modinfo.php:
+	* language/japanese/index.html:
+	* language/japanese/modinfo.php:
+	* xoops_version.php:
+		xoops_version.phpの中の文字列をLanguageファイルを使用するように変更。
+
+	* blocks/wp_archives_monthly.php:
+	* blocks/wp_calendar.php:
+	* blocks/wp_categories.php:
+	* blocks/wp_links.php:
+	* blocks/wp_search.php:
+	* wp-blog-header.php:
+		Block表示時の不具合対応
+
 2004-05-03  0.0.1b
 	* sql/mysql.sql:
 		Create文がMySQL4..1以降にしか対応していなかった。
