@@ -25,7 +25,7 @@ define("_MI_WORDPRESS_INST_POST_TITLE","'Bem-vindo ao mundo do WordPress!'");
 define("_MI_WORDPRESS_INST_COMMENT_CONTENT"," 'Este é um exemplo de comentário.<br />Para deletar um comentário, basta conectar-se, e ver os comentários do post, onde haverá uma opção para editar ou deletá-los.'");
 // WordPress Date & Time Format
 define("_MI_WORDPRESS_INST_OPTIONS_22","'pt_BR'");
-define("_MI_WORDPRESS_INST_OPTIONS_52","'l, j \\\\\\\de F \\\\\\\de Y'");
+define("_MI_WORDPRESS_INST_OPTIONS_52","'l, j \\de F \\de Y'");
 define("_MI_WORDPRESS_INST_OPTIONS_53","'H:i.s'");
 // Config titles
 define("_MI_WPUSESPAW_CFG_MSG","Usar editor SPAW nos formulários de envio");
@@ -68,6 +68,6 @@ define("_MI_WORDPRESS_BNAME8","Último post do WordPress%s");
 define("_MI_WORDPRESS_BDESC8","Último post do WordPress");
 
 define("_MI_WORDPRESS_AD_MENU1","Configurações do WordPress");
-define("_MI_WORDPRESS_AD_MENU2","Blocks/Groups");
+define("_MI_WORDPRESS_AD_MENU2","Permissões de acesso dos blocos");
 }
 ?>
