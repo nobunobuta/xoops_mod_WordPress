@@ -259,6 +259,7 @@ echo "\n<tr $style>
 
 	<?php 
 	} ?>
+	<?php if(0) { ?>
 <div class="wrap">
 <h2><?php echo _LANG_WUS_ADD_USER; ?></h2>
 <p><a href="<?php echo $siteurl ?>/wp-register.php">Register Themselves</a> : <?php echo _LANG_WUS_ADD_THEMSELVES; ?></p>
@@ -298,7 +299,7 @@ echo "\n<tr $style>
   </form>
 </div>
 	<?php
-
+	}
 break;
 }
 	
