@@ -1,3 +1,61 @@
+2004-06-02  0.1.2
+	* admin/index.php:
+	* admin/menu.php:
+	* admin/myblocksadmin.php:
+	* admin/mygroupperm.php:
+	* admin/mygrouppermform.php:
+	* language/english/admin.php:
+	* language/japanese/admin.php:
+		myblocksadmin.phpを使用したブロック管理を追加
+
+	* wp-includes/template-functions.php:
+		RSSやRDF出力時に"&"等の文字が入っていると、不正な<descriptiion>を含むxmlを吐きだした。
+		(If blog content contains like "&" char, WordPress generated invalid formatted RSS).
+
+	* wp-admin/edit-form-advanced.php:
+		コメント設定のラジオボタンメッセージが間違っていた。(Invalid messages appearts at Comment
+		Status)
+
+	* wp-blog-header.php:
+		XOOPSのmailfile読込パスが間違っていた。(Invalid mailfile.php path was
+		specified)
+
+	* language/portugues.do.brasil/admin.php:
+	* language/portugues.do.brasil/index.html:
+	* language/portugues.do.brasil/main.php:
+	* language/portugues.do.brasil/modinfo.php:
+	* wp-lang/lang_pt_BR.php:
+		Brazilian Portuguese language files, translated by Yuji
+
+	* wp-admin/spaw/lib/lang/pt_BR/pt_BR_lang_data.inc.php:
+		Rename Brazilian Portuguese language file for SPAW ( br -> pt_BR)
+
+	* wp-admin/edit-comments.php:
+	* wp-admin/edit.php:
+		EDIT機能の検索機能の一部がRegister Global Offの状態でうまく動かなかった。
+		（Some search function are in trouble, when register global off)
+
+	* wp-images/search.png:
+	* xoops_search.php:
+		XOOPSの検索ブロックで検索を可能に。（Enable search with XOOPS search block)
+
+	* xoops_version.php:
+		ブロックの表示オプションを幾つか追加(Add some display options for XOOPS block)
+
+	* wp-includes/template-functions.php:
+		カレンダブロックで、前月又は次月が10-12月の時に文字化け
+
+	* wp-includes/functions.php:
+	* wp-mail.php:
+	* wp-moblog.php:
+		メール投稿時のデフォルトカテゴリー設定不具合に対応
+		（Fixed default category setting  for posting via E-mail)
+
+	* blocks/wp_categories.php:
+	* blocks/wp_contents.php:
+	* blocks/wp_recent_posts.php:
+		ブロックの表示オプションを幾つか追加
+
 2004-05-28  0.1.1
 	* wp-config-extra.php:
 	* wp-includes/vars.php:
