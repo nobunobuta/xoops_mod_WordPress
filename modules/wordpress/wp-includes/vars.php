@@ -145,7 +145,7 @@ $pagenow = $pagenow[0];
 //}
 
 # browser detection
-$is_lynx = 0; $is_gecko = 0; $is_winIE = 0; $is_macIE = 0; $is_opera = 0; $is_NS4 = 0;
+$is_lynx = 0; $is_gecko = 0; $is_winIE = 0; $is_macIE = 0; $is_opera = 0; $is_NS4 = 0; $is_docomo=0;
 if (!isset($HTTP_USER_AGENT)) {
 	$HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
 }
@@ -159,6 +159,12 @@ if (preg_match('/Lynx/', $HTTP_USER_AGENT)) {
 	$is_macIE = 1;
 } elseif (preg_match('/Opera/', $HTTP_USER_AGENT)) {
 	$is_opera = 1;
+} elseif (preg_match('/DoCoMo/', $HTTP_USER_AGENT)) {
+	$is_docomo = 1;
+    $ua_list = explode("/", $HTTP_USER_AGENT);
+    $is_docomo = substr($ua_list[3], 1);
+    $is_docomo = $is_docomo*1024;
+
 } elseif ((preg_match('/Nav/', $HTTP_USER_AGENT) ) || (preg_match('/Mozilla\/4\./', $HTTP_USER_AGENT))) {
 	$is_NS4 = 1;
 }
