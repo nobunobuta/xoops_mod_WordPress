@@ -71,6 +71,7 @@ function the_content($more_link_text=_WP_TPL_MORE, $stripteaser=0, $more_file=''
 function the_content_rss($more_link_text='(more...)', $stripteaser=0, $more_file='', $cut = 0, $encode_html = 0) {
 	$content = get_the_content($more_link_text, $stripteaser, $more_file);
 	$content = apply_filters('the_content', $content);
+	$content = preg_replace('/<style.*?>.*?<\/style.*?>/ms','',$content);
 	if ($cut && !$encode_html) {
 		$encode_html = 2;
 	}
@@ -78,13 +79,18 @@ function the_content_rss($more_link_text='(more...)', $stripteaser=0, $more_file
 		$content = htmlspecialchars($content);
 		$cut = 0;
 	} elseif ($encode_html == 0) {
-		$content = make_url_footnote($content);
+		$content = preg_replace('/(<br .*?>|<\/tr>|<\/table>|<\/li>|<\/h\d>|<\/p>)/ms',"_rss_cr_",$content);
+		$content = htmlspecialchars(make_url_footnote($content));
+		$content = preg_replace('/_rss_cr_/ms','&lt;br /&gt;',$content);
 	} elseif ($encode_html == 2) {
+		$content = preg_replace('/(<br .*?>|<\/tr>|<\/table>|<\/li>|<\/h\d>|<\/p>)/ms',"_rss_cr_",$content);
 		$content = htmlspecialchars(strip_tags($content));
+		$content = preg_replace('/_rss_cr_/ms','&lt;br /&gt;',$content);
 	} elseif ($encode_html == 3) {
 		$content = convert_smilies($content);
 		$cut = 0;
 	}
+	$excerpt = '';
 	if ($cut) {
 		$blah = explode(' ', $content);
 		if (count($blah) > $cut) {
@@ -148,9 +154,7 @@ function the_excerpt() {
 }
 
 function the_excerpt_rss($cut = 0, $encode_html = 0) {
-    $output = get_the_excerpt(true);
-
-    $output = convert_chars($output);
+	$output = apply_filters('the_excerpt', get_the_excerpt(true));
     if ($cut && !$encode_html) {
         $encode_html = 2;
     }
