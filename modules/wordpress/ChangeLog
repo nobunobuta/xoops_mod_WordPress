@@ -1,0 +1,86 @@
+2004-05-03  0.0.1b
+	* sql/mysql.sql:
+		Create文がMySQL4..1以降にしか対応していなかった。
+
+	* wp-admin/edit-form-advanced.php:
+	* wp-admin/edit-form.php:
+		HTML要素名がXOOPSと重複してたのを修正。
+		投稿編集画面で、文字列を選択せずに、ツールバーのボタンを押した場合に動作しなかった。
+
+	* xoops_version.php:
+		バージョン番号を修正
+
+2004-05-02  0.0.1a
+	* blocks/wp_archives_monthly.php:
+	* blocks/wp_calendar.php:
+	* blocks/wp_categories.php:
+	* blocks/wp_links.php:
+	* blocks/wp_recent_comments.php:
+	* blocks/wp_recent_posts.php:
+	* blocks/wp_search.php:
+		XOOPSモジュール化 ブロック単独使用時不具合対応
+
+	* wp-config.php:
+		XOOPSモジュール化リリース漏れ
+
+	* wp-includes/functions.php:
+		PINGサーバへのPINGBACK先の汎用化(wp-config.phpで設定を可能に)
+
+2004-05-01  0.0.1
+
+	* blocks/wp_archives_monthly.php:
+	* blocks/wp_calendar.php:
+	* blocks/wp_categories.php:
+	* blocks/wp_contents.php:
+	* blocks/wp_links.php:
+	* blocks/wp_recent_comments.php:
+	* blocks/wp_recent_posts.php:
+	* blocks/wp_search.php:
+	* header.php:
+	* index.php:
+	* logo.gif:
+	* sql/mysql.sql:
+	* templates/blocks/index.html:
+	* templates/blocks/wp_block_contents.html:
+	* templates/wp_dummy.html:
+	* weblogs.com.changes.cache:
+	* wp-admin/admin-footer.php:
+	* wp-admin/admin-header.php:
+	* wp-admin/auth.php:
+	* wp-admin/edit-form.php:
+	* wp-admin/menu.php:
+	* wp-admin/options-permalink.php:
+	* wp-admin/wp-admin.css:
+	* wp-blog-header.php:
+	* wp-config-extra.php:
+	* wp-config.php:
+	* wp-images/rdf.png:
+	* wp-images/rss.png:
+	* wp-includes/class-pop3.php:
+	* wp-includes/functions.php:
+	* wp-includes/template-functions.php:
+	* wp-includes/wp-db.php:
+	* wp-lang/lang_ja.php:
+	* wp-layout.css:
+	* wp-settings.php:
+	* wp-trackback.php:
+	* xoops_version.php:
+		XOOPSモジュール化
+
+	* sql/mysql.sql:
+	* xoops_install.php:
+	* xoops_version.php:
+		XOOPSモジュール化 自動インストール対応
+
+	* attach/index.html:
+	* wp-moblog.php:
+		Moblog写真対応＋日本語対応(WordPress 汎用)
+
+	* wp-mail.php:
+		Moblog日本語対応(WordPress 汎用)
+
+	* wp-includes/class-xmlrpc.php:
+	* wp-includes/class-xmlrpcs.php:
+	* wp-rsd.php:
+	* xmlrpc.php:
+		xmlrpc日本語化対応+bug fix(WordPress 汎用)
