@@ -231,7 +231,7 @@ switch($action) {
 			$post_password = $postdata['post_password'];
 			$to_ping = $postdata['to_ping'];
 			$pinged = $postdata['pinged'];
-
+			$default_post_cat = get_settings('default_post_category');
             include('edit-form-advanced.php');
         } else {
 ?>
