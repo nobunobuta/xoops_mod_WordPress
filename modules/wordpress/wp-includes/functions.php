@@ -760,7 +760,7 @@ function gzip_compression() {
 				ob_start("ob_gzhandler");
 			}
 		} else if($phpver > "4.0") {
-			if(strstr($HTTP_SERVER_VARS['HTTP_ACCEPT_ENCODING'], 'gzip')) {
+			if(strstr($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')) {
 				if(extension_loaded("zlib")) {
 					$do_gzip_compress = TRUE;
 					ob_start();
@@ -774,7 +774,6 @@ function gzip_compression() {
 }
 
 function alert_error($msg) { // displays a warning box with an error message (original by KYank)
-	global $$HTTP_SERVER_VARS;
 	?>
 	<html>
 	<head>
@@ -788,7 +787,7 @@ function alert_error($msg) { // displays a warning box with an error message (or
 	<body>
 	<!-- this is for non-JS browsers (actually we should never reach that code, but hey, just in case...) -->
 	<?php echo $msg; ?><br />
-	<a href="<?php echo $HTTP_SERVER_VARS["HTTP_REFERER"]; ?>">go back</a>
+	<a href="<?php echo $_SERVER["HTTP_REFERER"]; ?>">go back</a>
 	</body>
 	</html>
 	<?php
@@ -1484,36 +1483,60 @@ function wp_notify_postauthor($comment_id, $comment_type='comment') {
 		$notify_message .= "E-mail : $comment->comment_author_email\r\n";
 		$notify_message .= "URI    : $comment->comment_author_url\r\n";
 		$notify_message .= "Whois  : http://ws.arin.net/cgi-bin/whois.pl?queryinput=$comment->comment_author_IP\r\n";
-		$notify_message .= "Comment:\r\n".stripslashes(mb_convert_encoding($comment->comment_content,$blog_charset,"auto"))."\r\n\r\n";
+		if (function_exists('mb_convert_encoding')) {
+			$notify_message .= "Comment:\r\n".stripslashes(mb_convert_encoding($comment->comment_content,$blog_charset,"auto"))."\r\n\r\n";
+		} else {
+			$notify_message .= "Comment:\r\n".stripslashes($comment->comment_content)."\r\n\r\n";
+		}
 		$notify_message .= _LANG_F_ALL_COMMENTS." \r\n";
 		$subject = '[' . $blogname . '] Comment: "' .stripslashes($post->post_title).'"';
 	} elseif ('trackback' == $comment_type) {
 		$notify_message  = _LANG_F_NEW_TRACKBACK." #$comment_post_ID ".stripslashes($post->post_title)."\r\n\r\n";
-		$notify_message .= "Website: ".mb_convert_encoding($comment->comment_author,$blog_charset,"auto")." (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
+		if (function_exists('mb_convert_encoding')) {
+			$notify_message .= "Website: ".mb_convert_encoding($comment->comment_author,$blog_charset,"auto")." (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
+		} else {
+			$notify_message .= "Website: ".$comment->comment_author." (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
+		}
 		$notify_message .= "URI    : $comment->comment_author_url\r\n";
-		$notify_message .= "Comment:\r\n".stripslashes(mb_convert_encoding($comment->comment_content,$blog_charset,"auto"))."\r\n\r\n";
+		if (function_exists('mb_convert_encoding')) {
+			$notify_message .= "Comment:\r\n".stripslashes(mb_convert_encoding($comment->comment_content,$blog_charset,"auto"))."\r\n\r\n";
+		} else {
+			$notify_message .= "Comment:\r\n".stripslashes($comment->comment_content)."\r\n\r\n";
+		}
 		$notify_message .= _LANG_F_ALL_TRACKBACKS." \r\n";
 		$subject = '[' . $blogname . '] Trackback: "' .stripslashes($post->post_title).'"';
 	} elseif ('pingback' == $comment_type) {
 		$notify_message  = _LANG_F_NEW_PINGBACK." #$comment_post_ID ".stripslashes($post->post_title)."\r\n\r\n";
 		$notify_message .= "Website: $comment->comment_author\r\n";
 		$notify_message .= "URI    : $comment->comment_author_url\r\n";
-		$notify_message .= "Excerpt: \n[...] ".mb_convert_encoding($original_context,$blog_charset,"auto")." [...]\r\n\r\n";
+		if (function_exists('mb_convert_encoding')) {
+			$notify_message .= "Excerpt: \n[...] ".mb_convert_encoding($original_context,$blog_charset,"auto")." [...]\r\n\r\n";
+		} else {
+			$notify_message .= "Excerpt: \n[...] ".$original_context." [...]\r\n\r\n";
+		}
 		$notify_message .= _LANG_F_ALL_PINGBACKS." \r\n";
 		$subject = '[' . $blogname . '] Pingback: "' .stripslashes($post->post_title).'"';
 	}
 	$notify_message .= get_permalink($comment->comment_post_ID) . '#comments';
 
 	if ('' == $comment->comment_author_email || '' == $comment->comment_author) {
-		$from = "From: \"". mb_encode_mimeheader(mb_convert_encoding($blogname,"JIS","auto")) ."\" <wordpress@" . $HTTP_SERVER_VARS['SERVER_NAME'] . '>';
+		if (function_exists('mb_convert_encoding')) {
+			$from = "From: \"". mb_encode_mimeheader(mb_convert_encoding($blogname,"JIS","auto")) ."\" <wordpress@" . $_SERVER['SERVER_NAME'] . '>';
+		} else {
+			$from = "From: \"". $blogname ."\" <wordpress@" . $_SERVER['SERVER_NAME'] . '>';
+		}
 	} else {
-		$from = 'From: "' . stripslashes(mb_encode_mimeheader(mb_convert_encoding($comment->comment_author,"JIS","auto"))) . "\" <$comment->comment_author_email>";
+		if (function_exists('mb_convert_encoding')) {
+			$from = 'From: "' . stripslashes(mb_encode_mimeheader(mb_convert_encoding($comment->comment_author,"JIS","auto"))) . "\" <$comment->comment_author_email>";
+		} else {
+			$from = 'From: "' . stripslashes($comment->comment_author) . "\" <$comment->comment_author_email>";
+		}
 	}
 
 	if (function_exists('mb_send_mail')) {
-	mb_send_mail($user->user_email, $subject, $notify_message, $from);
+		mb_send_mail($user->user_email, $subject, $notify_message, $from);
 	} else {
-	@mail($user->user_email, $subject, $notify_message, $from);
+		@mail($user->user_email, $subject, $notify_message, $from);
 	}
 
     return true;
@@ -1552,9 +1575,9 @@ function wp_notify_moderator($comment_id) {
     $from  = "From: $admin_email";
 
     if (function_exists('mb_send_mail')) {
-    mb_send_mail($admin_email, $subject, $notify_message, $from);
+	    mb_send_mail($admin_email, $subject, $notify_message, $from);
     } else {
-    @mail($admin_email, $subject, $notify_message, $from);
+	    @mail($admin_email, $subject, $notify_message, $from);
     }
 
     return true;

@@ -3,7 +3,7 @@ require(dirname(__FILE__) . '/wp-config.php');
 
 // trackback is done by a POST
 $request_array = 'HTTP_POST_VARS';
-$tb_id = explode('/', $HTTP_SERVER_VARS['REQUEST_URI']);
+$tb_id = explode('/', $_SERVER['REQUEST_URI']);
 $tb_id = intval($tb_id[count($tb_id)-1]);
 $tb_url = $HTTP_POST_VARS['url'];
 $title = $HTTP_POST_VARS['title'];
@@ -44,7 +44,7 @@ if ((strlen(''.$tb_id)) && (empty($HTTP_GET_VARS['__mode'])) && (strlen(''.$tb_u
 	$original_comment = $comment;
 	$comment_post_ID = $tb_id;
 
-	$user_ip = $HTTP_SERVER_VARS['REMOTE_ADDR'];
+	$user_ip = $_SERVER['REMOTE_ADDR'];
 	$user_domain = gethostbyaddr($user_ip);
 	$time_difference = get_settings('time_difference');
 	$now = current_time('mysql');

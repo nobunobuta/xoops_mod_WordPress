@@ -77,7 +77,9 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 			if (preg_match('/Subject: /', $line)) {
 				$subject = trim($line);
 				$subject = substr($subject, 9, strlen($subject)-9);
-				$subject = mb_decode_mimeheader($subject);
+				if function_exists('mb_decode_mimeheader') {
+					$subject = mb_decode_mimeheader($subject);
+				}
 				if ($use_phoneemail) {
 					$subject = explode($phoneemail_separator, $subject);
 					$subject = trim($subject[0]);
@@ -236,7 +238,6 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		if ($user_level > 0) {
 
 			$post_title = xmlrpc_getposttitle($content);
-//			$post_categories[] = xmlrpc_getpostcategory($content);
 			$post_category = xmlrpc_getpostcategory($content);
 
 			if ($post_title == '') {
@@ -245,17 +246,24 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 			if ($post_category == '') {
 				$post_category = $default_category;
 			}
-			echo "Subject : ".mb_convert_encoding($subject,"EUC-JP","auto")." <br />";
+			if function_exists('mb_convert_encoding') {
+				echo "Subject : ".mb_convert_encoding($subject,$blog_charset,"auto")." <br />";
+			} else {
+				echo "Subject : ".$subject." <br />";
+			}
 			echo "Category : $post_category <br />";
 			if (!$emailtestonly) {
-
-				$post_title = addslashes(trim(mb_convert_encoding($post_title,"EUC-JP","auto")));
 				$content = preg_replace("|\n([^\n])|", " $1", $content);
 				if ($charset == "") $charset = "JIS";
 				if (trim($charset) == "Shift_JIS") $charset = "SJIS";
 				$content =  preg_replace("/\=([0-9a-fA-F]{2,2})/e",  "pack('c',base_convert('\\1',16,10))", $content);
-				$content = addslashes(mb_convert_encoding(trim($content),"EUC-JP",$charset));
-
+				if function_exists('mb_convert_encoding') {
+					$content = addslashes(mb_convert_encoding(trim($content), $blog_charset, $charset));
+					$post_title = addslashes(trim(mb_convert_encoding($post_title,$blog_charset,"auto")));
+				} else {
+					$content = addslashes(trim($content));
+					$post_title = addslashes(trim($post_title));
+				}
                 if($flat > 500) {
                     $sql = "INSERT INTO $tableposts (post_author, post_date, post_content, post_title, post_category) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category)";
                 } else {

@@ -1,5 +1,5 @@
 <?php // Do not delete these lines
-	if ('wp-comments.php' == basename($HTTP_SERVER_VARS['SCRIPT_FILENAME']))
+	if ('wp-comments.php' == basename($_SERVER['SCRIPT_FILENAME']))
 		die ('Please do not load this page directly. Thanks!');
 	if (($withcomments) or ($c)) {
 

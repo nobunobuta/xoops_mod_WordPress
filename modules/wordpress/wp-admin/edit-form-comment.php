@@ -85,7 +85,7 @@ edCanvas = document.getElementById('wp_content');
 ?>
 
 <p><?php echo $saveasdraft; ?> <input type="submit" name="submit" value="<?php echo $submitbutton_text ?>" style="font-weight: bold;" tabindex="6" />
-  <input name="referredby" type="hidden" id="referredby" value="<?php echo $HTTP_SERVER_VARS['HTTP_REFERER']; ?>" />
+  <input name="referredby" type="hidden" id="referredby" value="<?php echo $_SERVER['HTTP_REFERER']; ?>" />
 </p>
 
 

@@ -42,7 +42,11 @@ function b_wp_recent_comments_show($options)
 				$comment_author = stripslashes($lcomment->comment_author);
 				$comment_content = strip_tags($lcomment->comment_content);
 				$comment_content = stripslashes($comment_content);
-				$comment_excerpt = mb_substr($comment_content,0,$comment_lenth);
+				if (function_exists('mb_substr')) {
+					$comment_excerpt = mb_substr($comment_content,0,$comment_lenth);
+				} else {
+					$comment_excerpt = substr($comment_content,0,$comment_lenth);
+				}
 				$permalink = get_permalink($lcomment->ID)."#comment-".$lcomment->comment_ID;
 				$output .= '<li style="font-size:90%"><strong>' . $comment_author . ':</strong> <a href="' . $permalink;
 				$output .= '" title="View the entire comment by ' . $comment_author.'">' . $comment_excerpt . '...</a> <span style=\"font-size:70%\">- '.$type.'</span></li>';
@@ -103,36 +107,42 @@ function tkzy_get_recent_comments($limit = 10) {
      return $output; 
 } 
 function tkzy_get_comment_author_link($my_comment,$abbr=0) { 
-     // modified comment_author_link() 
-     $ret = ""; 
-    $url = trim(stripslashes($my_comment->comment_author_url)); 
-    $email = stripslashes($my_comment->comment_author_email); 
-    $author = stripslashes($my_comment->comment_author); 
-    if (empty($author)) { 
-        $author = "Anonymous"; 
-    } 
-     if ($abbr && mb_strlen($author) > $abbr) { 
-          $author = mb_substr($author, 0, $abbr); 
-          $author .= ".."; 
-     } 
-
-    $url = str_replace('http://url', '', $url); 
-    $url = preg_replace('|[^a-z0-9-_.?#=&;,/:~]|i', '', $url); 
-    if (empty($url) && empty($email)) { 
-          $ret .= $author; 
-     }else{ 
-          $ret .= '<a href="'; 
-          if ($url) { 
-               $url = str_replace(';//', '://', $url); 
-               $url = (!strstr($url, '://')) ? 'http://'.$url : $url; 
-               $url = preg_replace('/&([^#])(?![a-z]{2,8};)/', '&#038;$1', $url); 
-               $ret .= $url; 
-          } else { 
-               $ret .= 'mailto:'.antispambot($email); 
-          } 
-          $ret .= '" rel="external">' . $author . '</a>'; 
-     } 
-     return $ret; 
-} 
+	// modified comment_author_link() 
+	$ret = ""; 
+	$url = trim(stripslashes($my_comment->comment_author_url)); 
+	$email = stripslashes($my_comment->comment_author_email); 
+	$author = stripslashes($my_comment->comment_author); 
+	if (empty($author)) { 
+		$author = "Anonymous"; 
+	}
+	if (function_exists('mb_strlen')) {
+		if ($abbr && mb_strlen($author) > $abbr) { 
+			$author = mb_substr($author, 0, $abbr); 
+			$author .= ".."; 
+		}
+	} else {
+		if ($abbr && strlen($author) > $abbr) { 
+			$author = substr($author, 0, $abbr); 
+			$author .= ".."; 
+		}
+	}
+	$url = str_replace('http://url', '', $url); 
+	$url = preg_replace('|[^a-z0-9-_.?#=&;,/:~]|i', '', $url); 
+	if (empty($url) && empty($email)) { 
+		$ret .= $author; 
+	}else{ 
+		$ret .= '<a href="'; 
+		if ($url) { 
+			$url = str_replace(';//', '://', $url); 
+			$url = (!strstr($url, '://')) ? 'http://'.$url : $url; 
+			$url = preg_replace('/&([^#])(?![a-z]{2,8};)/', '&#038;$1', $url); 
+			$ret .= $url; 
+		} else { 
+			$ret .= 'mailto:'.antispambot($email); 
+		} 
+		$ret .= '" rel="external">' . $author . '</a>'; 
+	} 
+	 return $ret; 
+	}
 
 ?>

@@ -66,7 +66,7 @@ function veriflog() {
 			$error="<strong>Error</strong>: wrong login or password";
 		}
 		redirect_header($siteurl.'/',2,'まずログインしてください。');
-		$redir = "Location: $siteurl/wp-login.php?redirect_to=" . urlencode($HTTP_SERVER_VARS["REQUEST_URI"]);
+		$redir = "Location: $siteurl/wp-login.php?redirect_to=" . urlencode($_SERVER["REQUEST_URI"]);
 		header($redir);
 		exit();
 	}

@@ -1,6 +1,13 @@
 <?php
 /* ÈþÆý */
-require("wp-lang/lang_ja.php");
+if (!defined('_LANGCODE')) {
+	define("_LANGCODE","en");
+}
+if (file_exists("wp-lang/lang_"._LANGCODE.".php")) {
+	require("wp-lang/lang_"._LANGCODE.".php");
+} else {
+	require("wp-lang/lang_en.php");
+}
 global $xoopsDB,$xoopsUser,$wpdb;
 global $wp_once_called;
 if (!($wp_once_called) || ($do_force)) {

@@ -237,10 +237,12 @@ function get_archives($type='', $limit='', $format='html', $before = "", $after 
             foreach ($arcresults as $arcresult) {
                 $url  = get_month_link($arcresult->year,   $arcresult->month);
                 if ($show_post_count) {
-                    $text = sprintf("%s %d", $month[zeroise($arcresult->month,2)], $arcresult->year);
+               		$text = ereg_replace('%MONTH',$month[zeroise($arcresult->month,2)],MONTH_FORMAT);
+					$text = ereg_replace('%YEAR',sprintf("%d",$arcresult->year),$text);
                     $after = "&nbsp;($arcresult->posts)";
                 } else {
-                    $text = sprintf("%s %d", $month[zeroise($arcresult->month,2)], $arcresult->year);
+               		$text = ereg_replace('%MONTH',$month[zeroise($arcresult->month,2)],MONTH_FORMAT);
+					$text = ereg_replace('%YEAR',sprintf("%d",$arcresult->year),$text);
                 }
                 echo get_archives_link($url, $text, $format, $before, $after);
             }
@@ -349,13 +351,18 @@ function get_calendar($daylength = 1) {
 			AND post_status = 'publish'
 							  ORDER  BY post_date ASC
 							  LIMIT 1");
-
+	$month_str = ereg_replace('%MONTH',$month[zeroise($thismonth, 2)],MONTH_FORMAT);
+	$month_str = ereg_replace('%YEAR',date('Y', $unixmonth),$month_str);
 	echo '<table id="wp-calendar">
-	<caption>' . $month[zeroise($thismonth, 2)] . ' ' . date('Y', $unixmonth) . '</caption>
+	<caption>' . $month_str . '</caption>
 	<thead>
 	<tr>';
 	foreach ($weekday as $wd) {
-		echo "\n\t\t<th abbr='$wd' scope='col' title='$wd'>" . substr($wd, 0, $daylength) . '</th>';
+		if (function_exists('mb_substr')) {
+			echo "\n\t\t<th abbr='$wd' scope='col' title='$wd'>" . mb_substr($wd, 0, $daylength) . '</th>';
+		} else {
+			echo "\n\t\t<th abbr='$wd' scope='col' title='$wd'>" . substr($wd, 0, $daylength) . '</th>';
+		}
 	}
 
 	echo '
@@ -958,7 +965,7 @@ function the_content_unicode($more_link_text='(more...)', $stripteaser=0, $more_
 
 function get_the_content($more_link_text='(more...)', $stripteaser=0, $more_file='') {
 	global $id, $post, $more, $c, $withcomments, $page, $pages, $multipage, $numpages;
-	global $HTTP_SERVER_VARS, $HTTP_COOKIE_VARS, $preview, $cookiehash;
+	global $HTTP_COOKIE_VARS, $preview, $cookiehash;
 	global $querystring_start, $querystring_equal, $querystring_separator;
     global $pagenow;
 	$output = '';
@@ -973,7 +980,7 @@ function get_the_content($more_link_text='(more...)', $stripteaser=0, $more_file
 	if ($more_file != '') {
 		$file = $more_file;
 	} else {
-		$file = $pagenow; //$HTTP_SERVER_VARS['PHP_SELF'];
+		$file = $pagenow; //$_SERVER['PHP_SELF'];
 	}
 	$content = $pages[$page-1];
 	$content = explode('<!--more-->', $content);
@@ -1053,7 +1060,7 @@ function the_excerpt_unicode() {
 
 function get_the_excerpt($fakeit = false) {
 	global $id, $post;
-	global $HTTP_SERVER_VARS, $HTTP_COOKIE_VARS, $preview, $cookiehash;
+	global $HTTP_COOKIE_VARS, $preview, $cookiehash;
 	$output = '';
 	$output = stripslashes($post->post_excerpt);
 	if (!empty($post->post_password)) { // if there's a password
@@ -1221,16 +1228,16 @@ function next_post($format='%', $next='next post: ', $title='yes', $in_same_cat=
 }
 
 function next_posts($max_page = 0) { // original by cfactor at cooltux.org
-	global $HTTP_SERVER_VARS, $siteurl, $blogfilename, $p, $paged, $what_to_show, $pagenow;
+	global $siteurl, $blogfilename, $p, $paged, $what_to_show, $pagenow;
 	global $querystring_start, $querystring_equal, $querystring_separator;
 	if (empty($p) && ($what_to_show == 'paged')) {
-		$qstr = $HTTP_SERVER_VARS['QUERY_STRING'];
+		$qstr = $_SERVER['QUERY_STRING'];
 		if (!empty($qstr)) {
 			$qstr = preg_replace("/&paged=\d{0,}/","",$qstr);
 			$qstr = preg_replace("/paged=\d{0,}/","",$qstr);
-		} elseif (stristr($HTTP_SERVER_VARS['REQUEST_URI'], $HTTP_SERVER_VARS['SCRIPT_NAME'] )) {
-			if ('' != $qstr = str_replace($HTTP_SERVER_VARS['SCRIPT_NAME'], '',
-											$HTTP_SERVER_VARS['REQUEST_URI']) ) {
+		} elseif (stristr($_SERVER['REQUEST_URI'], $_SERVER['SCRIPT_NAME'] )) {
+			if ('' != $qstr = str_replace($_SERVER['SCRIPT_NAME'], '',
+											$_SERVER['REQUEST_URI']) ) {
 				$qstr = preg_replace("/^\//", "", $qstr);
 				$qstr = preg_replace("/paged\/\d{0,}\//", "", $qstr);
 				$qstr = preg_replace("/paged\/\d{0,}/", "", $qstr);
@@ -1274,16 +1281,16 @@ function next_posts_link($label='Next Page &raquo;', $max_page=0) {
 
 
 function previous_posts() { // original by cfactor at cooltux.org
-	global $HTTP_SERVER_VARS, $siteurl, $blogfilename, $p, $paged, $what_to_show, $pagenow;
+	global $siteurl, $blogfilename, $p, $paged, $what_to_show, $pagenow;
 	global $querystring_start, $querystring_equal, $querystring_separator;
 	if (empty($p) && ($what_to_show == 'paged')) {
-		$qstr = $HTTP_SERVER_VARS['QUERY_STRING'];
+		$qstr = $_SERVER['QUERY_STRING'];
 		if (!empty($qstr)) {
 			$qstr = preg_replace("/&paged=\d{0,}/","",$qstr);
 			$qstr = preg_replace("/paged=\d{0,}/","",$qstr);
-		} elseif (stristr($HTTP_SERVER_VARS['REQUEST_URI'], $HTTP_SERVER_VARS['SCRIPT_NAME'] )) {
-			if ('' != $qstr = str_replace($HTTP_SERVER_VARS['SCRIPT_NAME'], '',
-											$HTTP_SERVER_VARS['REQUEST_URI']) ) {
+		} elseif (stristr($_SERVER['REQUEST_URI'], $_SERVER['SCRIPT_NAME'] )) {
+			if ('' != $qstr = str_replace($_SERVER['SCRIPT_NAME'], '',
+											$_SERVER['REQUEST_URI']) ) {
 				$qstr = preg_replace("/^\//", "", $qstr);
 				$qstr = preg_replace("/paged\/\d{0,}\//", "", $qstr);
 				$qstr = preg_replace("/paged\/\d{0,}/", "", $qstr);
@@ -1839,8 +1846,8 @@ function trackback_url($display = true) {
 
 
 function trackback_rdf($timezone = 0) {
-	global $siteurl, $id, $HTTP_SERVER_VARS;
-	if (!stristr($HTTP_SERVER_VARS['HTTP_USER_AGENT'], 'W3C_Validator')) {
+	global $siteurl, $id;
+	if (!stristr($_SERVER['HTTP_USER_AGENT'], 'W3C_Validator')) {
 		echo '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" '."\n";
 		echo '    xmlns:dc="http://purl.org/dc/elements/1.1/"'."\n";
 		echo '    xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/" xml:lang="ja">'."\n";

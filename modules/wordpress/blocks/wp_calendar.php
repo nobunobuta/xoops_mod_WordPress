@@ -70,7 +70,7 @@ function b_wp_calendar_show($option)
 		}
 	</style>
 EOD;
-	get_calendar(2);
+	get_calendar(1);
 	$block['content'] = ob_get_contents();
 	ob_end_clean();
 	return $block;

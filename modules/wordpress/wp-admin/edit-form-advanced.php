@@ -117,7 +117,7 @@ if ($use_quicktags) {
 	$trans_tbl = array_flip ($trans_tbl);
 	$content = strtr ($content, $trans_tbl);
 
-	$sw = new SPAW_Wysiwyg( 'wp_content', $content, 'jp', 'full', 'default' );
+	$sw = new SPAW_Wysiwyg( 'wp_content', $content, _LANGCODE , 'full', 'default', '70%', '400px'  );
 	$sw -> show();
     foreach($wpsmiliestrans as $smiley => $img) 
     { 
@@ -172,7 +172,7 @@ if ($action != 'editcomment') {
 ?>
 <?php echo $saveasdraft; ?> <input type="submit" name="submit" value="<?php echo _LANG_EF_AD_DRAFT; ?>" tabindex="6" /> 
   <input name="publish" type="submit" id="publish" tabindex="10" value="<?php echo _LANG_EF_AD_PUBLISH; ?>" /> 
-  <input name="referredby" type="hidden" id="referredby" value="<?php echo $HTTP_SERVER_VARS['HTTP_REFERER']; ?>" />
+  <input name="referredby" type="hidden" id="referredby" value="<?php echo $_SERVER['HTTP_REFERER']; ?>" />
 </p>
 
 

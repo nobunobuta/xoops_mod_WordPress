@@ -202,7 +202,7 @@ switch ($action) {
            . addslashes($link_image) . "', '$link_target', $link_category, '"
            . addslashes($link_description) . "', '$link_visible', $user_ID, $link_rating, '" . addslashes($link_rel) . "', '" . addslashes($link_notes) . "', '$link_rss_uri')");
 
-    header('Location: ' . $HTTP_SERVER_VARS['HTTP_REFERER']);
+    header('Location: ' . $_SERVER['HTTP_REFERER']);
     break;
   } // end Add
 

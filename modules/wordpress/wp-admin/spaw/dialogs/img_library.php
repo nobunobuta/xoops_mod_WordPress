@@ -16,7 +16,7 @@
 // include wysiwyg config
 include '../config/spaw_control.config.php';
 include $spaw_root.'class/lang.class.php';
-include_once '../../../mainfile.php';
+include_once '../../../../../mainfile.php';
 //include_once 'header.php';
 
 $theme = empty($HTTP_GET_VARS['theme'])?$spaw_default_theme:$HTTP_GET_VARS['theme'];
@@ -220,7 +220,6 @@ function liboptions($arr, $prefix = '', $sel = '')
 function uploadImg($img) {
 
   global $HTTP_POST_FILES;
-  global $HTTP_SERVER_VARS;
   global $spaw_valid_imgs;
   global $imglib;
   global $errors;

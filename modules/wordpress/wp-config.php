@@ -6,8 +6,8 @@ include_once ABSPATH.'../../mainfile.php';
 /** http://wordpress.xwd.jp/   **/
 
 // It is influenced by environment.
-mb_language("Japanese");
-mb_internal_encoding("euc-jp");
+//mb_language("Japanese");
+//mb_internal_encoding("euc-jp");
 
 // ** MySQL settings ** //
 define('WP_DB_NAME', XOOPS_DB_NAME);      // データベース名
@@ -45,7 +45,15 @@ $wp_use_spaw=true;
 require_once(ABSPATH.'wp-settings.php');
 
 // Language File - example: 'wp-lang/lang_en.php'
-require_once(ABSPATH.'wp-lang/lang_ja.php');
+//require_once(ABSPATH.'wp-lang/lang_ja.php');
+if (!defined('_LANGCODE')) {
+	define("_LANGCODE","en");
+}
+if (file_exists(ABSPATH."wp-lang/lang_"._LANGCODE.".php")) {
+	require_once(ABSPATH."wp-lang/lang_"._LANGCODE.".php");
+} else {
+	require_once(ABSPATH."wp-lang/lang_en.php");
+}
 
 /* Stop editing */
 if (get_xoops_option('wordpress','wp_use_spaw') == 1) {

@@ -81,9 +81,9 @@ case 'register':
 		die ('<strong>ERROR</strong>: This login is already registered, please choose another one.');
 	}
 
-	$user_ip = $HTTP_SERVER_VARS['REMOTE_ADDR'] ;
-	$user_domain = gethostbyaddr($HTTP_SERVER_VARS['REMOTE_ADDR'] );
-	$user_browser = $HTTP_SERVER_VARS['HTTP_USER_AGENT'];
+	$user_ip = $_SERVER['REMOTE_ADDR'] ;
+	$user_domain = gethostbyaddr($_SERVER['REMOTE_ADDR'] );
+	$user_browser = $_SERVER['HTTP_USER_AGENT'];
 
 	$user_login = addslashes($user_login);
 	$pass1 = addslashes($pass1);

@@ -189,8 +189,10 @@ echo $posts_nav_bar;
 		foreach ($arc_result as $arc_row) {
 			$arc_year  = $arc_row["YEAR(post_date)"];
 			$arc_month = $arc_row["MONTH(post_date)"];
+       		$month_str = ereg_replace('%MONTH',$month[zeroise($arc_month,2)],MONTH_FORMAT);
+			$month_str = ereg_replace('%YEAR',$arc_year,$month_str);
 			echo "<option value=\"$arc_year".zeroise($arc_month,2)."\">";
-			echo $month[zeroise($arc_month,2)]." $arc_year";
+			echo $month_str;
 			echo "</option>\n";
 		}
 	} elseif ($archive_mode == "daily") {
@@ -346,7 +348,7 @@ foreach ($posts as $post) { start_wp();
 
 					<form action="<?php echo $siteurl.'/wp-comments-post.php'?>" method="post">
 						<input type="hidden" name="comment_post_ID" value="<?php echo $id; ?>" />
-						<input type="hidden" name="redirect_to" value="<?php echo $HTTP_SERVER_VARS["REQUEST_URI"]; ?>" />
+						<input type="hidden" name="redirect_to" value="<?php echo $_SERVER["REQUEST_URI"]; ?>" />
 						<input type="text" name="author" class="textarea" value="<?php echo $user_nickname ?>" size="20" tabindex="1" /><br />
 						<input type="text" name="email" class="textarea" value="<?php echo $user_email ?>" size="20" tabindex="2" /><br />
 						<input type="text" name="url" class="textarea" value="<?php echo $user_url ?>" size="20" tabindex="3" /><br />

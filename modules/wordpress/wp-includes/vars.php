@@ -135,7 +135,7 @@ $wp_htmltranswinuni = array(
 );
 
 # on which page are we ?
-$PHP_SELF = $HTTP_SERVER_VARS['PHP_SELF'];
+$PHP_SELF = $_SERVER['PHP_SELF'];
 $pagenow = explode('/', $PHP_SELF);
 $pagenow = trim($pagenow[(sizeof($pagenow)-1)]);
 $pagenow = explode('?', $pagenow);
@@ -195,8 +195,8 @@ $wp_gecko_correction['out'] = array(
 );
 
 # server detection
-$is_Apache = strstr($HTTP_SERVER_VARS['SERVER_SOFTWARE'], 'Apache') ? 1 : 0;
-$is_IIS = strstr($HTTP_SERVER_VARS['SERVER_SOFTWARE'], 'Microsoft-IIS') ? 1 : 0;
+$is_Apache = strstr($_SERVER['SERVER_SOFTWARE'], 'Apache') ? 1 : 0;
+$is_IIS = strstr($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') ? 1 : 0;
 
 # if the config file does not provide the smilies array, let's define it here
 if (!isset($wpsmiliestrans)) {

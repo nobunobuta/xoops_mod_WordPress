@@ -405,18 +405,17 @@ function wp_kses_no_null($string)
 # This function removes any NULL or chr(173) characters in $string.
 ###############################################################################
 {
-  $string = preg_replace('/\0+/', '', $string);
-  $string = preg_replace('/(\\\\0)+/', '', $string);
+	$string = preg_replace('/\0+/', '', $string);
+	$string = preg_replace('/(\\\\0)+/', '', $string);
 
-if (function_exists('mb_ereg_replace')) { 
-$string = mb_ereg_replace('/\xad+/', '', $string); # deals with Opera "feature" 
-}else{ 
-$string = preg_replace('/\xad+/', '', $string); # deals with Opera "feature" 
-}
+	if (function_exists('mb_ereg_replace')) { 
+		$string = mb_ereg_replace('/\xad+/', '', $string); # deals with Opera "feature" 
+	}else{ 
+		$string = preg_replace('/\xad+/', '', $string); # deals with Opera "feature" 
+	}
 
-  return $string;
+	return $string;
 } # function wp_kses_no_null
-
 
 function wp_kses_stripslashes($string)
 ###############################################################################
@@ -425,7 +424,7 @@ function wp_kses_stripslashes($string)
 # preg_replace(//e) seems to require this.
 ###############################################################################
 {
-  return preg_replace('%\\\\"%', '"', $string);
+	return preg_replace('%\\\\"%', '"', $string);
 } # function wp_kses_stripslashes
 
 
@@ -434,21 +433,21 @@ function wp_kses_array_lc($inarray)
 # This function goes through an array, and changes the keys to all lower case.
 ###############################################################################
 {
-  $outarray = array();
+	$outarray = array();
 
-  foreach ($inarray as $inkey => $inval)
-  {
-    $outkey = strtolower($inkey);
-    $outarray[$outkey] = array();
+	foreach ($inarray as $inkey => $inval)
+	{
+		$outkey = strtolower($inkey);
+		$outarray[$outkey] = array();
 
-    foreach ($inval as $inkey2 => $inval2)
-    {
-      $outkey2 = strtolower($inkey2);
-      $outarray[$outkey][$outkey2] = $inval2;
-    } # foreach $inval
-  } # foreach $inarray
+		foreach ($inval as $inkey2 => $inval2)
+		{
+			$outkey2 = strtolower($inkey2);
+			$outarray[$outkey][$outkey2] = $inval2;
+		} # foreach $inval
+	} # foreach $inarray
 
-  return $outarray;
+	return $outarray;
 } # function wp_kses_array_lc
 
 

@@ -6,6 +6,6 @@
 */
 require(dirname(__FILE__) . '/wp-config.php');
 setcookie('wp-postpass_'.$cookiehash, $HTTP_POST_VARS['post_password'], time()+60*60*24*30);
-header('Location: ' . $HTTP_SERVER_VARS['HTTP_REFERER']);
+header('Location: ' . $_SERVER['HTTP_REFERER']);
 
 ?>

@@ -32,7 +32,7 @@ if (strlen($url) < 7)
 $comment = trim($HTTP_POST_VARS['comment']);
 $original_comment = $comment;
 $comment_post_ID = intval($HTTP_POST_VARS['comment_post_ID']);
-$user_ip = $HTTP_SERVER_VARS['REMOTE_ADDR'];
+$user_ip = $_SERVER['REMOTE_ADDR'];
 $user_domain = gethostbyaddr($user_ip);
 
 $commentstatus = $wpdb->get_var("SELECT comment_status FROM $tableposts WHERE ID = $comment_post_ID");
@@ -119,7 +119,7 @@ if ($ok) { // if there was no comment from this IP in the last 10 seconds
 	header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 	header('Cache-Control: no-cache, must-revalidate');
 	header('Pragma: no-cache');
-	$location = (empty($HTTP_POST_VARS['redirect_to'])) ? $HTTP_SERVER_VARS["HTTP_REFERER"] : $HTTP_POST_VARS['redirect_to'];
+	$location = (empty($HTTP_POST_VARS['redirect_to'])) ? $_SERVER["HTTP_REFERER"] : $HTTP_POST_VARS['redirect_to'];
 	if ($is_IIS) {
 		header("Refresh: 0;url=$location");
 	} else {

@@ -103,7 +103,7 @@ if ($use_quicktags && 'bookmarklet' != $mode) {
 	$trans_tbl = get_html_translation_table (HTML_SPECIALCHARS);
 	$trans_tbl = array_flip ($trans_tbl);
 	$content = strtr ($content, $trans_tbl);
-	$sw = new SPAW_Wysiwyg( 'wp_content', $content, 'jp', 'full', 'default', '70%', '400px' );
+	$sw = new SPAW_Wysiwyg( 'wp_content', $content, _LANGCODE, 'full', 'default', '70%', '400px' );
 	$sw -> show();
     foreach($wpsmiliestrans as $smiley => $img) 
     { 
@@ -145,7 +145,7 @@ if ($action != 'editcomment') {
   <?php if ('bookmarklet' != $mode) {
       echo '<input name="advanced" type="submit" id="advancededit" tabindex="7" value="'._LANG_EF_AD_EDITING.'" />';
   } ?>
-  <input name="referredby" type="hidden" id="referredby" value="<?php echo $HTTP_SERVER_VARS['HTTP_REFERER']; ?>" />
+  <input name="referredby" type="hidden" id="referredby" value="<?php echo $_SERVER['HTTP_REFERER']; ?>" />
 </p>
 
 

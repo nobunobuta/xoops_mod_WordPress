@@ -15,7 +15,8 @@ define("_MI_WORDPRESS_INST_POST_CONTENT","'WordPress ME for Xoops2の導入成功おめ
 define("_MI_WORDPRESS_INST_POST_TITLE","'ようこそ、WordPressの世界へ！'");
 // Sample Comment
 define("_MI_WORDPRESS_INST_COMMENT_CONTENT"," 'コメントのサンプルです！<br />To delete a comment, just log in, and view the posts\' comments, there you will have the option to edit or delete them.'");
-// WordPress Date & Time Format
+// WordPress OptionTable Values
+define("_MI_WORDPRESS_INST_OPTIONS_22","'ja'");
 define("_MI_WORDPRESS_INST_OPTIONS_52","'Y年n月j日(l)'");
 define("_MI_WORDPRESS_INST_OPTIONS_53","'H時i分s秒'");
 // Config titles

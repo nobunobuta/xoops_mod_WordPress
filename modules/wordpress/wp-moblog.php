@@ -67,8 +67,9 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		$subject = explode($phoneemail_separator, $subject);
 		$subject = trim($subject[0]);
 	}
-	$subject = trim(mb_convert_encoding(mb_decode_mimeheader($subject),"EUC-JP","auto"));
-
+	if function_exists('mb_convert_encoding') {
+		$subject = trim(mb_convert_encoding(mb_decode_mimeheader($subject),$blog_charset,"auto"));
+	}
 	global $subjectprefix;
 	if (!ereg($subjectprefix, $subject)) {
 		continue;
@@ -195,7 +196,12 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		$attachment = imap_fetchbody($mbox, $iCount, 2);
 		if ($attachment != '') {
 			$attachment = imap_base64($attachment);
-			$temp_file = mb_convert_encoding(mb_decode_mimeheader($struct->parts[1]->dparameters[0]->value),$blog_charset,"auto");			echo $temp_file;
+			if function_exists('mb_convert_encoding') {
+				$temp_file = mb_convert_encoding(mb_decode_mimeheader($struct->parts[1]->dparameters[0]->value),$blog_charset,"auto");
+			} else {
+				$temp_file = $struct->parts[1]->dparameters[0]->value;
+			}
+			echo $temp_file;
 			if (!($temp_fp = fopen("attach/" . $temp_file, "w"))) {
 				echo("error1");
 				continue;
@@ -245,7 +251,11 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 			if ($post_category == '') {
 				$post_category = $default_category;
 			}
-			$content = addslashes(mb_convert_encoding(trim($content),$blog_charset,"JIS"));
+			if function_exists('mb_convert_encoding') {
+				$content = addslashes(mb_convert_encoding(trim($content),$blog_charset,"JIS"));
+			} else {
+				$content = addslashes(trim($content));
+			}
 			if (!$emailtestonly) {
 				$post_title = addslashes(trim($post_title));
 				#If we find an attachment, add it to the post

@@ -356,7 +356,7 @@ switch($action) {
         } // end if publish
         
 		if ($HTTP_POST_VARS['save']) {
-			$location = $HTTP_SERVER_VARS['HTTP_REFERER'];
+			$location = $_SERVER['HTTP_REFERER'];
 		} else {
         	$location = 'post.php';
 		}
@@ -399,7 +399,7 @@ switch($action) {
             sleep($sleep_after_edit);
         }
 
-		$sendback = $HTTP_SERVER_VARS['HTTP_REFERER'];
+		$sendback = $_SERVER['HTTP_REFERER'];
 		if (strstr($sendback, 'post.php')) $sendback = $siteurl .'/wp-admin/post.php';
         header ('Location: ' . $sendback);
 
@@ -486,8 +486,8 @@ switch($action) {
 
 	wp_set_comment_status($comment, "delete");
 
-	if (($HTTP_SERVER_VARS['HTTP_REFERER'] != "") && (false == $noredir)) {
-		header('Location: ' . $HTTP_SERVER_VARS['HTTP_REFERER']);
+	if (($_SERVER['HTTP_REFERER'] != "") && (false == $noredir)) {
+		header('Location: ' . $_SERVER['HTTP_REFERER']);
 	} else {
 		header('Location: '.$siteurl.'/wp-admin/edit.php?p='.$p.'&c=1#comments');
 	}
@@ -514,8 +514,8 @@ switch($action) {
 	
 	wp_set_comment_status($comment, "hold");
 	
-	if (($HTTP_SERVER_VARS['HTTP_REFERER'] != "") && (false == $noredir)) {
-		header('Location: ' . $HTTP_SERVER_VARS['HTTP_REFERER']);
+	if (($_SERVER['HTTP_REFERER'] != "") && (false == $noredir)) {
+		header('Location: ' . $_SERVER['HTTP_REFERER']);
 	} else {
 		header('Location: '.$siteurl.'/wp-admin/edit.php?p='.$p.'&c=1#comments');
 	}
@@ -574,8 +574,8 @@ switch($action) {
 	}
 	
 	 
-	if (($HTTP_SERVER_VARS['HTTP_REFERER'] != "") && (false == $noredir)) {
-		header('Location: ' . $HTTP_SERVER_VARS['HTTP_REFERER']);
+	if (($_SERVER['HTTP_REFERER'] != "") && (false == $noredir)) {
+		header('Location: ' . $_SERVER['HTTP_REFERER']);
 	} else {
 		header('Location: '.$siteurl.'/wp-admin/edit.php?p='.$p.'&c=1#comments');
 	}
