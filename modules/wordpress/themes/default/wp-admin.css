@@ -206,7 +206,7 @@
 #wpAdminMain #categorydiv {
 	line-height: 130%;
 	width: 12em;
-
+	float: left;
 }
 
 #wpAdminMain #categorydiv input,#wpAdminMain #poststatusdiv input,#wpAdminMain #commentstatusdiv input, #wpAdminMain #pingstatusdiv input {
