@@ -1,3 +1,11 @@
+2004-05-04  0.0.1d
+	* blocks/wp_recent_comments.php:
+	* blocks/wp_recent_posts.php:
+		Block表示時の不具合対応
+
+	* xoops_version.php:
+		Contents Blockの定義を追加
+
 2004-05-04  0.0.1c
 	* sql/mysql.sql:
 	* xoops_install.php:
