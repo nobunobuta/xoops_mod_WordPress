@@ -48,7 +48,13 @@ for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 if ($standalone == 0) {
 	if ($profile == 0) {
 		include(XOOPS_ROOT_PATH.'/header.php');
+		ob_start();
+		echo  bloginfo('name');
+		$blog_name =  ob_get_contents();
+		ob_end_clean();
+		$module_title = $blog_name ." &raquo;".$title;
 		$xoopsTpl->assign('xoops_module_header', '<link rel="stylesheet" href="wp-admin.css" type="text/css" />');
+		$xoopsTpl->assign("xoops_pagetitle",$module_title);
 	}else{
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
