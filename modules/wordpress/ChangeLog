@@ -1,3 +1,5 @@
+2004-05-24  0.0.3-CVSSNAP
+    多言語対応中
 2004-05-23  0.0.2d
 	* wp-includes/functions.php:
 		PING送信時の接続タイムアウトを30秒に
