@@ -3,7 +3,7 @@ $modversion['name'] = _MI_WORDPRESS_NAME;
 $modversion['dirname'] = 'wordpress';
 
 $modversion['description'] = _MI_WORDPRESS_DESC;
-$modversion['version'] = "0.11";
+$modversion['version'] = "0.03";
 $modversion['credits'] = "";
 $modversion['author'] = _MI_WORDPRESS_AUTHOR;
 $modversion['help'] = "help.html";
@@ -30,6 +30,11 @@ $modversion['tables'] = array(
 	"wp_optiongroup_options",
 	"wp_post2cat"
 	);
+
+// Search
+$modversion['hasSearch'] = 1;
+$modversion['search']['file'] = "xoops_search.php";
+$modversion['search']['func'] = "wp_xoops_search";
 
 //Admin things
 $modversion['hasAdmin'] = 1;
@@ -97,7 +102,7 @@ $modversion['blocks'][3]['name'] =_MI_WORDPRESS_BNAME3;
 $modversion['blocks'][3]['description'] = _MI_WORDPRESS_BDESC3;
 $modversion['blocks'][3]['show_func'] = "b_wp_categories_show";
 $modversion['blocks'][3]['edit_func'] = "b_wp_categories_edit";
-$modversion['blocks'][3]['options'] = "0|0";
+$modversion['blocks'][3]['options'] = "0|0|name|asc";
 
 $modversion['blocks'][4]['file'] = "wp_links.php";
 $modversion['blocks'][4]['name'] =_MI_WORDPRESS_BNAME4;
@@ -113,6 +118,8 @@ $modversion['blocks'][6]['file'] = "wp_recent_posts.php";
 $modversion['blocks'][6]['name'] = _MI_WORDPRESS_BNAME6;
 $modversion['blocks'][6]['description'] = _MI_WORDPRESS_BDESC6;
 $modversion['blocks'][6]['show_func'] = "b_wp_recent_posts_show";
+$modversion['blocks'][6]['edit_func'] = "b_wp_recent_posts_edit";
+$modversion['blocks'][6]['options'] = "10";
 
 $modversion['blocks'][7]['file'] = "wp_recent_comments.php";
 $modversion['blocks'][7]['name'] = _MI_WORDPRESS_BNAME7;
@@ -125,5 +132,7 @@ $modversion['blocks'][8]['file'] = "wp_contents.php";
 $modversion['blocks'][8]['name'] = _MI_WORDPRESS_BNAME8;
 $modversion['blocks'][8]['description'] = _MI_WORDPRESS_BNAME8;
 $modversion['blocks'][8]['show_func'] = "b_wp_contents_show";
+$modversion['blocks'][8]['edit_func'] = "b_wp_contents_edit";
+$modversion['blocks'][8]['options'] = "10";
 $modversion['blocks'][8]['template'] = "wp_block_contents.html";
 ?>
