@@ -294,11 +294,20 @@ function unautobrize($content) {
 
 
 
-function mysql2date($dateformatstring, $mysqlstring, $use_b2configmonthsdays = 1) {
-	global $month, $weekday,$s_weekday_length,$s_month_length;
+function mysql2date($dateformatstring, $mysqlstring, $use_b2configmonthsdays = 1, $charset="") {
+	global $month, $weekday,$s_weekday_length,$s_month_length, $blog_charset;
 	$m = $mysqlstring;
 	if (empty($m)) {
 		return false;
+	}
+	if (function_exists('mb_convert_encoding')) {
+		if (!$charset) {
+			if ($blog_charset) {
+				$charset = $blog_charset;
+			} else {
+				$charset = mb_internal_encoding();
+			}
+		}
 	}
 	$i = mktime(substr($m,11,2),substr($m,14,2),substr($m,17,2),substr($m,5,2),substr($m,8,2),substr($m,0,4));
 	if (!empty($month) && !empty($weekday) && $use_b2configmonthsdays) {
@@ -306,14 +315,14 @@ function mysql2date($dateformatstring, $mysqlstring, $use_b2configmonthsdays = 1
 		$dateweekday = $weekday[date('w', $i)];
 		$dateformatstring = ' '.$dateformatstring;
 		if (function_exists('mb_substr')) {
-			$dateformatstring = preg_replace("/([^\\\])D/", "\\1".backslashit(mb_substr($dateweekday, 0, $s_weekday_length)), $dateformatstring);
+			$dateformatstring = preg_replace("/([^\\\])D/", "\\1".backslashit(mb_substr($dateweekday, 0, $s_weekday_length, $charset)), $dateformatstring);
 		} else {
 			$dateformatstring = preg_replace("/([^\\\])D/", "\\1".backslashit(substr($dateweekday, 0, $s_weekday_length)), $dateformatstring);
 		}
 		$dateformatstring = preg_replace("/([^\\\])F/", "\\1".backslashit($datemonth), $dateformatstring);
 		$dateformatstring = preg_replace("/([^\\\])l/", "\\1".backslashit($dateweekday), $dateformatstring);
 		if (function_exists('mb_substr')) {
-			$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(mb_substr($datemonth, 0, $s_month_length)), $dateformatstring);
+			$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(mb_substr($datemonth, 0, $s_month_length, $charset)), $dateformatstring);
 		} else {
 			$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(substr($datemonth, 0, $s_month_length)), $dateformatstring);
 		}

@@ -1,4 +1,5 @@
 <?php
+global $blog_charset;
 $blog_charset = 'euc-jp';
 
 if (!defined('WP_LANGUAGE_FILE_READ')) {

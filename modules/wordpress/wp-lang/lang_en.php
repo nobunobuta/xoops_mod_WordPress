@@ -1,4 +1,5 @@
 <?php
+global $blog_charset;
 $blog_charset = 'iso-8859-1';
 if (!defined('WP_LANGUAGE_FILE_READ')) {
 define ('WP_LANGUAGE_FILE_READ','1');

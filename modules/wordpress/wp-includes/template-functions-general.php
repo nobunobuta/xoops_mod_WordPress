@@ -322,7 +322,7 @@ function get_archives($type='', $limit='', $format='html', $before = "", $after 
 	}
 }
 function get_calendar($daylength = 1) {
-	global $wpdb ,$wp_id, $m, $monthnum, $year, $timedifference, $month, $weekday,  $posts, $wp_month_format;
+	global $wpdb ,$wp_id, $m, $monthnum, $year, $timedifference, $month, $weekday,  $posts, $wp_month_format,$blog_charset;
 
     // Quick check. If we have no posts at all, abort!
     if (!$posts) {
@@ -382,7 +382,7 @@ function get_calendar($daylength = 1) {
 	<tr>';
 	foreach ($weekday as $wd) {
 		if (function_exists('mb_substr')) {
-			echo "\n\t\t<th abbr='$wd' scope='col' title='$wd'>" . mb_substr($wd, 0, $daylength) . '</th>';
+			echo "\n\t\t<th abbr='$wd' scope='col' title='$wd'>" . mb_substr($wd, 0, $daylength,$blog_charset) . '</th>';
 		} else {
 			echo "\n\t\t<th abbr='$wd' scope='col' title='$wd'>" . substr($wd, 0, $daylength) . '</th>';
 		}
@@ -396,8 +396,8 @@ function get_calendar($daylength = 1) {
 	<tr>';
 
 	if ($previous) {
-		if (function_exists('mb_substr')) {
-			$smonth_name = mb_substr($month[zeroise($previous->month, 2)], 0, 3);
+		if (function_exists('mb_convert_encoding')) {
+			$smonth_name = mb_substr($month[zeroise($previous->month, 2)], 0, 3,$blog_charset);
 		} else {
 			$smonth_name = substr($month[zeroise($previous->month, 2)], 0, 3);
 		}
@@ -413,7 +413,7 @@ function get_calendar($daylength = 1) {
 
 	if ($next) {
 		if (function_exists('mb_substr')) {
-			$smonth_name = mb_substr($month[zeroise($next->month, 2)], 0, 3);
+			$smonth_name = mb_substr($month[zeroise($next->month, 2)], 0, 3,$blog_charset);
 		} else {
 			$smonth_name = substr($month[zeroise($next->month, 2)], 0, 3);
 		}

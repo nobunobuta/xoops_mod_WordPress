@@ -1,4 +1,5 @@
 <?php //* Brazilian Portuguese Translation by Marcelo Yuji Himoro <www.yuji.eu.org> *//
+global $blog_charset;
 $blog_charset = 'iso-8859-1';
 
 if (!defined('WP_LANGUAGE_FILE_READ')) {
