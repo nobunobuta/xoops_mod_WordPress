@@ -415,6 +415,27 @@ if ($posts) {
 		$comment_count_cache[$wp_id]["$comment_count->ID"] = $comment_count->ccount;
 	}
 
+	// Get post-meta info
+	if ( $meta_list = $wpdb->get_results("SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta[$wp_id]}  WHERE post_id IN($post_id_list) ORDER BY post_id, meta_key", ARRAY_A) ) {
+		
+		// Change from flat structure to hierarchical:
+		$post_meta_cache[$wp_id] = array();
+		foreach ($meta_list as $metarow) {
+			$mpid = $metarow['post_id'];
+			$mkey = $metarow['meta_key'];
+			$mval = $metarow['meta_value'];
+			
+			// Force subkeys to be array type:
+			if (!isset($post_meta_cache[$wp_id][$mpid]) || !is_array($post_meta_cache[$wp_id][$mpid]))
+				$post_meta_cache[$wp_id][$mpid] = array();
+			if (!isset($post_meta_cache[$wp_id][$mpid]["$mkey"]) || !is_array($post_meta_cache[$wp_id][$mpid]["$mkey"]))
+				$post_meta_cache[$wp_id][$mpid]["$mkey"] = array();
+			
+			// Add a value to the current pid/key:
+			$post_meta_cache[$wp_id][$mpid][$mkey][] = $mval;
+		}
+	}
+
     if (1 == count($posts)) {
 		if ((isset($p) && $p) || (isset($name) && $name)) {
     		$more = 1;
