@@ -498,7 +498,6 @@ define('_LANG_WAU_UPLOAD_ALTER','Nome alternativo:');
 define('_LANG_WAU_UPLOAD_REBTN','Renomear');
 define('_LANG_WAU_UPLOAD_CODEIN','Inserir código no formulário');
 define('_LANG_WAU_UPLOAD_AMAZON','Amazon Associate');
-define('_LANG_WAU_ATTACH_ICON','Apenas ícones anexos');
 
 /* File Name wp-admin/options-general.php */
 define('_LANG_WAO_GENERAL_DISABLED','Você não tem permissão suficiente para editar as opções para este blog.');
