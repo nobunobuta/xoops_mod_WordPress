@@ -1,6 +1,7 @@
 <?php 
 /* Don't remove these lines. */
 $blog = 1;
+include_once (dirname(__FILE__)."/../../mainfile.php");
 require ('wp-blog-header.php');
 add_filter('comment_text', 'popuplinks');
 foreach ($posts as $post) { start_wp();
@@ -10,23 +11,37 @@ foreach ($posts as $post) { start_wp();
 <head>
 	<title><?php echo get_settings('blogname') ?> - Comments on "<?php the_title() ?>"</title>
 
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $blog_charset ?>" />
+<?php 
+if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/wp-layout.css')) {
+	$themes = $xoopsConfig['theme_set'];
+} else {
+	$themes = "default";
+}
+if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/print.css')) {
+	$themes_p = $xoopsConfig['theme_set'];
+} else {
+	$themes_p = "default";
+}
+?>
+	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $siteurl; ?>/themes/<?php echo $themes; ?>/wp-layout.css" />
+	<link rel="stylesheet" type="text/css" media="print" href="<?php echo $siteurl; ?>/themes/<?php echo $themes_p; ?>/print.css" />
 	<style type="text/css" media="screen">
 		@import url( wp-layout.css );
 		body { margin: 3px; }
 	</style>
 
 </head>
-<body id="commentspopup">
+<body id="wpMainContent">
 
 <h1 id="header"><a href="" title="<?php echo get_settings('blogname') ?>"><?php echo get_settings('blogname') ?></a></h1>
 
-<h2 id="comments">Comments</h2>
+<h2 id="comments"><?php echo _LANG_WPCM_COM_TITLE; ?></h2>
 
-<p><a href="<?php echo $siteurl; ?>/wp-commentsrss2.php?p=<?php echo $post->ID; ?>">RSS feed for comments on this post.</a></p>
+<p><?php comments_rss_link('<abbr title="Really Simple Syndication">RSS</abbr> feed for comments on this post.'); ?></p>
 
 <?php if ('open' == $post->ping_status) { ?>
-<p>The <acronym title="Uniform Resource Identifier">URI</acronym> to TrackBack this entry is: <em><?php trackback_url() ?></em></p>
+<p><?php echo _LANG_WPCM_COM_TRACK; ?><em><?php trackback_url() ?></em></p>
 <?php } ?>
 
 <?php
@@ -51,43 +66,47 @@ if (!empty($commentstatus->post_password) && $_COOKIE['wp-postpass_'.$cookiehash
 <?php } // end for each comment ?>
 </ol>
 <?php } else { // this is displayed if there are no comments so far ?>
-	<p>No comments yet.</p>
+	<p><?php echo _LANG_WPCM_COM_YET; ?></p>
 <?php } ?>
-
-<?php if ('open' == $commentstatus->comment_status) { ?>
-<h2>Leave a Comment</h2>
-<p>Line and paragraph breaks automatic, website trumps email, <acronym title="Hypertext Markup Language">HTML</acronym> allowed: <code><?php echo allowed_tags(); ?></code></p>
+<h2><?php echo _LANG_WPCM_COM_LEAVE; ?></h2>
+<?php if ('open' == $post->comment_status) { ?>
+<p><?php echo _LANG_WPCM_HTML_ALLOWED; ?><code><?php echo allowed_tags(); ?></code></p>
 
 <form action="<?php echo $siteurl; ?>/wp-comments-post.php" method="post" id="commentform">
 	<p>
 	  <input type="text" name="author" id="author" class="textarea" value="<?php echo $comment_author; ?>" size="28" tabindex="1" />
-	   <label for="author">Name</label>
+	   <label for="author"><?php echo _LANG_WPCM_COM_NAME; ?></label>
 	<input type="hidden" name="comment_post_ID" value="<?php echo $id; ?>" />
 	<input type="hidden" name="redirect_to" value="<?php echo htmlspecialchars($_SERVER["REQUEST_URI"]); ?>" />
 	</p>
 
 	<p>
 	  <input type="text" name="email" id="email" value="<?php echo $comment_author_email; ?>" size="28" tabindex="2" />
-	   <label for="email">Email</label>
+	   <label for="email"><?php echo _LANG_WUS_AU_MAIL; ?></label>
 	</p>
 
 	<p>
 	  <input type="text" name="url" id="url" value="<?php echo $comment_author_url; ?>" size="28" tabindex="3" />
-	   <label for="url"><acronym title="Uniform Resource Identifier">URI</acronym></label>
+	   <label for="url"><acronym title="Uniform Resource Identifier"><?php echo _LANG_WUS_AU_URI; ?></acronym></label>
 	</p>
 
 	<p>
-	  <label for="comment">Your Comment</label>
+	  <label for="comment"><?php echo _LANG_WPCM_COM_YOUR; ?></label>
 	<br />
-	  <textarea name="comment" id="comment" cols="70" rows="4" tabindex="4"></textarea>
+	  <textarea name="comment" id="comment" cols="50" rows="4" tabindex="4"></textarea>
 	</p>
 
+<?php if ('none' != get_settings("comment_moderation")) { ?>
 	<p>
-	  <input name="submit" type="submit" tabindex="5" value=_LANG_WPCM_COM_SAYIT />
+	<?php echo _LANG_WPCM_PLEASE_NOTE; ?>
+	</p>
+<?php } // comment_moderation != 'none' ?>
+	<p>
+	  <input name="submit" type="submit" tabindex="5" value="<?php echo _LANG_WPCM_COM_SAYIT; ?>" />
 	</p>
 </form>
 <?php } else { // comments are closed ?>
-<p>Sorry, comments are closed at this time.</p>
+<p><?php echo _LANG_WPCM_THIS_TIME; ?></p>
 <?php }
 } // end password check
 ?>
