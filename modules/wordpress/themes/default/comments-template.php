@@ -2,7 +2,7 @@
 <?php //This is Comment listing and form Template ?>
 <h2 id="comments"><?php echo _LANG_WPCM_COM_TITLE; ?></h2>
 
-<p><?php comments_rss_link('<abbr title="Really Simple Syndication">RSS</abbr> feed for comments on this post.'); ?></p>
+<p><?php comments_rss_link(_LANG_WPCM_COM_RSS); ?></p>
 
 <?php if ('open' == $post->ping_status) { ?>
 <p><?php echo _LANG_WPCM_COM_TRACK; ?><em><?php trackback_url() ?></em></p>

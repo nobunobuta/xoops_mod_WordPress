@@ -1,0 +1,97 @@
+<script type="text/javascript">
+<!--
+function checkAll(form)
+{
+	for (i = 0, n = form.elements.length; i < n; i++) {
+		if(form.elements[i].type == "checkbox") {
+			if(form.elements[i].checked == true)
+				form.elements[i].checked = false;
+			else
+				form.elements[i].checked = true;
+		}
+	}
+}
+//-->
+</script>
+<div class="wrap">
+    <form name="cats" method="post" action="">
+    <table width="75%" cellpadding="3" cellspacing="3">
+      <tr>
+        <td><{$smarty.const._LANG_WLM_SHOW_LINKS}><br /></td>
+        <td><{$smarty.const._LANG_WLM_ORDER_BY}></td>
+		<td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><{$selectLinkCatControl}></td>
+        <td><{$selectOrderControl}></td>
+        <td>
+          <input type="submit" name="action" value="<{$smarty.const._LANG_WLM_SHOW_BUTTONTEXT}>" />
+        </td>
+      </tr>
+    </table>
+    </form>
+</div>
+
+<div class="wrap">
+    <form name="links" id="links" method="post" action="">
+    <input type="hidden" name="link_id" value="" />
+    <input type="hidden" name="action" value="" />
+    <input type="hidden" name="order_by" value="<{$order_by}>" />
+    <input type="hidden" name="cat_id" value="<{$cat_id}>" />
+    <{$ticketHiddenContorl}>
+  <table width='100%' border='0' cellspacing='1' cellpadding='0' class='outer'>
+    <tr>
+      <th width="15%" align='center'><{$helpLink}> <{$smarty.const._LANG_WLA_SUB_NAME}></th>
+      <th align='center'><{$smarty.const._LANG_WLA_SUB_URI}></th>
+      <th align='center'><{$smarty.const._LANG_WLA_SUB_CAT}></th>
+      <th align='center'><{$smarty.const._LANG_WLA_SUB_REL}></th>
+      <th align='center'><{$smarty.const._LANG_WLA_SUB_IMAGE}></th>
+      <th align='center'><{$smarty.const._LANG_WLA_SUB_VISIBLE}></th>
+      <th colspan="3" align='center'><{$smarty.const._LANG_WLM_SHOW_ACTIONTEXT}></th>
+  </tr>
+<{foreach item=link from=$link_rows}>
+   <tr valign="middle" <{$link.style}>>
+      <td><strong><{$link.link_name}></strong><br />
+      Description: <{$link.link_description}></td>
+      <td><a href="<{$link.link_url}>" title="Visit <{$link.link_name}>"><{$link.short_url}></a></td>
+      <td><{$link.category}></td>
+      <td><{$link.link_rel}></td>
+      <td align='center'><{$link.image}></td>
+      <td align='center'><{$link.visible}></td>
+<{if $link.show_buttons==1 }>
+      <td><a href="link-manager.php?link_id=<{$link.link_id}>&amp;action=linkedit" class="edit"><{$smarty.const._LANG_C_NAME_EDIT}></a></td>
+      <td><a href="link-manager.php?link_id=<{$link.link_id}>&amp;action=confirmdelete" class="delete"><{$smarty.const._LANG_C_NAME_DELETE}></a></td>
+      <td><input type="checkbox" name="linkcheck[]" value="<{$link.link_id}>" /></td>
+<{else}>
+      <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<{/if}>
+	</tr>
+<{/foreach}>
+  </table>
+</div>
+
+<div class="wrap">
+<h2><{$smarty.const._LANG_WLM_MULTI_LINK}></h2>
+  <table width="100%" cellpadding="3" cellspacing="3">
+    <tr><td colspan="4"><{$smarty.const._LANG_WLM_CHECK_CHOOSE}></td></tr>
+    <tr>
+        <td>
+          <input type="submit" name="action2" value="<{$smarty.const._LANG_WLM_ASSIGN_TEXT}>" /> <{$smarty.const._LANG_WLM_OWNER_SHIP}>
+          <{$selectSetUserControl}>
+        </td>
+        <td>
+          <{$smarty.const._LANG_WLM_TOGGLE_TEXT}><input type="submit" name="action2" value="<{$smarty.const._LANG_WLM_VISIVILITY_TEXT}>" />
+        </td>
+        <td>
+          <input type="submit" name="action2" value="<{$smarty.const._LANG_WLM_MOVE_TEXT}>" /><{$smarty.const._LANG_WLM_TO_CATEGORY}>
+          <{$selectSetLinkCatControl}>
+        </td>
+        <td align="right">
+          <a href="#" onClick="checkAll(document.getElementById('links')); return false; "><{$smarty.const._LANG_WLM_TOGGLE_BOXES}></a>
+        </td>
+    </tr>
+  </table>
+</form>
+</div>
+
+

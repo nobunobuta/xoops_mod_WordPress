@@ -1,12 +1,11 @@
 <?php
 /* Don't remove this line */ if (!defined('XOOPS_ROOT_PATH')) { exit; }
 /* This file sets various arrays and variables for use in WordPress */
-
 # WordPress version
-$wp_version = 'ME for XOOPS '.get_version();
+$GLOBALS['wp_version'] = 'ME for XOOPS '.get_version();
 
 # BBcode search and replace arrays
-$wp_bbcode['in'] = array(
+$GLOBALS['wp_bbcode']['in'] = array(
 	'#\[b](.+?)\[/b]#is',		// Formatting tags
 	'#\[i](.+?)\[/i]#is',
 	'#\[u](.+?)\[/u]#is',
@@ -20,7 +19,7 @@ $wp_bbcode['in'] = array(
 #	'#\[email](.+?)\[/email]#eis',		// E-mail
 #	'#\[email=(.+?)](.+?)\[/email]#eis'
 );
-$wp_bbcode['out'] = array(
+$GLOBALS['wp_bbcode']['out'] = array(
 	'<strong>$1</strong>',		// Formatting tags
 	'<em>$1</em>',
 	'<span style="text-decoration:underline">$1</span>',
@@ -36,30 +35,30 @@ $wp_bbcode['out'] = array(
 );
 
 # GreyMatter formatting search and replace arrays
-$wp_gmcode['in'] = array(
+$GLOBALS['wp_gmcode']['in'] = array(
 	'#\\*\*(.+?)\\*\*#is',		// **bold**
 	'#\\\\(.+?)\\\\#is',		// \\italic\\
 	'#\__(.+?)\__#is'		// __underline__
 );
-$wp_gmcode['out'] = array(
+$GLOBALS['wp_gmcode']['out'] = array(
 	'<strong>$1</strong>',
 	'<em>$1</em>',
 	'<span style="text-decoration:underline">$1</span>'
 );
 
 # Translation of HTML entities and special characters
-$wp_htmltrans = array_flip(get_html_translation_table(HTML_ENTITIES));
-$wp_htmltrans['<'] = '<';	# preserve HTML
-$wp_htmltrans['>'] = '>';	# preserve HTML
+$GLOBALS['wp_htmltrans'] = array_flip(get_html_translation_table(HTML_ENTITIES));
+$GLOBALS['wp_htmltrans']['<'] = '<';	# preserve HTML
+$GLOBALS['wp_htmltrans']['>'] = '>';	# preserve HTML
 $wp_htmltransbis = array(
-	'�' => '&#8211;',
-	'�' => '&#8212;',
-	'�' => '&#8216;',
-	'�' => '&#8217;',
-	'�' => '&#8220;',
-	'�' => '&#8221;',
-	'�' => '&#8226;',
-	'�' => '&#8364;',
+	'–' => '&#8211;',
+	'—' => '&#8212;',
+	'‘' => '&#8216;',
+	'’' => '&#8217;',
+	'“' => '&#8220;',
+	'”' => '&#8221;',
+	'•' => '&#8226;',
+	'€' => '&#8364;',
 	'&lt;' => '&#60;',	# preserve fake HTML
 	'&gt;' => '&#62;',	# preserve fake HTML
 	'&amp;' => '&#038;',	# preserve fake HTML
@@ -96,10 +95,10 @@ $wp_htmltransbis = array(
 	'&supe;' => '&#8839;', '&oplus;' => '&#8853;', '&otimes;' => '&#8855;', '&perp;' => '&#8869;', '&sdot;' => '&#8901;', '&lceil;' => '&#8968;', '&rceil;' => '&#8969;', '&lfloor;' => '&#8970;', '&rfloor;' => '&#8971;', '&lang;' => '&#9001;',
 	'&rang;' => '&#9002;', '&loz;' => '&#9674;', '&spades;' => '&#9824;', '&clubs;' => '&#9827;', '&hearts;' => '&#9829;', '&diams;' => '&#9830;'
 );
-$wp_htmltrans = array_merge($wp_htmltrans,$wp_htmltransbis);
+$GLOBALS['wp_htmltrans'] = array_merge($GLOBALS['wp_htmltrans'],$wp_htmltransbis);
 
 # Translation of invalid Unicode references range to valid range
-$wp_htmltranswinuni = array(
+$GLOBALS['wp_htmltranswinuni'] = array(
 	'&#128;' => '&#8364;', // the Euro sign
 	'&#129;' => '',
 	'&#130;' => '&#8218;', // these are Windows CP1252 specific characters
@@ -135,89 +134,94 @@ $wp_htmltranswinuni = array(
 );
 
 # on which page are we ?
-$PHP_SELF = $_SERVER['PHP_SELF'];
-$pagenow = explode('/', $PHP_SELF);
-$pagenow = trim($pagenow[(sizeof($pagenow)-1)]);
-$pagenow = explode('?', $pagenow);
-$pagenow = $pagenow[0];
+$GLOBALS['PHP_SELF'] = $_SERVER['PHP_SELF'];
+$GLOBALS['pagenow'] = explode('/', $GLOBALS['PHP_SELF']);
+$GLOBALS['pagenow'] = trim($GLOBALS['pagenow'][(sizeof($GLOBALS['pagenow'])-1)]);
+$GLOBALS['pagenow'] = explode('?', $GLOBALS['pagenow']);
+$GLOBALS['pagenow'] = $GLOBALS['pagenow'][0];
 //if (($querystring_start == '/') && ($pagenow != 'post.php')) {
 //	$pagenow = $siteurl.'/index.php';
 //}
 
 # browser detection
-$is_lynx = 0; $is_gecko = 0; $is_winIE = 0; $is_macIE = 0; $is_opera = 0; $is_NS4 = 0; $is_docomo=0;
-if (!isset($HTTP_USER_AGENT)) {
-	$HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+$GLOBALS['is_lynx'] = 0;
+$GLOBALS['is_gecko'] = 0;
+$GLOBALS['is_winIE'] = 0;
+$GLOBALS['is_macIE'] = 0;
+$GLOBALS['is_opera'] = 0;
+$GLOBALS['is_NS4'] = 0;
+$GLOBALS['is_docomo']=0;
+if (!isset($GLOBALS['HTTP_USER_AGENT'])) {
+	$GLOBALS['HTTP_USER_AGENT'] = $_SERVER['HTTP_USER_AGENT'];
 }
-if (preg_match('/Lynx/', $HTTP_USER_AGENT)) {
-	$is_lynx = 1;
-} elseif (preg_match('/Gecko/', $HTTP_USER_AGENT)) {
-	$is_gecko = 1;
-} elseif ((preg_match('/MSIE/', $HTTP_USER_AGENT)) && (preg_match('/Win/', $HTTP_USER_AGENT))) {
-	$is_winIE = 1;
-} elseif ((preg_match('/MSIE/', $HTTP_USER_AGENT)) && (preg_match('/Mac/', $HTTP_USER_AGENT))) {
-	$is_macIE = 1;
-} elseif (preg_match('/Opera/', $HTTP_USER_AGENT)) {
-	$is_opera = 1;
-} elseif (preg_match('/DoCoMo/', $HTTP_USER_AGENT)) {
-	$is_docomo = 1;
-    $ua_list = explode("/", $HTTP_USER_AGENT);
-    $is_docomo = substr($ua_list[3], 1);
-    $is_docomo = $is_docomo*1024;
-
-} elseif ((preg_match('/Nav/', $HTTP_USER_AGENT) ) || (preg_match('/Mozilla\/4\./', $HTTP_USER_AGENT))) {
-	$is_NS4 = 1;
+if (preg_match('/Lynx/', $GLOBALS['HTTP_USER_AGENT'])) {
+	$GLOBALS['is_lynx'] = 1;
+} elseif (preg_match('/Gecko/', $GLOBALS['HTTP_USER_AGENT'])) {
+	$GLOBALS['is_gecko'] = 1;
+} elseif ((preg_match('/MSIE/', $GLOBALS['HTTP_USER_AGENT'])) && (preg_match('/Win/', $GLOBALS['HTTP_USER_AGENT']))) {
+	$GLOBALS['is_winIE'] = 1;
+} elseif ((preg_match('/MSIE/', $GLOBALS['HTTP_USER_AGENT'])) && (preg_match('/Mac/', $GLOBALS['HTTP_USER_AGENT']))) {
+	$GLOBALS['is_macIE'] = 1;
+} elseif (preg_match('/Opera/', $GLOBALS['HTTP_USER_AGENT'])) {
+	$GLOBALS['is_opera'] = 1;
+} elseif (preg_match('/DoCoMo/', $GLOBALS['HTTP_USER_AGENT'])) {
+	$GLOBALS['is_docomo'] = 1;
+    $ua_list = explode("/", $GLOBALS['HTTP_USER_AGENT']);
+    $GLOBALS['is_docomo'] = substr($ua_list[3], 1);
+    $GLOBALS['is_docomo'] = $GLOBALS['is_docomo']*1024;
+} elseif ((preg_match('/Nav/', $GLOBALS['HTTP_USER_AGENT']) ) || (preg_match('/Mozilla\/4\./', $GLOBALS['HTTP_USER_AGENT']))) {
+	$GLOBALS['is_NS4'] = 1;
 }
-$is_IE    = (($is_macIE) || ($is_winIE));
+$GLOBALS['is_IE']    = (($GLOBALS['is_macIE']) || ($GLOBALS['is_winIE']));
 
 # browser-specific javascript corrections
-$wp_macIE_correction['in'] = array(
+$GLOBALS['wp_macIE_correction']['in'] = array(
 	'/\%uFFD4/', '/\%uFFD5/', '/\%uFFD2/', '/\%uFFD3/',
 	'/\%uFFA5/', '/\%uFFD0/', '/\%uFFD1/', '/\%uFFBD/',
 	'/\%uFF83%uFFC0/', '/\%uFF83%uFFC1/', '/\%uFF83%uFFC6/', '/\%uFF83%uFFC9/',
 	'/\%uFFB9/', '/\%uFF81%uFF8C/', '/\%uFF81%uFF8D/', '/\%uFF81%uFFDA/',
 	'/\%uFFDB/'
 );
-$wp_macIE_correction['out'] = array(
+$GLOBALS['wp_macIE_correction']['out'] = array(
 	'&lsquo;', '&rsquo;', '&ldquo;', '&rdquo;',
 	'&bull;', '&ndash;', '&mdash;', '&Omega;',
 	'&beta;', '&gamma;', '&theta;', '&lambda;',
 	'&pi;', '&prime;', '&Prime;', '&ang;',
 	'&euro;'
 );
-$wp_gecko_correction['in'] = array(
+$GLOBALS['wp_gecko_correction']['in'] = array(
 	'/\‘/', '/\’/', '/\“/', '/\”/',
 	'/\•/', '/\–/', '/\—/', '/\Ω/',
 	'/\β/', '/\γ/', '/\θ/', '/\λ/',
-	'/\π/', '/\′/', '/\″/', '/\�/',
-	'/\€/', '/\ /'
+	'/\π/', '/\′/', '/\″/', '/\∠/',
+	'/\€/'
 );
-$wp_gecko_correction['out'] = array(
+$GLOBALS['wp_gecko_correction']['out'] = array(
 	'&8216;', '&rsquo;', '&ldquo;', '&rdquo;',
 	'&bull;', '&ndash;', '&mdash;', '&Omega;',
 	'&beta;', '&gamma;', '&theta;', '&lambda;',
 	'&pi;', '&prime;', '&Prime;', '&ang;',
-	'&euro;', '&#8201;'
+	'&euro;'
 );
 
 # server detection
-$is_Apache = strstr($_SERVER['SERVER_SOFTWARE'], 'Apache') ? 1 : 0;
-$is_IIS = strstr($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') ? 1 : 0;
+$GLOBALS['is_Apache'] = strstr($_SERVER['SERVER_SOFTWARE'], 'Apache') ? 1 : 0;
+$GLOBALS['is_IIS'] = strstr($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') ? 1 : 0;
 
 # if the config file does not provide the smilies array, let's define it here
-if (!isset($wpsmiliestrans[$wp_id])) {
-	if (get_xoops_option( 'wordpress'.(($wp_id=='-')?'':$wp_id) ,'wp_use_xoops_smilies')) {
+if (!isset($GLOBALS['wpsmiliestrans'][wp_id()])) {
+	if (get_xoops_option(wp_mod() ,'wp_use_xoops_smilies')) {
 		$db =& Database::getInstance();
 		$getsmiles = $db->query("SELECT id, code, smile_url FROM ".$db->prefix("smiles")." ORDER BY id");
 		if (($numsmiles = $db->getRowsNum($getsmiles)) == "0") {
 			//EMPTY
 		} else {
 			while ($smiles = $db->fetchArray($getsmiles)) {
-				$wpsmiliestrans[$wp_id][$smiles['code']] = $smiles['smile_url'];
+				$GLOBALS['wpsmiliestrans'][wp_id()][$smiles['code']] = $smiles['smile_url'];
 			}
 		}
 	} else {
-	    $wpsmiliestrans[$wp_id] = array(
+	    $GLOBALS['wpsmiliestrans'][wp_id()] = array(
 	        ' :)'        => 'icon_smile.gif',
 	        ' :D'        => 'icon_biggrin.gif',
 	        ' :-D'       => 'icon_biggrin.gif',
@@ -277,28 +281,17 @@ if (!function_exists('smiliescmp')) {
 	}
 }
 
-if (get_xoops_option('wordpress'.(($wp_id=='-')?'':$wp_id),'wp_use_xoops_smilies')==0) {
-	uksort($wpsmiliestrans[$wp_id], 'smiliescmp');
+if (get_xoops_option(wp_mod(),'wp_use_xoops_smilies')==0) {
+	uksort($GLOBALS['wpsmiliestrans'][wp_id()], 'smiliescmp');
 }
 
 # generates smilies' search & replace arrays
-$wp_smiliessearch[$wp_id] = array();
-$wp_smiliesreplace[$wp_id] = array();
-foreach($wpsmiliestrans[$wp_id] as $smiley => $img) {
-	$wp_smiliessearch[$wp_id][] = $smiley;
+$GLOBALS['wp_smiliessearch'][wp_id()] = array();
+$GLOBALS['wp_smiliesreplace'][wp_id()] = array();
+foreach($GLOBALS['wpsmiliestrans'][wp_id()] as $smiley => $img) {
+	$GLOBALS['wp_smiliessearch'][wp_id()][] = $smiley;
 	$smiley_masked = str_replace(' ', '', $smiley);
-	$wp_smiliesreplace[$wp_id][] = " <img src='$smilies_directory/$img' alt='$smiley_masked' />";
+	$GLOBALS['wp_smiliesreplace'][wp_id()][] = " <img src='".$GLOBALS['smilies_directory']."/$img' alt='$smiley_masked' />";
 }
 
-
-// Some default filters
-add_filter('category_description', 'wptexturize');
-add_filter('list_cats', 'wptexturize');
-add_filter('comment_author', 'wptexturize');
-add_filter('comment_text', 'wptexturize');
-add_filter('single_post_title', 'wptexturize');
-add_filter('the_title', 'wptexturize');
-add_filter('the_content', 'wptexturize');
-add_filter('the_excerpt', 'wptexturize');
-//add_action('wp_head', 'doGeoUrlHeader');
 ?>

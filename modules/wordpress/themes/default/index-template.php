@@ -16,7 +16,15 @@
 	
 	<div class="feedback">
 		<?php link_pages('<br />Pages: ', '<br />', 'number'); ?> 
-		<?php comments_popup_link(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS); ?> 
+<?php
+if (get_xoops_option($wp_mod[$wp_id],'wp_use_xoops_comments') == 0) {
+	comments_popup_link(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS);
+} else {
+	xcomments_popup_link(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS);
+	echo " | ";
+	comments_popup_link(_WP_TPL_TRACKBACK0, _WP_TPL_TRACKBACK1, _WP_TPL_TRACKBACKS);
+}
+?>
 	</div>
 	
 	<!--

@@ -1,8 +1,8 @@
 <?php
-	$wp_version_major = '0';
-	$wp_version_minor = '5';
-	$wp_version_mod   = '0';
-	$wp_version_fix   = '-RC';
-	$wp_version_str   = $wp_version_major.'.'.$wp_version_minor.'.'.$wp_version_mod.$wp_version_fix;
-	$wp_version_xoops = $wp_version_major.'.'.$wp_version_minor.$wp_version_mod;
+	$_wp_version_major = '0';
+	$_wp_version_minor = '5';
+	$_wp_version_mod   = '0';
+	$_wp_version_fix   = '-RC';
+	$GLOBALS['wp_version_str']   = $_wp_version_major.'.'.$_wp_version_minor.'.'.$_wp_version_mod.$_wp_version_fix;
+	$GLOBALS['wp_version_xoops'] = $_wp_version_major.'.'.$_wp_version_minor.$_wp_version_mod;
 ?>

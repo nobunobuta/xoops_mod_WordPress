@@ -22,12 +22,19 @@ if (!defined('MOD_PUKI_ISBN_AMAZON_SHOP'))
 if (!defined('MOD_PUKI_ISBN_AMAZON_USED'))
 	define('MOD_PUKI_ISBN_AMAZON_USED','http://www.amazon.co.jp/exec/obidos/tg/detail/offer-listing/-/_ISBN_/all/ref='.MOD_PUKI_ISBN_AMAZON_ASE_ID);
 
+if ($_SERVER['HTTP_HOST']=='kowa') {
+/////////////////////////////////////////////////
+// expire 画像キャッシュを何日で削除するか
+if (!defined('MOD_PUKI_ISBN_AMAZON_EXPIRE_IMG')) define('MOD_PUKI_ISBN_AMAZON_EXPIRE_IMG',1000);
+// expire タイトルキャッシュを何日で削除するか
+if (!defined('MOD_PUKI_ISBN_AMAZON_EXPIRE_TIT')) define('MOD_PUKI_ISBN_AMAZON_EXPIRE_TIT',1000);
+} else {
 /////////////////////////////////////////////////
 // expire 画像キャッシュを何日で削除するか
 if (!defined('MOD_PUKI_ISBN_AMAZON_EXPIRE_IMG')) define('MOD_PUKI_ISBN_AMAZON_EXPIRE_IMG',10);
 // expire タイトルキャッシュを何日で削除するか
 if (!defined('MOD_PUKI_ISBN_AMAZON_EXPIRE_TIT')) define('MOD_PUKI_ISBN_AMAZON_EXPIRE_TIT',1);
-
+}
 
 function plugin_isbn_convert() {
 	if (func_num_args() < 1 or func_num_args() > 3) {

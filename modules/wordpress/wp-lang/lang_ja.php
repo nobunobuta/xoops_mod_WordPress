@@ -97,8 +97,8 @@ define('_LANG_L_WPLOST_YOURPASS','¥Ñ¥¹¥ï¡¼¥ÉÊ¶¼º ?');
 
 /* File Name wp-admin/post.php */
 define('_LANG_P_NEWCOMER_MESS','¿·µ¬ÅÐÏ¿¤·¤Æ¤«¤é´Ö¤â¤Ê¤¤¤Î¤Ç¡¢´ÉÍý¼Ô¤¬¤¢¤Ê¤¿¤Î¥ì¥Ù¥ë¤ò¾å¤²¤ÆÅê¹Æ¤òµö²Ä¤¹¤ë¤Þ¤ÇÂÔ¤¿¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó¡£¡¡Ä¾¤°¤Ë¥ì¥Ù¥ë¤ò¾å¤²¤Æ¤â¤é¤¤¤¿¤¤¾ì¹ç¤Ï¡¢´ÉÍý¼Ô¤ËÄ¾ÀÜ¥á¡¼¥ë¤ò¤¹¤ë¤³¤È¤¬¤Ç¤­¤Þ¤¹¡£¡¡¾º¿Ê¤·¤¿¾ì¹ç¡¢¤³¤Î¥Ú¡¼¥¸¤ò¥ê¥í¡¼¥É¤¹¤ë¤À¤±¤Ç¥ì¥Ù¥ë¤¬Í­¸ú¤Ë¤Ê¤ê¤Þ¤¹¡£');
-define('_LANG_P_DATARIGHT_EDIT','¤µ¤ó¤ÎÅê¹Æ¤òÊÔ½¸¤¹¤ë¤³¤È¤Ï½ÐÍè¤Þ¤»¤ó¡£');
-define('_LANG_P_DATARIGHT_DELETE','¤µ¤ó¤ÎÅê¹Æ¤òºï½ü¤¹¤ë¸¢¸Â¤¬¤¢¤ê¤Þ¤»¤ó¡£');
+define('_LANG_P_DATARIGHT_EDIT','¤³¤ÎÅê¹Æ¤òÊÔ½¸¤¹¤ë¤³¤È¤Ï½ÐÍè¤Þ¤»¤ó¡£');
+define('_LANG_P_DATARIGHT_DELETE','¤³¤ÎÅê¹Æ¤òºï½ü¤¹¤ë¸¢¸Â¤¬¤¢¤ê¤Þ¤»¤ó¡£');
 define('_LANG_P_DATARIGHT_ERROR','ºï½ü¤Ë¼ºÇÔ¤·¤Þ¤·¤¿ . . . ´ÉÍý¿Í¤ËÏ¢Íí¤·¤Æ¤¯¤À¤µ¤¤¡£');
 define('_LANG_P_OOPS_IDCOM','¤³¤ÎID¤Ë¤è¤ë¥³¥á¥ó¥È¤Ï¤¢¤ê¤Þ¤»¤ó');
 define('_LANG_P_OOPS_IDPOS','¤³¤ÎID¤Ë¤è¤ëÅê¹Æ¤Ï¤¢¤ê¤Þ¤»¤ó');
@@ -108,6 +108,7 @@ define('_LANG_P_NICKNAME_DELETE','¤µ¤ó¤ÎÅê¹Æ¤òºï½ü¤¹¤ë¤³¤È¤Ï½ÐÍè¤Þ¤»¤ó¡£');
 define('_LANG_P_COMHAS_APPR','¥³¥á¥ó¥È¤¬¾µÇ§¤µ¤ì¤Þ¤·¤¿');
 define('_LANG_P_YOUR_DRAFTS','Áð¹Æ:');
 define('_LANG_P_WP_BOOKMARKLET','¡ÖPress it¡× ¤ò¥¯¥ê¥Ã¥¯¤¹¤ë¤È¡¢¸½ºß±ÜÍ÷Ãæ¤Ç¤¢¤ë¥µ¥¤¥È¤Î¥ê¥ó¥¯¾ðÊó¤òÈ÷¤¨¤¿¥Ý¥Ã¥×¥¢¥Ã¥×¥¦¥£¥ó¥É¥¦¤¬³«¤­¤Þ¤¹¡£<br />¤³¤ì¤Ë¤è¤ê¿×Â®¤ÊÅê¹Æ¤¬²ÄÇ½¤Ë¤Ê¤ê¤Þ¤¹¡£');
+define('_LANG_P_CONFIRM_DELETE', 'ËÜÅö¤Ëºï½ü¤·¤Æ¤â¤è¤í¤·¤¤¤Ç¤¹¤«¡©');
 
 /* File Name wp-admin/categories.php */
 define('_LANG_C_DEFAULT_CAT','¥«¥Æ¥´¥ê¡¼¤òºï½ü¤¹¤ë¤³¤È¤Ï½ÐÍè¤Þ¤»¤ó¡¡¤³¤ì¤Ï¥Ç¥Õ¥©¥ë¥È¥»¥Ã¥È¤Ç¤¹¡£');
@@ -174,6 +175,7 @@ define('_LANG_EFA_POST_STATUS','Åê¹Æ¥¹¥Æ¡¼¥¿¥¹');
 define('_LANG_EFA_AD_COMMENTS','¥³¥á¥ó¥ÈÀßÄê');
 define('_LANG_EFA_AD_PINGS','¥Ô¥ó¤ÎÀßÄê');
 define('_LANG_EFA_POST_PASSWORD','¥Ñ¥¹¥ï¡¼¥É');
+define('_LANG_EFA_POST_CUSTOM','¥«¥¹¥¿¥à¥Õ¥£¡¼¥ë¥É');
 define('_LANG_EFA_POST_EXCERPT','È´¿è');
 define('_LANG_EFA_POST_LATITUDE','°ÞÅÙ:');
 define('_LANG_EFA_POST_LONGITUDE','·ÐÅÙ:');
@@ -242,7 +244,7 @@ define('_LANG_WLA_TEXT_TOOLBAR','Mozilla¤ÈNetscape¤Ç¤ÏºîÀ®¤·¤¿¥ê¥ó¥¯¤ò¥Ä¡¼¥ë¥Ð¡¼
 define('_LANG_WLA_BUTTON_TEXTNAME','¤³¤Î¥ê¥ó¥¯¤òÄÉ²Ã¤¹¤ë');
 
 /* File Name wp-admin/link-categories.php */
-define('_LANG_WLC_DONOT_DELETE','Can&#8217;t delete the link category. this is the default one');
+define('_LANG_WLC_DONOT_DELETE','ID¤¬1¤Î¥«¥Æ¥´¥ê¡¼¤Ïºï½ü¤¹¤ë»ö¤¬¤Ç¤­¤Þ¤»¤ó');
 define('_LANG_WLC_TITLE_TEXT','Edit Link Category &#8220;');
 define('_LANG_WLC_EPAGE_TITLE','<strong>Edit</strong> a link category:');
 define('_LANG_WLC_ADD_TITLE','Add a Link Category:');
@@ -270,7 +272,7 @@ define('_LANG_WLC_SUBCATE_SORT','¥½¡¼¥È½ç');
 define('_LANG_WLC_SUBCATE_DESC','¹ß½ç?');
 define('_LANG_WLC_SUBCATE_LIMIT','¥ê¥ß¥Ã¥È');
 define('_LANG_WLC_SUBCATE_IMAGES','¥¤¥á¡¼¥¸?');
-define('_LANG_WLC_SUBCATE_MINIDESC','¹ß½ç?');
+define('_LANG_WLC_SUBCATE_MINIDESC','ÀâÌÀ?');
 define('_LANG_WLC_SUBCATE_RATE','É¾²Á?');
 define('_LANG_WLC_SUBCATE_UPDATE','¹¹¿·?');
 define('_LANG_WLC_SUBCATE_BEFORE','Á°¥¿¥°');
@@ -314,6 +316,20 @@ define('_LANG_WLM_TOGGLE_BOXES','ÁªÂò/²ò½ü');
 define('_LANG_WLM_EDIT_LINK','Edit a link:');
 define('_LANG_WLM_SAVE_CHANGES','ÊÑ¹¹¤ÎÊÝÂ¸');
 define('_LANG_WLM_EDIT_CANCEL','¥­¥ã¥ó¥»¥ë');
+
+/* File Name wp-admin/menu.php */
+define('_LANG_ADMIN_MENU_WRITE','Åê¹Æ');
+define('_LANG_ADMIN_MENU_EDIT','ÊÔ½¸');
+define('_LANG_ADMIN_MENU_CATE','¥«¥Æ¥´¥ê¡¼');
+define('_LANG_ADMIN_MENU_LINK','¥ê¥ó¥¯');
+define('_LANG_ADMIN_MENU_USER','¥æ¡¼¥¶¡¼');
+define('_LANG_ADMIN_MENU_OPTION','¥ª¥×¥·¥ç¥ó');
+define('_LANG_ADMIN_MENU_PLUG','¥×¥é¥°¥¤¥ó');
+define('_LANG_ADMIN_MENU_TEMP','¥Æ¥ó¥×¥ì¡¼¥È');
+define('_LANG_ADMIN_MENU_UPLOAD','¥¢¥Ã¥×¥í¡¼¥É');
+define('_LANG_ADMIN_MENU_PROFILE','¥×¥í¥Õ¥£¡¼¥ë');
+define('_LANG_ADMIN_MENU_VIEW','¥µ¥¤¥ÈÉ½¼¨ &raquo;');
+define('_LANG_ADMIN_MENU_LOGOUT','¥í¥°¥¢¥¦¥È (%s)');
 
 /* File Name wp-admin/moderation.php */
 define('_LANG_WPM_USER_LEVEL','¤¢¤Ê¤¿¤Ë¤Ï¥³¥á¥ó¥È¤ò¾µÇ§¤¹¤ë¸¢¸Â¤¬¤¢¤ê¤Þ¤»¤ó¡£<br />¾Ü¤·¤¯¤Ï´ÉÍý¿ÍËø¤ªÌä¤¤¹ç¤ï¤»¤¯¤À¤µ¤¤¡£');
@@ -418,7 +434,7 @@ define('_LANG_WPF_SUBT_UPDATE','¥¢¥Ã¥×¥Ç¡¼¥È');
 
 /* File Name wp-admin/sidebar.php */
 define('_LANG_WAS_SIDE_POSTED','Åê¹Æ´°Î»');
-define('_LANG_WAS_SIDE_AGAIN','Â³¤±¤ÆÅê¹Æ¤¹¤ë¤Ë¤Ï<a href="sidebar.php">¤³¤Á¤é</a>¤ò¥¯¥ê¥Ã¥¯');
+define('_LANG_WAS_SIDE_AGAIN','Â³¤±¤ÆÅê¹Æ¤¹¤ë¤Ë¤Ï<a href="sidebar.php" target="_self">¤³¤Á¤é</a>¤ò¥¯¥ê¥Ã¥¯');
 
 /* File Name wp-admin/templates.php */
 define('_LANG_WAT_LEVEL_ERR','<p>¤¢¤Ê¤¿¤Ë¤Ï¥Æ¥ó¥×¥ì¡¼¥È¤òÊÔ½¸¤¹¤ë¸¢¸Â¤¬¤¢¤ê¤Þ¤»¤ó¡£<br />
@@ -448,8 +464,9 @@ define('_LANG_WUS_WHOSE_DELETE','¤¢¤Ê¤¿¤è¤ê¹â¤¤¥ì¥Ù¥ë¤Î¥æ¡¼¥¶¡¼¤òºï½ü¤¹¤ë¤³¤È¤Ï¤
 define('_LANG_WUS_CANNOT_DELU','¤³¤Î¥æ¡¼¥¶¡¼¤Ïºï½ü¤Ç¤­¤Þ¤»¤ó');
 define('_LANG_WUS_CANNOT_DELUPOST','¤³¤Î¥æ¡¼¥¶¡¼¤ÎÅê¹Æ¤Ïºï½ü¤Ç¤­¤Þ¤»¤ó');
 define('_LANG_WUS_AU_THOR','Authors');
+define('_LANG_WUS_AU_LOGIN','¥í¥°¥¤¥óÌ¾');
 define('_LANG_WUS_AU_NICK','¥Ë¥Ã¥¯¥Í¡¼¥à');
-define('_LANG_WUS_AU_NAME','¥í¥°¥¤¥óÌ¾');
+define('_LANG_WUS_AU_NAME','»áÌ¾');
 define('_LANG_WUS_AU_MAIL','E-Mail');
 define('_LANG_WUS_AU_URI','URL');
 define('_LANG_WUS_AU_LEVEL','¥ì¥Ù¥ë');
@@ -466,7 +483,7 @@ define('_LANG_WUS_ADD_TWICE','¥Ñ¥¹¥ï¡¼¥É (2²Õ½ê) ');
 define('_LANG_WPCM_LOAD_DIRECTLY','¤³¤Î¥Ç¥£¥ì¥¯¥È¥ê¤Î¥Õ¥¡¥¤¥ë¤ÏÄ¾ÀÜ¤´Í÷¤¤¤¿¤À¤±¤Þ¤»¤ó');
 define('_LANG_WPCM_ENTER_PASS','<p>¥³¥á¥ó¥È¤ò¸«¤ë¤¿¤á¤Î¥Ñ¥¹¥ï¡¼¥É¤òÆþÎÏ¤·¤Æ¤¯¤À¤µ¤¤¡£<p>');
 define('_LANG_WPCM_COM_TITLE','¥³¥á¥ó¥È');
-define('_LANG_WPCM_COM_RSS','¤³¤Î¥³¥á¥ó¥È¤ÎRSS');
+define('_LANG_WPCM_COM_RSS','¤³¤Î¥³¥á¥ó¥È¤Î<abbr title="Really Simple Syndication">RSS</abbr>');
 define('_LANG_WPCM_COM_TRACK','TrackBack URL : ');
 define('_LANG_WPCM_COM_YET','¤³¤ÎÅê¹Æ¤Ë¤Ï¡¢¤Þ¤À¥³¥á¥ó¥È¤¬ÉÕ¤¤¤Æ¤¤¤Þ¤»¤ó');
 define('_LANG_WPCM_COM_LEAVE','¥³¥á¥ó¥È¤ÎÅê¹Æ');
@@ -479,7 +496,7 @@ define('_LANG_WPCM_THIS_TIME','¤´¤á¤ó¤Ê¤µ¤¤¡¢¸½ºß¥³¥á¥ó¥È¤òÉÕ¤±¤ë¤³¤È¤Ï½ÐÍè¤Þ¤»¤
 define('_LANG_WPCM_COM_NAME','Name');
 
 /* File Name wp-comments-post.php */
-define('_LANG_WPCP_SORRY_ITEM','¤´¤á¤ó¤Ê¤µ¤¤  ¤³¤ÎÅê¹Æ¤ËÂÐ¤¹¤ë¥³¥á¥ó¥È¤ÏÄù¤áÀÚ¤ê¤Þ¤·¤¿');
+define('_LANG_WPCP_SORRY_ITEM','¤´¤á¤ó¤Ê¤µ¤¤  ¤³¤ÎÅê¹Æ¤ËÂÐ¤¹¤ë¥³¥á¥ó¥È¤Ï¼õ¤±ÉÕ¤±¤Æ¤¤¤Þ¤»¤ó');
 define('_LANG_WPCP_ERR_FILL','Error: ¤ªÌ¾Á°¤È¥á¡¼¥ë¥¢¥É¥ì¥¹¤òµ­Æþ¤·¤Æ¤¯¤À¤µ¤¤');
 define('_LANG_WPCP_ERR_TYPE','Error: ¥³¥á¥ó¥È¤òµ­Æþ¤·¤Æ¤¯¤À¤µ¤¤');
 define('_LANG_WPCP_SORRY_SECONDS','¤´¤á¤ó¤Ê¤µ¤¤  Â³¤±¤ÆÅê¹Æ¤¹¤ë¾ì¹ç¤Ï10ÉÃ°Ê¾å»þ´Ö¤ò¶õ¤±¤Æ¤¯¤À¤µ¤¤');
@@ -592,32 +609,32 @@ define('_LANG_INST_BASE_VALUE54','´ÉÍý¿Í¤Î¥á¡¼¥ë¥¢¥É¥ì¥¹ (Àµ³Î¤Ë)');
 // general blog setup
 define('_LANG_INST_BASE_VALUE9','½µ¤Î»Ï¤á¤ÎÍËÆü»ØÄê');
 define('_LANG_INST_BASE_VALUE11','[b]bold[/b]¤Î¤è¤¦¤ÊBBCode¤ò»ÈÍÑ¤¹¤ë');
-define('_LANG_INST_BASE_VALUE12','**bold** \\\\italic\\\\ __underline__¤Î¤è¤¦¤ÊGreyMatter-style¤ò»ÈÍÑ¤¹¤ë');
+define('_LANG_INST_BASE_VALUE12','**bold** \\\\italic\\\\ __underline__¤Î¤è¤¦¤Ê<br>GreyMatter-style¤ò»ÈÍÑ¤¹¤ë');
 define('_LANG_INST_BASE_VALUE13','¥Ü¥¿¥ó¤Ë¤è¤ë¥¯¥¤¥Ã¥¯¥¿¥°¤ò»ÈÍÑ¤¹¤ë (Mac IE¤Ç¤ÏÍøÍÑ¤Ç¤­¤Þ¤»¤ó)');
-define('_LANG_INST_BASE_VALUE14','½ÅÍ×! Ãæ¹ñ¸ì¡¢ÆüËÜ¸ì¡¢´Ú¹ñ¸ì¤½¤ÎÂ¾¤Î¥Þ¥ë¥Á¥Ð¥¤¥È¸À¸ì¤Ç¤Î»ÈÍÑ»þ¤Ë¤ÏÉ¬¤º[false]¤Ë¤·¤Æ¤¯¤À¤µ¤¤');
-define('_LANG_INST_BASE_VALUE15','¥¿¥°¤òµö²Ä¤·¤¿¾ì¹ç¡¢¤½¤ì¤¬°­¤¤·ë²Ì¤ò¾·¤¯¾ì¹ç¤¬¤¢¤ê¤Þ¤¹¡£ÍøÍÑ¾õ¶·¤Ë¤â¤è¤ê¤Þ¤¹¤¬[false]¤Ë¤¹¤ë¤³¤È¤ò¤ª´«¤á¤·¤Þ¤¹');
-define('_LANG_INST_BASE_VALUE16','Åê¹Æ»þ¤Ë¥¹¥Þ¥¤¥ê¡¼¥¢¥¤¥³¥ó¤Î»ÈÍÑ¤òµö²Ä¤¹¤ë¤³¤È¤Ç¡¢ÈùÌ¯¤Ê¥Ë¥å¥¢¥ó¥¹¤òÅÁ¤¨¤ë¤³¤È¤¬²ÄÇ½¤È¤Ê¤ê¤Þ¤¹');
+define('_LANG_INST_BASE_VALUE14','½ÅÍ×! Ãæ¹ñ¸ì¡¢ÆüËÜ¸ì¡¢´Ú¹ñ¸ì¤½¤ÎÂ¾¤Î¥Þ¥ë¥Á¥Ð¥¤¥È¸À¸ì¤Ç¤Î<br>»ÈÍÑ»þ¤Ë¤ÏÉ¬¤º[false]¤Ë¤·¤Æ¤¯¤À¤µ¤¤');
+define('_LANG_INST_BASE_VALUE15','¥¿¥°¤òµö²Ä¤·¤¿¾ì¹ç¡¢¤½¤ì¤¬°­¤¤·ë²Ì¤ò¾·¤¯¾ì¹ç¤¬¤¢¤ê¤Þ¤¹¡£<br>ÍøÍÑ¾õ¶·¤Ë¤â¤è¤ê¤Þ¤¹¤¬[false]¤Ë¤¹¤ë¤³¤È¤ò¤ª´«¤á¤·¤Þ¤¹');
+define('_LANG_INST_BASE_VALUE16','Åê¹Æ»þ¤Ë¥¹¥Þ¥¤¥ê¡¼¥¢¥¤¥³¥ó¤Î»ÈÍÑ¤òµö²Ä¤¹¤ë¤³¤È¤Ç¡¢<br>ÈùÌ¯¤Ê¥Ë¥å¥¢¥ó¥¹¤òÅÁ¤¨¤ë¤³¤È¤¬²ÄÇ½¤È¤Ê¤ê¤Þ¤¹');
 define('_LANG_INST_BASE_VALUE17','¥¹¥Þ¥¤¥ê¡¼¥¢¥¤¥³¥ó¤Î¤¢¤ë¥Ç¥£¥ì¥¯¥È¥ê¤ò»ØÄê (ºÇ¸å¤Î¥¹¥é¥Ã¥·¥å¤ÏÉÔÍ×)');
-define('_LANG_INST_BASE_VALUE18','¥³¥á¥ó¥ÈÅê¹Æ»þ¤ËÌ¾Á°¤È¥á¡¼¥ë¥¢¥É¥ì¥¹¤ÎÆþÎÏ¤òÉ¬¿Ü¤Ë¤¹¤ë¡£[false]¤Ë¤¹¤ë¤È¡¢¤½¤ì¤é¤¬Ì¤µ­Æþ¤Ç¤â¥³¥á¥ó¥È¤òÅê¹Æ¤¹¤ë¤³¤È¤¬½ÐÍè¤Þ¤¹');
+define('_LANG_INST_BASE_VALUE18','¥³¥á¥ó¥ÈÅê¹Æ»þ¤ËÌ¾Á°¤È¥á¡¼¥ë¥¢¥É¥ì¥¹¤ÎÆþÎÏ¤òÉ¬¿Ü¤Ë¤¹¤ë¡£<br>[false]¤Ë¤¹¤ë¤È¡¢¤½¤ì¤é¤¬Ì¤µ­Æþ¤Ç¤â¥³¥á¥ó¥È¤òÅê¹Æ¤¹¤ë¤³¤È¤¬½ÐÍè¤Þ¤¹');
 define('_LANG_INST_BASE_VALUE20','¥³¥á¥ó¥È¤¬Åê¹Æ¤µ¤ì¤¿ºÝ¥á¡¼¥ëÄÌÃÎ¤¹¤ë');
 /* rss/rdf feeds */
 define('_LANG_INST_BASE_VALUE21','RSS¤Ë½ÐÎÏ¤¹¤ëµ­»ö¿ô');
-define('_LANG_INST_BASE_VALUE22','RSS¤Ë½ÐÎÏ¤¹¤ë¸À¸ì ( »²¹Í : <a href="http://backend.userland.com/stories/storyReader$16" target="_blank">http://backend.userland.com/stories/storyReader$16</a>');
+define('_LANG_INST_BASE_VALUE22','RSS¤Ë½ÐÎÏ¤¹¤ë¸À¸ì<br>(»²¹Í:<a href="http://backend.userland.com/stories/storyReader$16" target="_blank">http://backend.userland.com/stories/storyReader$16</a>');
 define('_LANG_INST_BASE_VALUE23','b2rss.php¤Ë¤Æ&lt;description>Ãæ¤ËHTML¥¿¥°¤òµö²Ä¤·¤Þ¤¹¤« ?');
-define('_LANG_INST_BASE_VALUE24','RSS¤Ç½ÐÎÏ¤¹¤ëÈ´¿èµ­»ö¤ÎÄ¹¤µ(0=ÌµÀ©¸Â) Ãí : b2rss.php¤Ç¤Ï¥³¡¼¥É²½¤µ¤ì¤¿HTML¤ò»ÈÍÑ¤¹¤ì¤Ð0¤Ë¥»¥Ã¥È¤µ¤ì¤Þ¤¹¡£');
+define('_LANG_INST_BASE_VALUE24','RSS¤Ç½ÐÎÏ¤¹¤ëÈ´¿èµ­»ö¤ÎÄ¹¤µ(0=ÌµÀ©¸Â)<br>Ãí : b2rss.php¤Ç¤Ï¥³¡¼¥É²½¤µ¤ì¤¿HTML¤ò»ÈÍÑ¤¹¤ì¤Ð0¤Ë¥»¥Ã¥È¤µ¤ì¤Þ¤¹¡£');
 define('_LANG_INST_BASE_VALUE25','RSS½ÐÎÏÍÑ¤ËÈ´¿è¥Õ¥£¡¼¥ë¥É¤ò»ÈÍÑ¤¹¤ë');
 define('_LANG_INST_BASE_VALUE26','Åê¹Æµ­»ö¤òhttp://weblogs.com/¤Ë¤Æ¥ê¥¹¥È²½¤µ¤ì¤ë¤³¤È¤òµö²Ä¤¹¤ë');
 define('_LANG_INST_BASE_VALUE27','Åê¹Æµ­»ö¤òhttp://blo.gs/¤Ë¤Æ¥ê¥¹¥È²½¤µ¤ì¤ë¤³¤È¤òµö²Ä¤¹¤ë');
 define('_LANG_INST_BASE_VALUE28','¤³¤ì¤òÊÑ¹¹¤¹¤ëÉ¬Í×¤Ï¤¢¤ê¤Þ¤»¤ó');
-define('_LANG_INST_BASE_VALUE29','Trackback¤Î»ÈÍÑ¤òµö²Ä¤¹¤ë¤«¤·¤Ê¤¤¤«¤òÀßÄê¤·¤Æ¤¯¤À¤µ¤¤¡¡[false]¤Ë¤¹¤ë¤ÈÍøÍÑ¤Ç¤­¤Ê¤¯¤Ê¤ê¤Þ¤¹¡£');
-define('_LANG_INST_BASE_VALUE30','Pingback¤Î»ÈÍÑ¤òµö²Ä¤¹¤ë¤«¤·¤Ê¤¤¤«¤òÀßÄê¤·¤Æ¤¯¤À¤µ¤¤¡¡[false]¤Ë¤¹¤ë¤ÈÍøÍÑ¤Ç¤­¤Ê¤¯¤Ê¤ê¤Þ¤¹¡£');
+define('_LANG_INST_BASE_VALUE29','Trackback¤Î»ÈÍÑ¤òµö²Ä¤¹¤ë¤«¤·¤Ê¤¤¤«¤òÀßÄê¤·¤Æ¤¯¤À¤µ¤¤<br>[false]¤Ë¤¹¤ë¤ÈÍøÍÑ¤Ç¤­¤Ê¤¯¤Ê¤ê¤Þ¤¹¡£');
+define('_LANG_INST_BASE_VALUE30','Pingback¤Î»ÈÍÑ¤òµö²Ä¤¹¤ë¤«¤·¤Ê¤¤¤«¤òÀßÄê¤·¤Æ¤¯¤À¤µ¤¤<br>[false]¤Ë¤¹¤ë¤ÈÍøÍÑ¤Ç¤­¤Ê¤¯¤Ê¤ê¤Þ¤¹¡£');
 define('_LANG_INST_BASE_VALUE31','[true]¤Ç¥Õ¥¡¥¤¥ë¤Î¥¢¥Ã¥×¥í¡¼¥É¤òµö²Ä¡¢[false]¤Ç¶Ø»ß');
-define('_LANG_INST_BASE_VALUE32','²èÁü¤ò¥¢¥Ã¥×¥í¡¼¥É¤¹¤ë¥Ç¥£¥ì¥¯¥È¥ê¤òÀäÂÐ¥Ñ¥¹¤Ç»ØÄê¤·¤Æ¤¯¤À¤µ¤¤(ºÇ¸å¤Î¥¹¥é¥Ã¥·¥å¤ÏÉÔÍ×)¡¡¥µ¡¼¥Ð¡¼¤¬UNIX´Ä¶­¤Î¾ì¹ç¤Ï¡¢³ºÅö¥Ç¥£¥ì¥¯¥È¥ê¤Î¥Ñ¡¼¥ß¥Ã¥·¥ç¥ó¤ò[766]°Ê¾å¤Ë¤·¤Æ¤¯¤À¤µ¤¤');
-define('_LANG_INST_BASE_VALUE33','¤½¤Î¥Ç¥£¥ì¥¯¥È¥ê¡¼¤ÎURL¤òÆþÎÏ¤·¤Þ¤¹(¥¢¥Ã¥×¥í¡¼¥É¤µ¤ì¤¿¥Õ¥¡¥¤¥ë¤Ø¤Î¥ê¥ó¥¯¤òÀ¸À®¤¹¤ë¤¿¤á¤Ë»ÈÍÑ¤µ¤ì¤Þ¤¹)¡¡¤³¤Á¤é¤âºÇ¸å¤Î¥¹¥é¥Ã¥·¥å¤ÏÉÔÍ×¤Ç¤¹');
-define('_LANG_INST_BASE_VALUE34','µö²Ä¤¹¤ë¥Õ¥¡¥¤¥ë¥¿¥¤¥×¤ò»ØÄê¤·¤Þ¤¹¡¡¤³¤Î¥ê¥¹¥È¤ÏÁý¤¹¤³¤È¤¬¤Ç¤­¤Þ¤¹(³Æ¥Õ¥¡¥¤¥ë¥¿¥¤¥×¤ÏÈ¾³Ñ¥¹¥Ú¡¼¥¹¤Ç¶èÀÚ¤Ã¤Æ¤¯¤À¤µ¤¤)');
-define('_LANG_INST_BASE_VALUE35','¥¢¥Ã¥×¥í¡¼¥É²ÄÇ½¤Ê¥Õ¥¡¥¤¥ë¥µ¥¤¥º¤ò»ØÄê¤·¤Æ¤¯¤À¤µ¤¤¡£ ¤Û¤È¤ó¤É¤Î¥µ¡¼¥Ð¡¼¤Ç¤Ï2048KB¤ËÀ©¸Â¤µ¤ì¤Æ¤¤¤Þ¤¹(¥µ¡¼¥Ð¡¼¤Î¸Â³¦ÃÍ¤è¤ê¹â¤¤ÃÍ¤ò¥»¥Ã¥È¤·¤Æ¤â°ÕÌ£¤¬¤¢¤ê¤Þ¤»¤ó)');
+define('_LANG_INST_BASE_VALUE32','²èÁü¤ò¥¢¥Ã¥×¥í¡¼¥É¤¹¤ë¥Ç¥£¥ì¥¯¥È¥ê¤òÀäÂÐ¥Ñ¥¹¤Ç»ØÄê¤·¤Æ¤¯¤À¤µ¤¤<br>(ºÇ¸å¤Î¥¹¥é¥Ã¥·¥å¤ÏÉÔÍ×)¡¡¥µ¡¼¥Ð¡¼¤¬UNIX´Ä¶­¤Î¾ì¹ç¤Ï¡¢<br>³ºÅö¥Ç¥£¥ì¥¯¥È¥ê¤Î¥Ñ¡¼¥ß¥Ã¥·¥ç¥ó¤ò[766]°Ê¾å¤Ë¤·¤Æ¤¯¤À¤µ¤¤');
+define('_LANG_INST_BASE_VALUE33','¤½¤Î¥Ç¥£¥ì¥¯¥È¥ê¡¼¤ÎURL¤òÆþÎÏ¤·¤Þ¤¹<br>(¥¢¥Ã¥×¥í¡¼¥É¤µ¤ì¤¿¥Õ¥¡¥¤¥ë¤Ø¤Î¥ê¥ó¥¯¤òÀ¸À®¤¹¤ë¤¿¤á¤Ë»ÈÍÑ¤µ¤ì¤Þ¤¹)<br>¤³¤Á¤é¤âºÇ¸å¤Î¥¹¥é¥Ã¥·¥å¤ÏÉÔÍ×¤Ç¤¹');
+define('_LANG_INST_BASE_VALUE34','µö²Ä¤¹¤ë¥Õ¥¡¥¤¥ë¥¿¥¤¥×¤ò»ØÄê¤·¤Þ¤¹ ¤³¤Î¥ê¥¹¥È¤ÏÁý¤¹¤³¤È¤¬¤Ç¤­¤Þ¤¹<br>(³Æ¥Õ¥¡¥¤¥ë¥¿¥¤¥×¤ÏÈ¾³Ñ¥¹¥Ú¡¼¥¹¤Ç¶èÀÚ¤Ã¤Æ¤¯¤À¤µ¤¤)');
+define('_LANG_INST_BASE_VALUE35','¥¢¥Ã¥×¥í¡¼¥É²ÄÇ½¤Ê¥Õ¥¡¥¤¥ë¥µ¥¤¥º¤ò»ØÄê¤·¤Æ¤¯¤À¤µ¤¤¡£<br>¤Û¤È¤ó¤É¤Î¥µ¡¼¥Ð¡¼¤Ç¤Ï2048KB¤ËÀ©¸Â¤µ¤ì¤Æ¤¤¤Þ¤¹<br>(¥µ¡¼¥Ð¡¼¤Î¸Â³¦ÃÍ¤è¤ê¹â¤¤ÃÍ¤ò¥»¥Ã¥È¤·¤Æ¤â°ÕÌ£¤¬¤¢¤ê¤Þ¤»¤ó)');
 define('_LANG_INST_BASE_VALUE36','¥Õ¥¡¥¤¥ë¤Î¥¢¥Ã¥×¥í¡¼¥É¤òµö²Ä¤¹¤ë¥æ¡¼¥¶¡¼¥ì¥Ù¥ë¤òÀßÄê¤·¤Æ¤¯¤À¤µ¤¤');
-define('_LANG_INST_BASE_VALUE37','¾å¤ÎÀßÄê¤È¤Ï´Ø·¸¤Ê¤¯¡¢´ÉÍý¿Í¤¬ÀßÄê¤·¤¿ÆÃÄê¤Î¥æ¡¼¥¶¡¼¤À¤±¥Õ¥¡¥¤¥ë¤Î¥¢¥Ã¥×¥í¡¼¥É¤òµö²Ä¤¹¤ë¤³¤È¤â½ÐÍè¤Þ¤¹¡¡¤½¤Î¾ì¹ç¤Ï¤³¤Á¤é¤Ç¥æ¡¼¥¶¡¼Ì¾¤ò»ØÄê¤·¤Þ¤¹¡£ Ê£¿ô¤Î¾ì¹ç¤ÏÈ¾³Ñ¥¹¥Ú¡¼¥¹¤Ç¶èÀÚ¤Ã¤Æ¤¯¤À¤µ¤¤¡£');
+define('_LANG_INST_BASE_VALUE37','¾å¤ÎÀßÄê¤È¤Ï´Ø·¸¤Ê¤¯¡¢´ÉÍý¿Í¤¬ÀßÄê¤·¤¿ÆÃÄê¤Î¥æ¡¼¥¶¡¼¤À¤±¥Õ¥¡¥¤¥ë¤Î<br>¥¢¥Ã¥×¥í¡¼¥É¤òµö²Ä¤¹¤ë¤³¤È¤â½ÐÍè¤Þ¤¹¡£<br>¤½¤Î¾ì¹ç¤Ï¤³¤Á¤é¤Ç¥æ¡¼¥¶¡¼Ì¾¤ò»ØÄê¤·¤Þ¤¹¡£<br>Ê£¿ô¤Î¾ì¹ç¤ÏÈ¾³Ñ¥¹¥Ú¡¼¥¹¤Ç¶èÀÚ¤Ã¤Æ¤¯¤À¤µ¤¤¡£');
 /* email settings */
 define('_LANG_INST_BASE_VALUE38','¥á¡¼¥ë¥µ¡¼¥Ð¡¼Ì¾');
 define('_LANG_INST_BASE_VALUE39','¥í¥°¥¤¥óÌ¾');
@@ -625,10 +642,10 @@ define('_LANG_INST_BASE_VALUE40','¥Ñ¥¹¥ï¡¼¥É');
 define('_LANG_INST_BASE_VALUE41','¥Ý¡¼¥ÈÈÖ¹æ');
 define('_LANG_INST_BASE_VALUE42','Åê¹Æ¤¹¤ë¥Ç¥Õ¥©¥ë¥È¥«¥Æ¥´¥ê¡¼¤Î»ØÄê');
 define('_LANG_INST_BASE_VALUE43','ÂêÌ¾¤Ë¤Ä¤±¤ëÀÜÆ¬¸ì');
-define('_LANG_INST_BASE_VALUE44','¥¿¡¼¥ß¥Í¡¼¥¿¡¼¥¹¥È¥ê¥ó¥°(ËÜÊ¸¤«¤é¤³¤ÎÊ¸»úÎó¤Ç»Ï¤Þ¤ëÉôÊ¬¤òºï½ü¤¹¤ë)');
+define('_LANG_INST_BASE_VALUE44','¥¿¡¼¥ß¥Í¡¼¥¿¡¼¥¹¥È¥ê¥ó¥°<br>(ËÜÊ¸¤«¤é¤³¤ÎÊ¸»úÎó¤Ç»Ï¤Þ¤ëÉôÊ¬¤òºï½ü¤¹¤ë)');
 define('_LANG_INST_BASE_VALUE45','[true]¤Ë¤¹¤ë¤È¥Æ¥¹¥È¥â¡¼¥É¤Ë¤Ê¤ê¤Þ¤¹');
-define('_LANG_INST_BASE_VALUE46','¤³¤³¤ò[true]¤Ë¤¹¤ë¤³¤È¤Ç¡¢·ÈÂÓÅÅÏÃ¤Î¥á¡¼¥ë¥µ¡¼¥Ó¥¹¤Ê¤É¤«¤é¤ÎÊ¬³ä¤·¤¿ÆâÍÆ¤Ç¤â°ì¤Ä¤ÎËÜÊ¸¤È¤·¤ÆÄ´À°¤µ¤ì¤Þ¤¹');
-define('_LANG_INST_BASE_VALUE47','¥á¥Ã¥»¡¼¥¸¤òÁ÷¿®¤¹¤ëºÝ¤Ï¥í¥°¥¤¥óÌ¾¤ËÂ³¤±¤Æ¥Ñ¥¹¥ï¡¼¥É¤òÆþ¤ì¤Þ¤¹¡£ Ê¬³äÁ÷¿®¤·¤¿Ê¸¾Ï¤ò·Ò¤²¤ë¤¿¤á¤Î¥»¥Ñ¥ì¡¼¥¿¡¼¥¹¥È¥ê¥ó¥°¤ò¤³¤³¤Ç»ØÄê¤·¤Æ¤¯¤À¤µ¤¤¡£');
+define('_LANG_INST_BASE_VALUE46','¤³¤³¤ò[true]¤Ë¤¹¤ë¤³¤È¤Ç¡¢·ÈÂÓÅÅÏÃ¤Î¥á¡¼¥ë¥µ¡¼¥Ó¥¹¤Ê¤É¤«¤é¤Î<br>Ê¬³ä¤·¤¿ÆâÍÆ¤Ç¤â°ì¤Ä¤ÎËÜÊ¸¤È¤·¤ÆÄ´À°¤µ¤ì¤Þ¤¹');
+define('_LANG_INST_BASE_VALUE47','¥á¥Ã¥»¡¼¥¸¤òÁ÷¿®¤¹¤ëºÝ¤Ï¥í¥°¥¤¥óÌ¾¤ËÂ³¤±¤Æ¥Ñ¥¹¥ï¡¼¥É¤òÆþ¤ì¤Þ¤¹¡£<br> Ê¬³äÁ÷¿®¤·¤¿Ê¸¾Ï¤ò·Ò¤²¤ë¤¿¤á¤Î¥»¥Ñ¥ì¡¼¥¿¡¼¥¹¥È¥ê¥ó¥°¤ò<br>¤³¤³¤Ç»ØÄê¤·¤Æ¤¯¤À¤µ¤¤¡£');
 define('_LANG_INST_BASE_VALUE48','¥¤¥ó¥Ç¥Ã¥¯¥¹¤ËÉ½¼¨¤¹¤ëÅê¹Æ¿ô');
 define('_LANG_INST_BASE_VALUE49','Åê¹ÆÊÌ¡¢ÆüÉÕÊÌ¤Ê¤É¤ÎÉ½¼¨¥¹¥¿¥¤¥ë¤ÎÁªÂò');
 define('_LANG_INST_BASE_VALUE50','¥¢¡¼¥«¥¤¥Ö²½¤¹¤ëÃ±°Ì¤ÎÁªÂò');
@@ -652,10 +669,10 @@ define('_LANG_INST_BASE_VALUE58','PingBack¤Ë¤è¤ëÅê¹Æ¤ò¥Ç¥Õ¥©¥ë¥È¤Ç¥Á¥§¥Ã¥¯¤¹¤ë')
 define('_LANG_INST_BASE_VALUE59','¿·µ¬Åê¹Æ¤Î¥Ç¥Õ¥©¥ë¥È¥«¥Æ¥´¥ê¡¼');
 define('_LANG_INST_BASE_VALUE83','ÊÔ½¸¥Õ¥©¡¼¥à¤ËÉ½¼¨¤¹¤ëµ­»ö¤Î¿ô (min 3, max 100)');
 define('_LANG_INST_BASE_VALUE60','¥ê¥ó¥¯¤òÊÔ½¸¤Ç¤­¤ë¥æ¡¼¥¶¡¼¥ì¥Ù¥ë¤ÎÀßÄê');
-define('_LANG_INST_BASE_VALUE61','¤³¤³¤ò[false]¤Ë¤¹¤ë¤³¤È¤Ç¤¹¤Ù¤Æ¤Î¥ê¥ó¥¯¤¬É½¼¨¤µ¤ì¡¢Ã¯¤Ç¤â¥ê¥ó¥¯¥Þ¥Í¡¼¥¸¥ã¡¼¤òÊÔ½¸¤¹¤ë¤³¤È¤¬½ÐÍè¤ë¤è¤¦¤Ë¤Ê¤ê¤Þ¤¹');
+define('_LANG_INST_BASE_VALUE61','¤³¤³¤ò[false]¤Ë¤¹¤ë¤³¤È¤Ç¤¹¤Ù¤Æ¤Î¥ê¥ó¥¯¤¬É½¼¨¤µ¤ì¡¢<br>Ã¯¤Ç¤â¥ê¥ó¥¯¥Þ¥Í¡¼¥¸¥ã¡¼¤òÊÔ½¸¤¹¤ë¤³¤È¤¬½ÐÍè¤ë¤è¤¦¤Ë¤Ê¤ê¤Þ¤¹');
 define('_LANG_INST_BASE_VALUE62','É¾²ÁÉ½¼¨¤Ë»ÈÍÑ¤¹¤ë¥¿¥¤¥×¤ò»ØÄê¤·¤Þ¤¹');
 define('_LANG_INST_BASE_VALUE63','µ­¹æ¤ò»È¤¦¾ì¹ç¤³¤³¤Ç»ØÄê¤·¤Þ¤¹');
-define('_LANG_INST_BASE_VALUE64','0¤Î²ÁÃÍ¤ò»ØÄê¤·¤Þ¤¹¡£ ¤³¤³¤ò[true]¤Ë¤·¤¿¾ì¹ç¡¢0¤ÏÉ¾²Á¤Î´ð½à¤Ë¤Ê¤ê¤Þ¤»¤ó');
+define('_LANG_INST_BASE_VALUE64','0¤Î²ÁÃÍ¤ò»ØÄê¤·¤Þ¤¹¡£ ¤³¤³¤ò[true]¤Ë¤·¤¿¾ì¹ç¡¢<br>0¤ÏÉ¾²Á¤Î´ð½à¤Ë¤Ê¤ê¤Þ¤»¤ó');
 define('_LANG_INST_BASE_VALUE65','Æ±¤¸É¾²Á¥Ý¥¤¥ó¥È¤Ë¤ÏÆ±¤¸¥¤¥á¡¼¥¸¤ò»ÈÍÑ¤¹¤ë');
 define('_LANG_INST_BASE_VALUE66','É¾²Á0¤Î¥¤¥á¡¼¥¸');
 define('_LANG_INST_BASE_VALUE67','É¾²Á1¤Î¥¤¥á¡¼¥¸');
@@ -694,10 +711,10 @@ define('_LANG_UPG_STEP_INFO3','<p>¤³¤Î¥×¥í¥»¥¹¤À¤±¤Ç¤¹¤Ù¤Æ¤Îºî¶È¤¬´°Î»¤·¤Þ¤·¤¿¡£
 
 /* File Name wp-admin/upgrade-functions.php */
 define('_LANG_INST_BASE_VALUE88','¾µÇ§¤µ¤ì¤¿¥³¥á¥ó¥È¤Î¤ßÉ½¼¨¤µ¤ì¤ë¤è¤¦¤Ë¤¹¤ë¡£');
-define('_LANG_INST_BASE_VALUE89','¤³¤³¤ò[true]¤Ë¤·¤Æ¤ª¤¯¤³¤È¤Ç¡¢¾µÇ§ÂÔ¤Á¥³¥á¥ó¥È¤¬¤¢¤ë¤³¤È¤ò¥á¡¼¥ë¤ÇÄÌÃÎ²ÄÇ½¤Ë¤Ê¤ê¤Þ¤¹¡£');
+define('_LANG_INST_BASE_VALUE89','¤³¤³¤ò[true]¤Ë¤·¤Æ¤ª¤¯¤³¤È¤Ç¡¢¾µÇ§ÂÔ¤Á¥³¥á¥ó¥È¤¬¤¢¤ë¤³¤È¤ò<br>¥á¡¼¥ë¤ÇÄÌÃÎ²ÄÇ½¤Ë¤Ê¤ê¤Þ¤¹¡£');
 define('_LANG_INST_BASE_VALUE90','¥Ñ¡¼¥Þ¥Í¥ó¥È¥ê¥ó¥¯¥ª¥×¥·¥ç¥ó¤Ë¤Ä¤¤¤Æ¤Î¾Ü¤·¤¤ÀâÌÀ¤Ï<a href="options-permalink.php">¤³¤Á¤é¤Î¥Ú¡¼¥¸</a>¤Ç¤´Í÷¤¤¤¿¤À¤±¤Þ¤¹¡£');
-define('_LANG_INST_BASE_VALUE91','¥Õ¥¡¥¤¥ë½ÐÎÏ»þ¤Ëgzip¤òÍ­¸ú¤Ë¤¹¤ë¤«¤É¤¦¤«¤òÁªÂò¤·¤Æ¤¯¤À¤µ¤¤¡£ ¤ª»È¤¤¤Î¥¦¥§¥Ö¥µ¡¼¥Ð¡¼Apache¤Ëmod_gzip¤È¤¤¤¦¥â¥¸¥å¡¼¥ë¤¬ÁÈ¤ß¹þ¤Þ¤ì¤Æ¤¤¤Ê¤¤¾ì¹ç¤Ï¡¢¤³¤³¤ò[true]¤Ë¤·¤Æ¤¯¤À¤µ¤¤¡£');
-define('_LANG_INST_BASE_VALUE92','Hack¥Õ¥¡¥¤¥ë¤ò»ÈÍÑ¤¹¤ë¾ì¹ç¤Ï¤³¤³¤ò[true]¤Ë¤·¤Æ¤¯¤À¤µ¤¤¡£ Hack¥Õ¥¡¥¤¥ë¤ÏWordPress¤Î¥ë¡¼¥È¾å¤ËÃÖ¤¤¤Æ¡¢my-hacks.php¤Î¤è¤¦¤Ë¸Æ¤Ó½Ð¤·¤Þ¤¹¡£ ¤³¤ì¤Ï¥¢¥Ã¥×¥°¥ì¡¼¥É»þ¤Ë¾å½ñ¤­¤µ¤ì¤Ê¤¤¤è¤¦¤Ë¤¹¤ë¤¿¤á¤Î¤â¤Î¤Ç¤¹¡£');
+define('_LANG_INST_BASE_VALUE91','¥Õ¥¡¥¤¥ë½ÐÎÏ»þ¤Ëgzip¤òÍ­¸ú¤Ë¤¹¤ë¤«¤É¤¦¤«¤òÁªÂò¤·¤Æ¤¯¤À¤µ¤¤¡£ <br>¤ª»È¤¤¤Î¥¦¥§¥Ö¥µ¡¼¥Ð¡¼Apache¤Ëmod_gzip¤È¤¤¤¦¥â¥¸¥å¡¼¥ë¤¬<br>ÁÈ¤ß¹þ¤Þ¤ì¤Æ¤¤¤Ê¤¤¾ì¹ç¤Ï¡¢¤³¤³¤ò[true]¤Ë¤·¤Æ¤¯¤À¤µ¤¤¡£');
+define('_LANG_INST_BASE_VALUE92','Hack¥Õ¥¡¥¤¥ë¤ò»ÈÍÑ¤¹¤ë¾ì¹ç¤Ï¤³¤³¤ò[true]¤Ë¤·¤Æ¤¯¤À¤µ¤¤¡£<br>Hack¥Õ¥¡¥¤¥ë¤ÏWordPress¤Î¥ë¡¼¥È¾å¤ËÃÖ¤¤¤Æ¡¢my-hacks.php¤Î<br>¤è¤¦¤Ë¸Æ¤Ó½Ð¤·¤Þ¤¹¡£<br>¤³¤ì¤Ï¥¢¥Ã¥×¥°¥ì¡¼¥É»þ¤Ë¾å½ñ¤­¤µ¤ì¤Ê¤¤¤è¤¦¤Ë¤¹¤ë¤¿¤á¤Î¤â¤Î¤Ç¤¹¡£');
 define('_LANG_INST_BASE_VALUE93','Blog¤Î¥­¥ã¥é¥¯¥¿¡¼¥»¥Ã¥È (<a href="http://developer.apple.com/documentation/macos8/TextIntlSvcs/TextEncodingConversionManager/TEC1.5/TEC.b0.html">Ê¸»ú¥³¡¼¥É¥ê¥¹¥È</a>');
 define('_LANG_INST_BASE_VALUE94','¥°¥ê¥Ë¥Ã¥¸É¸½à»þ(GMT)¤«¤é¤Î»þº¹');
 

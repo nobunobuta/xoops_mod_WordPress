@@ -45,23 +45,21 @@ if( ! defined( 'WP_AUTHORS_INCLUDED' ) ) {
 		$idmode = (empty($options[1]))? '' : $options[1];
 		$show_rss2_icon = (empty($options[2]))? 0 : $options[2];
 
-		global $wpdb, $siteurl,  $wp_id, $wp_inblock ,$user_cache;
-
 		$id=1;
-		$use_cache=1;
-		
+		$GLOBALS['use_cache'] = 1;
+
 		if ($wp_num == "") {
-			$wp_id = $wp_num;
-			$wp_inblock = 1;
+			$GLOBALS['wp_id'] = $wp_num;
+			$GLOBALS['wp_inblock'] = 1;
 			require(dirname(__FILE__).'/../wp-config.php');
-			$wp_inblock = 0;
+			$GLOBALS['wp_inblock'] = 0;
 		}
 		$optioncount = ($with_count == 1);
 		$exclude_admin = false;
 		$show_fullname = false;
 		$hide_empty = true;
 		$feed = ($show_rss2_icon == 1) ? 'rss2' : '' ;
-		$feed_image = ($show_rss2_icon == 1) ? $siteurl.'/wp-images/rss-mini.gif' : '';
+		$feed_image = ($show_rss2_icon == 1) ? wp_siteurl().'/wp-images/rss-mini.gif' : '';
 		ob_start();
 		block_style_get($wp_num);
 		echo "<ul class='wpBlockList'>\n";
@@ -79,11 +77,10 @@ if( ! defined( 'WP_AUTHORS_INCLUDED' ) ) {
 		}
 
 		function b_wp'.$i.'_authors_show($options) {
-		global $wpdb, $siteurl,  $wp_id, $wp_inblock ,$user_cache;
-			$wp_id = "'.$i.'";
-			$wp_inblock = 1;
+			$GLOBALS["wp_id"] = "'.$i.'";
+			$GLOBALS["wp_inblock"] = 1;
 			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
-			$wp_inblock = 0;
+			$GLOBALS["wp_inblock"] = 0;
 			return (b_wp_authors_show($options,"'.$i.'"));
 		}
 	');

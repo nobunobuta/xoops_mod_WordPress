@@ -1,0 +1,71 @@
+<{if $deleted || $approved || $ignored}>
+<div class="wrap">
+  <{if $approved}> {
+    <{if $approved == "1"}>
+  1<{$smarty.const._LANG_WPM_COM_APPROV}><br />
+    <{else}>
+  <{$approved}><{$smarty.const._LANG_WPM_COMS_APPROVS}><br />
+    <{/if}>
+  <{/if}>
+  <{if $deleted}> {
+    <{if $deleted == "1"}>
+  1<{$smarty.const._LANG_WPM_COM_DEL}><br />
+    <{else}>
+  <{$deleted}><{$smarty.const._LANG_WPM_COMS_DELS}><br />
+    <{/if}>
+  <{/if}>
+  <{if $ignored}> {
+    <{if $ignored == "1"}>
+  1<{$smarty.const._LANG_WPM_COM_UNCHANGE}><br />
+    <{else}>
+  <{$ignored}><{$smarty.const._LANG_WPM_COMS_UNCHANGES}><br />
+    <{/if}>
+  <{/if}>
+</div>
+<{/if}>
+<div class="wrap">
+<{if $comment_rows}>
+  <p><{$smarty.const._LANG_WPM_WAIT_APPROVAL}></p>
+  <form name="approval" action="moderation.php" method="post">
+    <input type="hidden" name="action" value="update" />
+    <ol id="comments">
+  <{foreach item=comment from=$comment_rows}>
+      <li id='comment-$comment->comment_ID'>
+        <p><strong><{$smarty.const._LANG_WPM_COMPOST_NAME}></strong> <{$comment.comment_author}>
+    <{if $comment.comment_author_email}>
+        | <strong><{$smarty.const._LANG_WPM_COMPOST_MAIL}></strong> <{$comment.comment_author_emaial}> 
+    <{/if}>
+    <{if $comment.comment_author_url}>
+        | <strong><{$smarty.const._LANG_WPM_COMPOST_URL}></strong> <{$comment.comment_author_url}>
+    <{/if}>
+        | <strong>IP:</strong> <a href="http://ws.arin.net/cgi-bin/whois.pl?queryinput=<{$comment.comment_author_IP}>"><{$comment.comment_author_IP}></a></p>
+        <{$comment.comment_content}>
+        <p>Posted <{$comment.comment_date}> | 
+        <a href="post.php?action=editcomment&amp;comment=<{$comment.comment_ID}>"><{$smarty.const._LANG_WPM_JUST_EDIT}></a>
+        | <a href="post.php?action=confirmdeletecomment&amp;p=<{$comment.comment_post_ID}>&amp;comment=<{$comment.comment_ID}>&amp;referredby=moderation"><{$smarty.const._LANG_WPM_JUST_THIS}></a>
+        | <{$smarty.const._LANG_WPM_DO_ACTION}>
+        <input type="radio" name="comment[<{$comment.comment_ID}>]" id="comment[<{$comment.comment_ID}>]-approve" value="approve" /> <label for="comment[<{$comment.comment_ID}>]-approve"><{$smarty.const._LANG_WPM_DO_APPROVE}></label>
+        <input type="radio" name="comment[<{$comment.comment_ID}>]" id="comment[<{$comment.comment_ID}>]-delete" value="delete" /> <label for="comment[<{$comment.comment_ID}>]-delete"><{$smarty.const._LANG_WPM_DO_DELETE}></label>
+        <input type="radio" name="comment[<{$comment.comment_ID}>]" id="comment[<{$comment.comment_ID}>]-nothing" value="later" checked="checked" /> <label for="comment[<{$comment.comment_ID}>]-nothing"><{$smarty.const._LANG_WPM_DO_NOTHING}></label>
+      </li>
+  <{/foreach}>
+    </ol>
+    <input type="submit" name="submit" value="<{$smarty.const._LANG_WPM_MODERATE_BUTTON}>" />
+    <{$ticket}>
+  </form>
+<{else}>
+  <{$smarty.const._LANG_WPM_CURR_COMAPP}>
+<{/if}>
+</div>
+<{if $comment_rows}>
+<div class="wrap"> 
+  <{$smarty.const._LANG_WPM_DEL_LATER}>
+  <{$smarty.const._LANG_WPM_PUBL_VISIBLE}>
+  <{if $comments_notify == '1' }>
+  : <{$smarty.const._LANG_WPM_AUTHOR_NOTIFIED}></p>
+  <{else}>	
+  </p>
+  <{/if}>
+  <{$smarty.const._LANG_WPM_ASKED_AGAIN}>
+</div>
+<{/if}>

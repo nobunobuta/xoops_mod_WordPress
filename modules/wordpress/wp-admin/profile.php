@@ -1,346 +1,142 @@
 <?php
-$title = "Profile";
-/* <Profile | My Profile> */
+require_once('admin.php');
 
-function add_magic_quotes($array) {
-	foreach ($array as $k => $v) {
-		if (is_array($v)) {
-			$array[$k] = add_magic_quotes($v);
-		} else {
-			$array[$k] = addslashes($v);
+$_this_file = 'profile.php';
+$GLOBALS['parent_file'] = 'profile.php';
+
+$userHandler =& wp_handler('User');
+
+init_param('', 'action', 'string', '');
+
+switch(get_param('action')) {
+	case 'update':
+		//Check Ticket
+		if (!$GLOBALS['xoopsWPTicket']->check()) {
+			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $GLOBALS['xoopsWPTicket']->getErrors());
 		}
-	}
-	return $array;
-} 
+		//Check Paramaters
+		init_param('POST', 'newuser_firstname', 'string', '', true);
+		init_param('POST', 'newuser_lastname', 'string', '', true);
+		init_param('POST', 'newuser_nickname', 'string', NO_DEFAULT_PARAM, true);
+		init_param('POST', 'newuser_icq', 'string', '', true);
+		init_param('POST', 'newuser_aim', 'string', '', true);
+		init_param('POST', 'newuser_msn', 'string', '', true);
+		init_param('POST', 'newuser_yim', 'string', '', true);
+		init_param('POST', 'newuser_email', 'string', true, true);
+		init_param('POST', 'newuser_url', 'string', '', true);
+		init_param('POST', 'newuser_idmode', 'string', '', true);
+		init_param('POST', 'user_description', 'html', '', true);
 
-if (!get_magic_quotes_gpc()) {
-	$_GET    = add_magic_quotes($_GET);
-	$_POST   = add_magic_quotes($_POST);
-	$_COOKIE = add_magic_quotes($_COOKIE);
-}
+		$userObject =& $userHandler->create(false);
 
-$wpvarstoreset = array('action','standalone','redirect','profile','user');
-for ($i=0; $i<count($wpvarstoreset); $i += 1) {
-	$wpvar = $wpvarstoreset[$i];
-	if (!isset($$wpvar)) {
-		if (empty($_POST["$wpvar"])) {
-			if (empty($_GET["$wpvar"])) {
-				$$wpvar = '';
-			} else {
-				$$wpvar = $_GET["$wpvar"];
-			}
-		} else {
-			$$wpvar = $_POST["$wpvar"];
+		$userObject->setVar('ID', $GLOBALS['user_ID']);
+		$userObject->setVar('user_firstname', get_param('newuser_firstname'));
+		$userObject->setVar('user_lastname', get_param('newuser_lastname'));
+		$userObject->setVar('user_nickname', get_param('newuser_nickname'));
+		$userObject->setVar('user_icq', get_param('newuser_icq'));
+		$userObject->setVar('user_aim', get_param('newuser_aim'));
+		$userObject->setVar('user_msn', get_param('newuser_msn'));
+		$userObject->setVar('user_yim', get_param('newuser_yim'));
+		$userObject->setVar('user_email', get_param('newuser_email'));
+		$userObject->setVar('user_url', get_param('newuser_url'));
+		$userObject->setVar('newuser_idmode', get_param('newuser_idmode'));
+		$userObject->setVar('user_description', get_param('user_description'));
+		
+		if (!$userHandler->insert($userObject, false, true)) {
+			redirect_header($_this_file, 3, $userHandler->getErrors());
 		}
-	}
-}
+		header('Location: '.$_this_file.'?updated=true');
+		break;
 
-require_once('../wp-config.php');
-require_once(ABSPATH.'/wp-admin/auth.php');
-switch($action) {
-
-case 'update':
-
-	get_currentuserinfo();
-	wp_refcheck("/wp-admin");
-
-	/* checking the nickname has been typed */
-	if (empty($_POST["newuser_nickname"])) {
-		die ("<strong>ERROR</strong>: please enter your nickname (can be the same as your login)");
-		return false;
-	}
-
-	/* if the ICQ UIN has been entered, check to see if it has only numbers */
-	if (!empty($_POST["newuser_icq"])) {
-		if ((ereg("^[0-9]+$",$_POST["newuser_icq"]))==false) {
-			die ("<strong>ERROR</strong>: your ICQ UIN can only be a number, no letters allowed");
-			return false;
+	case 'viewprofile':
+		init_param('GET', 'user', 'integer', NO_DEFAULT_PARAM, true);
+		$userObject =& $userHandler->get(get_param('user'));
+		if (!$userObject) {
+			redirect_header(wp_siteurl(), 0, _LANG_P_CHEATING_ERROR);
 		}
-	}
+		if (isset($GLOBALS['xoopsUser']) && ($GLOBALS['xoopsUser']->getVar('uname') == $userObject->getVar('user_login'))) {
+			header ('Location: '.$_this_file.'?standalone=1');
+		}
+		$GLOBALS['standalone'] = 1;
+		$GLOBALS['title'] = "View Profile";
+		require_once('admin-header.php');
+		$_userinfo =& $userObject->getVarArray();
+		$_userinfo['uniqname'] = $userObject->get_uniqname();
+		$_userinfo['numposts'] = $userObject->getNumPosts(wp_prefix());
+		$_userinfo['user_email'] = make_clickable($_userinfo['user_email']);
+		$_userinfo['user_url'] =  make_clickable($_userinfo['user_url']);
+		$_userinfo['user_icq'] =  $_userinfo['user_icq'] >0 ? make_clickable($_userinfo['user_icq']) : '';
 
-	/* checking e-mail address */
-	if (empty($_POST["newuser_email"])) {
-		die ("<strong>ERROR</strong>: please type your e-mail address");
-		return false;
-	} else if (!is_email($_POST["newuser_email"])) {
-		die ("<strong>ERROR</strong>: the email address isn't correct");
-		return false;
-	}
+		$_wpTpl =& new WordPresTpl('wp-admin');
+		$_wpTpl->assign('user_ID', $GLOBALS['user_ID']);
+		$_wpTpl->assign('userinfo', $_userinfo);
+		$_wpTpl->display('profile-viewprofile.html');
 
-	if ($_POST["pass1"] == "") {
-		if ($_POST["pass2"] != "")
-			die ("<strong>ERROR</strong>: you typed your new password only once. Go back to type it twice.");
-		$updatepassword = "";
-	} else {
-		if ($_POST["pass2"] == "")
-			die ("<strong>ERROR</strong>: you typed your new password only once. Go back to type it twice.");
-		if ($_POST["pass1"] != $_POST["pass2"])
-			die ("<strong>ERROR</strong>: you typed two different passwords. Go back to correct that.");
-		$newuser_pass = $_POST["pass1"];
-		$updatepassword = "user_pass='$newuser_pass', ";
-		setcookie("wordpresspass_".$cookiehash,md5($newuser_pass),time()+31536000);
-	}
+		include('admin-footer.php');
+		break;
 
-	$newuser_firstname=addslashes(stripslashes($_POST['newuser_firstname']));
-	$newuser_lastname=addslashes(stripslashes($_POST['newuser_lastname']));
-	$newuser_nickname=addslashes(stripslashes($_POST['newuser_nickname']));
-	$newuser_icq=addslashes(stripslashes($_POST['newuser_icq']));
-	$newuser_aim=addslashes(stripslashes($_POST['newuser_aim']));
-	$newuser_msn=addslashes(stripslashes($_POST['newuser_msn']));
-	$newuser_yim=addslashes(stripslashes($_POST['newuser_yim']));
-	$newuser_email=addslashes(stripslashes($_POST['newuser_email']));
-	$newuser_url=addslashes(stripslashes($_POST['newuser_url']));
-	$newuser_idmode=addslashes(stripslashes($_POST['newuser_idmode']));
-	$user_description = addslashes(stripslashes($_POST['user_description']));
+	case 'IErightclick':
+		$GLOBALS['standalone'] = 1;
+		$GLOBALS['title'] = 'IE Right Click Register';
+		require_once('admin-header.php');
+		require_once(XOOPS_ROOT_PATH.'/class/template.php');
+		$_regedit = "REGEDIT4\r\n[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\MenuExt\Post To &WP : ".get_settings('blogname')."]\r\n@=\"".wp_siteurl()."/wp-admin/bookmarklet.jp.php\"\r\n\"contexts\"=hex:31\"";
+		
+		$_wpTpl =& new WordPresTpl('wp-admin');
+		$_wpTpl->assign('regedit', $_regedit);
+		$_wpTpl->display('profile-IErightclick.html');
+		include('admin-footer.php');
+		break;
+	default:
+		init_param('GET', 'standalone', 'integer', 0);
+		$GLOBALS['standalone'] = get_param('standalone');
+		$GLOBALS['title'] = 'Edit Profile';
+		include_once('admin-header.php');
+		require_once(XOOPS_ROOT_PATH.'/class/template.php');
+		
+		init_param('GET', 'updated','string','');
 
-	$query = "UPDATE {$wpdb->users[$wp_id]} SET user_firstname='$newuser_firstname', $updatepassword user_lastname='$newuser_lastname', user_nickname='$newuser_nickname', user_icq='$newuser_icq', user_email='$newuser_email', user_url='$newuser_url', user_aim='$newuser_aim', user_msn='$newuser_msn', user_yim='$newuser_yim', user_idmode='$newuser_idmode', user_description = '$user_description' WHERE ID = $user_ID";
-	$result = $wpdb->query($query);
-	if (!$result) {
-		die ("<strong>ERROR</strong>: couldn't update your profile... please contact the <a href=\"mailto:".get_settings('admin_email')."\">webmaster</a> !<br /><br />$query<br /><br />");
-	}
-	header('Location: profile.php?updated=true');
-break;
+		$userObject =& $userHandler->get($GLOBALS['user_ID']);
 
-case 'viewprofile':
+		include XOOPS_ROOT_PATH.'/class/xoopsformloader.php';
+		$_form = new XoopsThemeForm(_LANG_WPF_SUBT_EDIT, 'profile', $_this_file);
+		$_form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_USERID, $userObject->getVar('ID','e')));
+		$_form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_LEVEL, $userObject->getVar('user_level','e')));
+		$_form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_POSTS, $userObject->getNumPosts($wp_prefix[$wp_id])));
+		$_form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_LOGIN, $userObject->getVar('user_login','e')));
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_FIRST, 'newuser_firstname', 50, 150, $userObject->getVar('user_firstname','e')));
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_LAST, 'newuser_lastname', 50, 150, $userObject->getVar('user_lastname','e')));
+		$_form->addElement(new XoopsFormTextArea(_LANG_WPF_SUBT_DESC, 'user_description', $userObject->getVar('user_description','e'), 5,60));
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_NICK, 'newuser_nickname', 50, 150, $userObject->getVar('user_nickname','e')), true);
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_MAIL, 'newuser_email', 50, 150, $userObject->getVar('user_email','e')), true);
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_URL, 'newuser_url', 50, 150, $userObject->getVar('user_url','e')));
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_ICQ, 'newuser_icq', 50, 150, ($userObject->getVar('user_icq','e'))?($userObject->getVar('user_icq','e')):''));
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_AIM, 'newuser_aim', 50, 150, $userObject->getVar('user_aim','e')));
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_MSN, 'newuser_msn', 50, 150, $userObject->getVar('user_msn','e')));
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_YAHOO, 'newuser_yim', 50, 150, $userObject->getVar('user_yim','e')));
+		$_form_idmode = new XoopsFormSelect(_LANG_WPF_SUBT_IDENTITY, 'newuser_idmode', $userObject->getVar('user_idmode','e'));
+		$_form_idmode->addOption('nickname', $userObject->getVar('user_nickname'));
+		$_form_idmode->addOption('login', $userObject->getVar('user_login'));
+		$_form_idmode->addOption('firstname', $userObject->getVar('user_firstname'));
+		$_form_idmode->addOption('lastname', $userObject->getVar('user_lastname'));
+		$_form_idmode->addOption('namefl', $userObject->getVar('user_firstname').' '.$userObject->getVar('user_lastname'));
+		$_form_idmode->addOption('namelf', $userObject->getVar('user_lastname').' '.$userObject->getVar('user_firstname'));
+		$_form->addElement($_form_idmode);
+		$_form->addElement(new XoopsFormButton('', 'submit', _LANG_WPF_SUBT_UPDATE, 'submit'));
+		$_form->addElement(new XoopsFormHidden('checkuser_id', $GLOBALS['user_ID']));
+		$_form->addElement(new XoopsFormHidden('action', 'update'));
+		$_form->addElement($GLOBALS['xoopsWPTicket']->getTicketXoopsForm(__LINE__,600));
+		$_formHTML = $_form->render();
 
-
-	$profiledata = get_userdata($user);
-	if ($_COOKIE['wordpressuser_'.$cookiehash] == $profiledata->user_login)
-		header ('Location: profile.php');
-	
-	include_once('admin-header.php');
-	?>
-
-<h2><?php echo _LANG_WPF_SUBT_VIEW; ?> &#8220;
-  <?php
-	switch($profiledata->user_idmode) {
-		case 'nickname':
-			$r = $profiledata->user_nickname;
-			break;
-		case 'login':
-			$r = $profiledata->user_login;
-			break;
-		case 'firstname':
-			$r = $profiledata->user_firstname;
-			break;
-		case 'lastname':
-			$r = $profiledata->user_lastname;
-			break;
-		case 'namefl':
-			$r = $profiledata->user_firstname.' '.$profiledata->user_lastname;
-			break;
- 		case 'namelf':
-			$r = $profiledata->user_lastname.' '.$profiledata->user_firstname;
-			break;
-	}
-	echo $r;
-	?>
-  &#8221;</h2>
-	  
-  <div id="profile">
-<p> 
-  <strong>Login</strong> <?php echo $profiledata->user_login ?>
-  | <strong>User #</strong> <?php echo $profiledata->ID ?> | <strong>Level</strong> 
-  <?php echo $profiledata->user_level ?> | <strong>Posts</strong> 
-  <?php
-	$posts = get_usernumposts($user);
-	echo $posts;
-	?>
-</p>
-
-<p> <strong><?php echo _LANG_WPF_SUBT_FIRST; ?></strong> <?php echo $profiledata->user_firstname ?> </p>
-  
-<p> <strong><?php echo _LANG_WPF_SUBT_LAST; ?></strong> <?php echo $profiledata->user_lastname ?> </p>
-  
-<p> <strong><?php echo _LANG_WPF_SUBT_NICK; ?></strong> <?php echo $profiledata->user_nickname ?> </p>
-  
-<p> <strong><?php echo _LANG_WPF_SUBT_MAIL; ?></strong> <?php echo make_clickable($profiledata->user_email) ?> 
-</p>
-  
-<p> <strong><?php echo _LANG_WPF_SUBT_URL; ?></strong> <?php echo $profiledata->user_url ?> </p>
-  
-<p> <strong><?php echo _LANG_WPF_SUBT_ICQ; ?></strong> 
-  <?php if ($profiledata->user_icq > 0) { echo make_clickable("icq:".$profiledata->user_icq); } ?>
-</p>
-  
-<p> <strong><?php echo _LANG_WPF_SUBT_MSN; ?></strong> <?php echo $profiledata->user_msn ?> </p>
-  
-<p> <strong><?php echo _LANG_WPF_SUBT_YAHOO; ?></strong> <?php echo $profiledata->user_yim ?> </p>
-  
-</div>
-
-	<?php
-
-break;
-
-
-case 'IErightclick':
-
-
-	$bookmarklet_tbpb  = (get_settings('use_trackback')) ? '&trackback=1' : '';
-	$bookmarklet_tbpb .= (get_settings('use_pingback'))  ? '&pingback=1'  : '';
-	$bookmarklet_height= (get_settings('use_trackback')) ? 590 : 550;
-
-	?>
-
-	<div class="menutop">&nbsp;<?php echo _LANG_WPF_SUBT_ONE; ?></div>
-
-	<table width="100%" cellpadding="20">
-	<tr><td>
-
-	<p><?php echo _LANG_WPF_SUBT_COPY; ?></p>
-	<?php
-	$regedit = "REGEDIT4\r\n[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\MenuExt\Post To &WP : ".get_settings('blogname')."]\r\n@=\"$siteurl/wp-admin/bookmarklet.jp.php\"\r\n\"contexts\"=hex:31\"";
-	?>
-	<pre style="margin: 20px; background-color: #cccccc; border: 1px dashed #333333; padding: 5px; font-size: 12px;"><?php echo $regedit; ?></pre>
-	<p><?php echo _LANG_WPF_SUBT_BOOK; ?></p>
-<!--
-	<p align="center">
-		<form>
-		<input class="search" type="button" value="<?php echo _LANG_WPF_SUBT_CLOSE; ?>" name="close" onClick='window.close'/>
-		</form>
-	</p>
--->
-	</td></tr>
-	</table>
-	<?php
-	exit();
-break;
-
-
-default:
-	$parent_file = 'profile.php';
-	include_once('admin-header.php');
-	$profiledata=get_userdata($user_ID);
-
-	$bookmarklet_tbpb  = (get_settings('use_trackback')) ? '&trackback=1' : '';
-	$bookmarklet_tbpb .= (get_settings('use_pingback'))  ? '&pingback=1'  : '';
-	$bookmarklet_height= (get_settings('use_trackback')) ? 480 : 440;
-
-	?>
-<?php if ($updated) { ?>
-<div class="wrap">
-<p><strong><?php echo _LANG_WPF_SUBT_UPDATED; ?></strong></p>
-</div>
-<?php } ?>
-<div class="wrap">
-<form name="profile" id="profile" action="profile.php" method="post">
-	<h2><?php echo _LANG_WPF_SUBT_EDIT; ?></h2>
-  <p>
-    <input type="hidden" name="action" value="update" />
-    <input type="hidden" name="checkuser_id" value="<?php echo $user_ID ?>" />
-  </p>
-  <p><strong><?php echo _LANG_WPF_SUBT_USERID; ?></strong> <?php echo $profiledata->ID ?> | <strong><?php echo _LANG_WPF_SUBT_LEVEL; ?></strong> 
-    <?php echo $profiledata->user_level ?> | <strong><?php echo _LANG_WPF_SUBT_POSTS; ?></strong>
-    <?php
-	$posts = get_usernumposts($user_ID);
-	echo $posts;
-	?>
-    | <strong><?php echo _LANG_WPF_SUBT_LOGIN; ?></strong> <?php echo $profiledata->user_login ?></p>
-	<style type="text/css" media="screen">
-	th { text-align: right; }
-	</style>
-  <table width="99%"  border="0" cellspacing="2" cellpadding="3">
-    <tr>
-      <th width="15%" scope="row"><?php echo _LANG_WPF_SUBT_FIRST; ?></th>
-      <td><input type="text" name="newuser_firstname" id="newuser_firstname" value="<?php echo $profiledata->user_firstname ?>" /></td>
-    </tr>
-    <tr>
-      <th scope="row"><?php echo _LANG_WPF_SUBT_LAST; ?></th>
-      <td><input type="text" name="newuser_lastname" id="newuser_lastname2" value="<?php echo $profiledata->user_lastname ?>" /></td>
-    </tr>
-    <tr>
-      <th scope="row"><?php echo _LANG_WPF_SUBT_DESC; ?></th>
-      <td><textarea name="user_description" rows="5" id="textarea2" style="width: 99%; "><?php echo $profiledata->user_description ?></textarea></td>
-    </tr>
-    <tr>
-      <th scope="row"><?php echo _LANG_WPF_SUBT_NICK; ?></th>
-      <td><input type="text" name="newuser_nickname" id="newuser_nickname2" value="<?php echo $profiledata->user_nickname ?>" /></td>
-    </tr>
-    <tr>
-      <th scope="row"><?php echo _LANG_WPF_SUBT_MAIL; ?></th>
-      <td><input type="text" name="newuser_email" id="newuser_email2" value="<?php echo $profiledata->user_email ?>" /></td>
-    </tr>
-    <tr>
-      <th scope="row"><?php echo _LANG_WPF_SUBT_URL; ?></th>
-      <td><input type="text" name="newuser_url" id="newuser_url2" value="<?php echo $profiledata->user_url ?>" /></td>
-    </tr>
-    <tr>
-      <th scope="row"><?php echo _LANG_WPF_SUBT_ICQ; ?></th>
-      <td><input type="text" name="newuser_icq" id="newuser_icq2" value="<?php if ($profiledata->user_icq > 0) { echo $profiledata->user_icq; } ?>" /></td>
-    </tr>
-    <tr>
-      <th scope="row"><?php echo _LANG_WPF_SUBT_AIM; ?></th>
-      <td><input type="text" name="newuser_aim" id="newuser_aim2" value="<?php echo $profiledata->user_aim ?>" /></td>
-    </tr>
-    <tr>
-      <th scope="row"><?php echo _LANG_WPF_SUBT_MSN; ?> </th>
-      <td><input type="text" name="newuser_msn" id="newuser_msn2" value="<?php echo $profiledata->user_msn ?>" /></td>
-    </tr>
-    <tr>
-      <th scope="row"><?php echo _LANG_WPF_SUBT_YAHOO; ?> </th>
-      <td>        <input type="text" name="newuser_yim" id="newuser_yim2" value="<?php echo $profiledata->user_yim ?>" />      </td>
-    </tr>
-    <tr>
-      <th scope="row"><?php echo _LANG_WPF_SUBT_IDENTITY; ?> </th>
-      <td><select name="newuser_idmode">
-        <option value="nickname"<?php
-	if ($profiledata->user_idmode == 'nickname')
-	echo " selected"; ?>><?php echo $profiledata->user_nickname ?></option>
-        <option value="login"<?php
-	if ($profiledata->user_idmode=="login")
-	echo " selected"; ?>><?php echo $profiledata->user_login ?></option>
-        <option value="firstname"<?php
-	if ($profiledata->user_idmode=="firstname")
-	echo " selected"; ?>><?php echo $profiledata->user_firstname ?></option>
-        <option value="lastname"<?php
-	if ($profiledata->user_idmode=="lastname")
-	echo " selected"; ?>><?php echo $profiledata->user_lastname ?></option>
-        <option value="namefl"<?php
-	if ($profiledata->user_idmode=="namefl")
-	echo " selected"; ?>><?php echo $profiledata->user_firstname." ".$profiledata->user_lastname ?></option>
-        <option value="namelf"<?php
-	if ($profiledata->user_idmode=="namelf")
-	echo " selected"; ?>><?php echo $profiledata->user_lastname." ".$profiledata->user_firstname ?></option>
-      </select>        </td>
-    </tr>
-<?php if (0) { ?>
-    <tr>
-      <th scope="row"><?php echo _LANG_WPF_SUBT_NEWPASS; ?></th>
-      <td><input type="password" name="pass1" size="16" value="" />
-        <input type="password" name="pass2" size="16" value="" /></td>
-    </tr>
-<?php } ?>
-	</table>
-  <p style=" text-align: center;">
-    <input type="submit" value="<?php echo _LANG_WPF_SUBT_UPDATE; ?>" name="submit" /></p>
-	</div>
-  </form>
-</div>
-<?php if ($is_gecko) { ?>
-    <script language="JavaScript" type="text/javascript">
-function addPanel()
-        {
-          if ((typeof window.sidebar == "object") && (typeof window.sidebar.addPanel == "function"))
-            window.sidebar.addPanel("WordPress Post: <?php echo get_settings('blogname') ?>","<?php echo $siteurl ?>/wp-admin/sidebar.php","");
-          else
-            alert(_LANG_WPF_SUBT_MOZILLA);
-        }
-</script>
-    <strong><?php echo _LANG_WPF_SUBT_SIDEBAR; ?></strong><br />
-    Add the <a href="#" onclick="addPanel()">WordPress Sidebar</a>! 
-    <?php } elseif (($is_winIE) || ($is_macIE)) { ?>
-<div class="wrap">
-    <h2>SideBar</h2>
-    <?php echo _LANG_WPF_SUBT_FAVORITES; ?> <a href="javascript:Q='';if(top.frames.length==0)Q=document.selection.createRange().text;void(_search=open('<?php echo $siteurl ?>/wp-admin/sidebar.php?text='+escape(Q)+'&popupurl='+escape(location.href)+'&popuptitle='+escape(document.title),'_search'))">WordPress 
-    Sidebar</a>. 
-    
-</div>
-<?php } ?>
-	<?php
-
-break;
+		$_wpTpl =& new WordPresTpl('wp-admin');
+		$_wpTpl->assign('updated', get_param('updated'));
+		$_wpTpl->assign('formHTML', $_formHTML);
+		$_wpTpl->assign('blogname', get_settings('blogname'));
+		$_wpTpl->assign('siteurl', wp_siteurl());
+		$_wpTpl->assign('is_gecko', $GLOBALS['is_gecko']);
+		$_wpTpl->assign('is_IE', ($GLOBALS['is_winIE']) || ($GLOBALS['is_macIE']));
+		$_wpTpl->display('profile.html');
+		include('admin-footer.php');
+		break;
 }
-
-/* </Profile | My Profile> */
-include('admin-footer.php') ?>
+?>

@@ -1,0 +1,50 @@
+<div class="wrap">
+  <h2>Editing Comment # <{$commentdata.comment_ID}></h2>
+  <form name="post" action="post.php" method="post" id="post">
+    <input type="hidden" name="user_ID" value="<{$user_ID}>" />
+    <input type="hidden" name="action" value="editedcomment" />
+    <input type="hidden" name="comment_ID" value="<{$comment}>" />
+    <input type="hidden" name="comment_post_ID" value="<{$commentdata.comment_post_ID}>" />
+    <script type="text/javascript">
+    function focusit() {
+    	// focus on first input field
+    	document.post.name.focus();
+    }
+    window.onload = focusit;
+    </script>
+    <fieldset id="namediv">
+    	<legend><{$smarty.const._LANG_EFC_COM_NAME}></legend>
+    	<div><input type="text" name="newcomment_author" size="22" value="<{$commentdata.comment_author}>" tabindex="1" id="name" /></div>
+    </fieldset>
+    <fieldset id="emaildiv">
+    	<legend><{$smarty.const._LANG_EFC_COM_MAIL}></legend>
+    	<div><input type="text" name="newcomment_author_email" size="30" value="<{$commentdata.comment_author_email}>" tabindex="2" id="email" /></div>
+    </fieldset>
+    <fieldset id="uridiv">
+    	<legend><{$smarty.const._LANG_EFC_COM_URI}></legend>
+    	<div><input type="text" name="newcomment_author_url" size="35" value="<{$commentdata.comment_author_url}>" tabindex="3" id="URL" /></div>
+    </fieldset>
+    <fieldset style="clear: both;">
+    	<legend><{$smarty.const._LANG_EFC_COM_COMMENT}></legend>
+<{if $use_quicktags == true }>
+    	<div id="quicktags"><a href="http://wordpress.org/docs/reference/post/#quicktags" title="Help with quicktags"><{$smarty.const._LANG_EF_AD_POSTQUICK}></a>:<{$quicktags}></div>
+<{/if}>
+    	<div><textarea rows="<{$rows}>" cols="40" name="wp_content" tabindex="4" id="wp_content" style="width: 99%"><{$content}></textarea></div>
+    </fieldset>
+<{if $use_quicktags == true }>
+    <script type="text/javascript" language="JavaScript">
+    <!--
+    	edCanvas = document.getElementById('wp_content');
+    //-->
+    </script>
+<{/if}>
+    <p><{$saveasdraft}> <input type="submit" name="submit" value="<{$smarty.const._LANG_EFC_BUTTON_TEXT}>" style="font-weight: bold;" tabindex="6" />
+    	<input name="referredby" type="hidden" id="referredby" value="<{$referer}>" />
+    </p>
+<{if $user_level > 4}>
+    <{$touchtime}>
+<{/if}>
+	<{$ticket}>
+  </form>
+  <p><a class='delete' href="post.php?action=confirmdeletecomment&amp;noredir=true&amp;comment=<{$commentdata.comment_ID}>&amp;p=<{$commentdata.comment_post_ID}>"><{$smarty.const._LANG_EFA_DEL_THISPOST}></a></p>
+</div>

@@ -3,106 +3,118 @@ include_once (dirname(__FILE__)."/../../mainfile.php");
 require(dirname(__FILE__) . '/wp-config.php');
 
 // trackback is done by a POST
-$request_array = 'HTTP_POST_VARS';
-$tb_id = explode('/', $_SERVER['REQUEST_URI']);
-$tb_id = intval($tb_id[count($tb_id)-1]);
-$tb_url = $_POST['url'];
-$title = $_POST['title'];
-$excerpt = $_POST['excerpt'];
-$blog_name = $_POST['blog_name'];
-$charset = $_POST['charset'];
+$_tb_id = explode('/', $_SERVER['REQUEST_URI']);
+$_tb_id = intval($_tb_id[count($_tb_id)-1]);
+
+init_param('', 'url','string','');
+init_param('', 'title','string','');
+init_param('', 'excerpt','html','');
+init_param('', 'blog_name','string','');
+init_param('', 'charset','string','');
+init_param('', 'p','integer','');
+init_param('', 'name','string','');
+init_param('', '__mode','string','');
 
 require('wp-blog-header.php');
 
-if ( (($p != '') && ($p != 'all')) || ($name != '') ) {
-    $tb_id = $posts[0]->ID;
+if ( (test_param('p') && (get_param('p') != 'all')) || (test_param('name')) ) {
+    $_tb_id = $GLOBALS['posts'][0]->ID;
 }
 
-if (empty($title) && empty($tb_url) && empty($blog_name)) {
+if (!test_param('title') && !test_param('url') && !test_param('blog_name')) {
 	// If it doesn't look like a trackback at all...
-	header('Location: ' . get_permalink($tb_id));
+	header('Location: ' . get_permalink($_tb_id));
 }
 
-if ((strlen(''.$tb_id)) && (empty($_GET['__mode'])) && (strlen(''.$tb_url))) {
-
+if (!empty($_tb_id) && !test_param('__mode') && test_param('url')) {
 	@header('Content-Type: text/xml');
 
-	if (!get_settings('use_trackback'))
+	if (!get_settings('use_trackback')) {
 		trackback_response(1, 'Sorry, this weblog does not allow you to trackback its posts.');
+	}
 
-	$pingstatus = $wpdb->get_var("SELECT ping_status FROM {$wpdb->posts[$wp_id]} WHERE ID = $tb_id");
+	$_title = get_param('title');
+	$_excerpt = get_param('excerpt');
+	$_blog_name = get_param('blog_name');
+	$_charset = get_param('charset');
+	if ($GLOBALS['wp_debug']) {
+		$_debug_file = './log/trackback_r.log';
+		$_fp = fopen($_debug_file, 'a');
+		fwrite($_fp, "Title(Orig) =$_title\n");
+		fwrite($_fp, "Excerpt(Orig) =$_excerpt\n");
+		fwrite($_fp, "BlogName(Orig) =$_blog_name\n");
+		fwrite($_fp, "CharSet(Orig) =$_charset\n\n");
+	}
 
-	if ('closed' == $pingstatus)
+	$postHandler =& wp_handler('Post');
+	$postObject =& $postHandler->get($_tb_id);
+
+	if (!$postObject) {
+		trackback_response(1, 'Sorry, no post is exist for this post id.');
+	}
+	if ($postObject->getVar('ping_status') == 'closed') {
 		trackback_response(1, 'Sorry, trackbacks are closed for this item.');
+	}
 	if (function_exists('mb_convert_encoding')) {
-		if (($charset !="")&&((mb_http_input("P")=="")||(strtolower(ini_get("mbstring.http_input"))=="pass"))) {
-			$charset = strtoupper(trim($charset));
+		if (($_charset !="")&&((mb_http_input("P")=="")||(strtolower(ini_get("mbstring.http_input"))=="pass"))) {
+			$_charset = strtoupper(trim($_charset));
 		} else {
-			$charset="auto";
+			$_charset="auto";
 		}
-		if ($charset == "auto") {
-			$charset = mb_detect_encoding($title.$excerpt.$blog_name,$charset);
+		if ($_charset == "auto") {
+			$_charset = mb_detect_encoding($_title.$_excerpt.$_blog_name,$_charset);
 		}
-		$title = mb_convert_encoding($title, $blog_charset, $charset);
-		$excerpt = mb_convert_encoding($excerpt, $blog_charset, $charset);
-		$blog_name = mb_convert_encoding($blog_name, $blog_charset, $charset);
+		$_title = mb_conv($_title, $blog_charset, $_charset);
+		$_excerpt = mb_conv($_excerpt, $blog_charset, $_charset);
+		$_blog_name = mb_conv($_blog_name, $blog_charset, $_charset);
+		if ($GLOBALS['wp_debug']) {
+			fwrite($_fp, "Title(Conv) =$_title\n");
+			fwrite($_fp, "Excerpt(Conv) =$_excerpt\n");
+			fwrite($_fp, "BlogName(Conv) =$_blog_name\n");
+			fwrite($_fp, "CharSet(Conv) =$_charset\n");
+			fwrite($_fp, "\n\n");
+			fclose($_fp);
+		}
 	}
 
-	$tb_url = addslashes($tb_url);
-	$title = strip_tags($title);
-	$title = (strlen($title) > 255) ? substr($title, 0, 252).'...' : $title;
-	$excerpt = strip_tags($excerpt);
-	$excerpt = (strlen($excerpt) > 255) ? substr($excerpt, 0, 252).'...' : $excerpt;
-	$blog_name = htmlspecialchars($blog_name);
-	$blog_name = (strlen($blog_name) > 255) ? substr($blog_name, 0, 252).'...' : $blog_name;
+	$_title = strip_tags($_title);
+	$_title = (strlen($_title) > 255) ? substr($_title, 0, 252).'...' : $_title;
+	$_excerpt = strip_tags($_excerpt);
+	$_excerpt = (strlen($_excerpt) > 255) ? substr($_excerpt, 0, 252).'...' : $_excerpt;
+	$_blog_name = htmlspecialchars($_blog_name);
+	$_blog_name = (strlen($_blog_name) > 255) ? substr($_blog_name, 0, 252).'...' : $_blog_name;
 
-	$comment = '<trackback />';
-	$comment .= "<strong>$title</strong>\n$excerpt";
+	$_content = "<trackback /><strong>$_title</strong>\n$_excerpt";
+	$_content = convert_chars($_content);
+	$_content = apply_filters('format_to_post', $_content);
 
-	$author = addslashes(stripslashes(stripslashes($blog_name)));
-	$email = '';
-	$original_comment = $comment;
-	$comment_post_ID = $tb_id;
-
-	$user_ip = $_SERVER['REMOTE_ADDR'];
-	$user_domain = gethostbyaddr($user_ip);
-	$time_difference = get_settings('time_difference');
-	$now = current_time('mysql');
-
-	$comment = convert_chars($comment);
-	$comment = format_to_post($comment);
-
-	$comment_author = $author;
-	$comment_author_email = $email;
-	$comment_author_url = $tb_url;
-
-	$author = addslashes($author);
-
-	$comment_moderation = get_settings('comment_moderation');
 	$moderation_notify = get_settings('moderation_notify');
-
-	if ('manual' == $comment_moderation) {
-		$approved = 0;
-	} else if ('auto' == $comment_moderation) {
-		$approved = 0;
+	if (get_settings('comment_moderation') == 'manual') {
+		$_approved = 0;
+	} else if (get_settings('comment_moderation') == 'auto') {
+		$_approved = 0;
 	} else { // none
-		$approved = 1;
+		$_approved = 1;
 	}
 
-	$result = $wpdb->query("INSERT INTO {$wpdb->comments[$wp_id]} 
-	(comment_post_ID, comment_author, comment_author_email, comment_author_url, comment_author_IP, comment_date, comment_content, comment_approved)
-	VALUES 
-	('$comment_post_ID', '$author', '$email', '$tb_url', '$user_ip', '$now', '$comment', '$approved')
-	");
-
-	if (!$result) {
+	$commentHandler =& wp_handler('Comment');
+	$commentObject =& $commentHandler->create();
+	$commentObject->setVar('comment_post_ID',$_tb_id);
+	$commentObject->setVar('comment_author',$_blog_name);
+	$commentObject->setVar('comment_author_email','');
+	$commentObject->setVar('comment_author_url',get_param('url'));
+	$commentObject->setVar('comment_author_IP',$_SERVER['REMOTE_ADDR']);
+	$commentObject->setVar('comment_date',current_time('mysql'));
+	$commentObject->setVar('comment_content',$_content);
+	$commentObject->setVar('comment_approved',$_approved);
+	if(!$commentHandler->insert($commentObject, true)) {
 		die ("There is an error with the database, it can't store your comment...<br />Please contact the <a href='mailto:".get_settings('admin_email')."'>webmaster</a>.");
 	} else {
-		$comment_ID = $wpdb->get_var('SELECT last_insert_id()');
+		$_comment_ID = $commentObject->getVar('comment_ID');
 		if (get_settings('comments_notify'))
-			wp_notify_postauthor($comment_ID, 'trackback');
+			wp_notify_postauthor($_comment_ID, 'trackback');
 		trackback_response(0);
-		do_action('trackback_post', $comment_ID);
+		do_action('trackback_post', $_comment_ID);
 	}
 }
 ?>

@@ -7,97 +7,68 @@ require_once('../wp-config.php');
 **                 option_value, option_description, option_admin_level
 ** editable      - flag to determine whether the returned widget will be editable
 **/
-function get_option_widget($option_result, $editable, $between)
-{
+function &get_option_formElement($option_result, $editable=true, $between="") {
     global $wpdb, $wp_id;
     $disabled = $editable ? '' : 'disabled';
-
+    
     switch ($option_result->option_type) {
         case 1: // integer
         case 3: // string
         case 8: // float
         case 6:  // range -- treat same as integer for now!
-            if (($option_result->option_type == 1) || ($option_result->option_type == 1)) {
-                $width = 6;
-            } else {
-                $width = $option_result->option_width;
-            }
-            return <<<TEXTINPUT
-                    <label for="$option_result->option_name">$option_result->option_name</label>$between
-                    <input type="text" name="$option_result->option_name" size="$width" value="$option_result->option_value" $disabled/>
-TEXTINPUT;
-            //break;
+			if (($option_result->option_type == 1) || ($option_result->option_type == 6)) {
+				$width = 10;
+			} elseif ($option_result->option_width < 20) {
+				$width = $option_result->option_width;
+			} else {
+				$width = 50;
+			}
+			$elem = new XoopsFormText($option_result->option_name, $option_result->option_name, $width, 150, $option_result->option_value);
 
+			break;
         case 2: // boolean
-            $true_selected = ($option_result->option_value == '1') ? 'selected' : '';
-            $false_selected = ($option_result->option_value == '0') ? 'selected' : '';
-            return <<<BOOLSELECT
-                    <label for="$option_result->option_name">$option_result->option_name</label>$between
-                    <select name="$option_result->option_name" $disabled>
-                    <option value="1" $true_selected>true</option>
-                    <option value="0" $false_selected>false</option>
-                    </select>
-BOOLSELECT;
-            //break;
-            
+			$elem = new XoopsFormSelect($option_result->option_name, "$option_result->option_name", $option_result->option_value);
+			$elem->addOption("1","true");
+			$elem->addOption("0","false");
+			break;
         case 5: // select
-            $ret = <<<SELECT
-                    <label for="$option_result->option_name">$option_result->option_name</label>$between
-                    <select name="$option_result->option_name" id="$option_result->option_name" $disabled>
-SELECT;
-
-            $select = $wpdb->get_results("SELECT optionvalue, optionvalue_desc "
-                                         ."FROM {$wpdb->optionvalues[$wp_id]} "
-                                         ."WHERE option_id = $option_result->option_id "
-                                         ."ORDER BY optionvalue_seq");
-            if ($select) {
-                foreach($select as $option) {
-                    $ret .= '<option value="'.$option->optionvalue.'"';
-                    //error_log("comparing [$option_result->option_value] == [$option->optionvalue]");
-                    if ($option_result->option_value == $option->optionvalue) {
-                        $ret .=' selected';
-                    }
-                    $ret .= ">$option->optionvalue_desc</option>\n";
-                }
-            }
-            $ret .= '</select>';
-            return $ret;
-            //break;
-        
+			$elem = new XoopsFormSelect($option_result->option_name, "$option_result->option_name", $option_result->option_value);
+			$select = $wpdb->get_results("SELECT optionvalue, optionvalue_desc "
+										."FROM {$wpdb->optionvalues[$wp_id]} "
+										."WHERE option_id = $option_result->option_id "
+										."ORDER BY optionvalue_seq");
+			if ($select) {
+				foreach($select as $option) {
+					$elem->addOption($option->optionvalue,$option->optionvalue_desc);
+				}
+			}
+			break;
         case 7: // SQL select
-            // first get the sql to run
-            $sql = $wpdb->get_var("SELECT optionvalue FROM {$wpdb->optionvalues[$wp_id]} WHERE option_id = $option_result->option_id");
-            if (!$sql) {
-                return $option_result->option_name . $editable;
-            }
-
-            // now we may need to do table name substitution
-           eval("include('../wp-config.php');\$sql = \"$sql\";");
-
-            $ret = <<<SELECT
-                    <label for="$option_result->option_name">$option_result->option_name</label>$between
-                    <select name="$option_result->option_name" $disabled>
-SELECT;
-	
+			$sql = $wpdb->get_var("SELECT optionvalue FROM {$wpdb->optionvalues[$wp_id]} WHERE option_id = $option_result->option_id");
+			if (!$sql) {
+				$elem = new XoopsFormLabel($option_result->option_nam, $editable);
+				break;
+			}
+			// now we may need to do table name substitution
+			eval("include('../wp-config.php');\$sql = \"$sql\";");
+			$elem = new XoopsFormSelect($option_result->option_name, "$option_result->option_name", $option_result->option_value);
             $select = $wpdb->get_results("$sql");
             if ($select) {
                 foreach($select as $option) {
-                    $ret .= '<option value="'.$option->value.'"';
-                    //error_log("comparing [$option_result->option_value] == [$option->optionvalue]");
-                    if ($option_result->option_value == $option->value) {
-                        $ret .=' selected';
-                    }
-                    $ret .= ">$option->label</option>\n";
+					$elem->addOption($option->value, $option->label);
                 }
             }
-            $ret .= '</select>';
-            return $ret;
-            //break;
-
-    } // end switch
-    return $option_result->option_name . $editable;
-} // end function get_option_widget
-
+			break;
+		default:
+			$elem = new XoopsFormLabel($option_result->option_nam, $editable);
+	}
+	if ($option_result->option_description) {
+		$elem->setDescription(replace_constant($option_result->option_description));
+	}
+	$elem->setExtra($disabled);
+	
+	return $elem;
+}
 
 function validate_option($option, $name, $val) {
     global $wpdb, $wp_id;

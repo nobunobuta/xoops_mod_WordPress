@@ -7,12 +7,13 @@ if (file_exists(dirname(__FILE__) .'/wp-mail-conf.php')) {
 		}
 	}
 }
+
 function wp_mail_quit() {
   global $wp_pop3;
   $wp_pop3->quit();
 }
 function wp_mail_receive() {
-  global $xoopsDB, $wpdb, $wp_id, $siteurl, $blog_charset, $wp_pop3;
+  global $xoopsDB, $wpdb, $wp_id, $siteurl, $blog_charset, $wp_pop3, $img_target;
   
 	require_once(ABSPATH . WPINC . '/class-pop3.php');
 	timer_start();
@@ -317,11 +318,11 @@ function wp_mail_receive() {
 				if (!get_settings('emailtestonly')) {
 					// Attaching Image Files Save
 					if ($att_boundary != "") {
-						$attachment = wp_getattach($contents[2], trim($user_login), 1);
+						$attachment = wp_getattach($contents[2], "user-".trim($post_author), 1);
 					} 
 					if (($boundary != "") && ($hatt_boundary != "")) {
 						for ($i = 2; $i < count($contents); $i++) {
-							$hattachment = wp_getattach($contents[$i], trim($user_login), 0);
+							$hattachment = wp_getattach($contents[$i], "user-".trim($post_author), 0);
 							if ($hattachment) {
 								if (preg_match("/Content-Id: \<([^\>]*)>/i", $contents[$i], $matches)) {
 									$content = preg_replace("/(cid:" . preg_quote($matches[1]) . ")/", "$siteurl/attach/" . $hattachment, $content);
@@ -345,12 +346,19 @@ function wp_mail_receive() {
 					} 
 					// If we find an attachment, add it to the post
 					if ($attachment) {
-						if (file_exists("attach/thumb-" . $attachment)) {
-							$content = "<a href=\"" . $siteurl . "/attach/" . $attachment . "\"><img style=\"float: left;\" hspace=\"6\" src = \"" . $siteurl . "/attach/thumb-" . $attachment . "\"  alt=\"moblog\" ></a>" . $content . "<br clear=left>";
+						if (isset($img_target) && $img_target) {
+							$img_target = ' target="'.$img_target.'"';
 						} else {
-							$content = "<a href=\"" . $siteurl . "/attach/" . $attachment . "\"><img style=\"float: left;\" hspace=\"6\" src = \"" . $siteurl . "/attach/" . $attachment . "\"  alt=\"moblog\" ></a>" . $content . "<br clear=left>";
+							$img_target = '';
+						}
+
+						if (file_exists("attach/thumb-" . $attachment)) {
+							$content = "<a href=\"" . $siteurl . "/attach/" . $attachment . "\"".$img_target."><img style=\"float: left;\" hspace=\"6\" src = \"" . $siteurl . "/attach/thumb-" . $attachment . "\"  alt=\"moblog\" ></a>" . $content . "<br clear=left>";
+						} else {
+							$content = "<a href=\"" . $siteurl . "/attach/" . $attachment . "\"".$img_target."><img style=\"float: left;\" hspace=\"6\" src = \"" . $siteurl . "/attach/" . $attachment . "\"  alt=\"moblog\" ></a>" . $content . "<br clear=left>";
 						} 
 					} 
+					$post_name = sanitize_title($post_title);
 					if ($flat > 500) {
 						$sql = "INSERT INTO {$wpdb->posts[$wp_id]} (post_author, post_date, post_content, post_title, post_category) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category)";
 					} else {
@@ -358,6 +366,11 @@ function wp_mail_receive() {
 					} 
 					$result = $wpdb->query($sql);
 					$post_ID = $wpdb->insert_id;
+					// update blank postname
+					if ($post_name == "") {
+						$post_name = "post-".$post_ID;
+						$wpdb->query("UPDATE {$wpdb->posts[$wp_id]} SET post_name='$post_name' WHERE ID = $post_ID");
+					}
 					echo "Post ID = $post_ID<br />\n";
 					if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
 						sleep($sleep_after_edit);
@@ -380,7 +393,7 @@ function wp_mail_receive() {
 
 					pingWeblogs($blog_ID);
 					pingBlogs($blog_ID);
-//					pingback($content, $post_ID);
+					pingback($content, $post_ID);
 					do_action('publish_post', $post_ID);
 					do_action('publish_phone', $post_ID);
 				} 
@@ -438,7 +451,7 @@ function wp_getattach($content, $prefix = "", $create_thumbs = 0)
 			} 
 			if (!($temp_fp = fopen("attach/" . $temp_file, "wb"))) {
 				echo("Error1<br/>\n");
-				continue;
+				return false;
 			} 
 			fputs($temp_fp, $tmp);
 			fclose($temp_fp);

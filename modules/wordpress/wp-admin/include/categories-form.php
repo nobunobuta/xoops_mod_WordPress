@@ -1,23 +1,22 @@
 <?php
 	include XOOPS_ROOT_PATH."/class/xoopsformloader.php";
-	$form = new XoopsThemeForm($form_title, $form_id, "categories.php");
+	$_form = new XoopsThemeForm($_form_title, $_form_id, "categories.php");
 
-	$form->addElement(new XoopsFormText(_LANG_C_NAME_SUBCAT, "cat_name", 50, 150, $cat_name), true);
+	$_form->addElement(new XoopsFormText(_LANG_C_NAME_SUBCAT, "cat_name", 50, 150, $_form_cat_name), true);
 
-	$formcat = new XoopsFormSelect(_LANG_C_NAME_PARENT, "cat", $category_parent);
-	$formcat->addOption("0", 'None');
-	wp_dropdown_cats_xoops($formcat, $cat_ID, $category_parent);
-	$form->addElement($formcat);
+	$_form_cat = new XoopsFormSelect(_LANG_C_NAME_PARENT, "category_parent", $_form_category_parent);
+	$_form_cat->addOptionArray($_form_category_options);
+	$_form->addElement($_form_cat);
 
-	$form->addElement(new XoopsFormTextArea(_LANG_C_NAME_CATDESC ."(optional)", "category_description", $category_description, 10,80));
+	$_form->addElement(new XoopsFormTextArea(_LANG_C_NAME_CATDESC ."(optional)", "category_description", $_form_category_description, 10,80));
 
-	if ($form_id == 'addcat') {
-		$form->addElement(new XoopsFormButton("", "submit", _LANG_C_NAME_ADDBTN, "submit"));
-		$form->addElement(new XoopsFormHidden("action", "addcat"));
-	} elseif ($form_id == 'editcat') {
-		$form->addElement(new XoopsFormButton("", "submit", _LANG_C_NAME_EDITBTN, "submit"));
-		$form->addElement(new XoopsFormHidden("cat_ID", $cat_ID));
-		$form->addElement(new XoopsFormHidden("action", "editedcat"));
+	if ($_form_id == 'addcat') {
+		$_form->addElement(new XoopsFormButton("", "submit", _LANG_C_NAME_ADDBTN, "submit"));
+		$_form->addElement(new XoopsFormHidden("action", "addcat"));
+	} elseif ($_form_id == 'editcat') {
+		$_form->addElement(new XoopsFormButton("", "submit", _LANG_C_NAME_EDITBTN, "submit"));
+		$_form->addElement(new XoopsFormHidden("cat_ID", $_form_cat_ID));
+		$_form->addElement(new XoopsFormHidden("action", "editedcat"));
 	}
-	$form->display();
+	$_form->addElement($GLOBALS['xoopsWPTicket']->getTicketXoopsForm(__LINE__,3600));
 ?>

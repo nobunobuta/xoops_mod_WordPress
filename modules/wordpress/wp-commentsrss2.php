@@ -1,17 +1,13 @@
 <?php 
-
-// Contributed by Alex King
-// http://www.alexking.org/software/b2/
-
-/* These first lines are the first part of a WordPress template.
-		   In every template you do, you got to copy them before the CafeLog 'loop' */
-$blog=1; // enter your blog's ID
-header("Content-type: application/xml");
-include_once (dirname(__FILE__)."/../../mainfile.php");
+$GLOBALS['blog'] = 1;
+$GLOBALS['doing_rss'] = 1;
+require(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
+init_param('GET', 'num','integer');
+if (test_param('num')) $showposts = get_param('num');
 require('wp-blog-header.php');
-$rss_charset = wp_get_rss_charset();
-echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>';
+header("Content-type: application/xml");
+echo '<?xml version="1.0" encoding="'.wp_get_rss_charset().'"?'.'>';
 ?>
 <!-- generator="wordpress/<?php echo $wp_version ?>" -->
 <rss version="2.0" 
@@ -23,82 +19,58 @@ echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>';
 <channel>
 <?php
 $i = 0;
-foreach ($posts as $post) { start_wp();
-	if ($i < 1) {
-		$i++;
+foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp();
+	if ($_i < 1) {
+		$_i++;
 ?>
-	<title><?php if (isset($_REQUEST["p"])) { echo "Comments on: "; the_title_rss(); } else { bloginfo_rss("name"); echo " Comments"; } ?></title>
-	<link><?php isset($_REQUEST["p"]) ? permalink_single_rss() : bloginfo_rss("url") ?></link>
+	<title><?php if (test_param('p')) { echo "Comments on: "; the_title_rss(); } else { bloginfo_rss("name"); echo " Comments"; } ?></title>
+	<link><?php test_param('p') ? permalink_single_rss() : bloginfo_rss("url") ?></link>
 	<description><?php bloginfo_rss("description") ?></description>
 	<dc:language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></dc:language>
 	<dc:creator><?php echo antispambot(get_settings('admin_email')) ?></dc:creator>
 	<dc:rights>Copyright <?php echo mysql2date('Y', get_lastpostdate()); ?></dc:rights>
 	<dc:date><?php echo gmdate('Y-m-d\TH:i:s'); ?></dc:date>
-	<admin:generatorAgent rdf:resource="http://wordpress.xwd.jp/?v=<?php echo $wp_version ?>"/>
+	<admin:generatorAgent rdf:resource="http://wordpress.xwd.jp/?v=<?php echo $GLOBALS['wp_version'] ?>"/>
 	<admin:errorReportsTo rdf:resource="mailto:<?php echo antispambot(get_settings('admin_email')) ?>"/>
 	<sy:updatePeriod>hourly</sy:updatePeriod>
 	<sy:updateFrequency>1</sy:updateFrequency>
 	<sy:updateBase>2000-01-01T12:00+00:00</sy:updateBase>
 
 <?php 
-		if (isset($_REQUEST["p"])) {
-			$comments = $wpdb->get_results("SELECT comment_ID,
-												   comment_author,
-												   comment_author_email,
-												   comment_author_url,
-												   comment_date,
-												   comment_content,
-												   comment_post_ID,
-												   {$wpdb->posts[$wp_id]}.ID,
-												   {$wpdb->posts[$wp_id]}.post_password
-											FROM {$wpdb->comments[$wp_id]} 
-											LEFT JOIN {$wpdb->posts[$wp_id]} ON comment_post_id = id
-											WHERE comment_post_ID = '$id'
-											AND {$wpdb->comments[$wp_id]}.comment_approved = '1'
-											AND {$wpdb->posts[$wp_id]}.post_status = 'publish'
-											AND post_date < '".date("Y-m-d H:i:s")."' 
-											ORDER BY comment_date 
-											LIMIT ".get_settings('posts_per_rss'));
+		$_criteria =& new CriteriaCompo(new Criteria('comment_approved','1 '));
+		$_criteria->add(new Criteria('post_status','publish'));
+		$_criteria->add(new Criteria('post_date',date("Y-m-d H:i:s"), '<'));
+		if (test_param('p')) {
+			$_criteria->add(new Criteria('comment_post_ID',$GLOBALS['wp_post_id']));
+		} else {
+			$_criteria->setOrder('DESC');
 		}
-		else { // if no post id passed in, we'll just ue the last 10 comments.
-			$comments = $wpdb->get_results("SELECT comment_ID,
-												   comment_author,
-												   comment_author_email,
-												   comment_author_url,
-												   comment_date,
-												   comment_content,
-												   comment_post_ID,
-												   {$wpdb->posts[$wp_id]}.ID,
-												   {$wpdb->posts[$wp_id]}.post_password
-											FROM {$wpdb->comments[$wp_id]} 
-											LEFT JOIN {$wpdb->posts[$wp_id]} ON comment_post_id = id
-											WHERE {$wpdb->posts[$wp_id]}.post_status = 'publish'
-											AND {$wpdb->comments[$wp_id]}.comment_approved = '1'
-											AND post_date < '".date("Y-m-d H:i:s")."' 
-											ORDER BY comment_date DESC
-											LIMIT ".get_settings('posts_per_rss'));
-		}
-	// this line is WordPress' motor, do not delete it.
-		if ($comments) {
-			foreach ($comments as $comment) {
+		$_criteria->setSort('comment_date');
+		$_criteria->setLimit(get_settings('posts_per_rss'));
+		$_criteria->setStart(1);
+		$_joinCriteria =& new XoopsJoinCriteria(wp_table('posts'), 'comment_post_id', 'ID');
+		$commentHandler =& wp_handler('Comment');
+		$commentObjects = $commentHandler->getObjects($_criteria, false,
+											 'comment_ID, comment_author, comment_author_email, comment_author_url,
+											  comment_date, comment_content, comment_post_ID,'.wp_table('posts').'.ID,
+											 '.wp_table('posts').'.post_password', false, $_joinCriteria);
+		// this line is WordPress' motor, do not delete it.
+		if ($commentObjects) {
+			foreach ($commentObjects as $commentObject) {
+				$GLOBALS['comment'] = $commentObject->exportWpObject();
 ?>
 	<item rdf:about="<?php permalink_comments_rss() ?>">
 		<title>by: <?php comment_author_rss() ?></title>
 		<link><?php comment_link_rss() ?></link>
 		<dc:date><?php comment_time('Y-m-d\TH:i:s'); ?></dc:date>
-		<guid isPermaLink="false"><?php comment_ID(); echo ":".$comment->comment_post_ID; ?>@<?php bloginfo_rss("url") ?></guid>
-			<?php 
-			if (!empty($comment->post_password) && $_COOKIE['wp-postpass'] != $comment->post_password) {
-			?>
+		<guid isPermaLink="false"><?php comment_ID(); echo ":".$GLOBALS['comment']->comment_post_ID; ?>@<?php bloginfo_rss("url") ?></guid>
+		<?php if (!empty($GLOBALS['comment']->post_password) && $_COOKIE['wp-postpass'] != $GLOBALS['comment']->post_password) { ?>
 		<description>Protected Comments: Please enter your password to view comments.</description>
 		<content:encoded><![CDATA[<?php echo get_the_password_form() ?>]]></content:encoded>
-			<?php
-			}
-			else {
-			?>
+		<?php } else { ?>
 		<description><?php comment_text_rss() ?></description>
 		<content:encoded><![CDATA[<?php comment_text_rss(true) ?>]]></content:encoded>
-			<?php } // close check for password ?>
+		<?php } ?>
 	</item>
 <?php 
 			}

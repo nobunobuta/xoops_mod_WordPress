@@ -104,6 +104,7 @@ define('_LANG_P_NICKNAME_DELETE','You don&#8217;t have the right to delete post 
 define('_LANG_P_COMHAS_APPR','Comment has been approved.');
 define('_LANG_P_YOUR_DRAFTS','Your Drafts:');
 define('_LANG_P_WP_BOOKMARKLET','You can drag the following link to your links bar or add it to your bookmarks and when you "Press it" it will open up a popup window with information and a link to the site you&#8217;re currently browsing so you can make a quick post about it. Try it out:');
+define('_LANG_P_CONFIRM_DELETE', 'Are you sure you want to delete this?');
 
 /* File Name wp-admin/categories.php */
 define('_LANG_C_DEFAULT_CAT','Can\'t delete the <strong>%s</strong> category: this is the default one');
@@ -169,6 +170,7 @@ define('_LANG_EFA_POST_STATUS','Post Status');
 define('_LANG_EFA_AD_COMMENTS','Comments');
 define('_LANG_EFA_AD_PINGS','Pings');
 define('_LANG_EFA_POST_PASSWORD','Post Password');
+define('_LANG_EFA_POST_CUSTOM','Custom Field');
 define('_LANG_EFA_POST_EXCERPT','Excerpt');
 define('_LANG_EFA_POST_LATITUDE','Latitude:');
 define('_LANG_EFA_POST_LONGITUDE','Longitude:');
@@ -309,6 +311,20 @@ define('_LANG_WLM_EDIT_LINK','Edit a link:');
 define('_LANG_WLM_SAVE_CHANGES','Save Changes');
 define('_LANG_WLM_EDIT_CANCEL','Cancel');
 
+/* File Name wp-admin/menu.php */
+define('_LANG_ADMIN_MENU_WRITE','Write');
+define('_LANG_ADMIN_MENU_EDIT','Edit');
+define('_LANG_ADMIN_MENU_CATE','Categories');
+define('_LANG_ADMIN_MENU_LINK','Links');
+define('_LANG_ADMIN_MENU_USER','Users');
+define('_LANG_ADMIN_MENU_OPTION','Options');
+define('_LANG_ADMIN_MENU_PLUG','Plugins');
+define('_LANG_ADMIN_MENU_TEMP','Templates');
+define('_LANG_ADMIN_MENU_UPLOAD','Upload');
+define('_LANG_ADMIN_MENU_PROFILE','Profile');
+define('_LANG_ADMIN_MENU_VIEW','View site &raquo;');
+define('_LANG_ADMIN_MENU_LOGOUT','Logout (%s)');
+
 /* File Name wp-admin/moderation.php */
 define('_LANG_WPM_USER_LEVEL','Your level is not high enough to moderate comments. Ask for a promotion from your blog admin. :)');
 define('_LANG_WPM_LATE_POSTS','Posts');
@@ -430,6 +446,7 @@ define('_LANG_WUS_WHOSE_DELETE','Can&#8217;t delete a user whose level is higher
 define('_LANG_WUS_CANNOT_DELU','Couldn&#8217;t delete user');
 define('_LANG_WUS_CANNOT_DELUPOST','Couldn&#8217;t delete user&#8217;s post');
 define('_LANG_WUS_AU_THOR','Authors');
+define('_LANG_WUS_AU_LOGIN','Login');
 define('_LANG_WUS_AU_NICK','Nickname');
 define('_LANG_WUS_AU_NAME','Name');
 define('_LANG_WUS_AU_MAIL','E-mail');
@@ -558,10 +575,8 @@ define('_LANG_P_CHEATING_ERROR','Cheatin&#8217; uh?');
 /* File Name install.php */
 define('_LANG_INST_GUIDE_WPCONFIG','There doesn\'t seem to be a wp-config.php file. You must create one before moving on.');
 define('_LANG_INST_GUIDE_INSTALLED','<p>You appear to already have WordPress installed. If you would like to reinstall please clear your old database files first.</p></body></html>');
-define('_LANG_INST_GUIDE_WEL','<br />Welcome to WordPress. We&#8217;re now going to go through a few steps to get you up and running with the latest in personal publishing platforms. Before we get started, remember that we require a PHP version of at least 4.0.6, you
-  have ');
-define('_LANG_INST_GUIDE_COM','. Look good? You also need to set up the database connection information in <code>wp-config.php</code>. Have you looked at the <a href="../wp-readme/">readme</a>? If you&#8217;re all ready, <a href="install.php?step=1">let\'s
-  go</a>! ');
+define('_LANG_INST_GUIDE_WEL','<br />Welcome to WordPress. We&#8217;re now going to go through a few steps to get you up and running with the latest in personal publishing platforms. Before we get started, remember that we require a PHP version of at least 4.0.6, you  have ');
+define('_LANG_INST_GUIDE_COM','. Look good? You also need to set up the database connection information in <code>wp-config.php</code>. Have you looked at the <a href="../wp-readme/">readme</a>? If you&#8217;re all ready, <a href="install.php?step=1">let\'s  go</a>! ');
 define('_LANG_INST_STEP1_FIRST','<p>Okay first we&#8217;re going to set up the links database. This will allow you to host your own blogroll, complete with Weblogs.com updates.</p>');
 define('_LANG_INST_STEP1_LINKS','<p>Installing WP-Links.</p><p>Checking for tables...</p>');
 define('_LANG_INST_STEP1_ALLDONE','Did you defeat the boss monster at the end? Great! You&#8217;re ready for <a href="install.php?step=2">Step 2</a>.');
@@ -667,8 +682,7 @@ define('_LANG_INST_BASE_VALUE87','The default Longitude ICBM value');
 define('_LANG_INST_STEP2_LAST','OK. We\'re nearly done now. We just need to ask you a couple of things:');
 define('_LANG_INST_STEP2_URL','User setup successful!');
 define('_LANG_INST_STEP3_SET','<p>Now you can <a href="../wp-login.php">log in</a> with the <strong>login</strong> "admin" and <strong>password</strong> "');
-define('_LANG_INST_STEP3_UP','".</p><p><strong><em>Note that password</em></strong> carefully! It is a <em>random</em> password that was generated just for you. If you lose it, you
-  will have to delete the tables from the database yourself, and re-install WordPress.</p>');
+define('_LANG_INST_STEP3_UP','".</p><p><strong><em>Note that password</em></strong> carefully! It is a <em>random</em> password that was generated just for you. If you lose it, you will have to delete the tables from the database yourself, and re-install WordPress.</p>');
 define('_LANG_INST_STEP3_DONE','Were you expecting more steps? Sorry to disappoint. All done!');
 define('_LANG_INST_CAUTIONS','<ul><li>Directory : [755]</li><li>wp-config.php : [604Å`644]</li></ul>');
 

@@ -1,0 +1,61 @@
+<{if $user_count != 0}>
+<div class="wrap">
+  <h2><{$smarty.const._LANG_WUS_AU_THOR}></h2>
+  <table width='100%' border='0' cellspacing='1' cellpadding='0' class='outer'>
+	<tr>
+		<th align='center'>ID</th>
+		<th align='center'><{$smarty.const._LANG_WUS_AU_LOGIN}></th>
+		<th align='center'><{$smarty.const._LANG_WUS_AU_NICK}></th>
+		<th align='center'><{$smarty.const._LANG_WUS_AU_NAME}></th>
+		<th align='center'><{$smarty.const._LANG_WUS_AU_MAIL}></th>
+		<th align='center'><{$smarty.const._LANG_WUS_AU_URI}></th>
+		<th align='center'><{$smarty.const._LANG_WUS_AU_LEVEL}></th>
+		<th align='center'><{$smarty.const._LANG_WUS_AU_POSTS}></th>
+	</tr>
+<{foreach item=user from=$user_rows}>
+	<tr <{$user.style}>>
+		<th align='center'><{$user.ID}></th>
+		<td><strong><{$user.user_login}></strong></td>
+		<td><strong><{$user.user_nickname}></td>
+		<td><{$user.user_fullname}></td>
+		<td><a href='mailto:<{$user.user_email}>' title='e-mail: <{$user.user_email}>'><{$user.user_email}></a></td>
+		<td><a href='<{$user.user_url}>' title='website: <{$user.user_url}>'><{$user.user_short_url}></a></td>
+		<td align='center'><{$user.level_down}> <{$user.user_level}> <{$user.level_up}></td>
+		<td align='right'><{$user.user_numposts}></td>
+	</tr>
+<{/foreach}>
+  </table>
+</div>
+<{/if}>
+<{if $user0_count != 0}>
+<div class="wrap">
+  <h2><{$smarty.const._LANG_WUS_AU_USERS}></h2>
+  <table width='100%' border='0' cellspacing='1' cellpadding='0' class='outer'>
+	<tr>
+		<th align='center'>ID</th>
+		<th align='center'><{$smarty.const._LANG_WUS_AU_LOGIN}></th>
+		<th align='center'><{$smarty.const._LANG_WUS_AU_NICK}></th>
+		<th align='center'><{$smarty.const._LANG_WUS_AU_NAME}></th>
+		<th align='center'><{$smarty.const._LANG_WUS_AU_MAIL}></th>
+		<th align='center'><{$smarty.const._LANG_WUS_AU_URI}></th>
+		<th align='center'><{$smarty.const._LANG_WUS_AU_LEVEL}></th>
+		<th align='center'><{$smarty.const._LANG_WUS_AU_POSTS}></th>
+	</tr>
+<{foreach item=user from=$user0_rows}>
+	<tr <{$user.style}>>
+		<th align='center'><{$user.ID}></th>
+		<td><strong><{$user.user_login}></strong></td>
+		<td><strong><{$user.user_nickname}></td>
+		<td><{$user.user_fullname}></td>
+		<td><a href='mailto:<{$user.user_email}>' title='e-mail: <{$user.user_email}>'><{$user.user_email}></a></td>
+		<td><a href='<{$user.user_url}>' title='website: <{$user.user_url}>'><{$user.user_short_url}></a></td>
+		<td align='center'><{$user.user_del}> <{$user.user_level}> <{$user.level_up}></td>
+		<td align='right'><{$user.user_numposts}></td>
+	</tr>
+<{/foreach}>
+  </table>
+</div>
+<{/if}>
+<div class="wrap">
+	<p><{$smarty.const._LANG_WUS_AU_WARNING}></p>
+</div>

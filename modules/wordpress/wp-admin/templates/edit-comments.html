@@ -1,0 +1,29 @@
+<{include file="edit-comments-navibar.html"}>
+<div class="wrap">
+<{if $comments_found}>
+  <ol>
+<{foreach item=comment from=$comment_rows}>
+	<li <{$comment.class}> style="border-bottom: 1px solid #ccc;">
+	  <strong>Name:</strong> <{$comment.comment_author}>
+<{if $comment.comment_author_email}>
+		| <strong>Email:</strong> <{$comment.comment_author_email}> 
+<{/if}>
+<{if $comment.comment_author_url}>
+			| <strong>URI:</strong> <{$comment.comment_author_url}>
+<{/if}>
+			| <strong>IP:</strong> <a href="http://ws.arin.net/cgi-bin/whois.pl?queryinput=<{$comment.comment_author_IP}>"><{$comment.comment_author_IP}></a>
+		<{$comment.comment_content}>
+	<p>Posted <{$comment.comment_date}> | 
+<{if $comment.canEdit}>
+		<a href="post.php?action=editcomment&amp;comment=<{$comment.comment_ID}>"><{$smarty.const._LANG_EC_EDIT_COM}></a>
+		- <a href="post.php?action=confirmdeletecomment&amp;p=<{$comment.comment_post_ID}>&amp;comment=<{$comment.comment_ID}>&amp;referredby=edit-comment"><{$smarty.const._LANG_EC_DELETE_COM}></a>
+		- <a href="post.php?action=edit&amp;post=<{$comment.comment_post_ID}>"><{$smarty.const._LANG_EC_EDIT_POST}><{$comment.post_title}>&#8221;</a>
+		- <a href="<{$comment.post_permalink}>"><{$smarty.const._LANG_EC_VIEW_POST}></a></p>
+<{/if}>
+	</li>
+<{/foreach}>
+  </ol>
+<{else}>
+  <p><strong><{$smarty.const._LANG_E_RESULTS_FOUND}></strong></p>
+<{/if}>
+<{include file="edit-comments-navibar.html"}>

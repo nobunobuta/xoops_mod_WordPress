@@ -12,30 +12,21 @@ foreach ($posts as $post) { start_wp();
 	<title><?php echo get_settings('blogname') ?> - Comments on "<?php the_title() ?>"</title>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $blog_charset ?>" />
-<?php 
-if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/wp-layout.css')) {
-	$themes = $xoopsConfig['theme_set'];
-} else {
-	$themes = "default";
-}
-if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/print.css')) {
-	$themes_p = $xoopsConfig['theme_set'];
-} else {
-	$themes_p = "default";
-}
-?>
-	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $siteurl; ?>/themes/<?php echo $themes; ?>/wp-layout.css" />
-	<link rel="stylesheet" type="text/css" media="print" href="<?php echo $siteurl; ?>/themes/<?php echo $themes_p; ?>/print.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo XOOPS_URL."/themes/".$xoopsConfig['theme_set']."/style.css" ?>" />
+	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo get_custom_url('wp-layout.css') ?>" />
+	<link rel="stylesheet" type="text/css" media="print" href="<?php echo get_custom_url('print.css') ?>" />
 	<style type="text/css" media="screen">
 		@import url( wp-layout.css );
 		body { margin: 3px; }
 	</style>
 
 </head>
-<body id="wpMainContent">
+<body>
+<div id="wpMainContent">
 
 <h1 id="header"><a href="" title="<?php echo get_settings('blogname'); ?>"><?php echo get_settings('blogname'); ?></a></h1>
-
+<?php include "wp-comments.php" ?>
+<?php return ?>
 <h2 id="comments"><?php echo _LANG_WPCM_COM_TITLE; ?></h2>
 
 <p><?php comments_rss_link('<abbr title="Really Simple Syndication">RSS</abbr> feed for comments on this post.'); ?></p>
@@ -124,5 +115,6 @@ document.onkeypress = function esc(e) {
 }
 // -->
 </script>
+</div>
 </body>
 </html>

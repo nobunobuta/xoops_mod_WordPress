@@ -1,9 +1,6 @@
 <?php
-
-add_action('sanitize_title', 'sanitize_title_with_dashes');
-
 function wptexturize($text) {
-	$output = "";
+	$output = '';
 	// Capture tags and everything inside them
 	$textarr = preg_split("/(<.*>)/Us", $text, -1, PREG_SPLIT_DELIM_CAPTURE); // capture the tags as well as in between
 	$stop = count($textarr); $next = true; // loop stuff
@@ -13,7 +10,7 @@ function wptexturize($text) {
 		if (isset($curl{0}) && '<' != $curl{0} && $next) { // If it's not a tag
 			$curl = str_replace('---', '&#8212;', $curl);
 			$curl = str_replace('--', '&#8211;', $curl);
-			$curl = str_replace("...", '&#8230;', $curl);
+			$curl = str_replace('...', '&#8230;', $curl);
 			$curl = str_replace('``', '&#8220;', $curl);
 
 			// This is a hack, look at this more later. It works pretty well though.
@@ -21,10 +18,10 @@ function wptexturize($text) {
 			$cockneyreplace = array("&#8217;tain&#8217;t","&#8217;twere","&#8217;twas","&#8217;tis","&#8217;twill","&#8217;til","&#8217;bout","&#8217;nuff","&#8217;round");
 			$curl = str_replace($cockney, $cockneyreplace, $curl);
 
-			$curl = preg_replace("/'s/", "&#8217;s", $curl);
+			$curl = preg_replace("/'s/", '&#8217;s', $curl);
 			$curl = preg_replace("/'(\d\d(?:&#8217;|')?s)/", "&#8217;$1", $curl);
 			$curl = preg_replace('/(\s|\A|")\'/', '$1&#8216;', $curl);
-			$curl = preg_replace("/(\d+)\"/", "$1&Prime;", $curl);
+			$curl = preg_replace('/(\d+)"/', "$1&Prime;", $curl);
 			$curl = preg_replace("/(\d+)'/", "$1&prime;", $curl);
 			$curl = preg_replace("/(\S)'([^'\s])/", "$1&#8217;$2", $curl);
 			$curl = preg_replace('/"([\s.,!?;:&\']|\Z)/', '&#8221;$1', $curl);
@@ -80,9 +77,17 @@ function wpautop($pee, $br = 1) {
 	return $pee; 
 }
 
+
+function wp_filter_kses($string) {
+	return wp_kses($string, $GLOBALS['allowedtags']);
+}
+
+function clean_html($string) {
+	return wp_kses($string, $GLOBALS['fullcleantags']);
+}
+
 function sanitize_title($title) {
     $title = do_action('sanitize_title', $title);
-
     return $title;
 }
 
@@ -112,15 +117,15 @@ function sanitize_text($str, $isArea=false, $isURL=false) {
 
 	if ($isArea) {
 		$patterns[] = "/&lt;(\/)?\s*script.*?&gt;/si";
-		$replacements[] = "[$1script]";
+		$replacements[] = '[$1script]';
 		$patterns[] = "/&lt;(\/)?\s*style.*?&gt;/si";
-		$replacements[] = "[$style]";
+		$replacements[] = '[$style]';
 		$patterns[] = "/&lt;(\/)?\s*body.*?&gt;/si";
-		$replacements[] = "[$body]";
+		$replacements[] = '[$body]';
 		$patterns[] = "/&lt;(\/)?\s*link.*?&gt;/si";
-		$replacements[] = "[$link]";
+		$replacements[] = '[$link]';
 		$patterns[] = "/(&lt;.*)(?:onError|onUnload|onBlur|onFocus|onClick|onMouseOver|onSubmit|onReset|onChange|onSelect|onAbort)\s*=\s*(&quot;|&#039;).*\\2(.*?&gt;)/si";
-		$replacements[] = "$1$3";
+		$replacements[] = '$1$3';
 		if ($isURL) {
 			$patterns[] = "/(&quot;|&#039;).*/";
 			$replacements[] = "";
@@ -129,7 +134,7 @@ function sanitize_text($str, $isArea=false, $isURL=false) {
 		}
 	} else {
 		$patterns[] = "/(&#13|&#10).*/";
-		$replacements = "";
+		$replacements[] = "";
 	}
 	if ($isURL) {
 		$patterns[] = "/javascript:/si";
@@ -146,35 +151,29 @@ function sanitize_text($str, $isArea=false, $isURL=false) {
 }
 
 function convert_chars($content,$flag='obsolete attribute left there for backwards compatibility') { // html/unicode entities output
-
-	global  $wp_htmltrans, $wp_htmltranswinuni;
-
 	// removes metadata tags
 	$content = preg_replace('/<title>(.+?)<\/title>/','',$content);
 	$content = preg_replace('/<category>(.+?)<\/category>/','',$content);
 
 	if (get_settings('use_htmltrans')) {
-
 		// converts lone & characters into &#38; (a.k.a. &amp;)
 		$content = preg_replace('/&[^#](?![a-z]*;)/ie', '"&#38;".substr("\0",1)', $content);
 
 		// converts HTML-entities to their display values in order to convert them again later
 		$content = preg_replace('/['.chr(127).'-'.chr(255).']/e', '"&#".ord(\'\0\').";"', $content );
-		$content = strtr($content, $wp_htmltrans);
+		$content = strtr($content, $GLOBALS['wp_htmltrans']);
 
 		// now converting: Windows CP1252 => Unicode (valid HTML)
 		// (if you've ever pasted text from MSWord, you'll understand)
 
-		$content = strtr($content, $wp_htmltranswinuni);
-
+		$content = strtr($content, $GLOBALS['wp_htmltranswinuni']);
 	}
 
 	// you can delete these 2 lines if you don't like <br /> and <hr />
-	$content = str_replace("<br>","<br />",$content);
-	$content = str_replace("<hr>","<hr />",$content);
+	$content = str_replace('<br>','<br />',$content);
+	$content = str_replace('<hr>','<hr />',$content);
 
 	return $content;
-
 }
 
 /*
@@ -205,12 +204,10 @@ function balanceTags($text, $is_comment = 0) {
 	$tagqueue = '';
 	$newtext = '';
 
-	# b2 bug fix for comments - in case you REALLY meant to type '< !--'
+	# WP bug fix for comments - in case you REALLY meant to type '< !--'
 	$text = str_replace('< !--', '<    !--', $text);
-
-	# b2 bug fix for LOVE <3 (and other situations with '<' before a number)
+	# WP bug fix for LOVE <3 (and other situations with '<' before a number)
 	$text = preg_replace('#<([0-9]{1})#', '&lt;$1', $text);
-
 
 	while (preg_match("/<(\/?\w*)\s*([^>]*)>/",$text,$regex)) {
 		$newtext = $newtext . $tagqueue;
@@ -220,11 +217,9 @@ function balanceTags($text, $is_comment = 0) {
 
 		// clear the shifter
 		$tagqueue = '';
-
 		// Pop or Push
 		if ($regex[1][0] == "/") { // End Tag
 			$tag = strtolower(substr($regex[1],1));
-
 			// if too many closing tags
 			if($stacksize <= 0) {
 				$tag = '';
@@ -265,10 +260,8 @@ function balanceTags($text, $is_comment = 0) {
 			if($attributes) {
 				$attributes = ' '.$attributes;
 			}
-
 			$tag = '<'.$tag.$attributes.'>';
 		}
-
 		$newtext .= substr($text,0,$i) . $tag;
 		$text = substr($text,$i+$l);
 	}
@@ -284,7 +277,7 @@ function balanceTags($text, $is_comment = 0) {
 		$newtext = $newtext . '</' . $x . '>'; // Add remaining tags to close
 	}
 
-	# b2 fix for the bug with HTML comments
+	// WP fix for the bug with HTML comments
 	$newtext = str_replace("< !--","<!--",$newtext);
 	$newtext = str_replace("<    !--","< !--",$newtext);
 
@@ -292,39 +285,28 @@ function balanceTags($text, $is_comment = 0) {
 }
 
 function format_to_edit($content) {
-	global $autobr;
 	$content = stripslashes($content);
-	if ($autobr) { $content = unautobrize($content); }
+	if ($GLOBALS['autobr']) { $content = unautobrize($content); }
 	$content = apply_filters('format_to_edit', $content);
 	$content = htmlspecialchars($content);
 	return $content;
 	}
+
 function format_to_post($content) {
-	global $post_autobr,$comment_autobr;
 	$content = addslashes($content);
-	if ($post_autobr || $comment_autobr) { $content = autobrize($content); }
+	if ($GLOBALS['post_autobr'] || $GLOBALS['comment_autobr']) { $content = autobrize($content); }
 	$content = apply_filters('format_to_post', $content);
 	return $content;
 }
 
 function zeroise($number,$threshold) { // function to add leading zeros when necessary
-	$l=strlen($number);
-	if ($l<$threshold)
-		for ($i=0; $i<($threshold-$l); $i=$i+1) { $number='0'.$number;	}
+	$number = substr(str_repeat('0',$threshold).$number, -$threshold);
 	return $number;
 }
 
 function backslashit($string) {
 	$string = preg_replace('/([a-z])/i', '\\\\\1', $string);
 	return $string;
-}
-
-function popuplinks($text) {
-	// Comment text in popup windows should be filtered through this.
-	// Right now it's a moderately dumb function, ideally it would detect whether
-	// a target or rel attribute was already there and adjust its actions accordingly.
-	$text = preg_replace('/<a (.+?)>/i', "<a $1 target='_blank' rel='external'>", $text);
-	return $text;
 }
 
 function autobrize($content) {
@@ -342,44 +324,21 @@ function unautobrize($content) {
 
 
 function mysql2date($dateformatstring, $mysqlstring, $use_b2configmonthsdays = 1, $charset="") {
-	global $month, $weekday,$s_weekday_length,$s_month_length, $blog_charset;
-	$m = $mysqlstring;
-	if (empty($m)) {
+	if (empty($mysqlstring)) {
 		return false;
 	}
-	if (function_exists('mb_convert_encoding')) {
-		if (!$charset) {
-			if ($blog_charset) {
-				$charset = $blog_charset;
-			} else {
-				$charset = mb_internal_encoding();
-			}
-		}
-	}
-	$i = mktime(substr($m,11,2),substr($m,14,2),substr($m,17,2),substr($m,5,2),substr($m,8,2),substr($m,0,4));
-	if (!empty($month) && !empty($weekday) && $use_b2configmonthsdays) {
-		$datemonth = $month[date('m', $i)];
-		$dateweekday = $weekday[date('w', $i)];
+	$i = mktime(substr($mysqlstring,11,2),substr($mysqlstring,14,2),substr($mysqlstring,17,2),substr($mysqlstring,5,2),substr($mysqlstring,8,2),substr($mysqlstring,0,4));
+	if (!empty($GLOBALS['month']) && !empty($GLOBALS['weekday']) && $use_b2configmonthsdays) {
+		$datemonth = $GLOBALS['month'][date('m', $i)];
+		$dateweekday = $GLOBALS['weekday'][date('w', $i)];
 		$dateformatstring = ' '.$dateformatstring;
-		if (function_exists('mb_substr')) {
-			$dateformatstring = preg_replace("/([^\\\])D/", "\\1".backslashit(mb_substr($dateweekday, 0, $s_weekday_length, $charset)), $dateformatstring);
-		} else {
-			$dateformatstring = preg_replace("/([^\\\])D/", "\\1".backslashit(substr($dateweekday, 0, $s_weekday_length)), $dateformatstring);
-		}
+		$dateformatstring = preg_replace("/([^\\\])D/", "\\1".backslashit(mb_substring($dateweekday, 0, $GLOBALS['s_weekday_length'], $charset)),$dateformatstring);
 		$dateformatstring = preg_replace("/([^\\\])F/", "\\1".backslashit($datemonth), $dateformatstring);
 		$dateformatstring = preg_replace("/([^\\\])l/", "\\1".backslashit($dateweekday), $dateformatstring);
-		if (function_exists('mb_substr')) {
-			$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(mb_substr($datemonth, 0, $s_month_length, $charset)), $dateformatstring);
-		} else {
-			$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(substr($datemonth, 0, $s_month_length)), $dateformatstring);
-		}
+		$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(mb_substring($datemonth, 0, $GLOBALS['s_month_length'], $charset)), $dateformatstring);
 		$dateformatstring = substr($dateformatstring, 1, strlen($dateformatstring)-1);
 	}
 	$j = @date($dateformatstring, $i);
-	if (!$j) {
-	// for debug purposes
-	//	echo $i." ".$mysqlstring;
-	}
 	return $j;
 }
 
@@ -400,96 +359,6 @@ function addslashes_gpc($gpc) {
 		$gpc = addslashes($gpc);
 	}
 	return $gpc;
-}
-
-function date_i18n($dateformatstring, $unixtimestamp) {
-	global $month, $weekday;
-	$i = $unixtimestamp;
-	if ((!empty($month)) && (!empty($weekday))) {
-		$datemonth = $month[date('m', $i)];
-		$dateweekday = $weekday[date('w', $i)];
-		$dateformatstring = ' '.$dateformatstring;
-		$dateformatstring = preg_replace("/([^\\\])D/", "\\1".backslashit(substr($dateweekday, 0, 3)), $dateformatstring);
-		$dateformatstring = preg_replace("/([^\\\])F/", "\\1".backslashit($datemonth), $dateformatstring);
-		$dateformatstring = preg_replace("/([^\\\])l/", "\\1".backslashit($dateweekday), $dateformatstring);
-		$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(substr($datemonth, 0, 3)), $dateformatstring);
-		$dateformatstring = substr($dateformatstring, 1, strlen($dateformatstring)-1);
-	}
-	$j = @date($dateformatstring, $i);
-	return $j;
-	}
-
-
-
-function get_weekstartend($mysqlstring, $start_of_week) {
-	$my = substr($mysqlstring,0,4);
-	$mm = substr($mysqlstring,8,2);
-	$md = substr($mysqlstring,5,2);
-	$day = mktime(0,0,0, $md, $mm, $my);
-	$weekday = date('w',$day);
-	$i = 86400;
-	while ($weekday > $start_of_week) {
-		$weekday = date('w',$day);
-		$day = $day - 86400;
-		$i = 0;
-	}
-	$week['start'] = $day + 86400 - $i;
-	$week['end']   = $day + 691199;
-	return $week;
-}
-
-
-function convert_bbcode($content) {
-	global $wp_bbcode;
-	if (get_settings('use_bbcode')) {
-		$content = preg_replace($wp_bbcode["in"], $wp_bbcode["out"], $content);
-	}
-	$content = convert_bbcode_email($content);
-	return $content;
-}
-
-function convert_bbcode_email($content) {
-	$bbcode_email["in"] = array(
-		'#\[email](.+?)\[/email]#eis',
-		'#\[email=(.+?)](.+?)\[/email]#eis'
-	);
-	$bbcode_email["out"] = array(
-		"'<a href=\"mailto:'.antispambot('\\1').'\">'.antispambot('\\1').'</a>'",		// E-mail
-		"'<a href=\"mailto:'.antispambot('\\1').'\">\\2</a>'"
-	);
-
-	$content = preg_replace($bbcode_email["in"], $bbcode_email["out"], $content);
-	return $content;
-}
-
-function convert_gmcode($content) {
-	global $wp_gmcode;
-	if (get_settings('use_gmcode')) {
-		$content = preg_replace($wp_gmcode["in"], $wp_gmcode["out"], $content);
-	}
-	return $content;
-}
-
-function convert_smilies($text) {
-	global $smilies_directory,$wp_id;
-	global $wp_smiliessearch, $wp_smiliesreplace;
-	if (get_settings('use_smilies')) {
-		// HTML loop taken from texturize function, could possible be consolidated
-		$textarr = preg_split("/(<.*>)/U", $text, -1, PREG_SPLIT_DELIM_CAPTURE); // capture the tags as well as in between
-		$stop = count($textarr);// loop stuff
-		$output = '';
-		for ($i = 0; $i < $stop; $i++) {
-			$content = $textarr[$i];
-			if ((strlen($content) > 0) && ('<' != $content{0})) { // If it's not a tag
-				$content = str_replace($wp_smiliessearch[$wp_id], $wp_smiliesreplace[$wp_id], $content);
-			}
-			$output .= $content;
-		}
-	} else {
-		// return default text.
-		$output = $text;
-	}
-	return $output;
 }
 
 function antispambot($emailaddy, $mailto=0) {
@@ -520,6 +389,25 @@ function make_clickable($text) { // original function: phpBB, extended here for 
     return $ret;
 }
 
+function convert_smilies($text) {
+	if (get_settings('use_smilies')) {
+		// HTML loop taken from texturize function, could possible be consolidated
+		$textarr = preg_split("/(<.*>)/U", $text, -1, PREG_SPLIT_DELIM_CAPTURE); // capture the tags as well as in between
+		$stop = count($textarr);// loop stuff
+		$output = '';
+		for ($i = 0; $i < $stop; $i++) {
+			$content = $textarr[$i];
+			if ((strlen($content) > 0) && ('<' != $content{0})) { // If it's not a tag
+				$content = str_replace($GLOBALS['wp_smiliessearch'][wp_id()], $GLOBALS['wp_smiliesreplace'][wp_id()], $content);
+			}
+			$output .= $content;
+		}
+	} else {
+		// return default text.
+		$output = $text;
+	}
+	return $output;
+}
 
 function is_email($user_email) {
 	$chars = "/^([a-z0-9_]|\\-|\\.)+@(([a-z0-9_]|\\-)+\\.)+[a-z]{2,4}\$/i";
@@ -543,6 +431,98 @@ function strip_all_but_one_link($text, $mylink) {
 			$text = str_replace($matches[0][$i], $matches[2][$i], $text);
 		}
 	}
+	return $text;
+}
+
+function date_i18n($dateformatstring, $unixtimestamp, $charset="") {
+	if ((!empty($GLOBALS['month'])) && (!empty($GLOBALS['weekday']))) {
+		$datemonth = $GLOBALS['month'][date('m', $unixtimestamp)];
+		$dateweekday = $GLOBALS['weekday'][date('w', $unixtimestamp)];
+		$dateformatstring = ' '.$dateformatstring;
+		$dateformatstring = preg_replace("/([^\\\])D/", "\\1".backslashit(mb_substring($dateweekday, 0, $GLOBALS['s_weekday_length'], $charset)), $dateformatstring);
+		$dateformatstring = preg_replace("/([^\\\])F/", "\\1".backslashit($datemonth), $dateformatstring);
+		$dateformatstring = preg_replace("/([^\\\])l/", "\\1".backslashit($dateweekday), $dateformatstring);
+		$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(mb_substring($datemonth, 0, $GLOBALS['s_month_length'], $charset)), $dateformatstring);
+		$dateformatstring = substr($dateformatstring, 1, strlen($dateformatstring)-1);
+	}
+	$j = @date($dateformatstring, $unixtimestamp);
+	return $j;
+	}
+
+function get_weekstartend($mysqlstring, $start_of_week) {
+	$my = substr($mysqlstring,0,4);
+	$mm = substr($mysqlstring,8,2);
+	$md = substr($mysqlstring,5,2);
+	$day = mktime(0,0,0, $md, $mm, $my);
+	$weekday = date('w',$day);
+	$i = 86400;
+	while ($weekday > $start_of_week) {
+		$weekday = date('w',$day);
+		$day = $day - 86400;
+		$i = 0;
+	}
+	$week['start'] = $day + 86400 - $i;
+	$week['end']   = $day + 691199;
+	return $week;
+}
+
+/* big funky fixes for browsers' javascript bugs */
+function fix_js_param($str) {
+    if (($GLOBALS['is_macIE']) && (!isset($GLOBALS['IEMac_bookmarklet_fix']))) {
+        $str = preg_replace($GLOBALS['wp_macIE_correction']['in'],$GLOBALS['wp_macIE_correction']['out'], $str);
+    }
+    if (($GLOBALS['is_winIE']) && (!isset($GLOBALS['IEWin_bookmarklet_fix']))) {
+        $str =  preg_replace("/\%u([0-9A-F]{4,4})/e",  "'&#'.base_convert('\\1',16,10).';'", $str);
+    }
+    if (($GLOBALS['is_gecko']) && (!isset($GLOBALS['Gecko_bookmarklet_fix']))) {
+        $str = preg_replace($GLOBALS['wp_gecko_correction']['in'], $GLOBALS['wp_gecko_correction']['out'], $str);
+		$str = preg_replace("/\%u([0-9A-F]{4,4})/e", "'&#'.base_convert('\\1',16,10).';'", $str);
+    }
+    return $str;
+}
+
+function convert_bbcode($content) {
+    if (get_settings('use_bbcode')) {
+        $myts = new MyTextSanitizer;
+        $content =& $myts->codePreConv($content, 1); // Ryuji_edit(2003-11-18)
+        if (method_exists($myts, 'wikiPreConv')) {
+			$content =& $myts->wikiPreConv($content, 1); // modPukiWiki Conv by nobunobu
+		}
+        $content =& $myts->xoopsCodeDecode($content);
+        if (method_exists($myts, 'wikiConv')) {
+			$content =& $myts->wikiConv($content, 1, 0, 1); // modPukiWiki Conv by nobunobu
+		}
+        $content =& $myts->codeConv($content, 1, 0);    // Ryuji_edit(2003-11-18)
+    }
+    return $content;
+}
+
+function convert_bbcode_email($content) {
+	$bbcode_email["in"] = array(
+		'#\[email](.+?)\[/email]#eis',
+		'#\[email=(.+?)](.+?)\[/email]#eis'
+	);
+	$bbcode_email["out"] = array(
+		"'<a href=\"mailto:'.antispambot('\\1').'\">'.antispambot('\\1').'</a>'",		// E-mail
+		"'<a href=\"mailto:'.antispambot('\\1').'\">\\2</a>'"
+	);
+
+	$content = preg_replace($bbcode_email['in'], $bbcode_email['out'], $content);
+	return $content;
+}
+
+function convert_gmcode($content) {
+	if (get_settings('use_gmcode')) {
+		$content = preg_replace($GLOBALS['wp_gmcode']['in'], $GLOBALS['wp_gmcode']['out'], $content);
+	}
+	return $content;
+}
+
+function popuplinks($text) {
+	// Comment text in popup windows should be filtered through this.
+	// Right now it's a moderately dumb function, ideally it would detect whether
+	// a target or rel attribute was already there and adjust its actions accordingly.
+	$text = preg_replace('/<a (.+?)>/i', "<a $1 target='_blank' rel='external'>", $text);
 	return $text;
 }
 ?>

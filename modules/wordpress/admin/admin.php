@@ -29,12 +29,10 @@
 // Project: The XOOPS Project                                                //
 // ------------------------------------------------------------------------- //
 
-if (isset($_POST['fct'])) {
-	$fct = trim($_POST['fct']);
-}
-if (isset($_GET['fct'])) {
-	$fct = trim($_GET['fct']);
-}
+$admin_mydirname = basename( dirname( dirname( __FILE__ ) ) ) ;
+
+$fct = empty( $_POST['fct'] ) ? '' : trim( $_POST['fct'] ) ;
+$fct = empty( $_GET['fct'] ) ? $fct : trim( $_GET['fct'] ) ;
 if( empty( $fct ) ) $fct = 'preferences' ;
 //if (isset($fct) && $fct == "users") {
 //	$xoopsOption['pagetype'] = "user";
@@ -42,24 +40,21 @@ if( empty( $fct ) ) $fct = 'preferences' ;
 include "../../../mainfile.php";
 // include "../../mainfile.php"; GIJ
 include XOOPS_ROOT_PATH."/include/cp_functions.php";
-if ( file_exists(XOOPS_ROOT_PATH."/modules/system/language/".$xoopsConfig['language']."/admin.php") ) {
-	include XOOPS_ROOT_PATH."/modules/system/language/".$xoopsConfig['language']."/admin.php";
-} else {
-	include XOOPS_ROOT_PATH."/modules/system/language/english/admin.php";
-}
+
 include_once XOOPS_ROOT_PATH."/class/xoopsmodule.php";
+include_once "../include/gtickets.php" ;// GIJ
 
 $admintest = 0;
 
 if (is_object($xoopsUser)) {
 	$xoopsModule =& XoopsModule::getByDirname("system");
 	if ( !$xoopsUser->isAdmin($xoopsModule->mid()) ) {
-		redirect_header(XOOPS_URL."/",3,_NOPERM);
+		redirect_header(XOOPS_URL.'/user.php',3,_NOPERM);
 		exit();
 	}
 	$admintest=1;
 } else {
-	redirect_header(XOOPS_URL."/",3,_NOPERM);
+	redirect_header(XOOPS_URL.'/user.php',3,_NOPERM);
 	exit();
 }
 
@@ -70,6 +65,12 @@ if ($admintest != 0) {
 	if (isset($fct) && $fct != '') {
 		if (file_exists(XOOPS_ROOT_PATH."/modules/system/admin/".$fct."/xoops_version.php")) {
 		
+			if ( file_exists(XOOPS_ROOT_PATH."/modules/system/language/".$xoopsConfig['language']."/admin.php") ) {
+				include XOOPS_ROOT_PATH."/modules/system/language/".$xoopsConfig['language']."/admin.php";
+			} else {
+				include XOOPS_ROOT_PATH."/modules/system/language/english/admin.php";
+			}
+
 			if (file_exists(XOOPS_ROOT_PATH."/modules/system/language/".$xoopsConfig['language']."/admin/".$fct.".php")) {
 				include XOOPS_ROOT_PATH."/modules/system/language/".$xoopsConfig['language']."/admin/".$fct.".php";
 			} elseif (file_exists(XOOPS_ROOT_PATH."/modules/system/language/english/admin/".$fct.".php")) {

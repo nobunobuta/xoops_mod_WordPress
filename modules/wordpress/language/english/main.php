@@ -30,10 +30,12 @@ define("_WP_MONTH_FORMAT","%MONTH %YEAR");
 define("_WP_BY_MONTHLY","By Monthly");
 define("_WP_LIST_CAT_ALL","All Categories");
 
-
 define("_WP_TPL_COMMENT0",'Comments (0)');
 define("_WP_TPL_COMMENT1",'Comments (1)');
 define("_WP_TPL_COMMENTS",'Comments (%)');
+define("_WP_TPL_TRACKBACK0",'Trackbacks (0)');
+define("_WP_TPL_TRACKBACK1",'Trackbacks (1)');
+define("_WP_TPL_TRACKBACKS",'Trackbacks (%)');
 define("_WP_TPL_FILED_UNDER",'Filed under: ');
 define("_WP_TPL_EDIT_THIS",'Edit This');
 define("_WP_TPL_EDIT_THISC",'Edit This');

@@ -16,8 +16,8 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 
 		global $wpdb, $siteurl, $post, $use_cache, $category_cache, $comment_count_cache;
 		global $smilies_directory,  $wp_smiliessearch, $wp_smiliesreplace ,$authordata;
-		global $wp_bbcode,  $wp_gmcode,   $wp_htmltrans, $wp_htmltranswinuni;
-		global $wp_id, $wp_inblock, $xoopsConfig, $previousday, $time_difference ,$day;
+		global $wp_bbcode,  $wp_gmcode,   $wp_htmltrans, $wp_htmltranswinuni,$wp_filter;
+		global $wp_id, $wp_mod, $wp_base, $wp_inblock, $xoopsConfig, $previousday, $time_difference ,$day;
 		
 		$id=1;
 		$use_cache = 1;
@@ -45,6 +45,7 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 		// Get the categories for all the posts
 			foreach ($lposts as $post) {
 				$post_id_list[] = $post->ID;
+				$category_cache[$wp_id][$post->ID] = array();
 			}
 			$post_id_list = implode(',', $post_id_list);
 
@@ -71,13 +72,6 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 		$blog = 1;
 		$block = array();
 		$block['use_theme_template'] = get_xoops_option('wordpress'.$wp_num,'use_theme_template');
-		
-		if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/content_block-template.php')) {
-			$themes = $xoopsConfig['theme_set'];
-		} else {
-			$themes = "default";
-		}
-		$template_fname = XOOPS_ROOT_PATH."/modules/wordpress". (($wp_id=='-')?'':$wp_id) ."/themes/".$themes."/content_block-template.php";
 		
 		$block['style'] =block_style_get($wp_num,false);
 		$block['divid'] = 'wpBlockContent'.$wp_num;
@@ -114,7 +108,14 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 				ob_end_clean();
 		//
 				ob_start();
-				comments_popup_link(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS);
+				if (get_xoops_option($wp_mod[$wp_id],'wp_use_xoops_comments') == 0) {
+					comments_popup_link(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS);
+				} else {
+					xcomments_popup_link(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS);
+					echo " | ";
+					comments_popup_link(_WP_TPL_TRACKBACK0, _WP_TPL_TRACKBACK1, _WP_TPL_TRACKBACKS);
+				}
+//				comments_popup_link(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS);
 				$content['comments'] = ob_get_contents();
 				ob_end_clean();
 		//
@@ -126,17 +127,15 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 				$block['contents'][] = $content;
 			} else {
 				ob_start();
-				include $template_fname;
+				include(get_custom_path('content_block-template.php'));
 				$block['template_content'] .= ob_get_contents();
 				ob_end_clean();
 			}
 		}
 		$previousday=0;
 		$day=0;
-		$category_cache[$wp_id]=array();
-		$comment_count_cache=array();
-//		unset(category_cache);
-//		unset(comment_count_cache);
+		$comment_count_cache[$wp_id]=array();
+
 		return $block;
 	}
 
@@ -149,8 +148,8 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 		function b_wp'.$i.'_contents_show($options) {
 			global $wpdb, $siteurl, $post, $use_cache, $category_cache, $comment_count_cache;
 			global $smilies_directory,  $wp_smiliessearch, $wp_smiliesreplace ,$authordata;
-			global $wp_bbcode,  $wp_gmcode,   $wp_htmltrans, $wp_htmltranswinuni;
-			global $wp_id, $wp_inblock, $xoopsConfig, $previousday, $time_difference ,$day;
+			global $wp_bbcode,  $wp_gmcode,   $wp_htmltrans, $wp_htmltranswinuni,$wp_filter;
+			global $wp_id, $wp_mod, $wp_base, $wp_inblock, $xoopsConfig, $previousday, $time_difference ,$day;
 			$wp_id = "'.$i.'";
 			$wp_inblock = 2;
 			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");

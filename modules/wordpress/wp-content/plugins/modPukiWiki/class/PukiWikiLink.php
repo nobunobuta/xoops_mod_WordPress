@@ -2,11 +2,9 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id$
-//
 // modPukiWikiリンク生成用クラス群
+//
 // 修正元ファイル：PukiWiki 1.4のmake_link.php
-// ORG: make_link.php,v 1.2 2004/09/19 14:05:30 henoheno Exp $
 //
 
 //インライン要素を置換する
@@ -17,27 +15,9 @@ class PukiWikiInlineConverter
 	var $pos;
 	var $result;
 
-	function get_clone($obj) {
-		static $clone_func;
-
-		if (!isset($clone_func)) {
-			if (version_compare(PHP_VERSION,'5.0.0','<')) {
-				$clone_func = create_function('$a','return $a;');
-			} else {
-				$clone_func = create_function('$a','return clone $a;');
-			}
-		}
-		return $clone_func($obj);
-	}
-	function __clone() {
-		$converters = array();
-		foreach ($this->converters as $key=>$converter) {
-			$converters[$key] = $this->get_clone($converter);
-		}
-		$this->converters = $converters;
-	}
-    function PukiWikiInlineConverter($converters=NULL,$excludes=NULL)
+	function PukiWikiInlineConverter($converters=NULL,$excludes=NULL)
 	{
+		
 		if ($converters === NULL)
 		{
 			$converters = array(
@@ -111,7 +91,7 @@ class PukiWikiInlineConverter
 			$obj = $this->get_converter($match);
 			if ($obj->set($match,$page) !== FALSE)
 			{
-				$arr[] = $this->get_clone($obj);
+				$arr[] = $obj; // copy
 				if ($obj->body != '')
 				{
 					$arr = array_merge($arr,$this->get_objects($obj->body,$page));
@@ -167,16 +147,17 @@ class PukiWikiLink
 	}
 	
 	//private
-	// マッチした配列から、自分に必要な部分だけを取り出す
+	// マッチした配列から、ｩ分に必要な部分だけを謔闖oす
 	function splice($arr)
 	{
 		$count = $this->get_count() + 1;
 		$arr = array_pad(array_splice($arr,$this->start,$count),$count,'');
+//		var_dump ($arr);echo "<br>";
 		$this->text = $arr[0];
 		return $arr;
 	}
 	// 基本パラメータを設定する
-	function setParam($page,$name,$body,$type='',$alias='')
+	function setParam($page,$name,$body,$type='',$alias='', $tip='')
 	{
 		static $converter = NULL;
 		
@@ -199,11 +180,11 @@ class PukiWikiLink
 			$alias = preg_replace('#</?a[^>]*>#i','',$alias);  //BugTrack 669
 		}
 		$this->alias = $alias;
-		
+		$this->tip = $tip;
 		return TRUE;
 	}
 	// ページ名のリンクを作成
-	function make_pagelink($page, $alias='',$anchor='',$refer='')
+	function make_pagelink($page, $alias='',$anchor='',$refer='',$tip='')
 	{
 		$s_page = htmlspecialchars(PukiWikiFunc::strip_bracket($page));
 		$s_alias = ($alias == '') ? $s_page : $alias;
@@ -225,8 +206,12 @@ class PukiWikiLink
 		}
 		if (defined('MOD_PUKI_WIKI_URL')) {
 			if (PukiWikiFunc::is_page($page)) {
-				$passage = "";
-				$title = PukiWikiConfig::getParam('link_compact') ? '' : " title=\"$s_page$passage\"";
+				if ($tip) {
+					$title = " title=\"".$tip."\"";
+				} else {
+					$passage = "";
+					$title = PukiWikiConfig::getParam('link_compact') ? '' : " title=\"$s_page$passage\"";
+				}
 				if (defined('XOOPS_URL') and MOD_PUKI_WIKI_VER=='1.3' and PukiWikiConfig::getParam('use_static_url')) {
 					return "<a href=\"".XOOPS_URL.'/modules/pukiwiki/'.PukiWikiFunc::get_pgid_by_name($page).".html{$anchor}\"$title>$s_alias</a>";
 				} else {
@@ -285,7 +270,7 @@ EOD;
 	{
 		list($all,$this->plain,$name,$this->param,$body) = $this->splice($arr);
 		
-		// 本来のプラグイン名およびパラメータを取得しなおす PHP4.1.2 (?R)対策
+		// 本来のプラグイン名およびパラメータを謫ｾしなおす PHP4.1.2 (?R)対策
 		if (preg_match("/^{$this->pattern}/x",$all,$matches)
 			and $matches[1] != $this->plain)
 		{
@@ -296,7 +281,6 @@ EOD;
 	function toString()
 	{
 		$body = ($this->body == '') ? '' : PukiWikiFunc::make_link($this->body);
-
 		// プラグイン呼び出し
 		if (PukiWikiPlugin::exist_plugin_inline($this->name))
 		{
@@ -307,7 +291,7 @@ EOD;
 			}
 		}
 		
-		// プラグインが存在しないか、変換に失敗
+		// プラグインが存在しないか、変換にｸ敗
 		$body = ($body == '') ? ';' : "\{$body};";
 		return PukiWikiConfig::applyRules(htmlspecialchars('&'.$this->plain).$body);
 	}
@@ -484,7 +468,8 @@ EOD;
 	function set($arr,$page)
 	{
 		$WikiName = PukiWikiConfig::getParam('WikiName');
-
+		$pagename_aliases = PukiWikiConfig::getParam('pagename_aliases');
+		
 		list(,$alias,,$name,$this->anchor) = $this->splice($arr);
 		if ($name == '' and $this->anchor == '')
 		{
@@ -492,6 +477,21 @@ EOD;
 		}
 		if ($name != '' and preg_match("/^$WikiName$/",$name))
 		{
+			// ページが存在しない場合
+			if (!PukiWikiFunc::is_page($name))
+			{
+				// ページ名エイリアスを探す
+				if (array_key_exists($name,$pagename_aliases))
+				{
+					$name = $pagename_aliases[$name];
+				}
+				else
+				{
+					// 共通リンクディレクトリを探す
+					$_name = PukiWikiFunc::get_real_pagename($name);
+					if ($_name) $name = $_name;
+				}
+			}
 			return parent::setParam($page,$name,'','pagename',$alias);
 		}
 		if ($alias == '')
@@ -509,7 +509,17 @@ EOD;
 		{
 			if (!(PukiWikiFunc::is_pagename($name)))
 			{
-				return FALSE;
+				// ページ名エイリアスを探す
+				if (array_key_exists($name,$pagename_aliases))
+				{
+					$name = $pagename_aliases[$name];
+				}
+				else
+				{
+					// 共通リンクディレクトリを探す
+					$_name = PukiWikiFunc::get_real_pagename($name);
+					if ($_name) $name = $_name;
+				}
 			}
 		}
 		return parent::setParam($page,$name,'','pagename',$alias);
@@ -544,8 +554,26 @@ class PukiWikiLink_wikiname extends PukiWikiLink
 	}
 	function set($arr,$page)
 	{
+		$pagename_aliases = PukiWikiConfig::getParam('pagename_aliases');
 		list($name) = $this->splice($arr);
-		return parent::setParam($page,$name,'','pagename',$name);
+		$alias = $name;
+		
+		// ページが存在しない場合
+		if (!is_page($name))
+		{
+			// ページ名エイリアスを探す
+			if (array_key_exists($name,$pagename_aliases))
+			{
+				$name = $pagename_aliases[$name];
+			}
+			else
+			{
+				// 共通リンクディレクトリを探す
+				$_name = PukiWikiFunc::get_real_pagename($name);
+				if ($_name) $name = $_name;
+			}
+		}
+		return parent::setParam($page,$name,'','pagename',$alias);
 	}
 	function toString()
 	{
@@ -619,7 +647,7 @@ class PukiWikiLink_autolink extends PukiWikiLink
 		}
 		// AutoLinkデータを予めチェックするようにした by nao-pon
 		//@list($auto,$auto_a,$forceignorepages) = file(MOD_PUKI_WIKI_CACHE_DIR.'autolink.dat');
-		@list($auto, $auto_a, $forceignorepages) = $autolink_data;
+		list($auto, $auto_a, $forceignorepages) = $autolink_data;
 		$this->auto = $auto;
 		$this->auto_a = $auto_a; 
 		$this->forceignorepages = explode("\t",trim($forceignorepages));
@@ -634,13 +662,14 @@ class PukiWikiLink_autolink extends PukiWikiLink
 	}
 	function set($arr,$page)
 	{
+		$pagename_aliases = PukiWikiConfig::getParam('pagename_aliases');
 		$WikiName = PukiWikiConfig::getParam('WikiName');
 		
 		list($name) = $this->splice($arr);
 		
 		// 共通リンクディレクトリ対応 by nao-pon
 		$alias = $name;
-		
+		$tip = '';
 		// 無視リストに含まれている、あるいは存在しないページを捨てる
 		// 共通リンクディレクトリ対応 by nao-pon
 		//if (in_array($name,$this->forceignorepages) or PukiWikiFunc::is_page($name))
@@ -652,13 +681,24 @@ class PukiWikiLink_autolink extends PukiWikiLink
 		// 共通リンクディレクトリを探す by nao-pon
 		if (!PukiWikiFunc::is_page($name))
 		{
-			if (!$name = PukiWikiFunc::get_real_pagename($name))
-				return FALSE;
+			// ページ名エイリアスを探す
+			if (array_key_exists($name,$pagename_aliases))
+			{
+				$name = explode('!', $pagename_aliases[$name]);
+				if (count($name) == 2) $tip = $name[1];
+				$name = $name[0];
+			}
+			else
+			{
+				// 共通リンクディレクトリを探す
+				if (!$name = PukiWikiFunc::get_real_pagename($name))
+					return FALSE;
+			}
 		}
 		
 		// 共通リンクディレクトリ対応 by nao-pon
 		//return parent::setParam($page,$name,'','pagename',$name);
-		return parent::setParam($page,$name,'','pagename',$alias);
+		return parent::setParam($page,$name,'','pagename',$alias, $tip);
 	}
 	function toString()
 	{
@@ -666,7 +706,8 @@ class PukiWikiLink_autolink extends PukiWikiLink
 			$this->name,
 			$this->alias,
 			'',
-			$this->page
+			$this->page,
+			$this->tip
 		);
 	}
 }
@@ -681,7 +722,7 @@ class PukiWikiLink_autolink_a extends PukiWikiLink_autolink
 		return isset($this->auto_a) ? "({$this->auto_a})" : FALSE;
 	}
 }
-// 注釈 
+// 注ﾟ
 class PukiWikiLink_note extends PukiWikiLink
 {
 	function PukiWikiLink_note($start)

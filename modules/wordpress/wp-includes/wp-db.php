@@ -36,28 +36,32 @@
 		var $optionvalues;
 		var $optiongroups;
 		var $optiongroup_options;
-		
+		var $fp;
 		// ==================================================================
 		//	DB Constructor - connects to the server and selects a database
 
 		function wpdb($dbuser, $dbpassword, $dbname, $dbhost) {
-			$this->dbh = @mysql_connect($dbhost,$dbuser,$dbpassword);
-			if ( ! $this->dbh ) {
-				die("<div>
-				<p>" . _LANG_WA_WPDB_GUIDE1 . "</p>
-				<ul>
-				<li>" . _LANG_WA_WPDB_GUIDE2 . "</li>
-				<li>" . _LANG_WA_WPDB_GUIDE3 . "</li>
-				<li>" . _LANG_WA_WPDB_GUIDE4 . "</li>
-				</ul>
-				<p><a href='http://wordpress.xwd.jp/'>WordPress Japan</a></p>
-				</div></body></html>");
+			global $xoopsDB;
+			if (isset($xoopsDB)) {
+				$this->dbh =& $xoopsDB->conn;
+				$this->querycount = 0;
+			} else {
+				$this->dbh = @mysql_connect($dbhost,$dbuser,$dbpassword);
+				if ( ! $this->dbh ) {
+					die("<div>
+					<p>" . _LANG_WA_WPDB_GUIDE1 . "</p>
+					<ul>
+					<li>" . _LANG_WA_WPDB_GUIDE2 . "</li>
+					<li>" . _LANG_WA_WPDB_GUIDE3 . "</li>
+					<li>" . _LANG_WA_WPDB_GUIDE4 . "</li>
+					</ul>
+					<p><a href='http://wordpress.xwd.jp/'>WordPress Japan</a></p>
+					</div></body></html>");
+				}
+
+				$this->select($dbname);
+				$this->querycount = 0;
 			}
-
-
-			$this->select($dbname);
-			$this->querycount = 0;
-
 		}
 
 		// ==================================================================
@@ -139,6 +143,7 @@
 		//	Basic Query	- see docs for more detail
 
 		function query($query) {
+			global $wp_debug,$wp_base;
 			// Flush cached values..
 			$this->flush();
 
@@ -147,6 +152,11 @@
 
 			// Keep track of the last query for debug..
 			$this->last_query = $query;
+			if (0&&$wp_debug) {
+				$this->fp = fopen($wp_base['-'].'/log/wp-db.log', 'a');
+				fwrite($this->fp, "$query\n");
+				fclose($this->fp);
+			}
 
 			// Perform the query via std mysql_query function..
 			$this->result = mysql_query($query, $this->dbh);

@@ -1,57 +1,52 @@
 <?php
 // this file contains customizable arrays for smilies, weekdays and month names.
-global $xoopsConfig;
-if ( file_exists(dirname(__FILE__)."/language/".$xoopsConfig['language']."/main.php") ) {
-	include_once dirname(__FILE__)."/language/".$xoopsConfig['language']."/main.php";
+if ( file_exists(dirname(__FILE__)."/language/".$GLOBALS['xoopsConfig']['language']."/main.php") ) {
+	include_once dirname(__FILE__)."/language/".$GLOBALS['xoopsConfig']['language']."/main.php";
 } else {
 	include_once dirname(__FILE__)."/language/english/main.php";
 }
 
-global $weekday, $s_weekday_length;
 // the weekdays and the months.. translate them if necessary
-$weekday[0]=_WP_CAL_SUNDAY;
-$weekday[1]=_WP_CAL_MONDAY;
-$weekday[2]=_WP_CAL_TUESDAY;
-$weekday[3]=_WP_CAL_WEDNESDAY;
-$weekday[4]=_WP_CAL_THURSDAY;
-$weekday[5]=_WP_CAL_FRIDAY;
-$weekday[6]=_WP_CAL_SATURDAY;
+$GLOBALS['weekday'][0]=_WP_CAL_SUNDAY;
+$GLOBALS['weekday'][1]=_WP_CAL_MONDAY;
+$GLOBALS['weekday'][2]=_WP_CAL_TUESDAY;
+$GLOBALS['weekday'][3]=_WP_CAL_WEDNESDAY;
+$GLOBALS['weekday'][4]=_WP_CAL_THURSDAY;
+$GLOBALS['weekday'][5]=_WP_CAL_FRIDAY;
+$GLOBALS['weekday'][6]=_WP_CAL_SATURDAY;
 
-$s_weekday_length = _WP_CAL_SWEEK_LEN;
+$GLOBALS['s_weekday_length'] = _WP_CAL_SWEEK_LEN;
 
 // the months, translate them if necessary - note: this isn't active everywhere yet
-global $month, $s_month_length, $wp_month_format;
-$month['01']=_WP_CAL_JANUARY;
-$month['02']=_WP_CAL_FEBRUARY;
-$month['03']=_WP_CAL_MARCH;
-$month['04']=_WP_CAL_APRIL;
-$month['05']=_WP_CAL_MAY;
-$month['06']=_WP_CAL_JUNE;
-$month['07']=_WP_CAL_JULY;
-$month['08']=_WP_CAL_AUGUST;
-$month['09']=_WP_CAL_SEPTEMBER;
-$month['10']=_WP_CAL_OCTOBER;
-$month['11']=_WP_CAL_NOVEMBER;
-$month['12']=_WP_CAL_DECEMBER;
+$GLOBALS['month']['01']=_WP_CAL_JANUARY;
+$GLOBALS['month']['02']=_WP_CAL_FEBRUARY;
+$GLOBALS['month']['03']=_WP_CAL_MARCH;
+$GLOBALS['month']['04']=_WP_CAL_APRIL;
+$GLOBALS['month']['05']=_WP_CAL_MAY;
+$GLOBALS['month']['06']=_WP_CAL_JUNE;
+$GLOBALS['month']['07']=_WP_CAL_JULY;
+$GLOBALS['month']['08']=_WP_CAL_AUGUST;
+$GLOBALS['month']['09']=_WP_CAL_SEPTEMBER;
+$GLOBALS['month']['10']=_WP_CAL_OCTOBER;
+$GLOBALS['month']['11']=_WP_CAL_NOVEMBER;
+$GLOBALS['month']['12']=_WP_CAL_DECEMBER;
 
-$s_month_length = _WP_CAL_SMONTH_LEN;
-$wp_month_format = _WP_MONTH_FORMAT;
+$GLOBALS['s_month_length'] = _WP_CAL_SMONTH_LEN;
+$GLOBALS['wp_month_format'] = _WP_MONTH_FORMAT;
 
 // here's the conversion table, you can modify it if you know what you're doing
-global $wpsmiliestrans;
-if (get_xoops_option('wordpress'.(($wp_id=='-')?'':$wp_id),'wp_use_xoops_smilies')) {
+if (get_xoops_option(wp_mod(), 'wp_use_xoops_smilies')) {
 	// Get smilies infomation from XOOPS DB
-	$db =& Database::getInstance();
-	$getsmiles = $db->query("SELECT id, code, smile_url FROM ".$db->prefix("smiles")." ORDER BY id");
-	if (($numsmiles = $db->getRowsNum($getsmiles)) == "0") {
+	$_getsmiles = $GLOBALS['xoopsDB']->query("SELECT id, code, smile_url FROM ".$GLOBALS['xoopsDB']->prefix("smiles")." ORDER BY id");
+	if ($GLOBALS['xoopsDB']->getRowsNum($_getsmiles) == "0") {
 		//EMPTY
 	} else {
-		while ($smiles = $db->fetchArray($getsmiles)) {
-			$wpsmiliestrans[$wp_id][$smiles['code']] = $smiles['smile_url'];
+		while ($_smiles = $GLOBALS['xoopsDB']->fetchArray($_getsmiles)) {
+			$GLOBALS['wpsmiliestrans'][wp_id()][$_smiles['code']] = $_smiles['smile_url'];
 		}
 	}
 } else {
-	$wpsmiliestrans[$wp_id] = array(
+	$GLOBALS['wpsmiliestrans'][wp_id()] = array(
 	    ' :)'        => 'icon_smile.gif',
 	    ' :D'        => 'icon_biggrin.gif',
 	    ' :-D'       => 'icon_biggrin.gif',
@@ -99,12 +94,5 @@ if (get_xoops_option('wordpress'.(($wp_id=='-')?'':$wp_id),'wp_use_xoops_smilies
 	    ':mrgreen:' => 'icon_mrgreen.gif',
 	);
 }
-
-if (file_exists(dirname(__FILE__).'/themes/'.$xoopsConfig['theme_set'].'/wp-config-custom.php')) {
-	$themes = $xoopsConfig['theme_set'];
-} else {
-	$themes = "default";
-}
-include(dirname(__FILE__).'/themes/'.$themes.'/wp-config-custom.php');
-
+include(get_custom_path('wp-config-custom.php'));
 ?>

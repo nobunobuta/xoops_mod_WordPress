@@ -6,7 +6,7 @@ if( ! defined( 'WP_LINKS_INCLUDED' ) ) {
 	function b_wp_links_show($option,$wp_num="")
 	{
 		global $wpdb;
-		global $wp_id, $wp_inblock, $use_cache;
+		global $wp_id, $wp_inblock, $use_cache, $wp_mod, $wp_base;
 
 		$id=1;
 		$use_cache = 1;
@@ -30,7 +30,7 @@ if( ! defined( 'WP_LINKS_INCLUDED' ) ) {
 	for ($i = 0; $i < 10; $i++) {
 		eval ('
 		function b_wp'.$i.'_links_show($options) {
-			global $wp_id, $wp_inblock, $use_cache;
+			global $wp_id, $wp_inblock, $use_cache, $wp_mod, $wp_base;
 			$wp_id = "'.$i.'";
 			$wp_inblock = 1;
 			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");

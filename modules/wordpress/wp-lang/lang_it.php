@@ -104,6 +104,7 @@ define('_LANG_P_NICKNAME_DELETE','Non hai il diritto di cancellare i commenti.')
 define('_LANG_P_COMHAS_APPR','Il Commento è stato approvato.');
 define('_LANG_P_YOUR_DRAFTS','Il tuo Cestino:');
 define('_LANG_P_WP_BOOKMARKLET','Puoi salvare il seguente link o metterlo tra i tuoi favoriti e quando lo cliccherai si aprirà una finestra di popup con le relative informazioni e un collegamento al sito di modo che sia più facile postare messaggi. Prova:');
+define('_LANG_P_CONFIRM_DELETE', 'Are you sure you want to delete this?');
 
 /* File Name wp-admin/categories.php */
 define('_LANG_C_DEFAULT_CAT','Non puoi cancellare questa categoria <strong>%s</strong> categoria: si tratta di una categoria di default');

@@ -96,7 +96,7 @@ ini_set ('error_reporting', E_ALL);
 if (file_exists(dirname(__FILE__)."/xoops_version.php")) {
 	require('../../mainfile.php'); //XOOPSの場合には呼び出されるはず。
 }
-require('./wp-blog-header.php');
+require_once(dirname(__FILE__).'/wp-config.php');
 
 if (defined('XOOPS_URL')) {
 	$tableposts = $wpdb->posts[$wp_id];
@@ -298,6 +298,8 @@ switch ($_REQUEST["view"]) {
 		$prevstart = $_REQUEST["start"] - $CharCountPerPage;
 		$tmp = substr($post['Date'],5,2).'/'.substr($post['Date'],8,2).substr($post['Date'],10,6);
 		$echostring .= $post['Title'].'('.$tmp.') Page:'.$nextpage.'<hr />';
+		$authordata = get_userdata($post['Author_ID']);
+		$echostring .= "Author : ".the_author('',false).'<hr />';
 		$pages[0] =$post['Content'];$page=1;$more=1;
 		$post['Content']=get_the_content('');
 		//PukiWikiプラグインなどでレンダリングしている場合の為にフィルタを通す
@@ -410,11 +412,11 @@ switch ($_REQUEST["view"]) {
 			$siteurl = get_settings('home');
 		}
 		$post = get_postdata_num($_REQUEST["num"]);
-		$tmp = substr($post[Date],5,2).'/'.substr($post[Date],8,2).substr($post[Date],10,6);
-		$echostring .= '<b>'.$post[Title].'('.$tmp.')へのコメント投稿</b>';
+		$tmp = substr($post['Date'],5,2).'/'.substr($post['Date'],8,2).substr($post['Date'],10,6);
+		$echostring .= '<b>'.$post['Title'].'('.$tmp.')へのコメント投稿</b>';
 		$echostring .= '<hr />';
 
-		if ('open' == $post[comment_status]) {
+		if ('open' == $post['comment_status']) {
 			$echostring .= '<form action="'.$siteurl.'/wp-ktai-comments-post.php" method="post">';
 			$echostring .= '名前<br />';
 			$echostring .= '<input type="text" name="author" value="" size="40" /><br />';
@@ -425,7 +427,7 @@ switch ($_REQUEST["view"]) {
 			$echostring .= 'コメント<br />';
 			$echostring .= '<textarea cols="30" rows="4" name="comment"></textarea><br />';
 			$echostring .= '<input type="submit" name="submit" value="送信" /><br />';
-			$echostring .= '<input type="hidden" name="comment_post_ID" value="'.$post[ID].'" />';
+			$echostring .= '<input type="hidden" name="comment_post_ID" value="'.$post['ID'].'" />';
 //			$echostring .= '<input type="hidden" name="redirect_to" value="'.htmlspecialchars($HTTP_SERVER_VARS["REQUEST_URI"]).'" />';
 			$echostring .= '<input type="hidden" name="redirect_to" value="'.$siteurl.'/wp-ktai.php?view=comprev&num='.$_REQUEST["num"].'&start=0" />';
 			$echostring .= '<input type="hidden" name="comment_autobr" value="1" />';

@@ -25,13 +25,13 @@ if( ! defined( 'XOOPS_ROOT_PATH' ) ) {
 // directory where spaw files are located
 // $spaw_dir = 'spaw/';
 global $xoopsModule;
-$spaw_dir = XOOPS_URL . '/modules/wordpress'.(($wp_id=='-') ?'':$wp_id).'/wp-admin/spaw/' ;
+$spaw_dir = XOOPS_URL . '/modules/'.$wp_mod[$wp_id].'/wp-admin/spaw/' ;
 
 // base url for images
 $spaw_base_url = XOOPS_URL.'/';
 
 // $spaw_root = dirname( dirname( __FILE__ ) ) . '/' ;
-$spaw_root = XOOPS_ROOT_PATH . '/modules/wordpress'.(($wp_id=='-') ?'':$wp_id).'/wp-admin/spaw/' ;
+$spaw_root = $wp_base[$wp_id].'/wp-admin/spaw/' ;
 
 $spaw_default_toolbars = 'full';
 $spaw_default_theme = 'default';

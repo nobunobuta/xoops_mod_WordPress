@@ -47,8 +47,15 @@ class _XoopsTicket {
 	{
 		// create a token
 		list( $usec , $sec ) = explode( " " , microtime() ) ;
-		$token = crypt( $salt . $usec . $_ENV['PATH'] . $sec ) ;
+		$token = crypt( $salt . $usec . $_SERVER['PATH'] . $sec ) ;
 		$this->_latest_token = $token ;
+
+		if( empty( $_SESSION[$this->_session_param_name] ) ) $_SESSION[$this->_session_param_name] = array() ;
+
+		// limit max stubs 10
+		if( sizeof( $_SESSION[$this->_session_param_name] ) > 10 ) {
+			$_SESSION[$this->_session_param_name] = array_slice( $_SESSION[$this->_session_param_name] , -10 ) ;
+		}
 
 		// store stub
 		$_SESSION[$this->_session_param_name][] = array(

@@ -1,5 +1,7 @@
 <?php
 
+if( ! defined( 'XOOPS_ROOT_PATH' ) ) exit ;
+
 function myDeleteByModule($DB, $gperm_modid, $gperm_name = null, $gperm_itemid = null)
 {
 	$criteria = new CriteriaCompo(new Criteria('gperm_modid', intval($gperm_modid)));
@@ -22,7 +24,7 @@ function myDeleteByModule($DB, $gperm_modid, $gperm_name = null, $gperm_itemid =
 $modid = isset($_POST['modid']) ? intval($_POST['modid']) : 1;
 // we dont want system module permissions to be changed here ( 1 -> 0 GIJ)
 if ($modid <= 0 || !is_object($xoopsUser) || !$xoopsUser->isAdmin($modid)) {
-	redirect_header(XOOPS_URL.'/index.php', 1, _NOPERM);
+	redirect_header(XOOPS_URL.'/user.php', 1, _NOPERM);
 	exit();
 }
 $module_handler =& xoops_gethandler('module');

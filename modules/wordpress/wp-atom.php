@@ -1,20 +1,14 @@
-<?php 
-$blog = 1;
-$doing_rss = 1;
-header("Content-type: application/xml");
-include_once (dirname(__FILE__)."/../../mainfile.php");
+<?php
+$GLOBALS['blog'] = 1;
+$GLOBALS['doing_rss'] = 1;
+require(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
-if ($_GET['num']) $showposts = $_GET['num'];
+init_param('GET', 'num','integer');
+if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
 require('wp-blog-header.php');
-if (isset($showposts) && $showposts) {
-    $showposts = (int)$showposts;
-	$posts_per_page = $showposts;
-} else {
-	$posts_per_page = get_settings('posts_per_rss');
-}
-$rss_charset = wp_get_rss_charset();
+header("Content-type: application/xml");
 ?>
-<?php echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>'; ?>
+<?php echo '<?xml version="1.0" encoding="'.wp_get_rss_charset().'"?'.'>'; ?>
 <feed version="0.3"
   xmlns="http://purl.org/atom/ns#"
   xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -24,20 +18,20 @@ $rss_charset = wp_get_rss_charset();
 	<tagline><?php bloginfo_rss("description") ?></tagline>
 	<modified><?php echo gmdate('Y-m-d\TH:i:s\Z'); ?></modified>
 	<copyright>Copyright <?php echo mysql2date('Y', get_lastpostdate()); ?></copyright>
-	<generator url="http://wordpress.xwd.jp/" version="<?php echo $wp_version ?>">WordPress</generator>
+	<generator url="http://wordpress.xwd.jp/" version="<?php echo $GLOBALS['wp_version'] ?>">WordPress</generator>
 	
-	<?php $items_count = 0; if ($posts) { foreach ($posts as $post) { start_wp(); ?>
+	<?php if ($GLOBALS['posts']) { foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp(); ?>
 	<entry>
 	  	<author>
 			<name><?php the_author_rss() ?></name>
 		</author>
 		<title><?php the_title_rss() ?></title>
 		<link rel="alternate" type="text/html" href="<?php permalink_single_rss() ?>" />
-		<id><?php bloginfo_rss("url") ?>?p=<?php echo $id; ?></id>
+		<id><?php bloginfo_rss("url") ?>?p=<?php echo $GLOBALS['wp_post_id']; ?></id>
 		<modified><?php the_time('Y-m-d\TH:i:s\Z'); ?></modified>
 		<issued><?php the_time('Y-m-d\TH:i:s\Z'); ?></issued>
 		<?php the_category_rss('rdf') ?>
-<?php $more = 1; if (get_settings('rss_use_excerpt')) {
+<?php $GLOBALS['more'] = 1; if (get_settings('rss_use_excerpt')) {
 ?>
 		<summary type="text/html"><?php the_excerpt_rss(get_settings('rss_excerpt_length'), 2) ?></summary>
 <?php
@@ -49,5 +43,5 @@ $rss_charset = wp_get_rss_charset();
 ?>
 		<content type="text/html" mode="escaped" xml:base="<?php permalink_single_rss() ?>"><![CDATA[<?php the_content_rss('', 0, '', 0, 1) ?>]]></content>
 	</entry>
-	<?php $items_count++; if (($items_count == $posts_per_page) && empty($m)) { break; } } } ?>
+	<?php } } ?>
 </feed>

@@ -1,321 +1,155 @@
 <?php
-$title = 'Users';
-$parent_file = 'users.php';
+require_once('admin.php');
 
-/* <Team> */
-	
-$wpvarstoreset = array('action','standalone','redirect','profile');
-for ($i=0; $i<count($wpvarstoreset); $i += 1) {
-	$wpvar = $wpvarstoreset[$i];
-	if (!isset($$wpvar)) {
-		if (empty($_POST["$wpvar"])) {
-			if (empty($_GET["$wpvar"])) {
-				$$wpvar = '';
+$_this_file = 'users.php';
+$GLOBALS['parent_file'] = 'users.php';
+
+$userHandler =& wp_handler('User');
+
+init_param('', 'action', 'string', '');
+switch (get_param('action')) {
+	case 'promote':
+		//Check Ticket
+		if (!$GLOBALS['xoopsWPTicket']->check(false)) {
+			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $GLOBALS['xoopsWPTicket']->getErrors());
+		}
+		//Check User_Level
+		user_level_check();
+		//Check Paramaters
+	    init_param('GET', 'prom', 'string', NO_DEFAULT_PARAM, true);
+	    init_param('GET', 'id', 'integer', NO_DEFAULT_PARAM, true);
+		//Compare User_Level with target user's level.
+		$userObject =& $userHandler->get(get_param('id'));
+		if (($userObject->getVar('user_level') >= $GLOBALS['user_level']) && ($GLOBALS['user_ID'] != 1)){
+			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 5, _LANG_WUS_WHOSE_LEVEL);
+		}
+		
+		if (get_param('prom') == 'up') {
+			$_result = $userObject->upUserLevel();
+		} elseif (get_param('prom') == 'down') {
+			$_result = $userObject->downUserLevel();
+		}
+		if (!$_result) {
+			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $userHandler->getErrors());
+		}
+		header('Location: '.$_this_file);
+		break;
+
+	case 'confirmdelete':
+		//Check User_Level
+		user_level_check();
+		//Check Paramaters
+		init_param('GET', 'id', 'integer', NO_DEFAULT_PARAM, true);
+
+		$GLOBALS['title'] = 'Delete User';
+		$GLOBALS['standalone'] = 0;
+		require_once('admin-header.php');
+		$_delete_confirm = array(
+						'action' => 'delete',
+						'id' => get_param('id'),
+						);
+		$_delete_confirm += $GLOBALS['xoopsWPTicket']->getTicketArray(__LINE__);
+		$_msg = _LANG_P_CONFIRM_DELETE;
+		xoops_confirm($_delete_confirm, $_this_file, $_msg);
+		include('admin-footer.php');
+		break;
+
+	case 'delete':
+		//Check Ticket
+		if (!$GLOBALS['xoopsWPTicket']->check() ) {
+			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $GLOBALS['xoopsWPTicket']->getErrors());
+		}
+		//Check User_Level
+		user_level_check();
+		//Check Paramaters
+		init_param('POST', 'id', 'integer', NO_DEFAULT_PARAM, true);
+		//Compare User_Level with target user's level.
+		$userObject =& $userHandler->get(get_param('id'));
+		if ($userObject->getVar('user_level') !=0 ){
+			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, _LANG_WUS_CANNOT_DELU);
+		}
+		
+		if(!$userHandler->delete($userObject)) {
+			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $userHandler->getErrors());
+		}
+		header('Location: '.$_this_file);
+		break;
+
+	default:
+		//Check User_Level
+		user_level_check();
+
+		$GLOBALS['standalone'] = 0;
+		$GLOBALS['title'] = 'Admin Users';
+		require_once ('admin-header.php');
+		$_ticket=$GLOBALS['xoopsWPTicket']->getTicketParamString('plugins');
+		
+		$_criteria = new Criteria('user_level',0, '>');
+		$_criteria->setSort('ID');
+		$userObjects =& $userHandler->getObjects($_criteria);
+		$_user_rows =& _wpGetUserRows($userObjects, $_ticket, $_this_file);
+
+		$_criteria = new Criteria('user_level',0);
+		$_criteria->setSort('ID');
+		$userObjects =& $userHandler->getObjects($_criteria);
+		$_user0_rows =& _wpGetUserRows($userObjects, $_ticket, $_this_file);
+
+		$_wpTpl =& new WordPresTpl('wp-admin');
+		$_wpTpl->assign('user_count', count($_user_rows));
+		$_wpTpl->assign('user_rows', $_user_rows);
+		$_wpTpl->assign('user0_count', count($_user0_rows));
+		$_wpTpl->assign('user0_rows', $_user0_rows);
+		$_wpTpl->display('users.html');
+		include('admin-footer.php');
+		break;
+}
+
+function &_wpGetUserRows(&$records, $ticket, $this_file) {
+	$rows = array();
+	if ($records) {
+		$style = "";
+		foreach ($records as $record) {
+			$style = ('class="odd"' == $style) ? 'class="even"' : 'class="odd"';
+			$row = $record->getVarArray();
+			$row['style'] = $style;
+			if (_LANGCODE == 'ja') {
+				$row['user_fullname'] = $row['user_lastname'].' '.$row['user_firstname'];
 			} else {
-				$$wpvar = $_GET["$wpvar"];
+				$row['user_fullname'] = $row['user_firstname'].' '.$row['user_lastname'];
 			}
-		} else {
-			$$wpvar = $_POST["$wpvar"];
+			$user_short_url = str_replace('http://', '', stripslashes($row['user_url']));
+			$user_short_url = str_replace('www.', '', $user_short_url);
+			if ('/' == substr($user_short_url, -1))
+				$user_short_url = substr($user_short_url, 0, -1);
+			if (strlen($user_short_url) > 35)
+				$user_short_url =  substr($user_short_url, 0, 32).'...';
+			$row['user_short_url'] = $user_short_url;
+
+			$row['user_numposts'] = $record->getNumPosts();
+			
+			if ($row['user_numposts'] > 0 ) {
+				$row['user_numposts'] = "<a href='edit.php?author={$row['ID']}' title='View posts'>{$row['user_numposts']}</a>";
+			}
+			if ($GLOBALS['user_level'] >= 3) {
+				$row['user_del'] = "<a href='$this_file?action=confirmdelete&id={$row['ID']}' style='color:red;font-weight:bold;'>X</a>";
+			} else {
+				$row['user_del'] = "&nbsp;";
+			}
+			if ((($GLOBALS['user_level'] >= 2) && ($GLOBALS['user_level'] > $row['user_level']) && ($row['user_level'] > 0)) ||
+			    (($GLOBALS['user_level'] == 10) && ($GLOBALS['user_ID'] != 1))) {
+				$row['level_down'] = "<a href='$this_file?action=promote&id={$row['ID']}&prom=down$ticket'>-</a>";
+			} else {
+				$row['level_down'] = "&nbsp;";
+			}
+			if ((($GLOBALS['user_level'] >= 2) && ($GLOBALS['user_level'] > ($row['user_level'] + 1))) ||
+			    (($GLOBALS['user_level'] == 10) && ($row['user_level'] < 10))) {
+				$row['level_up'] = "<a href='$this_file?action=promote&id={$row['ID']}&prom=up$ticket'>+</a>";
+			} else {
+				$row['level_up'] = "&nbsp;";
+			}
+			$rows[] = $row;
 		}
 	}
+	return $rows;
 }
-
-switch ($action) {
-case 'adduser':
-	$standalone = 1;
-	require_once('admin-header.php');
-	wp_refcheck("/wp-admin");
-	function filter($value)	{
-		return ereg('^[a-zA-Z0-9\_-\|]+$',$value);
-	}
-
-	$user_login = $_POST['user_login'];
-	$pass1 = $_POST['pass1'];
-	$pass2 = $_POST['pass2'];
-	$user_email = $_POST['email'];
-	$user_firstname = $_POST['firstname'];
-	$user_lastname = $_POST['lastname'];
-		
-	/* checking login has been typed */
-	if ($user_login == '') {
-		die ('<strong>ERROR</strong>: Please enter a login.');
-	}
-
-	/* checking the password has been typed twice */
-	if ($pass1 == '' || $pass2 == '') {
-		die ('<strong>ERROR</strong>: Please enter your password twice.');
-	}
-
-	/* checking the password has been typed twice the same */
-	if ($pass1 != $pass2)	{
-		die ('<strong>ERROR</strong>: Please type the same password in the two password fields.');
-	}
-	$user_nickname = $user_login;
-
-	/* checking e-mail address */
-	if ($user_email == '') {
-		die ('<strong>ERROR</strong>: Please type your e-mail address.');
-	} else if (!is_email($user_email)) {
-		die ('<strong>ERROR</strong>: The email address isn&#8217;t correct.');
-	}
-
-	/* checking the login isn't already used by another user */
-	$loginthere = $wpdb->get_var("SELECT user_login FROM {$wpdb->users[$wp_id]} WHERE user_login = '$user_login'");
-    if ($loginthere) {
-		die ('<strong>ERROR</strong>: This login is already registered, please choose another one.');
-	}
-
-	$user_login = addslashes(stripslashes($user_login));
-	$pass1 = addslashes(stripslashes($pass1));
-	$user_nickname = addslashes(stripslashes($user_nickname));
-	$user_firstname = addslashes(stripslashes($user_firstname));
-	$user_lastname = addslashes(stripslashes($user_lastname));
-	$now = current_time('mysql');
-
-	$result = $wpdb->query("INSERT INTO {$wpdb->users[$wp_id]} 
-		(user_login, user_pass, user_nickname, user_email, user_ip, user_domain, user_browser, dateYMDhour, user_level, user_idmode, user_firstname, user_lastname)
-	VALUES 
-		('$user_login', '$pass1', '$user_nickname', '$user_email', '$user_ip', '$user_domain', '$user_browser', '$now', '".get_settings('new_users_can_blog')."', 'nickname', '$user_firstname', '$user_lastname')");
-	
-	if ($result == false) {
-		die ('<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:'.get_settings('admin_email').'">webmaster</a> !');
-	}
-
-	$stars = '';
-	for ($i = 0; $i < strlen($pass1); $i = $i + 1) {
-		$stars .= '*';
-	}
-
-	$message  = "get_settings('blogname'): "._LANG_R_USER_REGISTRATION."\r\n\r\n";
-	$message .= "Login: $user_login\r\n\r\nE-mail: $user_email";
-	$wpm_title = "[get_settings('blogname')] "._LANG_R_MAIL_REGISTRATION;
-	$header = "From: ".get_settings('admin_email')."\r\nErrors-To: ".get_settings('admin_email');
-
-	if (function_exists('mb_send_mail')) {
-	mb_send_mail(get_settings('admin_email'), $wpm_title, $message, $header);
-	} else {
-	@mail(get_settings('admin_email'), $wpm_title, $message, $header);
-	}
-	header('Location: users.php');
-break;
-
-case 'promote':
-
-	$standalone = 1;
-	require_once('admin-header.php');
-	wp_refcheck("/wp-admin");
-
-	if (empty($_GET['prom'])) {
-		header('Location: users.php');
-	}
-
-	$id = $_GET['id'];
-	$id = intval($id);
-	$prom = $_GET['prom'];
-
-	$user_data = get_userdata($id);
-	$usertopromote_level = $user_data->user_level;
-	if (($user_level <= $usertopromote_level) and ( $user_ID != 1)){
-		die('Can&#8217;t change the level of a user whose level is higher than yours.');
-	}
-	
-	if ('up' == $prom) {
-		$new_level = $usertopromote_level + 1;
-		$sql="UPDATE {$wpdb->users[$wp_id]} SET user_level=$new_level WHERE ID = $id";
-	} elseif ('down' == $prom) {
-		$new_level = $usertopromote_level - 1;
-		$sql="UPDATE {$wpdb->users[$wp_id]} SET user_level=$new_level WHERE ID = $id";
-	}
-	$result = $wpdb->query($sql);
-
-	header('Location: users.php');
-
-break;
-
-case 'delete':
-	$standalone = 1;
-	require_once('admin-header.php');
-	wp_refcheck("/wp-admin");
-
-	$id = intval($_GET['id']);
-
-	if (!$id) {
-		header('Location: users.php');
-	}
-	
-	$user_data = get_userdata($id);
-	$usertodelete_level = $user_data->user_level;
-
-	if (0 != $usertodelete_level)
-		die('Can&#8217;t delete a user whose level is higher than yours.');
-
-	$post_ids = $wpdb->get_col("SELECT ID FROM {$wpdb->posts[$wp_id]} WHERE post_author = $id");
-	if ($post_ids) {
-		$post_ids = implode(',', $post_ids);
-		
-		// Delete comments, *backs
-		$wpdb->query("DELETE FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID IN ($post_ids)");
-		// Clean cats
-		$wpdb->query("DELETE FROM {$wpdb->post2cat[$wp_id]} WHERE post_id IN ($post_ids)");
-		// Clean links
-		$wpdb->query("DELETE FROM {$wpdb->links[$wp_id]} WHERE link_owner = $id");
-		// Delete posts
-		$wpdb->query("DELETE FROM {$wpdb->posts[$wp_id]} WHERE post_author = $id");
-	}
-
-	// FINALLY, delete user
-	$wpdb->query("DELETE FROM {$wpdb->users[$wp_id]} WHERE ID = $id");
-	header('Location: users.php');
-
-break;
-
-default:
-	
-	$standalone = 0;
-	include ('admin-header.php');
-	?>
-<div class="wrap">
-  <h2><?php echo _LANG_WUS_AU_THOR; ?></h2>
-  <table cellpadding="3" cellspacing="3" width="100%">
-	<tr>
-	<th>ID</th>
-	<th><?php echo _LANG_WUS_AU_NICK; ?></th>
-	<th><?php echo _LANG_WUS_AU_NAME; ?></th>
-	<th><?php echo _LANG_WUS_AU_MAIL; ?></th>
-	<th><?php echo _LANG_WUS_AU_URI; ?></th>
-	<th><?php echo _LANG_WUS_AU_LEVEL; ?></th>
-	<th><?php echo _LANG_WUS_AU_POSTS; ?></th>
-	</tr>
-	<?php
-	$users = $wpdb->get_results("SELECT ID FROM {$wpdb->users[$wp_id]} WHERE user_level > 0 ORDER BY ID");
-	foreach ($users as $user) {
-		$user_data = get_userdata($user->ID);
-		$email = $user_data->user_email;
-		$url = $user_data->user_url;
-		$short_url = str_replace('http://', '', stripslashes($url));
-		$short_url = str_replace('www.', '', $short_url);
-		if ('/' == substr($short_url, -1))
-			$short_url = substr($short_url, 0, -1);
-		if (strlen($short_url) > 35)
-		$short_url =  substr($short_url, 0, 32).'...';
-		$style = ('class="alternate"' == $style) ? '' : 'class="alternate"';
-		$numposts = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts[$wp_id]} WHERE post_author = $user->ID and post_status = 'publish'");
-		if (0 < $numposts) $numposts = "<a href='edit.php?author=$user_data->ID' title='View posts'>$numposts</a>";
-		echo "
-<tr $style>
-	<td align='center'>$user_data->ID</td>
-	<td><strong>$user_data->user_nickname</strong></td>
-	<td>$user_data->user_firstname $user_data->user_lastname</td>
-	<td><a href='mailto:$email' title='e-mail: $email'>$email</a></td>
-	<td><a href='$url' title='website: $url'>$short_url</a></td>
-	<td align='center'>";
-	if ((($user_level >= 2) and ($user_level > $user_data->user_level) and ($user_data->user_level > 0)) or (($user_level == 10) and ($user_data->ID !=1 )))
-		echo " <a href=\"users.php?action=promote&id=".$user_data->ID."&prom=down\">-</a> ";
-	echo $user_data->user_level;
-	if ((($user_level >= 2) and ($user_level > ($user_data->user_level + 1))) or (($user_level == 10) and ($user_data->user_level <10)))
-		echo " <a href=\"users.php?action=promote&id=".$user_data->ID."&prom=up\">+</a> ";
-	echo "<td align='right'>$numposts</td>";
-	echo '</tr>';
-	}
-	
-	?>
-	
-  </table>
-</div>
-
-<?php
-	$users = $wpdb->get_results("SELECT * FROM {$wpdb->users[$wp_id]} WHERE user_level = 0 ORDER BY ID");
-	if ($users) {
-?>
-<div class="wrap">
-	<h2><?php echo _LANG_WUS_AU_USERS; ?></h2>
-	<table cellpadding="3" cellspacing="3" width="100%">
-	<tr>
-		<th>ID</th>
-		<th><?php echo _LANG_WUS_AU_NICK; ?></th>
-		<th><?php echo _LANG_WUS_AU_NAME; ?></th>
-		<th><?php echo _LANG_WUS_AU_MAIL; ?></th>
-		<th><?php echo _LANG_WUS_AU_URI; ?></th>
-		<th><?php echo _LANG_WUS_AU_LEVEL; ?></th>
-	</tr>
-	<?php
-	foreach ($users as $user) {
-		$user_data = get_userdata($user->ID);
-		$email = $user_data->user_email;
-		$url = $user_data->user_url;
-		$short_url = str_replace('http://', '', stripslashes($url));
-		$short_url = str_replace('www.', '', $short_url);
-		if ('/' == substr($short_url, -1))
-			$short_url = substr($short_url, 0, -1);
-		if (strlen($short_url) > 35)
-		$short_url =  substr($short_url, 0, 32).'...';
-		$style = ('class="alternate"' == $style) ? '' : 'class="alternate"';
-echo "\n<tr $style>
-<td align='center'>$user_data->ID</td>
-<td><strong>$user_data->user_nickname</td>
-<td>$user_data->user_firstname $user_data->user_lastname</td>
-<td><a href='mailto:$email' title='e-mail: $email'>$email</a></td>
-<td><a href='$url' title='website: $url'>$short_url</a></td>
-<td align='center'>";
-		if ($user_level >= 3)
-			echo " <a href=\"users.php?action=delete&id=".$user_data->ID."\" style=\"color:red;font-weight:bold;\" onclick=\"return confirm('You are about to delete this user\\n  \'OK\' to delete, \'Cancel\' to stop.')\">X</a> ";
-		echo $user_data->user_level;
-		if ($user_level >= 2)
-			echo " <a href=\"users.php?action=promote&id=".$user_data->ID."&prom=up\">+</a> ";	
-		echo "</td>\n</tr>\n";
-	}
-	?>
-	
-	</table>
-</div>
-
-	<?php 
-	} ?>
-	  <p><?php echo _LANG_WUS_AU_WARNING; ?></p>
-	<?php if(0) { ?>
-<div class="wrap">
-<h2><?php echo _LANG_WUS_ADD_USER; ?></h2>
-<p><a href="<?php echo $siteurl ?>/wp-register.php">Register Themselves</a> : <?php echo _LANG_WUS_ADD_THEMSELVES; ?></p>
-<form action="" method="post" name="adduser" id="adduser">
-  <table border="0" cellspacing="5" cellpadding="3">
-    <tr>
-      <th scope="row" align="left"><?php echo _LANG_WUS_AU_NICK; ?>
-      <input name="action" type="hidden" id="action" value="adduser" /></th>
-      <td><input name="user_login" type="text" id="user_login" /></td>
-    </tr>
-    <tr>
-      <th scope="row" align="left"><?php echo _LANG_WUS_ADD_FIRST; ?></th>
-      <td><input name="firstname" type="text" id="firstname" /></td>
-    </tr>
-    <tr>
-      <th scope="row" align="left"><?php echo _LANG_WUS_ADD_LAST; ?></th>
-      <td><input name="lastname" type="text" id="lastname" /></td>
-    </tr>
-    <tr>
-      <th scope="row" align="left"><?php echo _LANG_WUS_AU_MAIL; ?></th>
-      <td><input name="email" type="text" id="email" /></td>
-    </tr>
-    <tr>
-      <th scope="row" align="left"><?php echo _LANG_WUS_AU_URI; ?></th>
-      <td><input name="uri" type="text" id="uri" /></td>
-    </tr>
-    <tr>
-      <th scope="row" align="left"><?php echo _LANG_WUS_ADD_TWICE; ?></th>
-      <td><input name="pass1" type="text" id="pass1" />
-      <br />
-      <input name="pass2" type="text" id="pass2" /></td>
-    </tr>
-  </table>
-  <p>
-    <input name="adduser" type="submit" id="adduser" value="<?php echo _LANG_WUS_ADD_USER; ?>">
-  </p>
-  </form>
-</div>
-	<?php
-	}
-break;
-}
-	
-/* </Team> */
-include('admin-footer.php');
 ?>

@@ -1,8 +1,7 @@
 <?php
 // Links
 // Copyright (C) 2002 Mike Little -- mike@zed1.com
-
-require_once('../wp-config.php');
+require_once('admin.php');
 
 $parent_file = 'link-manager.php';
 $title = 'Import Blogroll';
@@ -22,14 +21,6 @@ switch ($step) {
 
         $opmltype = 'blogrolling'; // default.
 ?>
-
-<ul id="adminmenu2">
-	<li><a href="link-manager.php" ><?php echo _LANG_WLA_MANAGE_LINK; ?></a></li>
-	<li><a href="link-add.php"><?php echo _LANG_WLA_ADD_LINK; ?></a></li>
-	<li><a href="link-categories.php"><?php echo _LANG_WLA_LINK_CATE; ?></a></li>
-	<li class="last"><a href="link-import.php"  class="current"><?php echo _LANG_WLA_IMPORT_BLOG; ?></a></li>
-</ul>
-
 <div class="wrap">
 
     <h2><?php echo _LANG_WLI_ROLL_DESC; ?></h2>

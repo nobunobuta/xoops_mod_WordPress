@@ -1,0 +1,55 @@
+<div class="wrap">
+<h2><{$smarty.const._LANG_WLC_EPAGE_TITLE}></h2>
+  <form name="cats" method="post" action="link-categories.php">
+	<table width='100%' border='0' cellspacing='1' cellpadding='0' class='outer'>
+	  <tr>
+	    <th align='center' rowspan="2" valign="bottom"><{$smarty.const._LANG_WLC_SUBCATE_NAME}></th>
+		<th align='center' rowspan="2" valign="bottom">Id</th>
+		<th align='center' rowspan="2" valign="bottom"><{$smarty.const._LANG_WLC_SUBCATE_ATT}></th>
+		<th align='center' colspan="4" valign="bottom"><{$smarty.const._LANG_WLC_SUBCATE_SHOW}></th>
+		<th align='center' rowspan="2" valign="bottom"><{$smarty.const._LANG_WLC_SUBCATE_SORT}></th>
+		<th align='center' rowspan="2" valign="bottom"><{$smarty.const._LANG_WLC_SUBCATE_DESC}></th>
+		<th align='center' colspan="3" valign="bottom">Text/HTML</th>
+		<th align='center' rowspan="2" valign="bottom"><{$smarty.const._LANG_WLC_SUBCATE_LIMIT}></th>
+		<th align='center' rowspan="2" colspan="2">&nbsp;</th>
+	  </tr>
+	  <tr>
+		<th align='center' valign="top"><{$smarty.const._LANG_WLC_SUBCATE_IMAGES}></th>
+		<th align='center' valign="top"><{$smarty.const._LANG_WLC_SUBCATE_MINIDESC}></th>
+		<th align='center' valign="top"><{$smarty.const._LANG_WLC_SUBCATE_RATE}></th>
+		<th align='center' valign="top"><{$smarty.const._LANG_WLC_SUBCATE_UPDATE}></th>
+		<th align='center' valign="top"><{$smarty.const._LANG_WLC_SUBCATE_BEFORE}></th>
+		<th align='center' valign="top"><{$smarty.const._LANG_WLC_SUBCATE_BETWEEN}></th>
+		<th align='center' valign="top"><{$smarty.const._LANG_WLC_SUBCATE_AFTER}></th>
+	  </tr>
+		<input type="hidden" name="cat_id" value="" />
+		<input type="hidden" name="action" value="" />
+<{foreach item=linkCat from=$linkCat_rows}>
+	  <tr valign="middle" align="center" <{$linkCat.style}> style="border-bottom: 1px dotted #9C9A9C;">
+		<td align="left"><{$linkCat.cat_name}></td>
+		<td><{$linkCat.cat_id}></td>
+		<td><{$linkCat.auto_toggle}></td>
+		<td><{$linkCat.show_images}></td>
+		<td><{$linkCat.show_description}></td>
+		<td><{$linkCat.show_rating}></td>
+		<td><{$linkCat.show_updated}></td>
+		<td><{$linkCat.sort_order}></td>
+		<td><{$linkCat.sort_desc}></td>
+		<td nowrap="nowrap"><{$linkCat.text_before_link}>&nbsp;</td>
+		<td nowrap="nowrap"><{$linkCat.text_after_link}>&nbsp;</td>
+		<td nowrap="nowrap"><{$linkCat.text_after_all}></td>
+		<td><{$linkCat.list_limit}></td>
+		<td><a href="link-categories.php?cat_id=<{$linkCat.cat_id}>&amp;action=edit" class="edit"><{$smarty.const._LANG_WLC_SUBCATE_EDIT}></a></td>
+		<td><a href="link-categories.php?cat_id=<{$linkCat.cat_id}>&amp;action=confirmdelete" class="delete"><{$smarty.const._LANG_WLC_SUBCATE_DELETE}></a></td>
+	  </tr>
+<{/foreach}>
+	</table>
+  </form>
+</div>
+
+<{$formHTML}>
+<div class="wrap">
+	<h2>Note:</h2>
+	<p><{$smarty.const._LANG_WLC_EPAGE_NOTE}><b><{$note_name}></b>.</p>
+</div>
+
