@@ -61,6 +61,9 @@ define("_MI_WORDPRESS_BDESC7","WordPress aktuelle Kommentare");
 define("_MI_WORDPRESS_BNAME8","WordPress%s Inhalt");
 define("_MI_WORDPRESS_BDESC8","WordPress Inhalt");
 
+define("_MI_WORDPRESS_BNAME9","WordPress%s Authors");
+define("_MI_WORDPRESS_BDESC9","WordPress Authors");
+
 define("_MI_WORDPRESS_AD_MENU1","WordPress Option");
 define("_MI_WORDPRESS_AD_MENU2","Blocks/Groups");
 }

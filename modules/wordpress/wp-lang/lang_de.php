@@ -341,19 +341,31 @@ define('_LANG_WOP_SUBMIT_TEXT','Einstellungen updaten');
 define('_LANG_WOP_SETTING_SAVED',' Einstellung(en) sichern... ');
 
 /* File Name wp-admin/permalink.php */
-define('_LANG_WPL_EDIT_STRUCT','Permalink Struktur editieren');
-define('_LANG_WPL_CREATE_CUSTOM','WordPress bietet die M&ouml;glichkeit eine angepasste URI Struktur für Permalinks und Archive anzulegen. Folgende tags sind verf&uuml;gbar:');
-define('_LANG_WPL_CODE_YEAR','Das Jahr des Posts, 4 Zahlen, zum Beispiel <code>2004</code>');
-define('_LANG_WPL_CODE_MONTH','Monat des Jahres, zum Beispiel <code>05</code>');
-define('_LANG_WPL_CODE_DAY','Tag des Monats, zum Beispiel <code>28</code>');
-define('_LANG_WPL_CODE_POSTNAME','Eine bereinigte Version des Titels. Aus &quot;This Is A Great Post!&quot; wird im URI &quot;<code>this-is-a-great-post</code>&quot;');
-define('_LANG_WPL_CODE_POSTID','Die unique ID # des Posts, z.B. <code>423</code>');
-define('_LANG_WPL_USE_EXAMPLE','Also zum Beispiel der String <code>/archives/%year%/%monthnum%/%day%/%postname%/</code> ergibt einen Permalink <code>/archives/2003/05/23/my-cheese-sandwich/</code>. Damit dies funktioniert muss mod_rewrite auf dem Server installiert und aktiviert sein. Vielleicht gibt es in Zukunft andere Mechanismen um dies zu realisieren. ');
-define('_LANG_WPL_USE_TEMPTEXT','Nutze die Templatetags um eine virtuelle Sitestruktur zu erschaffen:');
-define('_LANG_WPL_BEFORE_HTACCESS','Nutze die aktuelle Permalink Struktur, ');
-define('_LANG_WPL_AFTER_HTACCESS',' aktuelle mod_rewrite Regeln in der <code>.htaccess</code>.');
-define('_LANG_WPL_MOD_REWRITE','Im Moment werden keine angepassten Permalinks verwendet. Es werden keine mod_rewrite Regeln ben&ouml;tigt.');
-define('_LANG_WPL_SUBMIT_UPDATE','Update');
+define('_LANG_WPL_EDIT_UPDATED','Permalink structure updated.');
+define('_LANG_WPL_EDIT_STRUCT','Edit Permalink Structure');
+define('_LANG_WPL_CREATE_CUSTOM','WordPress offers you the ability to create a custom URI structure for your permalinks and archives. The following &#8220;tags&#8221; are available:');
+define('_LANG_WPL_CODE_YEAR','The year of the post, 4 digits, for example <code>2004</code>');
+define('_LANG_WPL_CODE_MONTH','Month of the year, for example <code>05</code>');
+define('_LANG_WPL_CODE_DAY','Day of the month, for example <code>28</code>');
+define('_LANG_WPL_CODE_HOUR','Hour of the day, for example <code>15</code>');
+define('_LANG_WPL_CODE_MINUTE','Minute of the hour, for example <code>43</code>');
+define('_LANG_WPL_CODE_SECOND','Second of the minute, for example <code>33</code>');
+define('_LANG_WPL_CODE_POSTNAME','A sanitized version of the title of the post. So &#8220;This Is A Great Post!&#8221; becomes &#8220;<code>this-is-a-great-post</code>&#8221; in the URI');
+define('_LANG_WPL_CODE_POSTID','The unique ID # of the post, for example <code>423</code>');
+define('_LANG_WPL_USE_EXAMPLE','<p>So for example a value like:</p>
+<p><code>/archives/%year%/%monthnum%/%day%/%postname%/</code> </p>
+<p>would give you a permalink like:</p>
+<p><code>/archives/2003/05/23/my-cheese-sandwich/</code></p>
+<p> In general for this you must use mod_rewrite, however if you put a filename at the beginning WordPress will attempt to use that to pass the arguments, for example:</p>
+<p><code>/index.php/archives/%year%/%monthnum%/%day%/%postname%/</code> </p>
+<p>If you use this option you can ignore the mod_rewrite rules. </p>');
+define('_LANG_WPL_USE_TEMPTEXT','Use the template tags above to create a virtual site structure:');
+define('_LANG_WPL_USE_BLANK','If you like, you may enter a custom prefix for your category URIs here. For example, <code>/taxonomy/categorias</code> would make your category links like <code>http://example.org/taxonomy/categorias/general/</code>. If you leave this blank the default will be used.');
+define('_LANG_WPL_USE_HTACCESS','Using the permalink structure value you currently have, <code>%s</code>, these are the mod_rewrite rules you should have in your <code>.htaccess</code> file. Click in the field and press <kbd>CTRL + a</kbd> to select all.');
+define('_LANG_WPL_ENGINE_ON','RewriteEngine On RewriteBase');
+define('_LANG_WPL_EDIT_TEMPLATE','<p>If your <code>.htaccess</code> file is writable by WordPress, you can <a href="%s">edit it through your template interface</a>.</p>');
+define('_LANG_WPL_MOD_REWRITE','You are not currently using customized permalinks. No special mod_rewrite rules are needed.');
+define('_LANG_WPL_SUBMIT_UPDATE','Update Permalink Structure &raquo;');
 
 /* File Name wp-admin/profile.php */
 define('_LANG_WPF_ERR_NICKNAME','<strong>FEHLER</strong>: bitte Nickname eingeben (Kann dem Login entsprechen)');

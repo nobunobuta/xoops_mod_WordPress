@@ -15,23 +15,23 @@ function add_magic_quotes($array) {
 } 
 
 if (!get_magic_quotes_gpc()) {
-	$HTTP_GET_VARS    = add_magic_quotes($HTTP_GET_VARS);
-	$HTTP_POST_VARS   = add_magic_quotes($HTTP_POST_VARS);
-	$HTTP_COOKIE_VARS = add_magic_quotes($HTTP_COOKIE_VARS);
+	$_GET    = add_magic_quotes($_GET);
+	$_POST   = add_magic_quotes($_POST);
+	$_COOKIE = add_magic_quotes($_COOKIE);
 }
 
 $wpvarstoreset = array('action','standalone','cat');
 for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 	$wpvar = $wpvarstoreset[$i];
 	if (!isset($$wpvar)) {
-		if (empty($HTTP_POST_VARS["$wpvar"])) {
-			if (empty($HTTP_GET_VARS["$wpvar"])) {
+		if (empty($_POST["$wpvar"])) {
+			if (empty($_GET["$wpvar"])) {
 				$$wpvar = '';
 			} else {
-				$$wpvar = $HTTP_GET_VARS["$wpvar"];
+				$$wpvar = $_GET["$wpvar"];
 			}
 		} else {
-			$$wpvar = $HTTP_POST_VARS["$wpvar"];
+			$$wpvar = $_POST["$wpvar"];
 		}
 	}
 }
@@ -47,9 +47,9 @@ case 'addcat':
 	if ($user_level < 3)
 		die ('Cheatin&#8217; uh?');
 	
-	$cat_name= addslashes(stripslashes(stripslashes($HTTP_POST_VARS['cat_name'])));
+	$cat_name= addslashes(stripslashes(stripslashes($_POST['cat_name'])));
 	$category_nicename = sanitize_title($cat_name);
-	$category_description = addslashes(stripslashes(stripslashes($HTTP_POST_VARS['category_description'])));
+	$category_description = addslashes(stripslashes(stripslashes($_POST['category_description'])));
 	
 	$wpdb->query("INSERT INTO {$wpdb->categories[$wp_id]} (cat_ID, cat_name, category_nicename, category_description) VALUES ('0', '$cat_name', '$category_nicename', '$category_description')");
 	if ($category_nicename == "") {
@@ -67,7 +67,7 @@ case 'Delete':
 	require_once('admin-header.php');
 	wp_refcheck("/wp-admin");
 
-	$cat_ID = intval($HTTP_GET_VARS["cat_ID"]);
+	$cat_ID = intval($_GET["cat_ID"]);
 	$cat_name = get_catname($cat_ID);
 	$cat_name = addslashes($cat_name);
 
@@ -87,7 +87,7 @@ break;
 case 'edit':
 
 	require_once ('admin-header.php');
-	$cat_ID = intval($HTTP_GET_VARS['cat_ID']);
+	$cat_ID = intval($_GET['cat_ID']);
 	$category = $wpdb->get_row("SELECT * FROM {$wpdb->categories[$wp_id]} WHERE cat_ID = " . $cat_ID);
 	$cat_name = stripslashes($category->cat_name);
 	?>
@@ -118,11 +118,11 @@ case 'editedcat':
 	if ($user_level < 3)
 		die ('Cheatin&#8217; uh?');
 	
-	$cat_name = addslashes(stripslashes(stripslashes($HTTP_POST_VARS['cat_name'])));
-	$cat_ID = intval($HTTP_POST_VARS['cat_ID']);
+	$cat_name = addslashes(stripslashes(stripslashes($_POST['cat_name'])));
+	$cat_ID = intval($_POST['cat_ID']);
 	$category_nicename = sanitize_title($cat_name);
 	if ($category_nicename == "")  $category_nicename = "category-".$cat_ID;
-	$category_description = $HTTP_POST_VARS['category_description'];
+	$category_description = $_POST['category_description'];
 
 	$wpdb->query("UPDATE {$wpdb->categories[$wp_id]} SET cat_name = '$cat_name', category_nicename = '$category_nicename', category_description = '$category_description' WHERE cat_ID = $cat_ID");
 	

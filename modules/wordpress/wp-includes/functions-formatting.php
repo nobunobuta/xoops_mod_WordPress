@@ -248,6 +248,7 @@ function format_to_edit($content) {
 	global $autobr;
 	$content = stripslashes($content);
 	if ($autobr) { $content = unautobrize($content); }
+	$content = apply_filters('format_to_edit', $content);
 	$content = htmlspecialchars($content);
 	return $content;
 	}
@@ -255,6 +256,7 @@ function format_to_post($content) {
 	global $post_autobr,$comment_autobr;
 	$content = addslashes($content);
 	if ($post_autobr || $comment_autobr) { $content = autobrize($content); }
+	$content = apply_filters('format_to_post', $content);
 	return $content;
 }
 

@@ -75,7 +75,7 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 		}
 		if ($show_rss_icon) {
 			$output .= '<hr width="100%" />';
-			$output .= '<div style="text-align:right">&nbsp;<a href="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-commentsrss2.php"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss_comment.gif" /></a></div>';
+			$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('comments_rss2_url').'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss_comment.gif" /></a></div>';
 		}
 
 		$block['content'] = $output;

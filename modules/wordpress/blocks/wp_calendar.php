@@ -7,9 +7,9 @@ if( ! defined( 'WP_CALENDAR_POSTS_INCLUDED' ) ) {
 	{
 		global $wpdb, $siteurl, $wp_id, $wp_inblock, $xoopsConfig, $use_cache, $m,$monthnum,$year;
 		$id=1;
-		$m = $_GET['m'];
-		$monthnum = $_GET['monthnum'];
-		$year = $_GET['year'];
+		$m = array_key_exists('m',$_GET) ? $_GET['m']: '';
+		$monthnum = array_key_exists('monthnum',$_GET) ? $_GET['monthnum'] : '';
+		$year = array_key_exists('year',$_GET) ? $_GET['year'] : '';
 		$use_cache = 1;
 		if ($wp_num == "") {
 			$wp_id = $wp_num;
@@ -28,7 +28,7 @@ if( ! defined( 'WP_CALENDAR_POSTS_INCLUDED' ) ) {
 	for ($i = 0; $i < 10; $i++) {
 		eval ('
 		function b_wp'.$i.'_calendar_show($options) {
-			global $wpdb, $siteurl, $wp_id, $wp_inblock, $xoopsConfig, $use_cache, $m,$monthnum,$year; $HTTP_GET_VARS;
+			global $wpdb, $siteurl, $wp_id, $wp_inblock, $xoopsConfig, $use_cache, $m,$monthnum,$year;
 
 			$wp_id = "'.$i.'";
 			$wp_inblock = 1;

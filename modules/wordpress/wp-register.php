@@ -5,5 +5,5 @@
 	} else {
 		$loc = XOOPS_URL."/";
 	}
-	redirect_header($loc, 1, "This function is not avaiable in XOOPS Environment.");
+	redirect_header($loc, 1, "This function is not available in XOOPS Environment.");
 ?>

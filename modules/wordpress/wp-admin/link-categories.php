@@ -10,14 +10,14 @@ $wpvarstoreset = array('action','standalone','cat', 'auto_toggle');
 for ($i=0; $i<count($wpvarstoreset); $i += 1) {
     $wpvar = $wpvarstoreset[$i];
     if (!isset($$wpvar)) {
-        if (empty($HTTP_POST_VARS["$wpvar"])) {
-            if (empty($HTTP_GET_VARS["$wpvar"])) {
+        if (empty($_POST["$wpvar"])) {
+            if (empty($_GET["$wpvar"])) {
                 $$wpvar = '';
             } else {
-                $$wpvar = $HTTP_GET_VARS["$wpvar"];
+                $$wpvar = $_GET["$wpvar"];
             }
         } else {
-            $$wpvar = $HTTP_POST_VARS["$wpvar"];
+            $$wpvar = $_POST["$wpvar"];
         }
     }
 }
@@ -32,43 +32,43 @@ switch ($action) {
       if ($user_level < get_settings('links_minadminlevel'))
           die ("Cheatin' uh ?");
 
-      $cat_name = addslashes($HTTP_POST_VARS['cat_name']);
-      $auto_toggle = $HTTP_POST_VARS['auto_toggle'];
+      $cat_name = addslashes($_POST['cat_name']);
+      $auto_toggle = $_POST['auto_toggle'];
       if ($auto_toggle != 'Y') {
           $auto_toggle = 'N';
       }
 
-      $show_images = $HTTP_POST_VARS['show_images'];
+      $show_images = $_POST['show_images'];
       if ($show_images != 'Y') {
           $show_images = 'N';
       }
 
-      $show_description = $HTTP_POST_VARS['show_description'];
+      $show_description = $_POST['show_description'];
       if ($show_description != 'Y') {
           $show_description = 'N';
       }
 
-      $show_rating = $HTTP_POST_VARS['show_rating'];
+      $show_rating = $_POST['show_rating'];
       if ($show_rating != 'Y') {
           $show_rating = 'N';
       }
 
-      $show_updated = $HTTP_POST_VARS['show_updated'];
+      $show_updated = $_POST['show_updated'];
       if ($show_updated != 'Y') {
           $show_updated = 'N';
       }
 
-      $sort_order = $HTTP_POST_VARS['sort_order'];
+      $sort_order = $_POST['sort_order'];
 
-      $sort_desc = $HTTP_POST_VARS['sort_desc'];
+      $sort_desc = $_POST['sort_desc'];
       if ($sort_desc != 'Y') {
           $sort_desc = 'N';
       }
-      $text_before_link = addslashes($HTTP_POST_VARS['text_before_link']);
-      $text_after_link = addslashes($HTTP_POST_VARS['text_after_link']);
-      $text_after_all = addslashes($HTTP_POST_VARS['text_after_all']);
+      $text_before_link = addslashes($_POST['text_before_link']);
+      $text_after_link = addslashes($_POST['text_after_link']);
+      $text_after_all = addslashes($_POST['text_after_all']);
 
-      $list_limit = $HTTP_POST_VARS['list_limit'];
+      $list_limit = $_POST['list_limit'];
       if ($list_limit == '')
           $list_limit = -1;
 
@@ -87,7 +87,7 @@ switch ($action) {
     include_once('admin-header.php');
 	wp_refcheck("/wp-admin");
 
-    $cat_id = $HTTP_GET_VARS['cat_id'];
+    $cat_id = $_GET['cat_id'];
     $cat_id = intval($cat_id);
     $cat_name=get_linkcatname($cat_id);
     $cat_name=addslashes($cat_name);
@@ -107,7 +107,7 @@ switch ($action) {
   case 'Edit':
   {
     include_once ('admin-header.php');
-    $cat_id = $HTTP_GET_VARS['cat_id'];
+    $cat_id = $_GET['cat_id'];
     $cat_id = intval($cat_id);
     $row = $wpdb->get_row("SELECT cat_id, cat_name, auto_toggle, show_images, show_description, "
          . " show_rating, show_updated, sort_order, sort_desc, text_before_link, text_after_link, "
@@ -214,49 +214,49 @@ switch ($action) {
     if ($user_level < get_settings('links_minadminlevel'))
       die ("Cheatin' uh ?");
 
-    $submit=$HTTP_POST_VARS["submit"];
+    $submit=$_POST["submit"];
     if (isset($submit) && ($submit == _LANG_WLC_SAVEBUTTON_TEXT)) {
 
-    $cat_id=$HTTP_POST_VARS["cat_id"];
+    $cat_id=$_POST["cat_id"];
     $cat_id = intval($cat_id);
 
-    $cat_name=addslashes($HTTP_POST_VARS["cat_name"]);
-    $auto_toggle = $HTTP_POST_VARS["auto_toggle"];
+    $cat_name=addslashes($_POST["cat_name"]);
+    $auto_toggle = $_POST["auto_toggle"];
     if ($auto_toggle != 'Y') {
         $auto_toggle = 'N';
     }
 
-    $show_images = $HTTP_POST_VARS["show_images"];
+    $show_images = $_POST["show_images"];
     if ($show_images != 'Y') {
         $show_images = 'N';
     }
 
-    $show_description = $HTTP_POST_VARS["show_description"];
+    $show_description = $_POST["show_description"];
     if ($show_description != 'Y') {
         $show_description = 'N';
     }
 
-    $show_rating = $HTTP_POST_VARS["show_rating"];
+    $show_rating = $_POST["show_rating"];
     if ($show_rating != 'Y') {
         $show_rating = 'N';
     }
 
-    $show_updated = $HTTP_POST_VARS["show_updated"];
+    $show_updated = $_POST["show_updated"];
     if ($show_updated != 'Y') {
         $show_updated = 'N';
     }
 
-    $sort_order = $HTTP_POST_VARS["sort_order"];
+    $sort_order = $_POST["sort_order"];
 
-    $sort_desc = $HTTP_POST_VARS["sort_desc"];
+    $sort_desc = $_POST["sort_desc"];
     if ($sort_desc != 'Y') {
         $sort_desc = 'N';
     }
-    $text_before_link = addslashes($HTTP_POST_VARS["text_before_link"]);
-    $text_after_link = addslashes($HTTP_POST_VARS["text_after_link"]);
-    $text_after_all = addslashes($HTTP_POST_VARS["text_after_all"]);
+    $text_before_link = addslashes($_POST["text_before_link"]);
+    $text_after_link = addslashes($_POST["text_after_link"]);
+    $text_after_all = addslashes($_POST["text_after_all"]);
 
-    $list_limit = $HTTP_POST_VARS["list_limit"];
+    $list_limit = $_POST["list_limit"];
     if ($list_limit == '') {
         $list_limit = -1;
     } else {

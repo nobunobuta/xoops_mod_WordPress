@@ -4,7 +4,7 @@ $doing_rss = 1;
 header("Content-type: application/xml");
 include_once (dirname(__FILE__)."/../../mainfile.php");
 error_reporting(E_ERROR);
-if ($HTTP_GET_VARS['num']) $showposts = $HTTP_GET_VARS['num'];
+if ($_GET['num']) $showposts = $_GET['num'];
 require('wp-blog-header.php');
 if (isset($showposts) && $showposts) {
     $showposts = (int)$showposts;

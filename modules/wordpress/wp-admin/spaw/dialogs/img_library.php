@@ -19,13 +19,13 @@ include $spaw_root.'class/lang.class.php';
 include_once '../../../../../mainfile.php';
 //include_once 'header.php';
 
-$theme = empty($HTTP_GET_VARS['theme'])?$spaw_default_theme:$HTTP_GET_VARS['theme'];
+$theme = empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'];
 $theme_path = '../lib/themes/'.$theme.'/';
 
-$l = new SPAW_Lang(empty($HTTP_POST_VARS['lang'])?$HTTP_GET_VARS['lang']:$HTTP_POST_VARS['lang']);
+$l = new SPAW_Lang(empty($_POST['lang'])?$_GET['lang']:$_POST['lang']);
 $l->setBlock('image_insert');
 
-$imglib = (isset($HTTP_GET_VARS['lib'])) ? $HTTP_GET_VARS['lib'] : $HTTP_POST_VARS['lib'];
+$imglib = (isset($_GET['lib'])) ? $_GET['lib'] : $_POST['lib'];
 
 $value_found = false;
 // callback function for preventing listing of non-library directory
@@ -46,12 +46,12 @@ if (!$value_found || empty($imglib))
 $lib_options = liboptions($spaw_imglibs,'',$imglib);
 
 
-$img = $HTTP_POST_VARS['imglist'];
+$img = $_POST['imglist'];
 
 $preview = '';
 
 $errors = array();
-if ($HTTP_POST_FILES['img_file']['size']>0)
+if ($_FILES['img_file']['size']>0)
 {
   if ($img = uploadImg('img_file'))
   {
@@ -219,7 +219,6 @@ function liboptions($arr, $prefix = '', $sel = '')
 
 function uploadImg($img) {
 
-  global $HTTP_POST_FILES;
   global $spaw_valid_imgs;
   global $imglib;
   global $errors;
@@ -230,11 +229,11 @@ function uploadImg($img) {
 
   	$_root = XOOPS_ROOT_PATH."/";
   
-  if ($HTTP_POST_FILES[$img]['size']>0) {
-    $data['type'] = $HTTP_POST_FILES[$img]['type'];
-    $data['name'] = $HTTP_POST_FILES[$img]['name'];
-    $data['size'] = $HTTP_POST_FILES[$img]['size'];
-    $data['tmp_name'] = $HTTP_POST_FILES[$img]['tmp_name'];
+  if ($_FILES[$img]['size']>0) {
+    $data['type'] = $_FILES[$img]['type'];
+    $data['name'] = $_FILES[$img]['name'];
+    $data['size'] = $_FILES[$img]['size'];
+    $data['tmp_name'] = $_FILES[$img]['tmp_name'];
 
     // get file extension
     $ext = strtolower(substr(strrchr($data['name'],'.'), 1));

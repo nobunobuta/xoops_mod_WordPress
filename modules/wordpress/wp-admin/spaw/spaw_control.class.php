@@ -154,9 +154,7 @@ class SPAW_Wysiwyg {
   // checks browser compatibility with the control
   function checkBrowser()
   {
-    global $HTTP_SERVER_VARS;
-    
-    $browser = $HTTP_SERVER_VARS['HTTP_USER_AGENT'];
+    $browser = $_SERVER['HTTP_USER_AGENT'];
     // check if msie
     if (eregi("MSIE[^;]*",$browser,$msie))
     {

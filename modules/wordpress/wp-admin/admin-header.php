@@ -3,14 +3,14 @@ $wpvarstoreset = array('profile','standalone','redirect','redirect_url','a','pop
 for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 	$wpvar = $wpvarstoreset[$i];
 	if (!isset($$wpvar)) {
-		if (empty($HTTP_POST_VARS["$wpvar"])) {
-			if (empty($HTTP_GET_VARS["$wpvar"])) {
+		if (empty($_POST["$wpvar"])) {
+			if (empty($_GET["$wpvar"])) {
 				$$wpvar = '';
 			} else {
-				$$wpvar = $HTTP_GET_VARS["$wpvar"];
+				$$wpvar = $_GET["$wpvar"];
 			}
 		} else {
-			$$wpvar = $HTTP_POST_VARS["$wpvar"];
+			$$wpvar = $_POST["$wpvar"];
 		}
 	}
 }
@@ -87,7 +87,7 @@ setTimeout("redirect();", 600);
 }
 } // redirect
 ?>
-
+<?php if (isset($xfn)) : ?>
 <script language="javascript" type="text/javascript">
 //<![CDATA[
 
@@ -149,9 +149,11 @@ setTimeout("redirect();", 600);
 	   }
 	}
 	
-//	window.onload = blurry;
+	window.onload = blurry;
 //]]>
+<?php endif; ?>
 </script>
+<?php do_action('admin_head', ''); ?>
 <?php
 if ($profile==0) {
 	include('menu.php');

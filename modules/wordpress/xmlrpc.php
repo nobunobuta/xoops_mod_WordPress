@@ -22,7 +22,7 @@ $xmlrpc_logging = 0;
 function logIO($io,$msg) {
 	global $xmlrpc_logging;
 	if ($xmlrpc_logging) {
-		$fp = fopen("log/xmlrpc.log","a+");
+		$fp = fopen("./log/xmlrpc.log","a+");
 		$date = date("Y-m-d H:i:s ");
 		$iot = ($io == "I") ? " Input: " : " Output: ";
 		fwrite($fp, "\n\n".$date.$iot.$msg);
@@ -2046,7 +2046,8 @@ function pingback_ping($m) { // original code by Mort
 					$comment_ID = $wpdb->get_var('SELECT last_insert_id()');
 					if (get_settings('comments_notify'))
 						wp_notify_postauthor($comment_ID, 'pingback');
-				} else {
+					do_action('pingback_post', $comment_ID);
+			} else {
 					// URL pattern not found
 					$message = "Page linked to: $pagelinkedto\nPage linked from:"
 						. " $pagelinkedfrom\nTitle: $title\nContext: $context\n\n".$messages[1];

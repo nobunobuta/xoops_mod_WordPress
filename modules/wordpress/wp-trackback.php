@@ -6,17 +6,24 @@ require(dirname(__FILE__) . '/wp-config.php');
 $request_array = 'HTTP_POST_VARS';
 $tb_id = explode('/', $_SERVER['REQUEST_URI']);
 $tb_id = intval($tb_id[count($tb_id)-1]);
-$tb_url = $HTTP_POST_VARS['url'];
-$title = $HTTP_POST_VARS['title'];
-$excerpt = $HTTP_POST_VARS['excerpt'];
-$blog_name = $HTTP_POST_VARS['blog_name'];
-$charset = $HTTP_POST_VARS['charset'];
+$tb_url = $_POST['url'];
+$title = $_POST['title'];
+$excerpt = $_POST['excerpt'];
+$blog_name = $_POST['blog_name'];
+$charset = $_POST['charset'];
+
+require('wp-blog-header.php');
+
+if ( (($p != '') && ($p != 'all')) || ($name != '') ) {
+    $tb_id = $posts[0]->ID;
+}
+
 if (empty($title) && empty($tb_url) && empty($blog_name)) {
 	// If it doesn't look like a trackback at all...
 	header('Location: ' . get_permalink($tb_id));
 }
 
-if ((strlen(''.$tb_id)) && (empty($HTTP_GET_VARS['__mode'])) && (strlen(''.$tb_url))) {
+if ((strlen(''.$tb_id)) && (empty($_GET['__mode'])) && (strlen(''.$tb_url))) {
 
 	@header('Content-Type: text/xml');
 
@@ -95,6 +102,7 @@ if ((strlen(''.$tb_id)) && (empty($HTTP_GET_VARS['__mode'])) && (strlen(''.$tb_u
 		if (get_settings('comments_notify'))
 			wp_notify_postauthor($comment_ID, 'trackback');
 		trackback_response(0);
+		do_action('trackback_post', $comment_ID);
 	}
 }
 ?>

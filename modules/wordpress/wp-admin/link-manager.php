@@ -48,9 +48,9 @@ function add_magic_quotes($array) {
     return $array;
 }
 if (!get_magic_quotes_gpc()) {
-    $HTTP_GET_VARS    = add_magic_quotes($HTTP_GET_VARS);
-    $HTTP_POST_VARS   = add_magic_quotes($HTTP_POST_VARS);
-    $HTTP_COOKIE_VARS = add_magic_quotes($HTTP_COOKIE_VARS);
+    $_GET    = add_magic_quotes($_GET);
+    $_POST   = add_magic_quotes($_POST);
+    $_COOKIE = add_magic_quotes($_COOKIE);
 }
 
 $wpvarstoreset = array('action','standalone','cat_id', 'linkurl', 'name', 'image',
@@ -61,20 +61,20 @@ $wpvarstoreset = array('action','standalone','cat_id', 'linkurl', 'name', 'image
 for ($i=0; $i<count($wpvarstoreset); $i += 1) {
     $wpvar = $wpvarstoreset[$i];
     if (!isset($$wpvar)) {
-        if (empty($HTTP_POST_VARS["$wpvar"])) {
-            if (empty($HTTP_GET_VARS["$wpvar"])) {
+        if (empty($_POST["$wpvar"])) {
+            if (empty($_GET["$wpvar"])) {
                 $$wpvar = '';
             } else {
-                $$wpvar = $HTTP_GET_VARS["$wpvar"];
+                $$wpvar = $_GET["$wpvar"];
             }
         } else {
-            $$wpvar = $HTTP_POST_VARS["$wpvar"];
+            $$wpvar = $_POST["$wpvar"];
         }
     }
 }
 
-$links_show_cat_id = $HTTP_COOKIE_VARS['links_show_cat_id_' . $cookiehash];
-$links_show_order = $HTTP_COOKIE_VARS['links_show_order_' . $cookiehash];
+$links_show_cat_id = $_COOKIE['links_show_cat_id_' . $cookiehash];
+$links_show_order = $_COOKIE['links_show_order_' . $cookiehash];
 
 if (!empty($action2)) {
     $action = $action2;
@@ -177,19 +177,19 @@ switch ($action) {
     include_once('admin-header.php');
 	wp_refcheck("/wp-admin");
 
-    $link_url = $HTTP_POST_VARS['linkurl'];
-    $link_name = $HTTP_POST_VARS['name'];
-    $link_image = $HTTP_POST_VARS['image'];
-    $link_target = $HTTP_POST_VARS['target'];
-    $link_category = $HTTP_POST_VARS['category'];
+    $link_url = $_POST['linkurl'];
+    $link_name = $_POST['name'];
+    $link_image = $_POST['image'];
+    $link_target = $_POST['target'];
+    $link_category = $_POST['category'];
     $link_category = intval($link_category);
-    $link_description = $HTTP_POST_VARS['description'];
-    $link_visible = $HTTP_POST_VARS['visible'];
-    $link_rating = $HTTP_POST_VARS['rating'];
+    $link_description = $_POST['description'];
+    $link_visible = $_POST['visible'];
+    $link_rating = $_POST['rating'];
     $link_rating = intval($link_rating);
-    $link_rel = $HTTP_POST_VARS['rel'];
-    $link_notes = $HTTP_POST_VARS['notes'];
-	$link_rss_uri =  $HTTP_POST_VARS['rss_uri'];
+    $link_rel = $_POST['rel'];
+    $link_notes = $_POST['notes'];
+	$link_rss_uri =  $_POST['rss_uri'];
     $auto_toggle = get_autotoggle($link_category);
 
     if ($user_level < get_settings('links_minadminlevel'))
@@ -227,21 +227,21 @@ switch ($action) {
       include_once('admin-header.php');
 	  wp_refcheck("/wp-admin");
 
-      $link_id = $HTTP_POST_VARS['link_id'];
+      $link_id = $_POST['link_id'];
       $link_id = intval($link_id);
-      $link_url = $HTTP_POST_VARS['linkurl'];
-      $link_name = $HTTP_POST_VARS['name'];
-      $link_image = $HTTP_POST_VARS['image'];
-      $link_target = $HTTP_POST_VARS['target'];
-      $link_category = $HTTP_POST_VARS['category'];
+      $link_url = $_POST['linkurl'];
+      $link_name = $_POST['name'];
+      $link_image = $_POST['image'];
+      $link_target = $_POST['target'];
+      $link_category = $_POST['category'];
       $link_category = intval($link_category);
-      $link_description = $HTTP_POST_VARS['description'];
-      $link_visible = $HTTP_POST_VARS['visible'];
-      $link_rating = $HTTP_POST_VARS['rating'];
+      $link_description = $_POST['description'];
+      $link_visible = $_POST['visible'];
+      $link_rating = $_POST['rating'];
       $link_rating = intval($link_rating);
-      $link_rel = $HTTP_POST_VARS['rel'];
-      $link_notes = $HTTP_POST_VARS['notes'];
-	  $link_rss_uri =  $HTTP_POST_VARS['rss_uri'];
+      $link_rel = $_POST['rel'];
+      $link_notes = $_POST['notes'];
+	  $link_rss_uri =  $_POST['rss_uri'];
       $auto_toggle = get_autotoggle($link_category);
 
       if ($user_level < get_settings('links_minadminlevel'))
@@ -274,7 +274,7 @@ switch ($action) {
     include_once('admin-header.php');
 	wp_refcheck("/wp-admin");
 
-    $link_id = $HTTP_GET_VARS["link_id"];
+    $link_id = $_GET["link_id"];
 	$link_id = intval($link_id);
     if ($user_level < get_settings('links_minadminlevel'))
       die ("Cheatin' uh ?");
@@ -302,7 +302,7 @@ switch ($action) {
       die("You have no right to edit the links for this blog.<br />Ask for a promotion to your <a href='mailto:".get_settings('admin_email')."'>blog admin</a>. :)");
     }
 
-    $link_id = $HTTP_GET_VARS["link_id"];
+    $link_id = $_GET["link_id"];
 	$link_id = intval($link_id);
 
     $row = $wpdb->get_row("SELECT * 
@@ -523,8 +523,8 @@ No</label></td>
   } // end Show
   case "popup":
   {
-    $link_url = stripslashes($HTTP_GET_VARS["linkurl"]);
-    $link_name = stripslashes($HTTP_GET_VARS["name"]);
+    $link_url = stripslashes($_GET["linkurl"]);
+    $link_name = stripslashes($_GET["name"]);
     //break; fall through
   }
   default:

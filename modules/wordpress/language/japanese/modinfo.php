@@ -61,6 +61,9 @@ define("_MI_WORDPRESS_BDESC7","WordPress 最近のコメント");
 define("_MI_WORDPRESS_BNAME8","WordPress%s 記事ブロック");
 define("_MI_WORDPRESS_BDESC8","WordPress 記事ブロック");
 
+define("_MI_WORDPRESS_BNAME9","WordPress%s 投稿者ブロック");
+define("_MI_WORDPRESS_BDESC9","WordPress 投稿者ブロック");
+
 define("_MI_WORDPRESS_AD_MENU1","WordPressオプション");
 define("_MI_WORDPRESS_AD_MENU2","ブロックアクセス権限");
 }

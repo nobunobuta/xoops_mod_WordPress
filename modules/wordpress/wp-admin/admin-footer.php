@@ -1,10 +1,11 @@
 
 
-<p align="center" style="width: 100%" class="tabletoprow"><strong><a href="http://wordpress.xwd.jp/">WordPress <?php echo $wp_version ?></a></strong> - <a href="http://phpbb.xwd.jp/">Forum</a> <a href="http://detlog.org/document/docs.htm">Document</a> <a href="http://tekapo.com/wp_docs/readme_jp.html">Readme</a> / 
+<p align="center" style="width: 100%" class="tabletoprow"><strong><a href="http://wordpress.xwd.jp/">WordPress </a><a href="http://www.kowa.org/"><?php echo $wp_version ?></a></strong> -  <a href="http://wordpress.xwd.jp/wiki/">Document</a> <a href="../wp-readme/">Readme</a> / 
 <?php
 	echo number_format(timer_stop(), 2)." seconds";
 ?>
 </p>
+<?php do_action('admin_footer', ''); ?>
 </div>
 <?php
 if ($standalone == 0) {

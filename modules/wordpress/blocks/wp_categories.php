@@ -15,8 +15,8 @@ if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
 		if ( $options[0] == 1 ) {
 			$chk = " checked=\"checked\"";
 		}
-		
 		$form .= "&nbsp;<input type='radio' name='options[]' value='1'".$chk." />&nbsp;Dropdown List";
+
 		$form .= "<br />Listing with count:&nbsp;";
 		if ( $options[1] == 1 ) {
 			$chk = " checked='checked'";
@@ -65,19 +65,28 @@ if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
 		$sorting_key = ($options[2])?$options[2]:'name';
 		$sorting_order = ($options[3])?$options[3]:'asc';
 		
-		global $wpdb, $siteurl,  $wp_id, $wp_inblock ,$user_cache, $category_name, $cat;
+		global $wpdb, $siteurl,  $wp_id, $wp_inblock ,$user_cache, $cache_categories, $category_name, $cat;
 
 		$id=1;
 		$use_cache=1;
-		
-		$cat = intval($_GET['cat']);
-		$category_name = $_GET['category_name'];
-		
+
 		if ($wp_num == "") {
 			$wp_id = $wp_num;
 			$wp_inblock = 1;
 			require(dirname(__FILE__).'/../wp-config.php');
 			$wp_inblock = 0;
+		}
+		$cur_PATH = $_SERVER['SCRIPT_FILENAME'];
+		if (preg_match("/^".preg_quote(XOOPS_ROOT_PATH."/modules/wordpress".$wp_num."/","/")."/i",$cur_PATH)) {
+			$cat = array_key_exists('cat',$_GET) ? intval($_GET['cat']) : null;
+			$category_name = array_key_exists('category_name',$_GET) ? $_GET['category_name']: '';
+			if ($category_name and $cat==0) {
+				$category_name = preg_replace('|/+$|', '', $category_name);
+				$cat =$wpdb->get_var("SELECT cat_ID  FROM {$wpdb->categories[$wp_id]} WHERE category_nicename='$category_name'");
+			}
+		} else {
+			$cat = 0;
+			$category_name = "";
 		}
 
 		if ($block_style == 0) {
@@ -109,7 +118,7 @@ if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
 		}
 
 		function b_wp'.$i.'_categories_show($options) {
-			global $wpdb, $siteurl,  $wp_id, $wp_inblock ,$user_cache, $category_name, $cat;
+		global $wpdb, $siteurl,  $wp_id, $wp_inblock ,$user_cache, $cache_categories, $category_name, $cat;
 			$wp_id = "'.$i.'";
 			$wp_inblock = 1;
 			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");

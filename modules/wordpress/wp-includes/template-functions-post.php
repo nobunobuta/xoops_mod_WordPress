@@ -12,8 +12,8 @@ add_filter('the_content', 'convert_smilies');
 add_filter('the_content', 'convert_chars');
 add_filter('the_content', 'wpautop');
 
-add_filter('the_content', 'convert_bbcode');
-add_filter('the_content', 'convert_gmcode');
+add_filter('the_excerpt', 'convert_bbcode');
+add_filter('the_excerpt', 'convert_gmcode');
 add_filter('the_excerpt', 'convert_smilies');
 add_filter('the_excerpt', 'convert_chars');
 add_filter('the_excerpt', 'wpautop');

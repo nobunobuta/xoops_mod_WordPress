@@ -24,9 +24,14 @@ $wpdb->optionvalues[$wp_id]        = $table_prefix[$wp_id] . 'optionvalues';
 $wpdb->optiongroups[$wp_id]        = $table_prefix[$wp_id] . 'optiongroups';
 $wpdb->optiongroup_options[$wp_id] = $table_prefix[$wp_id] . 'optiongroup_options';
 
+$dogs = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]} WHERE 1=1");
+foreach ($dogs as $catt) {
+    $cache_categories[$wp_id][$catt->cat_ID] = $catt;
+}
 // This is the name of the include directory. No "/" allowed.
 
 require_once (ABSPATH . WPINC . '/functions.php');
+require_once (ABSPATH . WPINC . '/functions-formatting.php');
 require ('wp-config-extra.php');
 require_once (ABSPATH . WPINC . '/template-functions.php');
 require_once (ABSPATH . WPINC . '/class-xmlrpc.php');
@@ -51,8 +56,30 @@ if (!strstr($_SERVER['REQUEST_URI'], 'install.php') && !strstr($_SERVER['REQUEST
     $querystring_equal = '=';
     $querystring_separator = '&amp;';
 }
+
 // Used to guarantee unique cookies
 $cookiehash = md5($siteurl);
+
+if (!$wp_inblock) {
+	if (!defined('XOOPS_PULUGIN'.$wp_id)) {
+		define('XOOPS_PULUGIN'.$wp_id,1);
+		if (!strstr($_SERVER['PHP_SELF'], 'wp-admin/plugins.php') && get_settings('active_plugins')) {
+			$current_plugins = explode("\n", (get_settings('active_plugins')));
+			foreach ($current_plugins as $plugin) {
+				if (file_exists(ABSPATH . 'wp-content/plugins/' . $plugin)) {
+					include(ABSPATH . 'wp-content/plugins/' . $plugin);
+				}
+			}
+		}
+		if (!defined('SHUTDOWN_ACTION_HOOK')) {
+			define('SHUTDOWN_ACTION_HOOK','1');
+			function shutdown_action_hook() {
+				do_action('shutdown', '');
+			}
+			register_shutdown_function('shutdown_action_hook');
+		}
+	}
+}
 
 require (ABSPATH . WPINC . '/vars.php');
 ?>

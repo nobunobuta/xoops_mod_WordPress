@@ -9,7 +9,7 @@ if (file_exists("wp-lang/lang_"._LANGCODE.".php")) {
 	require_once("wp-lang/lang_en.php");
 }
 global $xoopsDB,$xoopsUser,$wpdb, $wp_id, $wp_inblock;
-global $wp_once_called;
+global $wp_once_called,$blog_charset;;
 $wpj_head = <<<EOD
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -63,19 +63,19 @@ if (!file_exists($curpath . '/wp-config.php'))
 $wp_inblock = 0;
 require($curpath.'/wp-config.php');
 
-$wpvarstoreset = array('m','p','posts','w','c', 'cat','withcomments','s','search','exact', 'sentence','poststart','postend','preview','debug', 'calendar','page','paged','more','tb', 'pb','author','order','orderby', 'year', 'monthnum', 'day', 'name', 'category_name');
+$wpvarstoreset = array('m','p','posts','w','c', 'cat','withcomments','s','search','exact', 'sentence','poststart','postend','preview','debug', 'calendar','page','paged','more','tb', 'pb','author','order','orderby', 'year', 'monthnum', 'day', 'name', 'category_name','author_name');
 
 	for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 		$wpvar = $wpvarstoreset[$i];
 		if (!isset($$wpvar)) {
-			if (empty($HTTP_POST_VARS[$wpvar])) {
-				if (empty($HTTP_GET_VARS[$wpvar])) {
+			if (empty($_POST[$wpvar])) {
+				if (empty($_GET[$wpvar])) {
 					$$wpvar = '';
 				} else {
-					$$wpvar = $HTTP_GET_VARS[$wpvar];
+					$$wpvar = $_GET[$wpvar];
 				}
 			} else {
-				$$wpvar = $HTTP_POST_VARS[$wpvar];
+				$$wpvar = $_POST[$wpvar];
 			}
 		}
 //		if (isset($$wpvar)) echo $wpvar . " = " . $$wpvar . "<br/>";
@@ -169,6 +169,7 @@ if (($p != '') && ($p != 'all')) {
 
 // if a search pattern is specified, load the posts that match
 if (!empty($s)) {
+	//echo $s."<br>";
 	$s = addslashes_gpc($s);
 	$search = ' AND (';
 	// puts spaces instead of commas
@@ -224,8 +225,16 @@ if ((empty($cat)) || ($cat == 'all') || ($cat == '0')) {
 // Category stuff for nice URIs
 
 if ('' != $category_name) {
+    if (stristr($category_name,'/')) {
+        $category_name = explode('/',$category_name);
+        if ($category_name[count($category_name)-1]) {
+        $category_name = $category_name[count($category_name)-1]; // no trailing slash
+        } else {
+        $category_name = $category_name[count($category_name)-2]; // there was a trailling slash
+        }
+    }
 	$category_name = preg_replace('|[^a-z0-9-]|', '', $category_name);
-	$category_name = preg_replace('/\/$/', '', $category_name);
+//	$category_name = preg_replace('/\/$/', '', $category_name);
 	$tables = ", {$wpdb->post2cat[$wp_id]}, {$wpdb->categories[$wp_id]}";
 	$join = " LEFT JOIN {$wpdb->post2cat[$wp_id]} ON ({$wpdb->posts[$wp_id]}.ID = {$wpdb->post2cat[$wp_id]}.post_id) LEFT JOIN {$wpdb->categories[$wp_id]} ON ({$wpdb->post2cat[$wp_id]}.category_id = {$wpdb->categories[$wp_id]}.cat_ID) ";
 	$whichcat = " AND (category_nicename = '$category_name') ";
@@ -253,6 +262,21 @@ if ((empty($author)) || ($author == 'all') || ($author == '0')) {
 		$whichauthor .= ' '.$andor.' post_author '.$eq.' '.intval($author_array[$i]);
 	}
 	$whichauthor .= ')';
+}
+// Author stuff for nice URIs
+
+if ('' != $author_name) {
+    if (stristr($author_name,'/')) {
+        $author_name = explode('/',$author_name);
+        if ($author_name[count($author_name)-1]) {
+        $author_name = $author_name[count($author_name)-1];#no trailing slash
+        } else {
+        $author_name = $author_name[count($author_name)-2];#there was a trailling slash
+        }
+    }
+    $author_name = preg_replace('|[^a-z0-9-_]|', '', strtolower($author_name));
+    $author = $wpdb->get_var("SELECT ID FROM {$wpdb->users[$wp_id]} WHERE user_login='".$author_name."'");
+    $whichauthor .= ' AND (post_author = '.intval($author).')';
 }
 
 $where .= $search.$whichcat.$whichauthor;
@@ -379,8 +403,8 @@ if ($preview) {
 }
 //error_log("$request");
 global $posts;
+//echo $request."<br>";
 $posts = $wpdb->get_results($request);
-
 // No point in doing all this work if we didn't match any posts.
 if ($posts) {
     // Get the categories for all the posts
@@ -390,12 +414,12 @@ if ($posts) {
     $post_id_list = implode(',', $post_id_list);
 
     $dogs = $wpdb->get_results("SELECT DISTINCT
-    	ID, category_id, cat_name, category_nicename, category_description
+        ID, category_id, cat_name, category_nicename, category_description, category_parent
     	FROM {$wpdb->categories[$wp_id]}, {$wpdb->post2cat[$wp_id]}, {$wpdb->posts[$wp_id]}
     	WHERE category_id = cat_ID AND post_id = ID AND post_id IN ($post_id_list)");
 
     foreach ($dogs as $catt) {
-    	$category_cache[$catt->ID][] = $catt;
+    	$category_cache[$wp_id][$catt->ID][] = $catt;
     }
 
     // Do the same for comment numbers
@@ -406,7 +430,7 @@ if ($posts) {
 		GROUP BY ID");
 
 	foreach ($comment_counts as $comment_count) {
-		$comment_count_cache["$comment_count->ID"] = $comment_count->ccount;
+		$comment_count_cache[$wp_id]["$comment_count->ID"] = $comment_count->ccount;
 	}
 
     if (1 == count($posts)) {

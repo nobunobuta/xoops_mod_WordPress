@@ -16,10 +16,10 @@
 include '../config/spaw_control.config.php';
 include $spaw_root.'class/lang.class.php';
 
-$theme = empty($HTTP_GET_VARS['theme'])?$spaw_default_theme:$HTTP_GET_VARS['theme'];
+$theme = empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'];
 $theme_path = $spaw_dir.'lib/themes/'.$theme.'/';
 
-$l = new SPAW_Lang($HTTP_GET_VARS['lang']);
+$l = new SPAW_Lang($_GET['lang']);
 $l->setBlock('image_prop');
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">

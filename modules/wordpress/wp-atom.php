@@ -4,7 +4,7 @@ $doing_rss = 1;
 header("Content-type: application/xml");
 include_once (dirname(__FILE__)."/../../mainfile.php");
 error_reporting(E_ERROR);
-if ($HTTP_GET_VARS['num']) $showposts = $HTTP_GET_VARS['num'];
+if ($_GET['num']) $showposts = $_GET['num'];
 require('wp-blog-header.php');
 if (isset($showposts) && $showposts) {
     $showposts = (int)$showposts;
@@ -49,5 +49,5 @@ $rss_charset = wp_get_rss_charset();
 ?>
 		<content type="text/html" mode="escaped" xml:base="<?php permalink_single_rss() ?>"><![CDATA[<?php the_content_rss('', 0, '', 0, 1) ?>]]></content>
 	</entry>
-	<?php $items_count++; if (($items_count == get_settings('posts_per_rss')) && empty($m)) { break; } } } ?>
+	<?php $items_count++; if (($items_count == $posts_per_page) && empty($m)) { break; } } } ?>
 </feed>

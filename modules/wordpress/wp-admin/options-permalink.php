@@ -14,45 +14,42 @@ function add_magic_quotes($array) {
 }
 
 if (!get_magic_quotes_gpc()) {
-	$HTTP_GET_VARS    = add_magic_quotes($HTTP_GET_VARS);
-	$HTTP_POST_VARS   = add_magic_quotes($HTTP_POST_VARS);
-	$HTTP_COOKIE_VARS = add_magic_quotes($HTTP_COOKIE_VARS);
+	$_GET    = add_magic_quotes($_GET);
+	$_POST   = add_magic_quotes($_POST);
+	$_COOKIE = add_magic_quotes($_COOKIE);
 }
 
 $wpvarstoreset = array('action','standalone', 'option_group_id');
 for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 	$wpvar = $wpvarstoreset[$i];
 	if (!isset($$wpvar)) {
-		if (empty($HTTP_POST_VARS["$wpvar"])) {
-			if (empty($HTTP_GET_VARS["$wpvar"])) {
+		if (empty($_POST["$wpvar"])) {
+			if (empty($_GET["$wpvar"])) {
 				$$wpvar = '';
 			} else {
-				$$wpvar = $HTTP_GET_VARS["$wpvar"];
+				$$wpvar = $_GET["$wpvar"];
 			}
 		} else {
-			$$wpvar = $HTTP_POST_VARS["$wpvar"];
+			$$wpvar = $_POST["$wpvar"];
 		}
 	}
 }
 
-require_once('optionhandler.php');
+require_once('./optionhandler.php');
 
-if ($HTTP_POST_VARS['Submit'] == _LANG_WPL_SUBMIT_UPDATE) {
+if (isset($_POST['submit'])) {
 	wp_refcheck("/wp-admin");
-	update_option('permalink_structure', $HTTP_POST_VARS['permalink_structure']);
-	$permalink_structure = $HTTP_POST_VARS['permalink_structure'];
+	update_option('permalink_structure', $_POST['permalink_structure']);
+	$permalink_structure = $_POST['permalink_structure'];
 } else {
 	$permalink_structure = get_settings('permalink_structure');
 }
 
 
-switch($action) {
-
-default:
 	$standalone = 0;
 	include_once('admin-header.php');
-	if ($user_level <= 3) {
-		die("You have no right to edit the options for this blog.<br>Ask for a promotion to your <a href=\"mailto:".get_settings('admin_email')."\">blog admin</a> :)");
+	if ($user_level <= 6) {
+		die("You have do not have sufficient permissions to edit the options for this blog.");
 	}
 ?>
  <ul id="adminmenu2"> 
@@ -69,91 +66,89 @@ default:
         }
     } // end for each group
 ?> 
-  <li class="last"><a href="options-permalink.php"><?php echo _LANG_WOP_PERM_LINKS; ?></a></li> 
+  <li class="last"><a class="current" href="options-permalink.php"><?php echo _LANG_WOP_PERM_LINKS; ?></a></li> 
 </ul> 
 <br clear="all" /> 
+<?php if (isset($_POST['submit'])) : ?>
+<div class="updated"><p><?php echo _LANG_WPL_EDIT_UPDATED; ?></p></div>
+<?php endif; ?>
 <div class="wrap"> 
   <h2><?php echo _LANG_WPL_EDIT_STRUCT; ?></h2> 
   <p><?php echo _LANG_WPL_CREATE_CUSTOM; ?></p>
-  <ul> 
-    <li><code>%year%</code> --- <?php echo _LANG_WPL_CODE_YEAR; ?></li> 
-    <li><code>%monthnum%</code> --- <?php echo _LANG_WPL_CODE_MONTH; ?></li> 
-    <li><code>%day% </code>--- <?php echo _LANG_WPL_CODE_DAY; ?></li> 
-    <li><code>%postname%</code> --- <?php echo _LANG_WPL_CODE_POSTNAME; ?></li> 
-    <li><code>%post_id%</code> --- <?php echo _LANG_WPL_CODE_POSTID; ?></li> 
-  </ul>
-  <p><?php echo _LANG_WPL_USE_EXAMPLE; ?></p> 
+
+<dl>
+	<dt><code>%year%</code></dt>
+	<dd>
+		<?php echo _LANG_WPL_CODE_YEAR; ?>
+	</dd>
+	<dt><code>%monthnum%</code></dt>
+	<dd>
+		<?php echo _LANG_WPL_CODE_MONTH; ?>
+	</dd>
+	<dt><code>%day%</code></dt>
+	<dd>
+		<?php echo _LANG_WPL_CODE_DAY; ?>
+	</dd>
+	<dt><code>%hour%</code></dt>
+	<dd>
+		<?php echo _LANG_WPL_CODE_HOUR; ?>
+	</dd>
+	<dt><code>%minute%</code></dt>
+	<dd>
+		<?php echo _LANG_WPL_CODE_MINUTE; ?>
+	</dd>
+	<dt><code>%second%</code></dt>
+	<dd>
+		<?php echo _LANG_WPL_CODE_SECOND; ?>
+	</dd>
+	<dt><code>%postname%</code></dt>
+	<dd>
+		<?php echo _LANG_WPL_CODE_POSTNAME; ?>
+	</dd>
+	<dt><code>%post_id%</code></dt>
+	<dd>
+		<?php echo _LANG_WPL_CODE_POSTID; ?>
+	</dd>
+</dl>
+<?php echo _LANG_WPL_USE_EXAMPLE; ?>
   <form name="form" action="options-permalink.php" method="post"> 
-    <p><?php echo _LANG_WPL_USE_TEMPTEXT; ?></p> 
+    <p><?php echo _LANG_WPL_USE_TEMPTEXT; ?></p>
     <p> 
-      <input name="permalink_structure" type="text" style="width: 100%;" value="<?php echo $permalink_structure; ?>" /> 
+      <input name="permalink_structure" type="text" style="width: 98%;" value="<?php echo $permalink_structure; ?>" /> 
     </p> 
-    <p> 
-      <input type="submit" name="Submit" value="<?php echo _LANG_WPL_SUBMIT_UPDATE; ?>"> 
+	<p><?php echo _LANG_WPL_USE_BLANK; ?></p>
+    <p class="submit"> 
+      <input type="submit" name="submit" value="<?php echo _LANG_WPL_SUBMIT_UPDATE; ?>"> 
     </p> 
   </form> 
 <?php
  if ($permalink_structure) {
 ?>
-  <p><?php echo _LANG_WPL_BEFORE_HTACCESS; ?><code><?php echo $permalink_structure; ?></code><?php echo _LANG_WPL_AFTER_HTACCESS; ?></p>
+  <p><?php printf(_LANG_WPL_USE_HTACCESS, $permalink_structure) ?></p>
   <?php
 $site_root = str_replace('http://', '', trim($siteurl));
 $site_root = preg_replace('|([^/]*)(.*)|i', '$2', $site_root);
 if ('/' != substr($site_root, -1)) $site_root = $site_root . '/';
 
-$rewritecode = array(
-	'%year%',
-	'%monthnum%',
-	'%day%',
-	'%postname%',
-	'%post_id%'
-);
-$rewritereplace = array(
-	'([0-9]{4})?',
-	'([0-9]{1,2})?',
-	'([0-9]{1,2})?',
-	'([0-9a-z-]+)?',
-	'([0-9]+)?'
-);
-$queryreplace = array (
-	'year=',
-	'monthnum=',
-	'day=',
-	'name=',
-	'p='
-);
-
-
-
-$match = str_replace('/', '/?', $permalink_structure);
-$match = preg_replace('|/[?]|', '', $match, 1);
-
-$match = str_replace($rewritecode, $rewritereplace, $match);
-$match = preg_replace('|[?]|', '', $match, 1);
-preg_match_all('/%.+?%/', $permalink_structure, $tokens);
-
-$query = 'index.php?';
-for ($i = 0; $i < count($tokens[0]); ++$i) {
-	if (0 < $i) $query .= '&';
-	$query .= str_replace($rewritecode, $queryreplace, $tokens[0][$i]) . '$'. ($i + 1);
-}
-++$i;
-// Add post paged stuff
-$match .= '([0-9]+)?/?';
-$query .= "&page=$$i";
-
-// Code for nice categories, currently not very flexible
-$front = substr($permalink_structure, 0, strpos($permalink_structure, '%'));
-		$catmatch = $front . 'category/';
-		$catmatch = preg_replace('|^/+|', '', $catmatch);
+$home_root = str_replace('http://', '', trim($siteurl));
+$home_root = preg_replace('|([^/]*)(.*)|i', '$2', $home_root);
+if ('/' != substr($home_root, -1)) $home_root = $home_root . '/';
 
 ?> 
-<form action"">
-  <textarea rows="5" style="width: 100%;">RewriteEngine On
-RewriteBase <?php echo $site_root; ?> 
-RewriteRule ^<?php echo $match; echo '$ ' . $site_root . $query ?> [QSA]
-RewriteRule ^<?php echo $catmatch; ?>?(.*) <?php echo $site_root; ?>index.php?category_name=$1 [QSA]</textarea> 
-	</form>
+<form action="">
+    <p>
+    	<textarea rows="5" style="width: 98%;"><?php echo "RewriteEngine On\nRewriteBase" ?> <?php echo $home_root; ?> 
+<?php
+$rewrite = rewrite_rules('', $permalink_structure);
+foreach ($rewrite as $match => $query) {
+	if (strstr($query, 'index.php')) echo 'RewriteRule ^' . $match . ' ' . $home_root . $query . " [QSA]\n";
+    else echo 'RewriteRule ^' . $match . ' ' . $site_root . $query . " [QSA]\n";
+}
+?>
+    </textarea>
+    </p>
+    <?php printf(_LANG_WPL_EDIT_TEMPLATE, 'templates.php?file=.htaccess') ?>
+</form>
 </div> 
 <?php
 } else {
@@ -161,11 +156,9 @@ RewriteRule ^<?php echo $catmatch; ?>?(.*) <?php echo $site_root; ?>index.php?ca
 <p>
 <?php echo _LANG_WPL_MOD_REWRITE; ?>
 </p>
+<?php } ?>
+</div>
+
 <?php
-}
-echo "</div>\n";
-
-break;
-}
-
-include("admin-footer.php") ?> 
+require('./admin-footer.php');
+?>

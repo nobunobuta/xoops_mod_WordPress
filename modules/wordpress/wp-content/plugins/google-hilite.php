@@ -11,7 +11,7 @@ Author URI: http://rboren.nu
 /* Highlighting code c/o Ryan Boren */
 function get_search_query_terms($engine = 'google') {
     global $s, $s_array, $blog_charset;
-	$referer = urldecode($_SERVER[HTTP_REFERER]);
+	$referer = urldecode($_SERVER['HTTP_REFERER']);
 	$query_array = array();
 	switch ($engine) {
 	case 'google':

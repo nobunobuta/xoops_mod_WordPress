@@ -15,9 +15,9 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 		$no_posts = (empty($options[0]))? 10 : $options[0];
 
 		global $wpdb, $siteurl, $post, $use_cache;
-		global $smilies_directory,  $wp_smiliessearch, $wp_smiliesreplace;
+		global $smilies_directory,  $wp_smiliessearch, $wp_smiliesreplace ,$authordata;
 		global $wp_bbcode,  $wp_gmcode,   $wp_htmltrans, $wp_htmltranswinuni;
-		global $wp_id, $wp_inblock, $xoopsConfig, $previousday, $time_difference ;
+		global $wp_id, $wp_inblock, $xoopsConfig, $previousday, $time_difference ,$day;
 		
 		$id=1;
 		$use_cache = 1;
@@ -106,6 +106,7 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 			}
 		}
 		$previousday = 0;
+		$day = '';
 		return $block;
 	}
 
@@ -116,9 +117,10 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 		}
 
 		function b_wp'.$i.'_contents_show($options) {
-			global $smilies_directory,  $wp_smiliessearch, $wp_smiliesreplace;
+			global $wpdb, $siteurl, $post, $use_cache;
+			global $smilies_directory,  $wp_smiliessearch, $wp_smiliesreplace ,$authordata;
 			global $wp_bbcode,  $wp_gmcode,   $wp_htmltrans, $wp_htmltranswinuni;
-			global $wp_id, $wp_inblock, $previousday, $xoopsConfig, $use_cache;
+			global $wp_id, $wp_inblock, $xoopsConfig, $previousday, $time_difference, $day ;
 			$wp_id = "'.$i.'";
 			$wp_inblock = 1;
 			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");

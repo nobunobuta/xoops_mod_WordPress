@@ -3,7 +3,7 @@
 /* This file sets various arrays and variables for use in WordPress */
 
 # WordPress version
-$wp_version = 'ME 1.0.3';
+$wp_version = 'ME for XOOPS '.get_version();
 
 # BBcode search and replace arrays
 $wp_bbcode['in'] = array(
@@ -147,7 +147,7 @@ $pagenow = $pagenow[0];
 # browser detection
 $is_lynx = 0; $is_gecko = 0; $is_winIE = 0; $is_macIE = 0; $is_opera = 0; $is_NS4 = 0;
 if (!isset($HTTP_USER_AGENT)) {
-	$HTTP_USER_AGENT = $HTTP_SERVER_VARS['HTTP_USER_AGENT'];
+	$HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
 }
 if (preg_match('/Lynx/', $HTTP_USER_AGENT)) {
 	$is_lynx = 1;
@@ -286,12 +286,13 @@ foreach($wpsmiliestrans[$wp_id] as $smiley => $img) {
 
 
 // Some default filters
-add_filter('all', 'wptexturize');
-add_filter('the_content', 'wpautop');
-add_filter('comment_text', 'wpautop');
-
-// Uncomment the following for Textile support
-// include_once('textile.php');
-// add_filter('the_content', 'textile');
-// There is some duplication of effort so textile.php really should be tweaked to eliminate that.
+add_filter('category_description', 'wptexturize');
+add_filter('list_cats', 'wptexturize');
+add_filter('comment_author', 'wptexturize');
+add_filter('comment_text', 'wptexturize');
+add_filter('single_post_title', 'wptexturize');
+add_filter('the_title', 'wptexturize');
+add_filter('the_content', 'wptexturize');
+add_filter('the_excerpt', 'wptexturize');
+//add_action('wp_head', 'doGeoUrlHeader');
 ?>

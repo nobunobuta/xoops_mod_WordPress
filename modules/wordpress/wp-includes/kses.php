@@ -409,11 +409,11 @@ function wp_kses_no_null($string)
 	$string = preg_replace('/\0+/', '', $string);
 	$string = preg_replace('/(\\\\0)+/', '', $string);
 
-	if (function_exists('mb_ereg_replace')) { 
-		$string = mb_ereg_replace('/\xad+/', '', $string); # deals with Opera "feature" 
-	}else{ 
-		$string = preg_replace('/\xad+/', '', $string); # deals with Opera "feature" 
-	}
+//	if (function_exists('mb_ereg_replace')) { 
+//		$string = mb_ereg_replace('/\xad+/', '', $string); # deals with Opera "feature" 
+//	}else{ 
+//		$string = preg_replace('/\xad+/', '', $string); # deals with Opera "feature" 
+//	}
 
 	return $string;
 } # function wp_kses_no_null

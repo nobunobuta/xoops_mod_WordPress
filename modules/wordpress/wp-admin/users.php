@@ -8,14 +8,14 @@ $wpvarstoreset = array('action','standalone','redirect','profile');
 for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 	$wpvar = $wpvarstoreset[$i];
 	if (!isset($$wpvar)) {
-		if (empty($HTTP_POST_VARS["$wpvar"])) {
-			if (empty($HTTP_GET_VARS["$wpvar"])) {
+		if (empty($_POST["$wpvar"])) {
+			if (empty($_GET["$wpvar"])) {
 				$$wpvar = '';
 			} else {
-				$$wpvar = $HTTP_GET_VARS["$wpvar"];
+				$$wpvar = $_GET["$wpvar"];
 			}
 		} else {
-			$$wpvar = $HTTP_POST_VARS["$wpvar"];
+			$$wpvar = $_POST["$wpvar"];
 		}
 	}
 }
@@ -29,12 +29,12 @@ case 'adduser':
 		return ereg('^[a-zA-Z0-9\_-\|]+$',$value);
 	}
 
-	$user_login = $HTTP_POST_VARS['user_login'];
-	$pass1 = $HTTP_POST_VARS['pass1'];
-	$pass2 = $HTTP_POST_VARS['pass2'];
-	$user_email = $HTTP_POST_VARS['email'];
-	$user_firstname = $HTTP_POST_VARS['firstname'];
-	$user_lastname = $HTTP_POST_VARS['lastname'];
+	$user_login = $_POST['user_login'];
+	$pass1 = $_POST['pass1'];
+	$pass2 = $_POST['pass2'];
+	$user_email = $_POST['email'];
+	$user_firstname = $_POST['firstname'];
+	$user_lastname = $_POST['lastname'];
 		
 	/* checking login has been typed */
 	if ($user_login == '') {
@@ -64,7 +64,6 @@ case 'adduser':
     if ($loginthere) {
 		die ('<strong>ERROR</strong>: This login is already registered, please choose another one.');
 	}
-
 
 	$user_login = addslashes(stripslashes($user_login));
 	$pass1 = addslashes(stripslashes($pass1));
@@ -106,27 +105,26 @@ case 'promote':
 	require_once('admin-header.php');
 	wp_refcheck("/wp-admin");
 
-	if (empty($HTTP_GET_VARS['prom'])) {
+	if (empty($_GET['prom'])) {
 		header('Location: users.php');
 	}
 
-	$id = $HTTP_GET_VARS['id'];
+	$id = $_GET['id'];
 	$id = intval($id);
-	$prom = $HTTP_GET_VARS['prom'];
+	$prom = $_GET['prom'];
 
 	$user_data = get_userdata($id);
 	$usertopromote_level = $user_data->user_level;
-
-	if ($user_level <= $usertopromote_level) {
+	if (($user_level <= $usertopromote_level) and ( $user_ID != 1)){
 		die('Can&#8217;t change the level of a user whose level is higher than yours.');
 	}
 	
 	if ('up' == $prom) {
 		$new_level = $usertopromote_level + 1;
-		$sql="UPDATE {$wpdb->users[$wp_id]} SET user_level=$new_level WHERE ID = $id AND $new_level < $user_level";
+		$sql="UPDATE {$wpdb->users[$wp_id]} SET user_level=$new_level WHERE ID = $id";
 	} elseif ('down' == $prom) {
 		$new_level = $usertopromote_level - 1;
-		$sql="UPDATE {$wpdb->users[$wp_id]} SET user_level=$new_level WHERE ID = $id AND $new_level < $user_level";
+		$sql="UPDATE {$wpdb->users[$wp_id]} SET user_level=$new_level WHERE ID = $id";
 	}
 	$result = $wpdb->query($sql);
 
@@ -139,16 +137,16 @@ case 'delete':
 	require_once('admin-header.php');
 	wp_refcheck("/wp-admin");
 
-	$id = $HTTP_GET_VARS['id'];
-	$id = intval($id);
+	$id = intval($_GET['id']);
 
 	if (!$id) {
 		header('Location: users.php');
 	}
+	
 	$user_data = get_userdata($id);
 	$usertodelete_level = $user_data->user_level;
 
-	if (0 <>  $usertodelete_level)
+	if (0 != $usertodelete_level)
 		die('Can&#8217;t delete a user whose level is higher than yours.');
 
 	$post_ids = $wpdb->get_col("SELECT ID FROM {$wpdb->posts[$wp_id]} WHERE post_author = $id");
@@ -211,10 +209,10 @@ default:
 	<td><a href='mailto:$email' title='e-mail: $email'>$email</a></td>
 	<td><a href='$url' title='website: $url'>$short_url</a></td>
 	<td align='center'>";
-	if (($user_level >= 2) and ($user_level > $user_data->user_level) and ($user_data->user_level > 0))
+	if ((($user_level >= 2) and ($user_level > $user_data->user_level) and ($user_data->user_level > 0)) or (($user_level == 10) and ($user_data->ID !=1 )))
 		echo " <a href=\"users.php?action=promote&id=".$user_data->ID."&prom=down\">-</a> ";
 	echo $user_data->user_level;
-	if (($user_level >= 2) and ($user_level > ($user_data->user_level + 1)))
+	if ((($user_level >= 2) and ($user_level > ($user_data->user_level + 1))) or (($user_level == 10) and ($user_data->user_level <10)))
 		echo " <a href=\"users.php?action=promote&id=".$user_data->ID."&prom=up\">+</a> ";
 	echo "<td align='right'>$numposts</td>";
 	echo '</tr>';
@@ -269,11 +267,11 @@ echo "\n<tr $style>
 	?>
 	
 	</table>
-	  <p><?php echo _LANG_WUS_AU_WARNING; ?></p>
 </div>
 
 	<?php 
 	} ?>
+	  <p><?php echo _LANG_WUS_AU_WARNING; ?></p>
 	<?php if(0) { ?>
 <div class="wrap">
 <h2><?php echo _LANG_WUS_ADD_USER; ?></h2>

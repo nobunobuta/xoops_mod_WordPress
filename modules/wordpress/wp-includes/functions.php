@@ -14,379 +14,18 @@ if (!function_exists('floatval')) {
 
 /* functions... */
 
-/***** Formatting functions *****/
-function wptexturize($text) {
-	$output = "";
-	$textarr = preg_split("/(<.*>)/Us", $text, -1, PREG_SPLIT_DELIM_CAPTURE); // capture the tags as well as in between
-	$stop = count($textarr); $next = true; // loop stuff
-	for ($i = 0; $i < $stop; $i++) {
-		$curl = $textarr[$i];
-
-		if (isset($curl{0}) && '<' != $curl{0} && $next) { // If it's not a tag
-			$curl = str_replace('---', '&#8212;', $curl);
-			$curl = str_replace('--', '&#8211;', $curl);
-			$curl = str_replace("...", '&#8230;', $curl);
-			$curl = str_replace('``', '&#8220;', $curl);
-
-			// This is a hack, look at this more later. It works pretty well though.
-			$cockney = array("'tain't","'twere","'twas","'tis","'twill","'til","'bout","'nuff","'round");
-			$cockneyreplace = array("&#8217;tain&#8217;t","&#8217;twere","&#8217;twas","&#8217;tis","&#8217;twill","&#8217;til","&#8217;bout","&#8217;nuff","&#8217;round");
-			$curl = str_replace($cockney, $cockneyreplace, $curl);
-
-			$curl = preg_replace("/'s/", "&#8217;s", $curl);
-			$curl = preg_replace("/'(\d\d(?:&#8217;|')?s)/", "&#8217;$1", $curl);
-			$curl = preg_replace('/(\s|\A|")\'/', '$1&#8216;', $curl);
-			$curl = preg_replace("/(\d+)\"/", "$1&Prime;", $curl);
-			$curl = preg_replace("/(\d+)'/", "$1&prime;", $curl);
-			$curl = preg_replace("/(\S)'([^'\s])/", "$1&#8217;$2", $curl);
-			$curl = preg_replace('/"([\s.,!?;:&\']|\Z)/', '&#8221;$1', $curl);
-            $curl = preg_replace('/(\s|\A)"/', '$1&#8220;', $curl);
-			$curl = preg_replace("/'([\s.]|\Z)/", '&#8217;$1', $curl);
-			$curl = preg_replace("/\(tm\)/i", '&#8482;', $curl);
-			$curl = preg_replace("/\(c\)/i", '&#169;', $curl);
-			$curl = preg_replace("/\(r\)/i", '&#174;', $curl);
-			$curl = preg_replace('/&([^#])(?![a-z]{1,8};)/', '&#038;$1', $curl);
-			$curl = str_replace("''", '&#8221;', $curl);
-			
-			$curl = preg_replace('/(d+)x(\d+)/', "$1&#215;$2", $curl);
-
-		} elseif (strstr($curl, '<code') || strstr($curl, '<pre') || strstr($curl, '<kbd' || strstr($curl, '<style') || strstr($curl, '<script'))) {
-			// strstr is fast
-			$next = false;
-		} else {
-			$next = true;
-		}
-		$output .= $curl;
-	}
-	return $output;
-}
-
-function wpautop($pee, $br = 1) {
-	$pee = $pee . "\n"; // just to make things a little easier, pad the end
-	$pee = preg_replace('|<br />\s*<br />|', "\n\n", $pee);
-	$pee = preg_replace('!(<(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)!', "\n$1", $pee); // Space things out a little
-	$pee = preg_replace('!(</(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])>)!', "$1\n", $pee); // Space things out a little
-	$pee = preg_replace("/(\r\n|\r)/", "\n", $pee); // cross-platform newlines 
-	$pee = preg_replace("/\n\n+/", "\n\n", $pee); // take care of duplicates
-	$pee = preg_replace('/\n?(.+?)(?:\n\s*\n|\z)/s', "\t<p>$1</p>\n", $pee); // make paragraphs, including one at the end 
-	$pee = preg_replace('|<p>\s*?</p>|', '', $pee); // under certain strange conditions it could create a P of entirely whitespace 
-    $pee = preg_replace('!<p>\s*(</?(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)\s*</p>!', "$1", $pee); // don't pee all over a tag
-	$pee = preg_replace("|<p>(<li.+?)</p>|", "$1", $pee); // problem with nested lists
-	$pee = preg_replace('|<p><blockquote([^>]*)>|i', "<blockquote$1><p>", $pee);
-	$pee = str_replace('</blockquote></p>', '</p></blockquote>', $pee);
-	$pee = preg_replace('!<p>\s*(</?(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)!', "$1", $pee);
-	$pee = preg_replace('!(</?(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)\s*</p>!', "$1", $pee); 
-	if ($br) $pee = preg_replace('|(?<!<br />)\s*\n|', "<br />\n", $pee); // optionally make line breaks
-	$pee = preg_replace('!(</?(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)\s*<br />!', "$1", $pee);
-	$pee = preg_replace('!<br />(\s*</?(?:p|li|div|dl|dd|dt|th|pre|td|ul|ol)>)!', '$1', $pee);
-	$pee = preg_replace('/&([^#])(?![a-z]{1,8};)/', '&#038;$1', $pee);
-	
-	return $pee; 
-}
-
-function sanitize_title($title) {
-    $title = strtolower($title);
-	$title = preg_replace('/&.+?;/', '', $title); // kill entities
-    $title = preg_replace('/[^a-z0-9 -]/', '', $title);
-    $title = preg_replace('/\s+/', ' ', $title);
-    $title = trim($title);
-    $title = str_replace(' ', '-', $title);
-	$title = preg_replace('|-+|', '-', $title);
-	return $title;
-}
-
-function popuplinks($text) {
-	// Comment text in popup windows should be filtered through this.
-	// Right now it's a moderately dumb function, ideally it would detect whether
-	// a target or rel attribute was already there and adjust its actions accordingly.
-	$text = preg_replace('/<a (.+?)>/i', "<a $1 target='_blank' rel='external'>", $text);
-	return $text;
-}
-
-function autobrize($content) {
-	$content = preg_replace("/<br>\n/", "\n", $content);
-	$content = preg_replace("/<br \/>\n/", "\n", $content);
-	$content = preg_replace("/(\015\012)|(\015)|(\012)/", "<br />\n", $content);
-	return $content;
-	}
-function unautobrize($content) {
-	$content = preg_replace("/<br>\n/", "\n", $content);   //for PHP versions before 4.0.5
-	$content = preg_replace("/<br \/>\n/", "\n", $content);
-	return $content;
-	}
-
-
-function format_to_edit($content) {
-	global $autobr;
-	$content = stripslashes($content);
-	if ($autobr) { $content = unautobrize($content); }
-	$content = htmlspecialchars($content);
-	return $content;
-	}
-function format_to_post($content) {
-	global $post_autobr,$comment_autobr;
-	$content = addslashes($content);
-	if ($post_autobr || $comment_autobr) { $content = autobrize($content); }
-	return $content;
-	}
-
-
-function zeroise($number,$threshold) { // function to add leading zeros when necessary
-	$l=strlen($number);
-	if ($l<$threshold)
-		for ($i=0; $i<($threshold-$l); $i=$i+1) { $number='0'.$number;	}
-	return $number;
-	}
-
-
-function backslashit($string) {
-	$string = preg_replace('/([a-z])/i', '\\\\\1', $string);
-	return $string;
-}
-
-
-function mysql2date($dateformatstring, $mysqlstring, $use_b2configmonthsdays = 1) {
-	global $month, $weekday,$s_weekday_length,$s_month_length;
-	$m = $mysqlstring;
-	if (empty($m)) {
-		return false;
-	}
-	$i = mktime(substr($m,11,2),substr($m,14,2),substr($m,17,2),substr($m,5,2),substr($m,8,2),substr($m,0,4));
-	if (!empty($month) && !empty($weekday) && $use_b2configmonthsdays) {
-		$datemonth = $month[date('m', $i)];
-		$dateweekday = $weekday[date('w', $i)];
-		$dateformatstring = ' '.$dateformatstring;
-		if (function_exists('mb_substr')) {
-			$dateformatstring = preg_replace("/([^\\\])D/", "\\1".backslashit(mb_substr($dateweekday, 0, $s_weekday_length)), $dateformatstring);
-		} else {
-			$dateformatstring = preg_replace("/([^\\\])D/", "\\1".backslashit(substr($dateweekday, 0, $s_weekday_length)), $dateformatstring);
-		}
-		$dateformatstring = preg_replace("/([^\\\])F/", "\\1".backslashit($datemonth), $dateformatstring);
-		$dateformatstring = preg_replace("/([^\\\])l/", "\\1".backslashit($dateweekday), $dateformatstring);
-		if (function_exists('mb_substr')) {
-			$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(mb_substr($datemonth, 0, $s_month_length)), $dateformatstring);
-		} else {
-			$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(substr($datemonth, 0, $s_month_length)), $dateformatstring);
-		}
-		$dateformatstring = substr($dateformatstring, 1, strlen($dateformatstring)-1);
-	}
-	$j = @date($dateformatstring, $i);
-	if (!$j) {
-	// for debug purposes
-	//	echo $i." ".$mysqlstring;
-	}
-	return $j;
-}
-
-function current_time($type) {
-	$time_difference = get_settings('time_difference');
-	switch ($type) {
-		case 'mysql':
-			return date('Y-m-d H:i:s', (time() + ($time_difference * 3600) ) );
-			break;
-		case 'timestamp':
-			return (time() + ($time_difference * 3600) );
-			break;
-	}
-}
-
-function addslashes_gpc($gpc) {
-	if (!get_magic_quotes_gpc()) {
-		$gpc = addslashes($gpc);
-	}
-	return $gpc;
-}
-
-function date_i18n($dateformatstring, $unixtimestamp) {
-	global $month, $weekday;
-	$i = $unixtimestamp;
-	if ((!empty($month)) && (!empty($weekday))) {
-		$datemonth = $month[date('m', $i)];
-		$dateweekday = $weekday[date('w', $i)];
-		$dateformatstring = ' '.$dateformatstring;
-		$dateformatstring = preg_replace("/([^\\\])D/", "\\1".backslashit(substr($dateweekday, 0, 3)), $dateformatstring);
-		$dateformatstring = preg_replace("/([^\\\])F/", "\\1".backslashit($datemonth), $dateformatstring);
-		$dateformatstring = preg_replace("/([^\\\])l/", "\\1".backslashit($dateweekday), $dateformatstring);
-		$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(substr($datemonth, 0, 3)), $dateformatstring);
-		$dateformatstring = substr($dateformatstring, 1, strlen($dateformatstring)-1);
-	}
-	$j = @date($dateformatstring, $i);
-	return $j;
-	}
-
-
-
-function get_weekstartend($mysqlstring, $start_of_week) {
-	$my = substr($mysqlstring,0,4);
-	$mm = substr($mysqlstring,8,2);
-	$md = substr($mysqlstring,5,2);
-	$day = mktime(0,0,0, $md, $mm, $my);
-	$weekday = date('w',$day);
-	$i = 86400;
-	while ($weekday > $start_of_week) {
-		$weekday = date('w',$day);
-		$day = $day - 86400;
-		$i = 0;
-	}
-	$week['start'] = $day + 86400 - $i;
-	$week['end']   = $day + 691199;
-	return $week;
-}
-
-function convert_chars($content,$flag='obsolete attribute left there for backwards compatibility') { // html/unicode entities output
-
-	global  $wp_htmltrans, $wp_htmltranswinuni;
-
-	// removes metadata tags
-	$content = preg_replace('/<title>(.+?)<\/title>/','',$content);
-	$content = preg_replace('/<category>(.+?)<\/category>/','',$content);
-
-	if (get_settings('use_htmltrans')) {
-
-		// converts lone & characters into &#38; (a.k.a. &amp;)
-		$content = preg_replace('/&[^#](?![a-z]*;)/ie', '"&#38;".substr("\0",1)', $content);
-
-		// converts HTML-entities to their display values in order to convert them again later
-		$content = preg_replace('/['.chr(127).'-'.chr(255).']/e', '"&#".ord(\'\0\').";"', $content );
-		$content = strtr($content, $wp_htmltrans);
-
-		// now converting: Windows CP1252 => Unicode (valid HTML)
-		// (if you've ever pasted text from MSWord, you'll understand)
-
-		$content = strtr($content, $wp_htmltranswinuni);
-
-	}
-
-	// you can delete these 2 lines if you don't like <br /> and <hr />
-	$content = str_replace("<br>","<br />",$content);
-	$content = str_replace("<hr>","<hr />",$content);
-
-	return $content;
-
-}
-
-function convert_bbcode($content) {
-	global $wp_bbcode;
-	if (get_settings('use_bbcode')) {
-		$content = preg_replace($wp_bbcode["in"], $wp_bbcode["out"], $content);
-	}
-	$content = convert_bbcode_email($content);
-	return $content;
-}
-
-function convert_bbcode_email($content) {
-	$bbcode_email["in"] = array(
-		'#\[email](.+?)\[/email]#eis',
-		'#\[email=(.+?)](.+?)\[/email]#eis'
-	);
-	$bbcode_email["out"] = array(
-		"'<a href=\"mailto:'.antispambot('\\1').'\">'.antispambot('\\1').'</a>'",		// E-mail
-		"'<a href=\"mailto:'.antispambot('\\1').'\">\\2</a>'"
-	);
-
-	$content = preg_replace($bbcode_email["in"], $bbcode_email["out"], $content);
-	return $content;
-}
-
-function convert_gmcode($content) {
-	global $wp_gmcode;
-	if (get_settings('use_gmcode')) {
-		$content = preg_replace($wp_gmcode["in"], $wp_gmcode["out"], $content);
-	}
-	return $content;
-}
-
-function convert_smilies($text) {
-	global $smilies_directory,$wp_id;
-	global $wp_smiliessearch, $wp_smiliesreplace;
-	if (get_settings('use_smilies')) {
-		// HTML loop taken from texturize function, could possible be consolidated
-		$textarr = preg_split("/(<.*>)/U", $text, -1, PREG_SPLIT_DELIM_CAPTURE); // capture the tags as well as in between
-		$stop = count($textarr);// loop stuff
-		$output = '';
-		for ($i = 0; $i < $stop; $i++) {
-			$content = $textarr[$i];
-			if ((strlen($content) > 0) && ('<' != $content{0})) { // If it's not a tag
-				$content = str_replace($wp_smiliessearch[$wp_id], $wp_smiliesreplace[$wp_id], $content);
-			}
-			$output .= $content;
-		}
-	} else {
-		// return default text.
-		$output = $text;
-	}
-	return $output;
-}
-
-function antispambot($emailaddy, $mailto=0) {
-	$emailNOSPAMaddy = '';
-	srand ((float) microtime() * 1000000);
-	for ($i = 0; $i < strlen($emailaddy); $i = $i + 1) {
-		$j = floor(rand(0, 1+$mailto));
-		if ($j==0) {
-			$emailNOSPAMaddy .= '&#'.ord(substr($emailaddy,$i,1)).';';
-		} elseif ($j==1) {
-			$emailNOSPAMaddy .= substr($emailaddy,$i,1);
-		} elseif ($j==2) {
-			$emailNOSPAMaddy .= '%'.zeroise(dechex(ord(substr($emailaddy, $i, 1))), 2);
-		}
-	}
-	$emailNOSPAMaddy = str_replace('@','&#64;',$emailNOSPAMaddy);
-	return $emailNOSPAMaddy;
-}
-
-function make_clickable($text) { // original function: phpBB, extended here for AIM & ICQ
-    $ret = " " . $text;
-    $ret = preg_replace("#([\n ])([a-z]+?)://([^, <>{}\n\r]+)#i", "\\1<a href=\"\\2://\\3\" target=\"_blank\">\\2://\\3</a>", $ret);
-    $ret = preg_replace("#([\n ])aim:([^,< \n\r]+)#i", "\\1<a href=\"aim:goim?screenname=\\2\\3&message=Hello\">\\2\\3</a>", $ret);
-    $ret = preg_replace("#([\n ])icq:([^,< \n\r]+)#i", "\\1<a href=\"http://wwp.icq.com/scripts/search.dll?to=\\2\\3\">\\2\\3</a>", $ret);
-    $ret = preg_replace("#([\n ])www\.([a-z0-9\-]+)\.([a-z0-9\-.\~]+)((?:/[^,< \n\r]*)?)#i", "\\1<a href=\"http://www.\\2.\\3\\4\" target=\"_blank\">www.\\2.\\3\\4</a>", $ret);
-    $ret = preg_replace("#([\n ])([a-z0-9\-_.]+?)@([^,< \n\r]+)#i", "\\1<a href=\"mailto:\\2@\\3\">\\2@\\3</a>", $ret);
-    $ret = substr($ret, 1);
-    return $ret;
-}
-
-
-function is_email($user_email) {
-	$chars = "/^([a-z0-9_]|\\-|\\.)+@(([a-z0-9_]|\\-)+\\.)+[a-z]{2,4}\$/i";
-	if(strstr($user_email, '@') && strstr($user_email, '.')) {
-		if (preg_match($chars, $user_email)) {
-			return true;
-		} else {
-			return false;
-		}
-	} else {
-		return false;
-	}
-}
-
-
-function strip_all_but_one_link($text, $mylink) {
-	$match_link = '#(<a.+?href.+?'.'>)(.+?)(</a>)#';
-	preg_match_all($match_link, $text, $matches);
-	$count = count($matches[0]);
-	for ($i=0; $i<$count; $i++) {
-		if (!strstr($matches[0][$i], $mylink)) {
-			$text = str_replace($matches[0][$i], $matches[2][$i], $text);
-		}
-	}
-	return $text;
-}
-
-
-/***** // Formatting functions *****/
 
 
 
 function get_lastpostdate() {
 	global  $cache_lastpostdate, $use_cache, $time_difference, $pagenow, $wpdb ,$wp_id;
-	if ((!isset($cache_lastpostdate)) OR (!$use_cache)) {
+	if ((!isset($cache_lastpostdate[$wp_id])) OR (!$use_cache)) {
 		$now = date("Y-m-d H:i:s",(time() + ($time_difference * 3600)));
 
 		$lastpostdate = $wpdb->get_var("SELECT post_date FROM {$wpdb->posts[$wp_id]} WHERE post_date <= '$now' AND post_status = 'publish' ORDER BY post_date DESC LIMIT 1");
-		$cache_lastpostdate = $lastpostdate;
+		$cache_lastpostdate[$wp_id] = $lastpostdate;
 	} else {
-		$lastpostdate = $cache_lastpostdate;
+		$lastpostdate = $cache_lastpostdate[$wp_id];
 	}
 	return $lastpostdate;
 }
@@ -402,10 +41,10 @@ function user_pass_ok($user_login,$user_pass) {
 }
 
 function get_currentuserinfo() { // a bit like get_userdata(), on steroids
-	global $HTTP_COOKIE_VARS, $user_login, $userdata, $user_level, $user_ID, $user_nickname, $user_email, $user_url, $user_pass_md5, $cookiehash, $xoopsUser;
+	global $user_login, $userdata, $user_level, $user_ID, $user_nickname, $user_email, $user_url, $user_pass_md5, $cookiehash, $xoopsUser;
 	// *** retrieving user's data from cookies and db - no spoofing
 /*
-	$user_login = $HTTP_COOKIE_VARS['wordpressuser_'.$cookiehash];
+	$user_login = $_COOKIE['wordpressuser_'.$cookiehash];
 	$userdata = get_userdatabylogin($user_login);
 	$user_level = $userdata->user_level;
 	$user_ID = $userdata->ID;
@@ -431,7 +70,7 @@ function get_currentuserinfo() { // a bit like get_userdata(), on steroids
 function get_userdata($userid) {
 	global $wpdb, $cache_userdata, $use_cache, $xoopsDB ,$wp_id;
 	$userid = intval($userid);
-	if ((empty($cache_userdata[$userid])) || (!$use_cache)) {
+	if ((empty($cache_userdata[$wp_id][$userid])) || (!$use_cache)) {
 		$user = $wpdb->get_row("SELECT * FROM {$wpdb->users[$wp_id]} WHERE ID = $userid");
 		$xuser = $wpdb->get_row("SELECT * FROM ".$xoopsDB->prefix('users')." WHERE uid=$userid");
         $user->user_nickname = stripslashes($user->user_nickname);
@@ -441,9 +80,9 @@ function get_userdata($userid) {
         $user->user_lastname = stripslashes($user->user_lastname);
 		$user->user_description = stripslashes($user->user_description);
 		$user->user_pass = $xuser->pass;
-		$cache_userdata[$userid] = $user;
+		$cache_userdata[$wp_id][$userid] = $user;
 	} else {
-		$user = $cache_userdata[$userid];
+		$user = $cache_userdata[$wp_id][$userid];
 	}
 	return $user;
 }
@@ -465,25 +104,25 @@ function get_userdata2($userid) { // for team-listing
 
 function get_userdatabylogin($user_login) {
 	global  $cache_userdata, $use_cache, $wpdb, $xoopsDB ,$wp_id;
-	if ((empty($cache_userdata["$user_login"])) OR (!$use_cache)) {
+	if ((empty($cache_userdata[$wp_id]["$user_login"])) OR (!$use_cache)) {
 		$user = $wpdb->get_row("SELECT * FROM {$wpdb->users[$wp_id]} WHERE user_login = '$user_login'");
 		$xuser = $wpdb->get_row("SELECT * FROM ".$xoopsDB->prefix('users')." WHERE uname='".trim($user_login)."'");
 		$user->user_pass = $xuser->pass;
-		$cache_userdata["$user_login"] = $user;
+		$cache_userdata[$wp_id]["$user_login"] = $user;
 	} else {
-		$user = $cache_userdata["$user_login"];
+		$user = $cache_userdata[$wp_id]["$user_login"];
 	}
 	return $user;
 }
 
 function get_userid($user_login) {
 	global  $cache_userdata, $use_cache, $wpdb ,$wp_id;
-	if ((empty($cache_userdata["$user_login"])) OR (!$use_cache)) {
+	if ((empty($cache_userdata[$wp_id]["$user_login"])) OR (!$use_cache)) {
 		$user_id = $wpdb->get_var("SELECT ID FROM {$wpdb->users[$wp_id]} WHERE user_login = '$user_login'");
 
-		$cache_userdata["$user_login"] = $user_id;
+		$cache_userdata[$wp_id]["$user_login"] = $user_id;
 	} else {
-		$user_id = $cache_userdata["$user_login"];
+		$user_id = $cache_userdata[$wp_id]["$user_login"];
 	}
 	return $user_id;
 }
@@ -598,15 +237,32 @@ function get_alloptions() {
 }
 
 function update_option($option_name, $newvalue) {
-	global $wpdb, $wp_id;
+	global $wpdb, $wp_id, $cache_settings;
 	// No validation at the moment
+	$newvalue = stripslashes($newvalue);
+	$newvalue = trim($newvalue); // I can't think of any situation we wouldn't want to trim
+	$newvalue = $wpdb->escape($newvalue);
 	$wpdb->query("UPDATE {$wpdb->options[$wp_id]} SET option_value = '$newvalue' WHERE option_name = '$option_name'");
+	$cache_settings[$wp_id] = get_alloptions(); // Re cache settings
 }
 
-function add_option() {
+function add_option($name, $value='') {
 	// Adds an option if it doesn't already exist
-	global $wpdb;
-	// TODO
+	global $wpdb, $wp_id;
+	if(!get_settings($name)) {
+		$name = $wpdb->escape($name);
+		$options = $wpdb->get_results("SELECT option_id FROM {$wpdb->options[$wp_id]} WHERE option_name = '$name'");
+		if (count($options) == 0) {
+			$value = $wpdb->escape($value);
+			$wpdb->query("INSERT INTO {$wpdb->options[$wp_id]} (option_name, option_value) VALUES ('$name', '$value')");
+
+			if($wpdb->insert_id) {
+				global $cache_settings;
+				$cache_settings[$wp_id]->{$name} = $value;
+			}
+		}
+	}
+	return;
 }
 
 function get_postdata($postid) {
@@ -687,13 +343,13 @@ function get_commentdata($comment_ID,$no_cache=0,$include_unapproved=false) { //
 
 function get_catname($cat_ID) {
 	global $cache_catnames,$use_cache, $wpdb ,$wp_id;
-	if ((!$cache_catnames) || (!$use_cache)) {
+	if ((!$cache_catnames[$wp_id]) || (!$use_cache)) {
         $results = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]}") or die('Oops, couldn\'t query the db for categories.');
 		foreach ($results as $post) {
-			$cache_catnames[$post->cat_ID] = $post->cat_name;
+			$cache_catnames[$wp_id][$post->cat_ID] = $post->cat_name;
 		}
 	}
-	$cat_name = $cache_catnames[$cat_ID];
+	$cat_name = $cache_catnames[$wp_id][$cat_ID];
 	return $cat_name;
 }
 
@@ -1274,120 +930,6 @@ function sanitise_html_attributes($text) {
     return $text;
 }
 
-/*
- balanceTags
-
- Balances Tags of string using a modified stack.
-
- @param text      Text to be balanced
- @return          Returns balanced text
- @author          Leonard Lin (leonard@acm.org)
- @version         v1.1
- @date            November 4, 2001
- @license         GPL v2.0
- @notes
- @changelog
-             1.2  ***TODO*** Make better - change loop condition to $text
-             1.1  Fixed handling of append/stack pop order of end text
-                  Added Cleaning Hooks
-             1.0  First Version
-*/
-function balanceTags($text, $is_comment = 0) {
-	if (get_settings('use_balanceTags') == 0) {
-		return $text;
-	}
-
-	$tagstack = array();
-	$stacksize = 0;
-	$tagqueue = '';
-	$newtext = '';
-
-	# b2 bug fix for comments - in case you REALLY meant to type '< !--'
-	$text = str_replace('< !--', '<    !--', $text);
-
-	# b2 bug fix for LOVE <3 (and other situations with '<' before a number)
-	$text = preg_replace('#<([0-9]{1})#', '&lt;$1', $text);
-
-
-	while (preg_match("/<(\/?\w*)\s*([^>]*)>/",$text,$regex)) {
-		$newtext = $newtext . $tagqueue;
-
-		$i = strpos($text,$regex[0]);
-		$l = strlen($tagqueue) + strlen($regex[0]);
-
-		// clear the shifter
-		$tagqueue = '';
-
-		// Pop or Push
-		if ($regex[1][0] == "/") { // End Tag
-			$tag = strtolower(substr($regex[1],1));
-
-			// if too many closing tags
-			if($stacksize <= 0) {
-				$tag = '';
-				//or close to be safe $tag = '/' . $tag;
-			}
-			// if stacktop value = tag close value then pop
-			else if ($tagstack[$stacksize - 1] == $tag) { // found closing tag
-				$tag = '</' . $tag . '>'; // Close Tag
-				// Pop
-				array_pop ($tagstack);
-				$stacksize--;
-			} else { // closing tag not at top, search for it
-				for ($j=$stacksize-1;$j>=0;$j--) {
-					if ($tagstack[$j] == $tag) {
-					// add tag to tagqueue
-						for ($k=$stacksize-1;$k>=$j;$k--){
-							$tagqueue .= '</' . array_pop ($tagstack) . '>';
-							$stacksize--;
-						}
-						break;
-					}
-				}
-				$tag = '';
-			}
-		} else { // Begin Tag
-			$tag = strtolower($regex[1]);
-
-			// Tag Cleaning
-
-			// Push if not img or br or hr
-			if($tag != 'br' && $tag != 'img' && $tag != 'hr') {
-				$stacksize = array_push ($tagstack, $tag);
-			}
-
-			// Attributes
-			// $attributes = $regex[2];
-			$attributes = $regex[2];
-			if($attributes) {
-				$attributes = ' '.$attributes;
-			}
-
-			$tag = '<'.$tag.$attributes.'>';
-		}
-
-		$newtext .= substr($text,0,$i) . $tag;
-		$text = substr($text,$i+$l);
-	}
-
-	// Clear Tag Queue
-	$newtext = $newtext . $tagqueue;
-
-	// Add Remaining text
-	$newtext .= $text;
-
-	// Empty Stack
-	while($x = array_pop($tagstack)) {
-		$newtext = $newtext . '</' . $x . '>'; // Add remaining tags to close
-	}
-
-	# b2 fix for the bug with HTML comments
-	$newtext = str_replace("< !--","<!--",$newtext);
-	$newtext = str_replace("<    !--","< !--",$newtext);
-
-	return $newtext;
-}
-
 function doGeoUrlHeader($posts) {
     if (count($posts) == 1) {
         // there's only one result  see if it has a geo code
@@ -1633,20 +1175,19 @@ if (!function_exists('in_array')) {
 function start_wp() {
 	global $post, $id, $postdata, $authordata, $day, $preview, $page, $pages, $multipage, $more, $numpages;
 	global $preview_userid,$preview_date,$preview_content,$preview_title,$preview_category,$preview_notify,$preview_make_clickable,$preview_autobr;
-	global $pagenow;
-	global $HTTP_GET_VARS;
+	global $pagenow,$wp_id;
 	if (!$preview) {
 		$id = $post->ID;
 	} else {
 		$id = 0;
 		$postdata = array (
 			'ID' => 0,
-			'Author_ID' => $HTTP_GET_VARS['preview_userid'],
-			'Date' => $HTTP_GET_VARS['preview_date'],
-			'Content' => $HTTP_GET_VARS['preview_content'],
-			'Excerpt' => $HTTP_GET_VARS['preview_excerpt'],
-			'Title' => $HTTP_GET_VARS['preview_title'],
-			'Category' => $HTTP_GET_VARS['preview_category'],
+			'Author_ID' => $_GET['preview_userid'],
+			'Date' => $_GET['preview_date'],
+			'Content' => $_GET['preview_content'],
+			'Excerpt' => $_GET['preview_excerpt'],
+			'Title' => $_GET['preview_title'],
+			'Category' => $_GET['preview_category'],
 			'Notify' => 1
 			);
 	}
@@ -1684,165 +1225,70 @@ function is_new_day() {
 		return(0);
 	}
 }
+// Filters: these are the core of WP's plugin architecture
 
 function apply_filters($tag, $string) {
-	global $wp_filter;
-	if (isset($wp_filter['all'])) {
-		$wp_filter['all'] = (is_string($wp_filter['all'])) ? array($wp_filter['all']) : $wp_filter['all'];
-        if (isset($wp_filter[$tag]))
-            $wp_filter[$tag] = array_merge($wp_filter['all'], $wp_filter[$tag]);
-        else
-            $wp_filter[$tag] = array_merge($wp_filter['all'], array());
-		$wp_filter[$tag] = array_unique($wp_filter[$tag]);
+	global $wp_filter, $wp_id;;
+	if (isset($wp_filter[$wp_id]['all'])) {
+		foreach ($wp_filter[$wp_id]['all'] as $priority => $functions) {
+			if (isset($wp_filter[$wp_id][$tag][$priority]))
+				$wp_filter[$wp_id][$tag][$priority] = array_merge($wp_filter[$wp_id]['all'][$priority], $wp_filter[$wp_id][$tag][$priority]);
+			else
+				$wp_filter[$wp_id][$tag][$priority] = array_merge($wp_filter[$wp_id]['all'][$priority], array());
+			$wp_filter[$wp_id][$tag][$priority] = array_unique($wp_filter[$wp_id][$tag][$priority]);
+		}
+
 	}
-	if (isset($wp_filter[$tag])) {
-		$wp_filter[$tag] = (is_string($wp_filter[$tag])) ? array($wp_filter[$tag]) : $wp_filter[$tag];
-		$functions = $wp_filter[$tag];
-		foreach($functions as $function) {
-            //error_log("apply_filters #1 applying filter $function");
-			$string = $function($string);
+	
+	if (isset($wp_filter[$wp_id][$tag])) {
+		ksort($wp_filter[$wp_id][$tag]);
+		foreach ($wp_filter[$wp_id][$tag] as $priority => $functions) {
+			foreach($functions as $function) {
+					$string = $function($string);
+			}
 		}
 	}
 	return $string;
 }
 
-function add_filter($tag, $function_to_add) {
-	global $wp_filter;
-	if (isset($wp_filter[$tag])) {
-		$functions = $wp_filter[$tag];
-		if (is_array($functions)) {
-			foreach($functions as $function) {
-				$new_functions[] = $function;
-			}
-		} elseif (is_string($functions)) {
-			$new_functions[] = $functions;
-		}
-/* this is commented out because it just makes PHP die silently
-   for no apparent reason
-		if (is_array($function_to_add)) {
-			foreach($function_to_add as $function) {
-				if (!in_array($function, $wp_filter[$tag])) {
-					$new_functions[] = $function;
-				}
-			}
-		} else */if (is_string($function_to_add)) {
-			if (!@in_array($function_to_add, $wp_filter[$tag])) {
-				$new_functions[] = $function_to_add;
-			}
-		}
-		$wp_filter[$tag] = $new_functions;
-	} else {
-		$wp_filter[$tag] = array($function_to_add);
+function add_filter($tag, $function_to_add, $priority = 10) {
+	global $wp_filter, $wp_id;
+	// So the format is wp_filter[$wp_id]['tag']['array of priorities']['array of functions']
+	if (!@in_array($function_to_add, $wp_filter[$wp_id][$tag]["$priority"])) {
+		$wp_filter[$wp_id][$tag]["$priority"][] = $function_to_add;
 	}
 	return true;
 }
 
-/* Highlighting code c/o Ryan Boren */
-function get_search_query_terms($engine = 'google') {
-    global $s, $s_array;
-	$referer = urldecode($_SERVER[HTTP_REFERER]);
-	$query_array = array();
-	switch ($engine) {
-	case 'google':
-		// Google query parsing code adapted from Dean Allen's
-		// Google Hilite 0.3. http://textism.com
-		$query_terms = preg_replace('/^.*q=([^&]+)&?.*$/i','$1', $referer);
-		$query_terms = preg_replace('/\'|"/', '', $query_terms);
-		$query_array = preg_split ("/[\s,\+\.]+/", $query_terms);
-		break;
-
-	case 'lycos':
-		$query_terms = preg_replace('/^.*query=([^&]+)&?.*$/i','$1', $referer);
-		$query_terms = preg_replace('/\'|"/', '', $query_terms);
-		$query_array = preg_split ("/[\s,\+\.]+/", $query_terms);
-		break;
-
-	case 'yahoo':
-		$query_terms = preg_replace('/^.*p=([^&]+)&?.*$/i','$1', $referer);
-		$query_terms = preg_replace('/\'|"/', '', $query_terms);
-		$query_array = preg_split ("/[\s,\+\.]+/", $query_terms);
-		break;
-
-    case 'wordpress':
-        // Check the search form vars if the search terms
-        // aren't in the referer.
-        if ( ! preg_match('/^.*s=/i', $referer)) {
-            if (isset($s_array)) {
-                $query_array = $s_array;
-            } else if (isset($s)) {
-                $query_array = array($s);
-            }
-
-            break;
-        }
-
-		$query_terms = preg_replace('/^.*s=([^&]+)&?.*$/i','$1', $referer);
-		$query_terms = preg_replace('/\'|"/', '', $query_terms);
-		$query_array = preg_split ("/[\s,\+\.]+/", $query_terms);
-        break;
-	}
-
-	return $query_array;
-}
-
-function is_referer_search_engine($engine = 'google') {
-    global $siteurl;
-
-	$referer = urldecode($_SERVER[HTTP_REFERER]);
-    // echo "referer is: $referer<br />";
-	if ( ! $engine ) {
-		return 0;
-	}
-
-	switch ($engine) {
-	case 'google':
-		if (preg_match('/^http:\/\/w?w?w?\.?google.*/i', $referer)) {
-			return 1;
-		}
-		break;
-
-    case 'lycos':
-		if (preg_match('/^http:\/\/search\.lycos.*/i', $referer)) {
-			return 1;
-		}
-        break;
-
-    case 'yahoo':
-		if (preg_match('/^http:\/\/search\.yahoo.*/i', $referer)) {
-			return 1;
-		}
-        break;
-
-    case 'wordpress':
-        if (preg_match("#^$siteurl#i", $referer)) {
-            return 1;
-        }
-        break;
-	}
-
-	return 0;
-}
-
-function hilite($text) {
-	$search_engines = array('wordpress', 'google', 'lycos', 'yahoo');
-
-	foreach ($search_engines as $engine) {
-		if ( is_referer_search_engine($engine)) {
-			$query_terms = get_search_query_terms($engine);
-			foreach ($query_terms as $term) {
-				if (!empty($term) && $term != ' ') {
-					if (!preg_match('/<.+>/',$text)) {
-						$text = preg_replace('/(\b'.$term.'\b)/i','<span class="hilite">$1</span>',$text);
-					} else {
-						$text = preg_replace('/(?<=>)([^<]+)?(\b'.$term.'\b)/i','$1<span class="hilite">$2</span>',$text);
-					}
-				}
+function remove_filter($tag, $function_to_remove, $priority = 10) {
+	global $wp_filter, $wp_id;;
+	if (@in_array($function_to_remove, $wp_filter[$wp_id][$tag]["$priority"])) {
+		foreach ($wp_filter[$wp_id][$tag]["$priority"] as $function) {
+			if ($function_to_remove != $function) {
+				$new_function_list[] = $function;
 			}
-			break;
 		}
+		$wp_filter[$wp_id][$tag]["$priority"] = $new_function_list;
 	}
+	//die(var_dump($wp_filter));
+	return true;
+}
+// The *_action functions are just aliases for the *_filter functions, they take special strings instead of generic content
 
-	return $text;
+function do_action($tag, $string) {
+	return apply_filters($tag, $string);
+}
+
+function add_action($tag, $function_to_add, $priority = 10) {
+	add_filter($tag, $function_to_add, $priority);
+}
+
+function remove_action($tag, $function_to_remove, $priority = 10) {
+	remove_filter($tag, $function_to_remove, $priority);
+}
+
+function wp_head() {
+	do_action('wp_head', '');
 }
 
 function mb_conv($str,$to,$from)
@@ -1853,6 +1299,203 @@ function mb_conv($str,$to,$from)
 		$retstr = $str;
 	}
 	return $retstr;
+}
+/* rewrite_rules
+ * Construct rewrite matches and queries from permalink structure.
+ * matches - The name of the match array to use in the query strings.
+ *           If empty, $1, $2, $3, etc. are used.
+ * Returns an associate array of matches and queries.
+ */
+function rewrite_rules($matches = '', $permalink_structure = '') {
+
+    function preg_index($number, $matches = '') {
+        $match_prefix = '$';
+        $match_suffix = '';
+        
+        if (! empty($matches)) {
+            $match_prefix = '$' . $matches . '['; 
+                                               $match_suffix = ']';
+        }        
+        
+        return "$match_prefix$number$match_suffix";        
+    }
+    
+    $rewrite = array();
+
+    if (empty($permalink_structure)) {
+        $permalink_structure = get_settings('permalink_structure');
+        
+        if (empty($permalink_structure)) {
+            return $rewrite;
+        }
+    }
+
+    $rewritecode = 
+	array(
+	'%year%',
+	'%monthnum%',
+	'%day%',
+	'%hour%',
+	'%minute%',
+	'%second%',
+	'%postname%',
+	'%post_id%'
+	);
+
+    $rewritereplace = 
+	array(
+	'([0-9]{4})?',
+	'([0-9]{1,2})?',
+	'([0-9]{1,2})?',
+	'([0-9]{1,2})?',
+	'([0-9]{1,2})?',
+	'([0-9]{1,2})?',
+	'([_0-9a-z-]+)?',
+	'([0-9]+)?'
+	);
+
+    $queryreplace = 
+	array (
+	'year=',
+	'monthnum=',
+	'day=',
+	'hour=',
+	'minute=',
+	'second=',
+	'name=',
+	'p='
+	);
+
+
+    $match = str_replace('/', '/?', $permalink_structure);
+    $match = preg_replace('|/[?]|', '', $match, 1);
+
+    $match = str_replace($rewritecode, $rewritereplace, $match);
+    $match = preg_replace('|[?]|', '', $match, 1);
+
+    $feedmatch = trailingslashit(str_replace('?/?', '/', $match));
+    $trackbackmatch = $feedmatch;
+
+    preg_match_all('/%.+?%/', $permalink_structure, $tokens);
+
+    $query = 'index.php?';
+    $feedquery = 'wp-feed.php?';
+    $trackbackquery = 'wp-trackback.php?';
+    for ($i = 0; $i < count($tokens[0]); ++$i) {
+             if (0 < $i) {
+                 $query .= '&';
+                 $feedquery .= '&';
+                 $trackbackquery .= '&';
+             }
+             
+             $query_token = str_replace($rewritecode, $queryreplace, $tokens[0][$i]) . preg_index($i+1, $matches);
+             $query .= $query_token;
+             $feedquery .= $query_token;
+             $trackbackquery .= $query_token;
+             }
+    ++$i;
+
+    // Add post paged stuff
+    $match .= '([0-9]+)?/?$';
+    $query .= '&page=' . preg_index($i, $matches);
+
+    // Add post feed stuff
+    $feedregex = '(feed|rdf|rss|rss2|atom)/?$';
+    $feedmatch .= $feedregex;
+    $feedquery .= '&feed=' . preg_index($i, $matches);
+
+    // Add post trackback stuff
+    $trackbackregex = 'trackback/?$';
+    $trackbackmatch .= $trackbackregex;
+
+    // Site feed
+    $sitefeedmatch = 'feed/?([_0-9a-z-]+)?/?$';
+    $sitefeedquery = 'wp-feed.php?feed=' . preg_index(1, $matches);
+
+    // Site comment feed
+    $sitecommentfeedmatch = 'comments/feed/?([_0-9a-z-]+)?/?$';
+    $sitecommentfeedquery = 'wp-feed.php?feed=' . preg_index(1, $matches) . '&withcomments=1';
+
+    // Code for nice categories and authors, currently not very flexible
+    $front = substr($permalink_structure, 0, strpos($permalink_structure, '%'));
+	if ( '' == get_settings('category_base') )
+		$catmatch = $front . 'category/';
+	else
+	    $catmatch = get_settings('category_base') . '/';
+    $catmatch = preg_replace('|^/+|', '', $catmatch);
+    
+    $catfeedmatch = $catmatch . '(.*)/' . $feedregex;
+    $catfeedquery = 'wp-feed.php?category_name=' . preg_index(1, $matches) . '&feed=' . preg_index(2, $matches);
+
+    $catmatch = $catmatch . '?(.*)';
+    $catquery = 'index.php?category_name=' . preg_index(1, $matches);
+
+    $authormatch = $front . 'author/';
+    $authormatch = preg_replace('|^/+|', '', $authormatch);
+
+    $authorfeedmatch = $authormatch . '(.*)/' . $feedregex;
+    $authorfeedquery = 'wp-feed.php?author_name=' . preg_index(1, $matches) . '&feed=' . preg_index(2, $matches);
+
+    $authormatch = $authormatch . '?(.*)';
+    $authorquery = 'index.php?author_name=' . preg_index(1, $matches);
+
+    $rewrite = array(
+                     $catfeedmatch => $catfeedquery,
+                     $catmatch => $catquery,
+                     $authorfeedmatch => $authorfeedquery,
+                     $authormatch => $authorquery,
+                     $match => $query,
+                     $feedmatch => $feedquery,
+                     $trackbackmatch => $trackbackquery,
+                     $sitefeedmatch => $sitefeedquery,
+                     $sitecommentfeedmatch => $sitecommentfeedquery
+                     );
+
+    return $rewrite;
+}
+
+function get_posts($args) {
+	global $wpdb, $tableposts;
+	parse_str($args, $r);
+	if (!isset($r['numberposts'])) $r['numberposts'] = 5;
+	if (!isset($r['offset'])) $r['offset'] = 0;
+	// The following not implemented yet
+	if (!isset($r['category'])) $r['category'] = '';
+	if (!isset($r['orderby'])) $r['orderby'] = '';
+	if (!isset($r['order'])) $r['order'] = '';
+
+	$now = current_time('mysql');
+
+	$posts = $wpdb->get_results("SELECT DISTINCT * FROM $tableposts WHERE post_date <= '$now' AND (post_status = 'publish') GROUP BY $tableposts.ID ORDER BY post_date DESC LIMIT " . $r['offset'] . ',' . $r['numberposts']);
+	
+	return $posts;
+}
+
+function check_comment($author, $email, $url, $comment, $user_ip) {
+	if (1 == get_settings('comment_moderation')) return false; // If moderation is set to manual
+
+	if ( (count(explode('http:', $comment)) - 1) >= get_settings('comment_max_links') )
+		return false; // Check # of external links
+
+	if ('' == trim( get_settings('moderation_keys') ) ) return true; // If moderation keys are empty
+	$words = explode("\n", get_settings('moderation_keys') );
+	foreach ($words as $word) {
+	$word = trim($word);
+	$pattern = "#$word#i";
+		if ( preg_match($pattern, $author) ) return false;
+		if ( preg_match($pattern, $email) ) return false;
+		if ( preg_match($pattern, $url) ) return false;
+		if ( preg_match($pattern, $comment) ) return false;
+		if ( preg_match($pattern, $user_ip) ) return false;
+	}
+
+	return true;
+}
+
+// Check for hacks file if the option is enabled
+if (get_settings('hack_file')) {
+	if (file_exists(ABSPATH . '/my-hacks.php'))
+		require(ABSPATH . '/my-hacks.php');
 }
 
 function get_xoops_option($dirname,$conf_name) {
@@ -1895,6 +1538,7 @@ global $xoopsConfig;
 	} else {
 		$themes = "default";
 	}
+	$wp_block_style="";
 	include_once(XOOPS_ROOT_PATH."/modules/wordpress". $wp_num ."/themes/".$themes."/wp-blocks.css.php");
 	if ($echo) {
 		if (trim($wp_block_style) != "") {
@@ -1910,9 +1554,8 @@ EOD;
 }
 
 function wp_refcheck($offset = "", $redirect = true) {
-global $siteurl;
-global $HTTP_SERVER_VARS, $HTTP_ENV_VARS;
-	$ref = isset($HTTP_SERVER_VARS['HTTP_REFERER']) ? $HTTP_SERVER_VARS['HTTP_REFERER'] : $HTTP_ENV_VARS['HTTP_REFERER'];
+    global $siteurl;
+	$ref = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : $_ENV['HTTP_REFERER'];
 	if ($ref == '') {
 		if ($redirect) {
 			if (defined('XOOPS_URL')) { //XOOPS Module mode
@@ -1950,10 +1593,26 @@ function wp_get_rss_charset() {
 	return $rss_charset;
 }
 
-// Check for hacks file if the option is enabled
-if (get_settings('hack_file')) {
-	if (file_exists(ABSPATH . '/my-hacks.php'))
-		require(ABSPATH . '/my-hacks.php');
+function wp_convert_rss_charset($srcstr) {
+  global $blog_charset;
+	$rss_charset = wp_get_rss_charset();
+	if ($blog_charset != $rss_charset) {
+		return mb_convert_encoding($srcstr,  $rss_charset, $blog_charset);
+	} else {
+		return $srcstr;
+	}
+}
+function trailingslashit($string) {
+    if ( '/' != substr($string, -1)) {
+        $string .= '/';
+    }
+    return $string;
 }
 
+function get_version() {
+	$old_stat=error_reporting(0);
+	include (dirname(dirname(__FILE__))."/xoops_version.php");
+	error_reporting($old_stat);
+	return $modversion['version'];
+}
 ?>

@@ -347,19 +347,32 @@ define('_LANG_WOP_SUBMIT_TEXT','設定の保存');
 define('_LANG_WOP_SETTING_SAVED',' 件のセッティングを変更しました');
 
 /* File Name wp-admin/options-permalink.php */
+define('_LANG_WPL_EDIT_UPDATED','パーマリンク構造を更新しました。');
 define('_LANG_WPL_EDIT_STRUCT','Edit Permalink Structure');
 define('_LANG_WPL_CREATE_CUSTOM','WordPressではパーマネントリンク及びアーカイブの為のカスタムURIを作成することが出来ます。<br />利用できるタグは以下の通りです。');
-define('_LANG_WPL_CODE_YEAR','年号を表示するには、「2004」のように4桁の数字を記入します。');
-define('_LANG_WPL_CODE_MONTH','月を表示するには、「05」のように2桁の数字を記入します。');
-define('_LANG_WPL_CODE_DAY','日を表示するには、「28」のように2桁の数字を記入します。');
+define('_LANG_WPL_CODE_YEAR','年号を表示するには、「<code>2004</code>」のように4桁の数字を記入します。');
+define('_LANG_WPL_CODE_MONTH','月を表示するには、「<code>05</code>」のように2桁の数字を記入します。');
+define('_LANG_WPL_CODE_DAY','日を表示するには、「<code>28</code>」のように2桁の数字を記入します。');
+define('_LANG_WPL_CODE_HOUR','時を表示するには、「<code>15</code>」のように2桁の数字を記入します。');
+define('_LANG_WPL_CODE_MINUTE','分を表示するには、「<code>43</code>」のように2桁の数字を記入します。');
+define('_LANG_WPL_CODE_SECOND','秒を表示するには、「<code>33</code>」のように2桁の数字を記入します。');
 define('_LANG_WPL_CODE_POSTNAME','ポスト名を「this-is-a-great-post」のようにすれば、「This Is A Great Post!」 とサニタイズされます。');
 define('_LANG_WPL_CODE_POSTID','投稿を区別するためのユニークID');
-define('_LANG_WPL_USE_EXAMPLE','例えば、<code>/archives/%year%/%monthnum%/%day%/%postname%/</code> のように書けば、<code>/archives/2003/05/23/my-cheese-sandwich/</code> にリンクすることになります。 この機能は、サーバーにインストールされたmod_rewriteを利用するものです。 今後、他のオプションに変更するかもしれません。');
-define('_LANG_WPL_USE_TEMPTEXT','上記の見本を参考にしてタグを作成してください。');
-define('_LANG_WPL_BEFORE_HTACCESS',' ');
-define('_LANG_WPL_AFTER_HTACCESS',' というパーマネントリンクを使用するには、.htaccessに以下の記述が必要です。');
-define('_LANG_WPL_MOD_REWRITE','現在カスタマイズされたパーマネントリンクを使用していません。特別なmod_rewriteルールは必要ではありません。');
-define('_LANG_WPL_SUBMIT_UPDATE','アップデート');
+define('_LANG_WPL_USE_EXAMPLE','<p>例として</p>
+<p><code>/archives/%year%/%monthnum%/%day%/%postname%/</code></p>
+<p>のように書けば、パーマリンクは次のようになります</p>
+<p><code>/archives/2003/05/23/my-cheese-sandwich/</code></p>
+<p>通常この機能はサーバーにインストールされた mod_rewrite を利用しなくてはなりませんが、以下のようにファイル名を一番前に入れると WordPress はそのファイル名を使用して引数を渡そうと試みます。</p>
+<p><code>/index.php/archives/%year%/%monthnum%/%day%/%postname%/</code> </p>
+<p>この機能を利用すれば mod_rewrite のルールを無視することができます。</p>
+');
+define('_LANG_WPL_USE_TEMPTEXT','では、上記の見本を参考にしてタグを作成してください。');
+define('_LANG_WPL_USE_BLANK','カテゴリー URI 用のカスタム接頭語を登録することが出来ます。例えば、<code>/taxonomy/categorias</code> と入力すると <code>http://example.org/taxonomy/categorias/general/</code> のようなカテゴリーリンクが作成されます。このフィールドが空の場合はデフォルトの設定が使用されます。');
+define('_LANG_WPL_USE_HTACCESS','現在のパーマリンク構造の値、<code>%s</code>、を使用するには、<code>.htaccess</code> に以下の mod_rewrite ルールの記述が必要です。フィールドをクリックし、<kbd>CTRL + a</kbd> キーですべてを選択します。');
+define('_LANG_WPL_ENGINE_ON','RewriteEngine On RewriteBase');
+define('_LANG_WPL_EDIT_TEMPLATE','<p>WordPress による <code>.htaccess</code> への書き込みが可能な状態であれば、<a href=\"%s\">テンプレートインターフェイスを通じて編集</a>することができます。</p>');
+define('_LANG_WPL_MOD_REWRITE','現在カスタマイズされたパーマリンクを使用していません。特に mod_rewrite ルールは必要ではありません。');
+define('_LANG_WPL_SUBMIT_UPDATE','パーマリンク構造を更新 &raquo;');
 
 /* File Name wp-admin/profile.php */
 define('_LANG_WPF_ERR_NICKNAME','<strong>ERROR</strong>: ニックネームを入力してください (ログイン名と同じで構いません)');
@@ -682,5 +695,27 @@ define('_LANG_INST_BASE_VALUE91','ファイル出力時にgzipを有効にするかどうかを選択
 define('_LANG_INST_BASE_VALUE92','Hackファイルを使用する場合はここを[true]にしてください。 HackファイルはWordPressのルート上に置いて、my-hacks.phpのように呼び出します。 これはアップグレード時に上書きされないようにするためのものです。');
 define('_LANG_INST_BASE_VALUE93','Blogのキャラクターセット (<a href="http://developer.apple.com/documentation/macos8/TextIntlSvcs/TextEncodingConversionManager/TEC1.5/TEC.b0.html">文字コードリスト</a>');
 define('_LANG_INST_BASE_VALUE94','グリニッジ標準時(GMT)からの時差');
+
+/* File Name wp-admin/plugins.php */
+define('_LANG_PG_LEAST_LEVEL','プラグインの設定にはユーザーレベル8以上が必要です。');
+define('_LANG_PG_ACTIVATED_OK','プラグイン機能 <strong>有効</strong>');
+define('_LANG_PG_DEACTIVATED_OK','プラグイン機能 <strong>無効</strong>');
+define('_LANG_PG_PAGE_TITLE','Plugin Management');
+define('_LANG_PG_NEED_PUT','プラグインとは、通常 WordPress とは別途にダウンロードする "機能を追加する" ためのファイルです。プラグインをインストールするには、<code>wp-content/plugins</code> ディレクトリーにプラグインファイルを入れるだけです。一旦プラグインがインストールされれば、このページでそのプラグインを有効化させたり無効化させたりすることができます。');
+define('_LANG_PG_OPEN_ERROR','plugins ディレクトリーを開くことができないか、利用可能なプラグインが存在しません。');
+define('_LANG_PG_SUB_PLUGIN','プラグイン');
+define('_LANG_PG_SUB_VERSION','バージョン');
+define('_LANG_PG_SUB_AUTHOR','作者');
+define('_LANG_PG_SUB_DESCR','概要');
+define('_LANG_PG_SUB_ACTION','アクション');
+define('_LANG_PG_SUB_DEACTIVATE','無効');
+define('_LANG_PG_SUB_ACTIVATE','有効');
+define('_LANG_PG_GOOGLE_HILITE','Google、Yahoo 等の検索エンジン、あるいは WordPress 自身でブログを検索した時に、このプラグインによって検索語句がハイライトされます。<a href="http://photomatt.net/">Matt</a> によるパッケージング。');
+define('_LANG_PG_MARK_DOWN','Markdown はウェブで書き物をする人のための、テキストから HTML への変換ツールです。<a href="http://daringfireball.net/projects/markdown/syntax">Markdown syntax</a> によって、読みやすく書きやすいプレインテキスト・フォーマットを使用して書くことができ、そしてそれを構造的に適合した XHTML に変換します。このプラグインは投稿とコメントに対して Markdown を有効にします。Markdown は <a href="http://daringfireball.net/">John Gruber</a> によって Perl で作成され、<a href="http://www.michelf.com/">Michel Fortin</a> によって PHP に移植され、<a href="http://photomatt.net/">Matt</a> によって WP のプラグインが作られました。このプラグインを使用する場合は、コンフリクトが起こるので Textile 1 と 2 を無効にしてください。');
+define('_LANG_PG_TEXTILE_2','これは Textile として知られる <a href="http://textism.com/?wp">Dean Allen</a> の Humane Web Text Generator の単純なラッパーです。このバージョン２では、ほとんど HTML メタ言語となるくらいの多くの柔軟性が加わりました。その代償として遅くなっています。このプラグインを使用する場合は、一緒にはうまく作動しないので Textile 1 と Markdown を無効にしてください。');
+define('_LANG_PG_HELLO_DOLLY','これはただのプラグインではありません。Louis Armstrong によって歌われた最も有名な二つの単語に要約される、同一世代のすべての人々の希望と情熱を象徴するものです。ところで、これは世界で最初の WordPress 公式プラグインです。このプラグインが有効にされると、プラグイン管理画面以外の Admin 画面の右上に "Hello, Dolly" からの歌詞がランダムに表示されます。');
+define('_LANG_PG_TEXTILE_1','これは <a href="http://www.textism.com/tools/textile/">Textile</a> として知られる <a href="http://textism.com/?wp">Dean Allen</a> の Humane Web Text Generator の単純なラッパーです。このプラグインを使用する場合は、一緒にはうまく作動しないので Textile 2 と Markdown を無効にしてください。');
+
+
 }
 ?>

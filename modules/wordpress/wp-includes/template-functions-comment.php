@@ -16,8 +16,6 @@ add_filter('comment_text', 'wpautop', 30);
 add_filter('comment_text', 'balanceTags');
 add_filter('comment_text', 'convert_smilies', 20);
 
-add_filter('comment_text', 'convert_bbcode');
-add_filter('comment_text', 'convert_gmcode');
 add_filter('comment_excerpt', 'convert_chars');
 
 function clean_url($url) {

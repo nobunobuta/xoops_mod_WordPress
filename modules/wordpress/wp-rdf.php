@@ -4,7 +4,7 @@ $doing_rss = 1;
 header("Content-type: application/xml");
 include_once (dirname(__FILE__)."/../../mainfile.php");
 error_reporting(E_ERROR);
-if ($HTTP_GET_VARS['num']) $showposts = $HTTP_GET_VARS['num'];
+if ($_GET['num']) $showposts = $_GET['num'];
 require('wp-blog-header.php');
 if (isset($showposts) && $showposts) {
     $showposts = (int)$showposts;
@@ -55,7 +55,7 @@ $rss_charset = wp_get_rss_charset();
 	<title><?php the_title_rss() ?></title>
 	<link><?php permalink_single_rss() ?></link>
 	<dc:date><?php the_time('Y-m-d\TH:i:s'); ?></dc:date>
-	<dc:creator><?php the_author_rss() ?> (mailto:<?php the_author_email() ?>)</dc:creator>
+	<dc:creator><?php the_author_rss() ?> &lt;<?php the_author_email() ?>&gt;</dc:creator>
 	<?php the_category_rss('rdf') ?>
 <?php $more = 1; if (get_settings('rss_use_excerpt')) {
 ?>

@@ -520,7 +520,7 @@ function get_links_list($order = 'name', $hide_if_empty = 'obsolete') {
 	global   $wpdb ,$wp_id;
 
 	$order = strtolower($order);
-
+	$direction = '';
 	// Handle link category sorting
 	if (substr($order,0,1) == '_') {
 		$direction = ' DESC';

@@ -121,7 +121,7 @@ if (!get_settings('use_fileupload')) //Checks if file upload is enabled in the c
 
 $allowed_types = explode(' ', trim(get_settings('fileupload_allowedtypes')));
 
-if ($HTTP_POST_VARS['submit']) {
+if ($_POST['submit']) {
 	$action = 'upload';
 } else {
 	$action = '';
@@ -201,15 +201,15 @@ case 'upload':
 
 <?php //Makes sure they choose a file
 
-//print_r($HTTP_POST_FILES);
+//print_r($_FILES);
 //die();
 
 
-    $imgalt = (isset($HTTP_POST_VARS['imgalt'])) ? $HTTP_POST_VARS['imgalt'] : $imgalt;
+    $imgalt = (isset($_POST['imgalt'])) ? $_POST['imgalt'] : $imgalt;
 
-    $img1_name = (strlen($imgalt)) ? $HTTP_POST_VARS['imgalt'] : $HTTP_POST_FILES['img1']['name'];
-    $img1_type = (strlen($imgalt)) ? $HTTP_POST_VARS['img1_type'] : $HTTP_POST_FILES['img1']['type'];
-    $imgdesc = str_replace('"', '&amp;quot;', $HTTP_POST_VARS['imgdesc']);
+    $img1_name = (strlen($imgalt)) ? $_POST['imgalt'] : $_FILES['img1']['name'];
+    $img1_type = (strlen($imgalt)) ? $_POST['img1_type'] : $_FILES['img1']['type'];
+    $imgdesc = str_replace('"', '&amp;quot;', $_POST['imgdesc']);
 
     $imgtype = explode(".",$img1_name);
     $imgtype = $imgtype[count($imgtype)-1];
@@ -220,13 +220,13 @@ case 'upload':
 
     if (strlen($imgalt)) {
         $pathtofile = get_settings('fileupload_realpath')."/".$imgalt;
-        $img1 = $HTTP_POST_VARS['img1'];
+        $img1 = $_POST['img1'];
     } else {
         $pathtofile = get_settings('fileupload_realpath')."/".$img1_name;
-        $img1 = $HTTP_POST_FILES['img1']['tmp_name'];
+        $img1 = $_FILES['img1']['tmp_name'];
     }
 
-	$fsize = sprintf("%5.1f",$HTTP_POST_FILES['img1']['size'] / 1024);
+	$fsize = sprintf("%5.1f",$_FILES['img1']['size'] / 1024);
 
     // makes sure not to upload duplicates, rename duplicates
     $i = 1;
@@ -303,15 +303,15 @@ die();
         or die("Couldn't Upload Your File to $pathtofile.");
     }
     
-    if(($HTTP_POST_VARS['thumbsize'] != 'none')&&($HTTP_POST_VARS['thumbsize'] != 'icon')) {
-        if($HTTP_POST_VARS['thumbsize'] == 'small') {
+    if(($_POST['thumbsize'] != 'none')&&($_POST['thumbsize'] != 'icon')) {
+        if($_POST['thumbsize'] == 'small') {
             $max_side = 200;
         }
-        elseif($HTTP_POST_VARS['thumbsize'] == 'large') {
+        elseif($_POST['thumbsize'] == 'large') {
             $max_side = 400;
         }
-        elseif($HTTP_POST_VARS['thumbsize'] == 'custom') {
-            $max_side = $HTTP_POST_VARS['imgthumbsizecustom'];
+        elseif($_POST['thumbsize'] == 'custom') {
+            $max_side = $_POST['imgthumbsizecustom'];
         }
         
         $result = wp_create_thumbnail($pathtofile, $max_side, NULL);
@@ -321,14 +321,14 @@ die();
     }
 
 $img_prefix = 'thumb-';
-	if ($HTTP_POST_VARS['associate'] == 'amazon') {
+	if ($_POST['associate'] == 'amazon') {
 	$asin = explode(".", $img1_name);
 	$piece_of_code = "&lt;a href=&quot;http://www.amazon.co.jp/exec/obidos/ASIN/$asin[0]/$amazon_id&quot; target=&quot;_blank&quot;&gt;&lt;img style=&quot;float: left; margin: 0 10px 0 0;&quot; src=&quot;". get_settings('fileupload_url') ."/$img1_name&quot; border=&quot;0&quot; alt=&quot;$imgdesc&quot; /&gt;&lt;/a&gt;";
 	}
-	elseif ($HTTP_POST_VARS['thumbsize'] == 'icon') {
+	elseif ($_POST['thumbsize'] == 'icon') {
 	$piece_of_code = "&lt;a style=&quot;float: left; margin: 0 10px 0 0;&quot; href=&quot;". get_settings('fileupload_url') . "/$img1_name&quot;&gt;" . "&lt;img src=&quot;". $siteurl ."/wp-images/file.gif&quot; alt=&quot;$imgdesc&quot; /&gt;" .$img1_name. "(".$fsize."KB)&lt;/a&gt;";
 	}
-	elseif ( ereg('image/',$img1_type) && $HTTP_POST_VARS['thumbsize'] != 'none') {
+	elseif ( ereg('image/',$img1_type) && $_POST['thumbsize'] != 'none') {
 	$piece_of_code = "&lt;a style=&quot;float: left; margin: 0 10px 0 0;&quot; href=&quot;". get_settings('fileupload_url') . "/$img1_name&quot;&gt;" . "&lt;img src=&quot;". get_settings('fileupload_url') ."/$img_prefix$img1_name&quot; alt=&quot;$imgdesc&quot; /&gt;" . "&lt;/a&gt;";
 	} else {
 	$piece_of_code = "&lt;img src=&quot;". get_settings('fileupload_url') . "/$img1_name&quot; alt=&quot;$imgdesc&quot; /&gt;";

@@ -17,6 +17,7 @@ $xoops_system_path = XOOPS_ROOT_PATH . '/modules/system' ;
 $language = $xoopsConfig['language'] ;
 if( ! file_exists( "$xoops_system_path/language/$language/admin/blocksadmin.php") ) $language = 'english' ;
 
+include_once( "$xoops_system_path/constants.php" ) ;
 include_once( "$xoops_system_path/language/$language/admin.php" ) ;
 include_once( "$xoops_system_path/language/$language/admin/blocksadmin.php" ) ;
 $group_defs = file( "$xoops_system_path/language/$language/admin/groups.php" ) ;
@@ -28,42 +29,111 @@ foreach( $group_defs as $def ) {
 // check $xoopsModule
 if( ! is_object( $xoopsModule ) ) redirect_header( XOOPS_URL.'/user.php' , 1 , _NOPERM ) ;
 
-// get blocks owned by the module
-$block_arr =& XoopsBlock::getByModule( $xoopsModule->mid() ) ;
+// check access right (needs system_admin of BLOCK)
+$sysperm_handler =& xoops_gethandler('groupperm');
+if (!$sysperm_handler->checkRight('system_admin', XOOPS_SYSTEM_BLOCK, $xoopsUser->getGroups())) redirect_header( XOOPS_URL.'/user.php' , 1 , _NOPERM ) ;
 
-// add by Tom
-sort ($block_arr);
-reset ($block_arr);
+// get blocks owned by the module
+$db =& Database::getInstance();
+$sql = $sql = "SELECT * FROM ".$db->prefix("newblocks")." WHERE mid=". $xoopsModule->mid()." ORDER BY side,weight,bid";
+$result = $db->query($sql);
+$block_arr = array();
+while( $myrow = $db->fetchArray($result) ) {
+	$block_arr[] = new XoopsBlock($myrow);
+}
 
 function list_blocks()
 {
-	global $xoopsUser , $xoopsConfig , $xoopsDB ;
+	global $xoopsUser , $xoopsConfig , $xoopsDB , $xoopsModule ;
 	global $block_arr , $xoops_system_url ;
-
-	$side_descs = array( 0 => _AM_SBLEFT, 1 => _AM_SBRIGHT, 3 => _AM_CBLEFT, 4 => _AM_CBRIGHT, 5 => _AM_CBCENTER ) ;
 
 	// displaying TH
 	echo "
-	<table width='100%' class='outer' cellpadding='4' cellspacing='1'>
-	<tr valign='middle'><th width='20%'>"._AM_BLKDESC."</th><th>"._AM_TITLE."</th><th align='center' nowrap='nowrap'>"._AM_SIDE."</th><th align='center'>"._AM_WEIGHT."</th><th align='center'>"._AM_VISIBLE."</th><th align='right'>"._AM_ACTION."</th></tr>
-	";
+	<form action='admin.php' name='blockadmin' method='post'>
+		<table width='90%' class='outer' cellpadding='4' cellspacing='1'>
+		<tr valign='middle'>
+			<th width='20%'>"._AM_BLKDESC."</th>
+			<th>"._AM_TITLE."</th>
+			<th align='center' nowrap='nowrap'>"._AM_SIDE."</th>
+			<th align='center'>"._AM_WEIGHT."</th>
+			<th align='center'>"._AM_VISIBLE."</th>
+			<th align='center'>"._AM_ACTION."</th>
+		</tr>\n" ;
+
+	$mydirname = $xoopsModule->dirname() ;
 
 	// blocks displaying loop
 	$class = 'even' ;
 	foreach( array_keys( $block_arr ) as $i ) {
-		$visible = ( $block_arr[$i]->getVar("visible") == 1 ) ? _YES : _NO ;
+		$sel0 = $sel1 = $ssel0 = $ssel1 = $ssel2 = $ssel3 = $ssel4 = "";
+
 		$weight = $block_arr[$i]->getVar("weight") ;
-		$side_desc = $side_descs[ $block_arr[$i]->getVar("side") ] ;
-		$title = $block_arr[$i]->getVar("title") ;
-		if( $title == '' ) $title = "&nbsp;" ;
 		$name = $block_arr[$i]->getVar("name") ;
 		$bid = $block_arr[$i]->getVar("bid") ;
 
-		echo "<tr valign='top'><td class='$class'>$name</td><td class='$class'>$title</td><td class='$class' align='center'>$side_desc</td><td class='$class' align='center'>$weight</td><td class='$class' align='center' nowrap>$visible</td><td class='$class' align='right'><a href='$xoops_system_url/admin.php?fct=blocksadmin&amp;op=edit&amp;bid=$bid' target='_blank'>"._EDIT."</a></td></tr>\n" ;
+		$title4edit = "<input type='text' name='title[$bid]' value='".$block_arr[$i]->getVar("title")."' size='20' />" ;
+		$appendix_operations = "<a href='admin.php?fct=blocksadmin&amp;op=clone&amp;bid=$bid'>"._CLONE."</a>" ;
+		if( $block_arr[$i]->getVar('block_type') == 'D' ) $appendix_operations .= "&nbsp;<a href='admin.php?fct=blocksadmin&amp;op=delete&amp;bid=$bid'>"._DELETE."</a>" ;
+
+		if ( $block_arr[$i]->getVar("visible") == 1 ) {
+			$sel1 = " checked='checked' style='background-color:#00FF00;'";
+		} else {
+			$sel0 = " checked='checked' style='background-color:#FF0000;'";
+		}
+
+		switch( $block_arr[$i]->getVar("side") ) {
+			default :
+			case XOOPS_SIDEBLOCK_LEFT :
+				$ssel0 = " checked='checked' style='background-color:#00FF00;'";
+				break ;
+			case XOOPS_SIDEBLOCK_RIGHT :
+				$ssel1 = " checked='checked' style='background-color:#00FF00;'";
+				break ;
+			case XOOPS_CENTERBLOCK_LEFT :
+				$ssel2 = " checked='checked' style='background-color:#00FF00;'";
+				break ;
+			case XOOPS_CENTERBLOCK_RIGHT :
+				$ssel4 = " checked='checked' style='background-color:#00FF00;'";
+				break ;
+			case XOOPS_CENTERBLOCK_CENTER :
+				$ssel3 = " checked='checked' style='background-color:#00FF00;'";
+				break ;
+		}
+
+		echo "
+		<tr valign='top'>
+			<td class='$class'>$name</td>
+			<td class='$class'>$title4edit</td>
+			<td class='$class' align='center' nowrap='nowrap'>
+				<input type='radio' name='side[$bid]' value='".XOOPS_SIDEBLOCK_LEFT."'$ssel0 />-<input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_LEFT."'$ssel2 /><input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_CENTER."'$ssel3 /><input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_RIGHT."'$ssel4 />-<input type='radio' name='side[$bid]' value='".XOOPS_SIDEBLOCK_RIGHT."'$ssel1 />
+			</td>
+			<td class='$class' align='center'>
+				<input type='text' name=weight[$bid] value='$weight' size='5' maxlength='5' style='text-align:right;' />
+			</td>
+			<td class='$class' align='center' nowrap='nowrap'>
+				<input type='radio' name='visible[$bid]' value='1'$sel1>"._YES."
+				<input type='radio' name='visible[$bid]' value='0'$sel0>"._NO."
+			</td>
+			<td class='$class' align='left'>
+				<a href='admin.php?fct=blocksadmin&amp;op=edit&amp;bid=$bid'>"._EDIT."</a>
+				$appendix_operations
+				<input type='hidden' name='bid[$bid]' value='$bid' />
+			</td>
+		</tr>\n" ;
+
 		$class = ( $class == 'even' ) ? 'odd' : 'even' ;
 	}
-	echo "<tr><td class='foot' align='center' colspan='7'>
-	</td></tr></table>\n" ;
+
+	echo "
+		<tr>
+			<td class='foot' align='center' colspan='6'>
+				<input type='hidden' name='fct' value='blocksadmin' />
+				<input type='hidden' name='op' value='order' />
+				<input type='submit' name='submit' value='"._SUBMIT."' />
+			</td>
+		</tr>
+		</table>
+	</form>\n" ;
 }
 
 
@@ -76,7 +146,7 @@ function list_groups()
 		$item_list[ $block_arr[$i]->getVar("bid") ] = $block_arr[$i]->getVar("title") ;
 	}
 
-	$form = new MyXoopsGroupPermForm( '' , 1 , 'block_read' , _MD_AM_ADGS ) ;
+	$form = new MyXoopsGroupPermForm( _MD_AM_ADGS , 1 , 'block_read' , '' ) ;
 	$form->addAppendix('module_admin',$xoopsModule->mid(),$xoopsModule->name().' '._AM_ACTIVERIGHTS);
 	$form->addAppendix('module_read',$xoopsModule->mid(),$xoopsModule->name().' '._AM_ACCESSRIGHTS);
 	foreach( $item_list as $item_id => $item_name) {
@@ -93,6 +163,7 @@ if( ! empty( $_POST['submit'] ) ) {
 }
 
 xoops_cp_header() ;
+if( file_exists( './mymenu.php' ) ) include( './mymenu.php' ) ;
 
 echo "<h3 style='text-align:left;'>".$xoopsModule->name()."</h3>\n" ;
 echo "<h4 style='text-align:left;'>"._AM_BADMIN."</h4>\n" ;

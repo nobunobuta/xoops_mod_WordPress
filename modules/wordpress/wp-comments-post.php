@@ -13,25 +13,25 @@ function add_magic_quotes($array) {
 } 
 
 if (!get_magic_quotes_gpc()) {
-	$HTTP_GET_VARS    = add_magic_quotes($HTTP_GET_VARS);
-	$HTTP_POST_VARS   = add_magic_quotes($HTTP_POST_VARS);
-	$HTTP_COOKIE_VARS = add_magic_quotes($HTTP_COOKIE_VARS);
+	$_GET    = add_magic_quotes($_GET);
+	$_POST   = add_magic_quotes($_POST);
+	$_COOKIE = add_magic_quotes($_COOKIE);
 }
 
-$author = trim(strip_tags($HTTP_POST_VARS['author']));
+$author = trim(strip_tags($_POST['author']));
 
-$email = trim(strip_tags($HTTP_POST_VARS['email']));
+$email = trim(strip_tags($_POST['email']));
 if (strlen($email) < 6)
 	$email = '';
 
-$url = trim(strip_tags($HTTP_POST_VARS['url']));
+$url = trim(strip_tags($_POST['url']));
 $url = ((!stristr($url, '://')) && ($url != '')) ? 'http://'.$url : $url;
 if (strlen($url) < 7)
 	$url = '';
 
-$comment = trim($HTTP_POST_VARS['comment']);
+$comment = trim($_POST['comment']);
 $original_comment = $comment;
-$comment_post_ID = intval($HTTP_POST_VARS['comment_post_ID']);
+$comment_post_ID = intval($_POST['comment_post_ID']);
 $user_ip = $_SERVER['REMOTE_ADDR'];
 $user_domain = gethostbyaddr($user_ip);
 
@@ -52,6 +52,7 @@ $now = current_time('mysql');
 $comment = balanceTags($comment, 1);
 $comment = convert_chars($comment);
 $comment = format_to_post($comment);
+$comment = apply_filters('post_comment_text', $comment);
 
 $comment_author = $author;
 $comment_author_email = $email;
@@ -109,6 +110,8 @@ if ($ok) { // if there was no comment from this IP in the last 10 seconds
 	if ($url == '')
 		$url = ' '; // this to make sure a cookie is set for 'no url'
 
+	do_action('comment_post', $comment_ID);
+
 	setcookie('comment_author_'.$cookiehash, $author, time()+30000000);
 	setcookie('comment_author_email_'.$cookiehash, $email, time()+30000000);
 	setcookie('comment_author_url_'.$cookiehash, $url, time()+30000000);
@@ -117,7 +120,7 @@ if ($ok) { // if there was no comment from this IP in the last 10 seconds
 	header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 	header('Cache-Control: no-cache, must-revalidate');
 	header('Pragma: no-cache');
-	$location = (empty($HTTP_POST_VARS['redirect_to'])) ? $_SERVER["HTTP_REFERER"] : $HTTP_POST_VARS['redirect_to'];
+	$location = (empty($_POST['redirect_to'])) ? $_SERVER['HTTP_REFERER'] : $_POST['redirect_to'];
 	if ($is_IIS) {
 		header("Refresh: 0;url=$location");
 	} else {
