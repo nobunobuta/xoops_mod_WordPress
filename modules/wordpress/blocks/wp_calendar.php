@@ -15,18 +15,8 @@ if( ! defined( 'WP_CALENDAR_POSTS_INCLUDED' ) ) {
 			include(dirname(__FILE__).'/../wp-config.php');
 			$wp_inblock = 0;
 		}
-		if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/wp-blocks.css.php')) {
-			$themes = $xoopsConfig['theme_set'];
-		} else {
-			$themes = "default";
-		}
-		include_once(XOOPS_ROOT_PATH."/modules/wordpress". (($wp_id=='-')?'':$wp_id) ."/themes/".$themes."/wp-blocks.css.php");
 		ob_start();
-		echo <<< EOD
-		<style type="text/css" media="screen">
-				$wp_block_style
-		</style>
-EOD;
+		block_style_get($wp_num);
 		get_calendar(1);
 		$block['content'] = ob_get_contents();
 		ob_end_clean();

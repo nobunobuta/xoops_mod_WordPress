@@ -44,24 +44,31 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 		$request .= " AND post_date <= '".$now."'";
 		$request .= " ORDER BY post_date DESC LIMIT 0, $no_posts";
 		$lposts = $wpdb->get_results($request);
-		$output = '';
 		$date = "";
 		$pdate = "";
+		ob_start();
+		block_style_get($wp_num);
+		$output = ob_get_contents();
+		ob_end_clean();
+
+		$output .= '<div id="wpRecentPost">';
 		if ($lposts) {
 			foreach ($lposts as $lpost) {
 				if ($cat_date) {
 					$date=mysql2date("Y-n-j", $lpost->post_date);
 					if ($date <> $pdate) {
-						if ($pdate) $output .= "</ul>";
-						$output .= "<strong>".$date."</strong><ul>";
+//						if ($pdate) $output .= "</ul>";
+						$output .= '<label id="postDate">'.$date.'</label><br />';
 						$pdate = $date;
 					}
+					$output .= '&nbsp;';
 				}
 				$post_title = stripslashes($lpost->post_title);
 				$permalink = get_permalink($lpost->ID);
-				$output .= '<li style="font-size:90%"><a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '">' . $post_title . '</a></li>';
+				$output .= '&nbsp;<strong><big>&middot;</big></strong>&nbsp;<a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '">' . $post_title . '</a><br>';
 			}
 		}
+		$output .= '</div>';
 		$block['content'] = $output;
 		return $block;
 	}

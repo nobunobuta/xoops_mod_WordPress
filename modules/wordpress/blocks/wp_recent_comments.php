@@ -54,7 +54,7 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 						$comment_excerpt = substr($comment_content,0,$comment_lenth);
 					}
 					$permalink = get_permalink($lcomment->ID)."#comment-".$lcomment->comment_ID;
-					$output .= '<li style="font-size:90%"><strong>' . $comment_author . ':</strong> <a href="' . $permalink;
+					$output .= '<li style="list-style-type:none; list-style-position: outside; text-indext:0px; font-size:90%"><strong>' . $comment_author . ':</strong> <a href="' . $permalink;
 					$output .= '" title="View the entire comment by ' . $comment_author.'">' . $comment_excerpt . '...</a> <span style=\"font-size:70%\">- '.$type.'</span></li>';
 				}
 			}

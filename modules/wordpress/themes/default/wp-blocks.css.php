@@ -1,12 +1,7 @@
 <?php
 /* Don't remove this line */ if (!defined('XOOPS_ROOT_PATH')) { exit; }
-$wp_block_style = <<<EOD
-/* Default WordPress by Dave Shea || http://mezzoblue.com
-	Modifications by Matthew Mullenweg || http://photomatt.net
-	This is just a basic layout, with only the bare minimum defined.
-	Please tweak this and make it your own. :)
-ÈþÆý
-*/
+/* Don't remove this line */ $wp_block_style = <<<EOD
+/* ÈþÆý */
 #wpBlockContent$wp_num {
 	padding-left: 5px;
 	padding-right: 5px;
@@ -93,6 +88,18 @@ $wp_block_style = <<<EOD
 	padding-left: 5px;
 }
 
+EOD;
+/* Don't remove this line */ if (!defined("WP_BLOCK_CSS_READ")) { define("WP_BLOCK_CSS_READ","1");$wp_block_style .= <<<EOD
+
+#wpRecentPost {
+	font-size: 90%;
+	word-break: break-all;
+}
+#wpRecentPost #postDate {
+	font-weight: bold;
+	font-size:110%;
+}
+
 #wp-calendar {
 	empty-cells: show;
 	font-size: 14px;
@@ -150,6 +157,6 @@ $wp_block_style = <<<EOD
 	font-size: 11px;
 	text-transform: capitalize;
 }
-
 EOD;
+/* Don't remove this line */ }
 ?>

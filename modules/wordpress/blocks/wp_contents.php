@@ -46,13 +46,13 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 		$block = array();
 		$block['use_theme_template'] = get_xoops_option('wordpress'.$wp_num,'use_theme_template');
 		
-		if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/wp-blocks.css.php')) {
-			$themes = $xoopsConfig['theme_set'];
-		} else {
-			$themes = "default";
-		}
-		include_once(XOOPS_ROOT_PATH."/modules/wordpress". (($wp_id=='-')?'':$wp_id) ."/themes/".$themes."/wp-blocks.css.php");
-		
+//		if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/wp-blocks.css.php')) {
+//			$themes = $xoopsConfig['theme_set'];
+//		} else {
+//			$themes = "default";
+//		}
+//		include_once(XOOPS_ROOT_PATH."/modules/wordpress". (($wp_id=='-')?'':$wp_id) ."/themes/".$themes."/wp-blocks.css.php");
+//		
 		if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/content_block-template.php')) {
 			$themes = $xoopsConfig['theme_set'];
 		} else {
@@ -60,7 +60,7 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 		}
 		$template_fname = XOOPS_ROOT_PATH."/modules/wordpress". (($wp_id=='-')?'':$wp_id) ."/themes/".$themes."/content_block-template.php";
 		
-		$block['style'] =$wp_block_style;
+		$block['style'] =block_style_get($wp_num,false);
 		$block['divid'] = 'wpBlockContent'.$wp_num;
 		$block['template_content'] = "";
 		$i = 0;

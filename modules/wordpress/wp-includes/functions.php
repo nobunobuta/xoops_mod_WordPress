@@ -1884,4 +1884,26 @@ function get_xoops_option($dirname,$conf_name) {
 	
 	return($value);
 }
+function block_style_get($wp_num, $echo = 'true') {
+global $xoopsConfig;
+
+	if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. $wp_num .'/themes/'.$xoopsConfig['theme_set'].'/wp-blocks.css.php')) {
+		$themes = $xoopsConfig['theme_set'];
+	} else {
+		$themes = "default";
+	}
+	include_once(XOOPS_ROOT_PATH."/modules/wordpress". $wp_num ."/themes/".$themes."/wp-blocks.css.php");
+	if ($echo) {
+		if (trim($wp_block_style) != "") {
+		echo <<< EOD
+<style type="text/css" media="screen">
+	$wp_block_style
+</style>
+EOD;
+		}
+	} else {
+		return trim($wp_block_style);
+	}
+}
+
 ?>
