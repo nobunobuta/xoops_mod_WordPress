@@ -378,7 +378,7 @@ define('_LANG_WPF_SUBT_COPY','To have a one-click bookmarklet, just copy and pas
 define('_LANG_WPF_SUBT_BOOK','Save it as wordpress.reg, and double-click on this file in an Explorer<br />window. Answer Yes to the question, and restart Internet Explorer.<br /><br />That&#8242;s it, you can now right-click in an IE window and select <br />&#8242;Post to WP&#8242; to make the bookmarklet appear. :)');
 define('_LANG_WPF_SUBT_CLOSE','Close this window');
 define('_LANG_WPF_SUBT_UPDATED','Profile updated.');
-// define('_LANG_WPF_SUBT_EDIT','Edit Your Profile');
+define('_LANG_WPF_SUBT_EDIT','Edit Your Profile');
 define('_LANG_WPF_SUBT_USERID','Login:');
 define('_LANG_WPF_SUBT_LEVEL','Level:');
 define('_LANG_WPF_SUBT_POSTS','Posts:');
