@@ -2,6 +2,9 @@
 /* ÈþÆý */
 require("wp-lang/lang_ja.php");
 global $xoopsDB,$xoopsUser,$wpdb;
+global $wp_once_called;
+if (!($wp_once_called)) {
+$wp_once_called = 1;
 $wpj_head = <<<EOD
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -365,7 +368,6 @@ if ($preview) {
 }
 
 // error_log("$request");
-// echo $request;
 global $posts;
 $posts = $wpdb->get_results($request);
 
@@ -406,6 +408,7 @@ if ($posts) {
     	if ($s && empty($paged)) { // If they were doing a search and got one result
     		header('Location: ' . get_permalink($posts[0]->ID));
     	}
+}
 }
 }
 ?>
