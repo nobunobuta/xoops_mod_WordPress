@@ -1,4 +1,0 @@
-<?php
-$_my_ext_=pathinfo(__FILE__);if ($_my_ext_['extension']!="php") exit;
-phpinfo();
-?>
