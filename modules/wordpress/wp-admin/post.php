@@ -183,10 +183,11 @@ switch($action) {
 			$pinged = explode("\n", $pinged);
 			if ('' != $to_ping) {
 				if (strlen($excerpt) > 0) {
-					$the_excerpt = (strlen(strip_tags($excerpt)) > 255) ? substr(strip_tags($excerpt), 0, 252) . '...' : strip_tags($excerpt)	;
+					$the_excerpt = apply_filters('the_excerpt', $excerpt);
 				} else {
-					$the_excerpt = (strlen(strip_tags($content)) > 255) ? substr(strip_tags($content), 0, 252) . '...' : strip_tags($content);
+					$the_excerpt = apply_filters('the_content', $content);
 				}
+				$the_excerpt = (strlen(strip_tags($the_excerpt)) > 255) ? substr(strip_tags($the_excerpt), 0, 252) . '...' : strip_tags($the_excerpt);
 				$excerpt = stripslashes($the_excerpt);
 				$to_pings = explode("\n", $to_ping);
 				if ($useutf8=="1") $target_charset = 'UTF-8';
@@ -355,11 +356,11 @@ switch($action) {
 			$pinged = explode("\n", $pinged);
 			if ('' != $to_ping) {
 				if (strlen($excerpt) > 0) {
-					$the_excerpt = (strlen(strip_tags($excerpt)) > 255) ? substr(strip_tags($excerpt), 0, 252) . '...' : strip_tags($excerpt)	;
+					$the_excerpt = apply_filters('the_excerpt', $excerpt);
 				} else {
-					$the_excerpt = (strlen(strip_tags($content)) > 255) ? substr(strip_tags($content), 0, 252) . '...' : strip_tags($content);
+					$the_excerpt = apply_filters('the_content', $content);
 				}
-				$excerpt = stripslashes($the_excerpt);
+				$the_excerpt = (strlen(strip_tags($the_excerpt)) > 255) ? substr(strip_tags($the_excerpt), 0, 252) . '...' : strip_tags($the_excerpt);				$excerpt = stripslashes($the_excerpt);
 				$to_pings = explode("\n", $to_ping);
 				if ($useutf8=="1") {
 					$ping_charset = 'UTF-8';
