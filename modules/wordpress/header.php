@@ -13,9 +13,14 @@ if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) 
 } else {
 	$themes = "default";
 }
+if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/print.css')) {
+	$themes_p = $xoopsConfig['theme_set'];
+} else {
+	$themes_p = "default";
+}
 ?>
 	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $siteurl; ?>/themes/<?php echo $themes; ?>/wp-layout.css" />
-	<link rel="stylesheet" type="text/css" media="print" href="<?php echo $siteurl; ?>/themes/<?php echo $themes; ?>/print.css" />
+	<link rel="stylesheet" type="text/css" media="print" href="<?php echo $siteurl; ?>/themes/<?php echo $themes_p; ?>/print.css" />
 	<link rel="alternate" type="application/rdf+xml" title="RDF" href="<?php bloginfo('rdf_url'); ?>" />
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="<?php bloginfo('rss2_url'); ?>" />
 	<link rel="alternate" type="text/xml" title="RSS .92" href="<?php bloginfo('rss_url'); ?>" />
