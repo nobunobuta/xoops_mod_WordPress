@@ -77,7 +77,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 			if (preg_match('/Subject: /', $line)) {
 				$subject = trim($line);
 				$subject = substr($subject, 9, strlen($subject)-9);
-				if function_exists('mb_decode_mimeheader') {
+				if (function_exists('mb_decode_mimeheader')) {
 					$subject = mb_decode_mimeheader($subject);
 				}
 				if ($use_phoneemail) {
@@ -244,9 +244,9 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				$post_title = $subject;
 			}
 			if ($post_category == '') {
-				$post_category = $default_category;
+				$post_category = get_settings('default_post_category');
 			}
-			if function_exists('mb_convert_encoding') {
+			if (function_exists('mb_convert_encoding')) {
 				echo "Subject : ".mb_convert_encoding($subject,$blog_charset,"auto")." <br />";
 			} else {
 				echo "Subject : ".$subject." <br />";
@@ -257,7 +257,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				if ($charset == "") $charset = "JIS";
 				if (trim($charset) == "Shift_JIS") $charset = "SJIS";
 				$content =  preg_replace("/\=([0-9a-fA-F]{2,2})/e",  "pack('c',base_convert('\\1',16,10))", $content);
-				if function_exists('mb_convert_encoding') {
+				if (function_exists('mb_convert_encoding')) {
 					$content = addslashes(mb_convert_encoding(trim($content), $blog_charset, $charset));
 					$post_title = addslashes(trim(mb_convert_encoding($post_title,$blog_charset,"auto")));
 				} else {
@@ -271,7 +271,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
                 }
 				$result = $wpdb->query($sql);
 				$post_ID = $wpdb->insert_id;
-
+				echo "Post ID = $post_ID<br />";
 				if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
 					sleep($sleep_after_edit);
 				}
@@ -288,11 +288,8 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 			echo "\n<p><b>Posted title:</b> $post_title<br />";
 			echo "\n<b>Posted content:</b><br /><pre>".$content.'</pre></p>';
 
-		if (!$post_categories) $post_categories[] = 1;
-		foreach ($post_categories as $post_category) {
 			// Double check it's not there already
 			$exists = $wpdb->get_row("SELECT * FROM $tablepost2cat WHERE post_id = $post_ID AND category_id = $post_category");
-
 			 if (!$exists && $result) { 
 			 	$wpdb->query("
 				INSERT INTO $tablepost2cat
@@ -301,7 +298,6 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				($post_ID, $post_category)
 				");
 			}
-		}
 
 			if(!$pop3->delete($iCount)) {
 				echo '<p>Oops '.$pop3->ERROR.'</p></div>';

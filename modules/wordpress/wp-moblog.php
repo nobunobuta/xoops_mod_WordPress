@@ -67,7 +67,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		$subject = explode($phoneemail_separator, $subject);
 		$subject = trim($subject[0]);
 	}
-	if function_exists('mb_convert_encoding') {
+	if (function_exists('mb_convert_encoding')) {
 		$subject = trim(mb_convert_encoding(mb_decode_mimeheader($subject),$blog_charset,"auto"));
 	}
 	global $subjectprefix;
@@ -196,7 +196,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		$attachment = imap_fetchbody($mbox, $iCount, 2);
 		if ($attachment != '') {
 			$attachment = imap_base64($attachment);
-			if function_exists('mb_convert_encoding') {
+			if (function_exists('mb_convert_encoding')) {
 				$temp_file = mb_convert_encoding(mb_decode_mimeheader($struct->parts[1]->dparameters[0]->value),$blog_charset,"auto");
 			} else {
 				$temp_file = $struct->parts[1]->dparameters[0]->value;
@@ -249,9 +249,9 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				$post_title = $subject;
 			}
 			if ($post_category == '') {
-				$post_category = $default_category;
+				$post_category = get_settings('default_post_category');
 			}
-			if function_exists('mb_convert_encoding') {
+			if (function_exists('mb_convert_encoding')) {
 				$content = addslashes(mb_convert_encoding(trim($content),$blog_charset,"JIS"));
 			} else {
 				$content = addslashes(trim($content));
@@ -273,6 +273,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
                 }
 				$result = $wpdb->query($sql);
 				$post_ID = $wpdb->insert_id;
+				echo "Post ID = $post_ID<br />";
 				echo "The result is: ".$result;
 				if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
 					sleep($sleep_after_edit);
@@ -299,12 +300,14 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 
 # Added to make category work
 #
-               if (!$post_categories) $post_categories[] = 1;
-                foreach ($post_categories as $post_category) {
+//              if (!$post_category) $post_category = 1;
+//                foreach ($post_categories as $post_category) {
                         // Double check it's not there already
                         $exists = $wpdb->get_row("SELECT * FROM $tablepost2cat WHERE post_id = $post_ID AND category_id = $post_category");
+			 echo "INSERT INTO $tablepost2cat (post_id, category_id) VALUES ($post_ID, $post_category)";
 
                          if (!$exists && $result) {
+			 	echo "....<br />";
                                 $wpdb->query("
                                 INSERT INTO $tablepost2cat
                                 (post_id, category_id)
@@ -312,7 +315,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
                                 ($post_ID, $post_category)
                                 ");
                         }
-                }
+//                }
 #
 # End of category work stuff
 
