@@ -7,7 +7,6 @@ function b_wp_archives_monthly_show($option)
     global $querystring_start, $querystring_equal, $querystring_separator, $month, $wpdb, $start_of_week;
 	global $tableposts,$tablepost2cat,$tablecomments,$tablecategories;
 	require_once(dirname(__FILE__).'/../wp-blog-header.php');
-	ob_flush();
 	ob_start();
 	get_archives('monthly');
 	$block['content'] = ob_get_contents();
