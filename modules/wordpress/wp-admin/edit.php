@@ -1,6 +1,13 @@
 <?php
 $title = 'Edit Posts';
 require_once('admin-header.php');
+
+$showposts = $HTTP_GET_VARS['showposts'];
+$post_per_page = $HTTP_GET_VARS['posts_per_page'];
+$poststart = $HTTP_GET_VARS['poststart'];
+$postend = $HTTP_GET_VARS['postend'];
+$order = $HTTP_GET_VARS['order'];
+
 if (!$showposts) {
 	if ($posts_per_page) {
 		$showposts=$posts_per_page;
@@ -75,7 +82,7 @@ if ($drafts) {
           <td colspan="2" align="center"><!-- show next/previous X posts -->
             <form name="previousXposts" method="get" action="">
 <?php
-if ($previousXstart > 0) {
+if ($previousXstart >= 0) {
 ?>
               <input type="hidden" name="showposts" value="<?php echo $showposts; ?>" />
               <input type="hidden" name="poststart" value="<?php echo $previousXstart; ?>" />

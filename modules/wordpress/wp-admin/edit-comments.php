@@ -3,6 +3,12 @@ $title = 'Edit Comments';
 $parent_file = 'edit.php';
 require_once('admin-header.php');
 
+$showcomments = $HTTP_GET_VARS['showcomments'];
+$comment_per_page = $HTTP_GET_VARS['comments_per_page'];
+$commentstart = $HTTP_GET_VARS['commentstart'];
+$commentend = $HTTP_GET_VARS['commentend'];
+$order = $HTTP_GET_VARS['order'];
+
 if (!$showcomments) {
 	if ($comments_per_page) {
 		$showcomments=$comments_per_page;
@@ -55,7 +61,7 @@ ob_start();
           <td colspan="2" align="center"><!-- show next/previous X comments -->
             <form name="previousXcomments" method="get" action="">
 <?php
-if ($previousXstart > 0) {
+if ($previousXstart >= 0) {
 ?>
               <input type="hidden" name="showcomments" value="<?php echo $showcomments; ?>" />
               <input type="hidden" name="commentstart" value="<?php echo $previousXstart; ?>" />
