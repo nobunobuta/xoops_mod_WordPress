@@ -34,7 +34,7 @@ define("_MI_WPADMINAUTHGRP_CFG_DESC","ユーザ登録時に管理権限(WordPressのユーザレ
 define("_MI_WP_USE_XOOPS_SMILE","XOOPSのスマイルアイコンを使用");
 define("_MI_WP_USE_XOOPS_SMILE_DESC","スマイルアイコンをXOOPSで使用しているものに置き換える。");
 
-define("_MI_WP_USE_THEME_TEMPLATE","記事ブロック表示にthemeディレクトリのテンプレートを使用使用");
+define("_MI_WP_USE_THEME_TEMPLATE","記事ブロック表示にthemeディレクトリのテンプレートを使用");
 define("_MI_WP_USE_THEME_TEMPLATE_DESC","記事ブロック表示にthemeディレクトリ下のテンプレート(content_block-template.php)を使用します。");
 // Block Name
 define("_MI_WORDPRESS_BNAME1","WordPress%s カレンダー");
