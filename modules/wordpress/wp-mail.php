@@ -372,9 +372,6 @@ function wp_mail_receive() {
 						$wpdb->query("UPDATE {$wpdb->posts[$wp_id]} SET post_name='$post_name' WHERE ID = $post_ID");
 					}
 					echo "Post ID = $post_ID<br />\n";
-					if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-						sleep($sleep_after_edit);
-					} 
 
 					$blog_ID = 1;
 					if ($flat < 500) {

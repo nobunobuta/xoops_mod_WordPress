@@ -91,23 +91,31 @@ function wp_insert_post($postarr = array()) {
 			$post_category = array($GLOBALS['post_default_category']);
 		}
 		$postObject->setVar('post_category', $post_category[0]);
-	}
-	if (empty($postarr['post_date'])) {
-		$postObject->setVar('post_date', current_time('mysql'));
 	} else {
-		$postObject->setVar('post_date', $postarr['post_date']);
+		$post_category = array($GLOBALS['post_default_category']);
 	}
-	if (empty($postarr['post_author'])) {
+	if (!empty($postarr['post_date'])) {
+		$postObject->setVar('post_date', $postarr['post_date']);
+	} else {
+		$postObject->setVar('post_date', current_time('mysql'));
+	}
+	if (!empty($postarr['post_author'])) {
 		$postObject->setVar('post_author', $postarr['post_author']);
 	}
-	if (empty($postarr['post_status'])) {
+	if (!empty($postarr['post_status'])) {
 		$postObject->setVar('post_status', $postarr['post_status']);
+	} else {
+		$postObject->setVar('post_status', get_settings('default_post_status'));
 	}
-	if (empty($postarr['ping_status'])) {
+	if (!empty($postarr['ping_status'])) {
 		$postObject->setVar('ping_status', $postarr['ping_status']);
+	} else {
+		$postObject->setVar('ping_status', get_settings('default_ping_status'));
 	}
-	if (empty($postarr['comment_status'])) {
+	if (!empty($postarr['comment_status'])) {
 		$postObject->setVar('comment_status', $postarr['comment_status']);
+	} else {
+		$postObject->setVar('comment_status', get_settings('default_comment_status'));
 	}
 	if ($postHandler->insert($postObject, true)) {
 		$post_ID = $postObject->getVar('ID');
@@ -188,19 +196,24 @@ function wp_update_post($postarr = array()) {
 	} else {
 		$post_category = array($GLOBALS['post_default_category']);
 	}
-	if (!empty($postarr['post_date'])) {
-		$postObject->setVar('post_date', $postarr['post_date']);
-	}
-	if (empty($postarr['post_status'])) {
+	if (!empty($postarr['post_status'])) {
 		$postObject->setVar('post_status', $postarr['post_status']);
+	} else {
+		$postObject->setVar('post_status', get_settings('default_post_status'));
 	}
-	if (empty($postarr['ping_status'])) {
+	if (!empty($postarr['ping_status'])) {
 		$postObject->setVar('ping_status', $postarr['ping_status']);
+	} else {
+		$postObject->setVar('ping_status', get_settings('default_ping_status'));
+	} 
+	if (!empty($postarr['comment_status'])) {
+		$postObject->setVar('comment_status', $postarr['comment_status']);
+	} else {
+		$postObject->setVar('comment_status', get_settings('default_comment_status'));
 	}
-	if (empty($postarr['comment_status'])) {
+	if (!empty($postarr['comment_status'])) {
 		$postObject->setVar('comment_status', $postarr['comment_status']);
 	}
-	$postObject->setVar('post_modified', current_time('mysql'));
 	if ($postHandler->insert($postObject, true, true)) {
 		$post_ID = $postObject->getVar('ID');
 		$postObject->assignCategories($post_category);
@@ -356,7 +369,7 @@ $wpnewpost_doc='Adds a post, blogger-api like, +title +category +postdate';
 function b2newpost($m) {
 	global $xmlrpcerruser; // import user errcode value
 	global $blog_ID;
-	global $cafelogID, $sleep_after_edit;
+	global $cafelogID;
 	$err="";
 
 	$username=$m->getParam(2);
@@ -404,10 +417,6 @@ function b2newpost($m) {
 
 		if (!isset($blog_ID)) { $blog_ID = 1; }
 		
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
-
 		pingWeblogs($blog_ID);
 		pingBlogs($blog_ID);
 		pingback($content, $post_ID);
@@ -576,7 +585,7 @@ function bloggernewpost($m) {
 	global $xmlrpcerruser; // import user errcode value
 	global $blog_ID,$cache_userdata,$use_rss,$post_autobr;
 	global $post_default_title,$post_default_category;
-	global $cafelogID, $sleep_after_edit;
+	global $cafelogID;
 	$err="";
 
 
@@ -620,10 +629,6 @@ function bloggernewpost($m) {
 
 		if (!isset($blog_ID)) { $blog_ID = 1; }
 		
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
-
 		pingWeblogs($blog_ID);
 		pingBlogs($blog_ID);
 		pingback($content, $post_ID);
@@ -648,7 +653,7 @@ function bloggereditpost($m) {
 
 	global $xmlrpcerruser; // import user errcode value
 	global $blog_ID,$cache_userdata,$use_rss,$post_autobr;
-	global $post_default_title,$post_default_category, $sleep_after_edit;
+	global $post_default_title,$post_default_category;
 	$err="";
 
 
@@ -709,11 +714,8 @@ function bloggereditpost($m) {
 	   "For some strange yet very annoying reason, the entry couldn't be edited.");
 
 		if (!isset($blog_ID)) { $blog_ID = 1; }
-		
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
-//		pingWeblogs($blog_ID);
+
+		pingWeblogs($blog_ID);
 		return new xmlrpcresp(new xmlrpcval("1", "boolean"));
 	} else {
 		return new xmlrpcresp(0, $xmlrpcerruser+3, // user error 3
@@ -732,7 +734,7 @@ function bloggerdeletepost($m) {
 
 	global $xmlrpcerruser; // import user errcode value
 	global $blog_ID,$cache_userdata,$use_rss,$post_autobr;
-	global $post_default_title,$post_default_category, $sleep_after_edit;
+	global $post_default_title,$post_default_category;
 	$err="";
 
 
@@ -780,9 +782,6 @@ function bloggerdeletepost($m) {
 
 		if (!isset($blog_ID)) { $blog_ID = 1; }
 		
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
 //		pingWeblogs($blog_ID);
 		return new xmlrpcresp(new xmlrpcval(1,'boolean'));
 	} else {
@@ -1163,7 +1162,7 @@ function mwnewpost($params) {
 	global $xmlrpcerruser;
 	global $blog_ID, $cache_userdata;
 	global $use_rss,$post_autobr,$post_default_title;
-	global $post_default_category,$cafelogID,$sleep_after_edit;
+	global $post_default_category,$cafelogID;
 
 	$xblogid = $params->getParam(0);
 	$xuser = $params->getParam(1);
@@ -1227,10 +1226,6 @@ function mwnewpost($params) {
 		}
 
 		if (!isset($blog_ID)) { $blog_ID = 1; }
-
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
 
 		pingWeblogs($blog_ID);
 		pingBlogs($blog_ID);
@@ -1326,17 +1321,12 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 
 		if (!isset($blog_ID)) { $blog_ID = 1; }
 
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
-
 		pingWeblogs($blog_ID);
 		pingBlogs($blog_ID);
 		pingback($content, $post_ID);
 		trackback_url_list($content_struct['mt_tb_ping_urls'],$post_ID);
 
 		logIO("O","(MW) Edited ! ID: $post_ID");
-//		$myResp = new xmlrpcval($ID,"string");
 		$myResp = new xmlrpcval(true,"boolean");
 
 		return new xmlrpcresp($myResp);
