@@ -1,7 +1,5 @@
 <?php
-function selected($selected, $current) {
-	if ($selected == $current) echo ' selected="selected"';
-}
+require_once('admin.php');
 
 $mode = 'sidebar';
 
@@ -15,7 +13,7 @@ if ($user_level == 0)
 
 $time_difference = get_settings('time_difference');
 
-if ('b' == $_GET['a']) {
+if (isset($_GET['a'])&&('b' == $_GET['a'])) {
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -44,7 +42,7 @@ form {
 }
 .sidebar-categories {
     display: block;
-    height: 6.6em;
+    height: 8em;
     overflow: auto;
     background-color: #f4f4f4;
 }

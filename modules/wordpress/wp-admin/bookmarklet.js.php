@@ -1,13 +1,18 @@
 <?php
-$url = 'http://'.$_SERVER["SERVER_NAME"];
-$url .= ($_SERVER["SERVER_PORT"]==80) ? '' : ':'.$_SERVER["SERVER_PORT"];
-$url .= dirname($_SERVER["REQUEST_URI"]) . "/bookmarklet.php";
+include ('../wp-config.php');
+error_reporting(E_ERROR);
+$bookmarklet_height= (get_settings('use_trackback')) ? 550 : 520;
+if ($wp_use_spaw) {
+	$range_text = "htmlText";
+} else {
+	$range_text = "text";
+}
 echo <<<EOD
 <script type="text/javascript" defer>
 <!--
 doc=external.menuArguments.document;
-Q=doc.selection.createRange().text;
-void(btw=window.open('$url?text='+escape(Q)+'&trackback=1&pingback=1&popupurl='+escape(external.menuArguments.location.href)+'&popuptitle='+escape(doc.title),'bookmarklet','scrollbars=no,width=480,height=550,status=yes'));
+Q=doc.selection.createRange().$range_text;
+void(btw=window.open('$siteurl/wp-admin/bookmarklet.php?text='+escape(Q)+'&popupurl='+escape(external.menuArguments.location.href)+'&popuptitle='+escape(doc.title),'bookmarklet','scrollbars=yes,width=600,height=$bookmarklet_height,left=100,top=50,status=yes'));
 btw.focus();
 //-->
 </script>

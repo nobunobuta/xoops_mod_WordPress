@@ -1,12 +1,12 @@
 <div class="wrap">
 <?php
-
 $allowed_users = explode(" ", trim(get_settings('fileupload_allowedusers')));
-
 $submitbutton_text = 'Blog this!';
 $toprow_title = 'New Post';
 $form_action = 'post';
 $form_extra = '';
+$colspan = 3;
+
 if (get_settings('use_pingback')) {
 	$form_pingback = '<input type="checkbox" class="checkbox" name="post_pingback" value="1" ';
 	if ($post_pingback) $form_pingback .= 'checked="checked" ';
@@ -14,6 +14,9 @@ if (get_settings('use_pingback')) {
 } else {
 	$form_pingback = '';
 }
+
+$form_prevstatus = '';
+
 if (get_settings('use_trackback')) {
 	$form_trackback = _LANG_EF_TRACK_FORM.'	<input type="text" name="trackback_url" style="width: 360px" id="trackback" tabindex="7" value="'.$trackback_url.'"/>';
 	if ('bookmarklet' != $mode) {
@@ -31,24 +34,20 @@ if (get_settings('use_trackback')) {
 } else {
 	$form_trackback = '';
 }
-$colspan = 3;
 $saveasdraft = '';
 
-
-?>
-
-<form name="post" action="post.php" method="post" id="post">
-
-<?php
 if ('bookmarklet' == $mode) {
-    echo '<input type="hidden" name="mode" value="bookmarklet" />';
+    $form_extra = '<input type="hidden" name="mode" value="bookmarklet" />';
     if ($target_charset) {
-    	echo '<input type="hidden" name="target_charset" value="'.$target_charset.'" />';
+    	$form_extra .= '<input type="hidden" name="target_charset" value="'.$target_charset.'" />';
     }
 }
 ?>
+
+<form name="post" action="post.php" method="post" id="post">
 <input type="hidden" name="user_ID" value="<?php echo $user_ID ?>" />
-<input type="hidden" name="action" value='<?php echo $form_action . $form_extra ?>' />
+<input type="hidden" name="action" value='<?php echo $form_action ?>' />
+<?php echo $form_extra ?>
 
 <script type="text/javascript">
 <!--
@@ -59,11 +58,7 @@ function focusit() {
 window.onload = focusit;
 //-->
 </script>
-<style media="screen" type="text/css">
-#titlediv, #postpassworddiv {
-	height: 3.5em;
-}
-</style>
+
 <div id="poststuff">
     <fieldset id="titlediv">
       <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#title" title="Help on titles"><?php echo _LANG_EF_AD_POSTTITLE; ?></a></legend> 
@@ -78,13 +73,11 @@ window.onload = focusit;
 <fieldset id="postdiv">
 <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#post" title="Help with post field"><?php echo _LANG_EF_AD_POSTAREA; ?></a></legend>
 		<div id="quicktags">
-<?php
-if ($wp_use_spaw==false||!$is_winIE) {
-if (get_settings('use_quicktags') && 'bookmarklet' != $mode) {
-	echo '<a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#quicktags" title="Help with quicktags">'._LANG_EF_AD_POSTQUICK.'</a>: ';
-	include('quicktags.php');
-}
-?>
+<?php if ($wp_use_spaw==false||!$is_winIE) { ?>
+<?php if (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))&&('bookmarklet' != $mode)) { ?>
+<a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#quicktags" title="Help with quicktags"><?php echo _LANG_EF_AD_POSTQUICK; ?></a>:
+<?php include('quicktags.php'); ?>
+<?php } ?>
 </div>
 <?php
  $rows = get_settings('default_post_edit_rows');
@@ -92,7 +85,7 @@ if (get_settings('use_quicktags') && 'bookmarklet' != $mode) {
      $rows = 10;
  }
 ?>
-<div><textarea rows="<?php echo $rows; ?>" cols="40" name="wp_content" tabindex="4" id="wp_content"><?php echo $content ?></textarea></div>
+<div><textarea rows="<?php echo $rows; ?>" cols="40" name="wp_content" tabindex="5" id="wp_content"><?php echo $content ?></textarea></div>
 <?php
 } else {
 // For Spaw Editor
@@ -114,43 +107,32 @@ echo "<script src=\"quicktags_spaw.js\" language=\"JavaScript\" type=\"text/java
 ?>
 </fieldset>
 
-<?php
-if ($wp_use_spaw==false||!$is_winIE) {
-if (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))) {
-?>
+<?php if (($wp_use_spaw==false||!$is_winIE) && (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx))))) { ?>
 <script type="text/javascript" language="JavaScript">
 <!--
 edCanvas = document.getElementById('wp_content');
 //-->
 </script>
-<?php }} ?>
+<?php } ?>
 
 <?php echo $form_pingback ?>
 <?php echo $form_prevstatus ?>
 
 <p>
-<?php
-if ($action != 'editcomment') {
-    if ( (get_settings('use_fileupload')) && ($user_level >= get_settings('fileupload_minlevel'))
-         && (in_array($user_login, $allowed_users) || (trim(get_settings('fileupload_allowedusers'))=="")) ) { ?>
+<?php if ( (get_settings('use_fileupload')) && ($user_level >= get_settings('fileupload_minlevel')) && (in_array($user_login, $allowed_users) || (trim(get_settings('fileupload_allowedusers'))=="")) ) { ?>
 <input type="button" value="<?php echo _LANG_EFA_STATUS_UPLOAD; ?>" onclick="launchupload();" tabindex="10" />
-<?php }
-}
-?>
+<?php } ?>
 <input name="saveasdraft" type="submit" id="saveasdraft" tabindex="9" value="<?php echo _LANG_EF_AD_DRAFT; ?>" /> 
   <input name="saveasprivate" type="submit" id="saveasprivate" tabindex="10" value="<?php echo _LANG_EF_AD_PRIVATE; ?>" /> 
   <input name="publish" type="submit" id="publish" tabindex="6" value="<?php echo _LANG_EF_AD_PUBLISH; ?>" /> 
-  <?php if ('bookmarklet' != $mode) {
-      echo '<input name="advanced" type="submit" id="advancededit" tabindex="7" value="'._LANG_EF_AD_EDITING.'" />';
-  } ?>
+<?php if ('bookmarklet' != $mode) { ?>
+  <input name="advanced" type="submit" id="advancededit" tabindex="7" value="'._LANG_EF_AD_EDITING.'" />
   <input name="referredby" type="hidden" id="referredby" value="<?php echo $_SERVER['HTTP_REFERER']; ?>" />
+<?php  } ?>
 </p>
 
-
-<?php
-
-echo $form_trackback;
-?>
+<?php echo $form_trackback; ?>
+<?php do_action('simple_edit_form', ''); ?>
 
 </div>
 </form>

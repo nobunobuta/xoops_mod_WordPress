@@ -1,9 +1,8 @@
 <?php
+require('../wp-config.php');
 require_once(ABSPATH . 'wp-admin/admin-functions.php');
-if (!(veriflog())) {
-	redirect_header($siteurl.'/',2,_NOPERM);
-	exit();
-}
+require_once(ABSPATH . 'wp-admin/auth.php');
+
 $dogs = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]}");
 foreach ($dogs as $catt) {
 	$cache_categories[$catt->cat_ID] = $catt;
@@ -17,4 +16,5 @@ $date_format = get_settings('date_format');
 $time_format = get_settings('time_format');
 
 require_once(dirname(__FILE__). '/menu.php');
+
 ?>

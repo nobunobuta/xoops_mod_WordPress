@@ -1,18 +1,9 @@
 <?php
+require_once('admin.php');
+
 $title = 'Options';
 $this_file = 'options.php';
 $parent_file = 'options.php';
-
-function add_magic_quotes($array) {
-	foreach ($array as $k => $v) {
-		if (is_array($v)) {
-			$array[$k] = add_magic_quotes($v);
-		} else {
-			$array[$k] = addslashes($v);
-		}
-	}
-	return $array;
-}
 
 if (!get_magic_quotes_gpc()) {
 	$_GET    = add_magic_quotes($_GET);
@@ -50,7 +41,6 @@ switch($action) {
 
 case "update":
 	$standalone = 0;
-	include_once("./admin-header.php");
 	wp_refcheck("/wp-admin");
     $any_changed = 0;
     
@@ -138,30 +128,13 @@ if ($non_was_selected) { // no group pre-selected, display opening page
 } else { //there was a group selected.
 
 ?>
-<ul id="adminmenu2">
-<?php
-    //Iterate through the available option groups.
-    $option_groups = $wpdb->get_results("SELECT group_id, group_name, group_desc, group_longdesc FROM {$wpdb->optiongroups[$wp_id]} ORDER BY group_id");
-    foreach ($option_groups as $option_group) {
-        if ($option_group->group_id == $option_group_id) {
-            $current_desc=replace_constant($option_group->group_desc);
-            $current_long_desc = $option_group->group_longdesc;
-            echo("  <li><a class=\"current\" href=\"$this_file?option_group_id={$option_group->group_id}\" title=\"".replace_constant($option_group->group_desc)."\">{$option_group->group_name}</a></li>\n");
-        } else {
-            echo("  <li><a href=\"$this_file?option_group_id={$option_group->group_id}\" title=\"".replace_constant($option_group->group_desc)."\">{$option_group->group_name}</a></li>\n");
-        }
-    } // end for each group
-?>
-  <li class="last"><a href="options-permalink.php"><?php echo _LANG_WOP_PERM_LINKS; ?></a></li>
-</ul>
 <br clear="all" />
-<div class="wrap">
-  <h2><?php echo $current_desc; ?></h2>
-  <form name="form" action="<?php echo $this_file; ?>" method="post">
-  <input type="hidden" name="action" value="update" />
-  <input type="hidden" name="option_group_id" value="<?php echo $option_group_id; ?>" />
-  <table width="90%" cellpadding="2" cellspacing="2" border="0">
+<?php if($messase) { ?>
+<div class="wrap"><?php echo $message; ?></div>
+<?php } ?>
 <?php
+	include XOOPS_ROOT_PATH."/class/xoopsformloader.php";
+	$form = new XoopsThemeForm($current_desc, "form", $this_file);
     //Now display all the options for the selected group.
     $options = $wpdb->get_results("SELECT {$wpdb->options[$wp_id]}.option_id, option_name, option_type, option_value, option_width, option_height, option_description, option_admin_level "
                                   . "FROM {$wpdb->options[$wp_id]} "
@@ -170,18 +143,15 @@ if ($non_was_selected) { // no group pre-selected, display opening page
                                   . "ORDER BY seq");
     if ($options) {
         foreach ($options as $option) {
-            echo('    <tr><td width="10%" valign="top">'. get_option_widget($option, ($user_level >= $option->option_admin_level), '</td><td width="15%" valign="top" style="border: 1px solid #ccc">'));
-            echo("    </td><td  valign='top' class='helptext'>".replace_constant($option->option_description)."</td></tr>\n");
+        	$form->addElement(get_option_formElement($option, ($user_level >= $option->option_admin_level)));
         }
     }
-?>
-    <tr><td colspan="3">&nbsp;</td></tr>
-    <tr><td align="center" colspan="3"><input type="submit" name="Update" value="<?php echo _LANG_WOP_SUBMIT_TEXT; ?>" /></td></tr>
-    <tr><td colspan="3"><?php echo $message; ?></td></tr>
-  </table>
-  </form>
-</div>
+	$form->addElement(new XoopsFormButton("", "Update", _LANG_WOP_SUBMIT_TEXT, "submit"));
+	$form->addElement(new XoopsFormHidden("option_group_id", $option_group_id));
+	$form->addElement(new XoopsFormHidden("action", "update"));
+	$form->display();
 
+?>
 <div class="wrap">
 <?php
     if ($current_long_desc != '') {

@@ -1,4 +1,6 @@
 <?php
+require_once('admin.php');
+
 $standalone="1";
 $title = 'Upload Image or File';
 require_once('admin-header.php');
@@ -65,7 +67,12 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
 	                $thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
 	            }
 			} else {
-                $thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
+                if (function_exists('imagecreatetruecolor')) {
+                    $thumbnail = @imagecreatetruecolor($image_new_width, $image_new_height);
+                }
+                if (!$thumbnail) {
+                     $thumbnail =imagecreate($image_new_width, $image_new_width);
+                }
 			}
             @imagecopyresized($thumbnail, $image, 0, 0, 0, 0, $image_new_width, $image_new_height, $image_attr[0], $image_attr[1]);
             

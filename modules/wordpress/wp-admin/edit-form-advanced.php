@@ -1,4 +1,3 @@
-
 <div class="wrap">
 <?php
 
@@ -7,9 +6,14 @@ $allowed_users = explode(" ", trim(get_settings('fileupload_allowedusers')));
 $submitbutton_text = 'Save';
 $toprow_title = 'Editing Post #' . $postdata['ID'];
 $form_action = 'editpost';
-$form_extra = "' />\n<input type='hidden' name='post_ID' value='$post->ID";
+$form_extra = "<input type='hidden' name='post_ID' value='$post->ID' >";
 $colspan = 2;
-$form_pingback = '<input type="hidden" name="post_pingback" value="0" />';
+if (get_settings('use_pingback')) {
+	$form_pingback = '<input type="checkbox" class="checkbox" name="post_pingback" value="1" ';
+	$form_pingback .= 'tabindex="7" id="pingback" />' ._LANG_EF_PING_FORM;
+} else {
+	$form_pingback = '';
+}
 $form_prevstatus = '<input type="hidden" name="prev_status" value="'.$post_status.'" />';
 if (get_settings('use_trackback')) {
 	$form_trackback = _LANG_EF_TRACK_FORM.'	<input type="text" name="trackback_url" style="width: 415px" id="trackback" tabindex="7" value="'. str_replace("\n", ' ', $to_ping) .'" />&nbsp;&nbsp;&nbsp;Use UTF-8:<input value="1" type="checkbox" name="useutf8" id="useutf8" /></p>';
@@ -25,13 +29,12 @@ if (get_settings('use_trackback')) {
 	$form_trackback = '';
 }
 $saveasdraft = '<input name="save" type="submit" id="save" tabindex="6" value="'._LANG_EFA_SAVE_CONTINUE.'" />';
-
-
 ?>
 
 <form name="post" action="post.php" method="post" id="post">
 <input type="hidden" name="user_ID" value="<?php echo $user_ID ?>" />
-<input type="hidden" name="action" value='<?php echo $form_action . $form_extra ?>' />
+<input type="hidden" name="action" value='<?php echo $form_action ?>' />
+<?php echo $form_extra ?>
 
 <script type="text/javascript">
 <!--
@@ -84,14 +87,11 @@ window.onload = focusit;
 <fieldset id="postdiv">
 <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#post" title="Help with post field"><?php echo _LANG_EF_AD_POSTAREA; ?></a></legend>
 		<div id="quicktags">
-<?php
-if ($wp_use_spaw==false) {
-
-if (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))) {
-	echo '<a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#quicktags" title="Help with quicktags"><?php echo _LANG_EF_AD_POSTQUICK; ?></a>: ';
-	include('quicktags.php');
-}
-?>
+<?php if ($wp_use_spaw==false||!$is_winIE) { ?>
+<?php if (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))) { ?>
+<a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#quicktags" title="Help with quicktags"><?php echo _LANG_EF_AD_POSTQUICK; ?></a>:
+<?php include('quicktags.php'); ?>
+<?php } ?>
 </div>
 <?php
  $rows = get_settings('default_post_edit_rows');
@@ -104,7 +104,6 @@ if (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))) {
 } else {
 // For Spaw Editor
     include_once "spaw/spaw_control.class.php";
-//	$content = html_entity_decode($content);
 	$trans_tbl = get_html_translation_table (HTML_SPECIALCHARS);
 	$trans_tbl = array_flip ($trans_tbl);
 	$content = strtr ($content, $trans_tbl);
@@ -113,74 +112,69 @@ if (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))) {
 	$sw -> show();
     foreach($wpsmiliestrans[$wp_id] as $smiley => $img) 
     { 
-        print '<a href="javascript:bbinsert(document.post,\'\',\''.str_replace("'","\'",$smiley).'\')"><img src="' . $smilies_directory . '/'. $img . '" alt="' . $smiley . '" /></a> '; 
+        echo '<a href="javascript:bbinsert(document.post,\'\',\''.str_replace("'","\'",$smiley).'\')"><img src="' . $smilies_directory . '/'. $img . '" alt="' . $smiley . '" /></a> '; 
     } 
 	echo "<script src=\"quicktags_spaw.js\" language=\"JavaScript\" type=\"text/javascript\"></script>";
 //
 }
 ?>
 </fieldset>
-
 <?php
-if ($wp_use_spaw==false) {
-if (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))) {
-?>
+if (($wp_use_spaw==false) &&  (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx))))) { ?>
 <script type="text/javascript" language="JavaScript">
 <!--
 edCanvas = document.getElementById('wp_content');
 //-->
 </script>
+<?php } ?>
 <?php
-}
-}
-if ($action != 'editcomment') {
-    if (get_settings('use_geo_positions')) {
-        if (empty($edited_lat)) {
-            if (get_settings('use_default_geourl')) {
-                $edited_lat = get_settings('default_geourl_lat');
-                $edited_lon = get_settings('default_geourl_lon');
-            }
+if (get_settings('use_geo_positions')) {
+    if (empty($edited_lat)) {
+        if (get_settings('use_default_geourl')) {
+            $edited_lat = get_settings('default_geourl_lat');
+            $edited_lon = get_settings('default_geourl_lon');
         }
+    }
 ?>
 <label for="post_latf"><?php echo _LANG_EFA_POST_LATITUDE; ?></label><input size="8" type="text" value="<?php echo $edited_lat; ?>" name="post_latf">&nbsp;
 <label for="post_lonf"><?php echo _LANG_EFA_POST_LONGITUDE; ?></label><input size="8" type="text" value="<?php echo $edited_lon; ?>" name="post_lonf">&nbsp; <a href="http://www.geourl.org/resources.html" rel="external" ><?php echo _LANG_EFA_POST_GEOINFO; ?></a>
 <br />
-<?php
-    }
-}
-?>
+<?php } ?>
 
 <?php echo $form_pingback ?>
 <?php echo $form_prevstatus ?>
 
 <p>
-<?php
-if ($action != 'editcomment') {
-    if ( (get_settings('use_fileupload')) && ($user_level >= get_settings('fileupload_minlevel'))
-         && (in_array($user_login, $allowed_users) || (trim(get_settings('fileupload_allowedusers'))=="")) ) { ?>
+<?php if ( (get_settings('use_fileupload')) && ($user_level >= get_settings('fileupload_minlevel')) && (in_array($user_login, $allowed_users) || (trim(get_settings('fileupload_allowedusers'))=="")) ) { ?>
 <input type="button" value="<?php echo _LANG_EFA_STATUS_UPLOAD; ?>" onclick="launchupload();" tabindex="10" />
-<?php }
-}
-?>
+<?php } ?>
 <?php echo $saveasdraft; ?> <input type="submit" name="submit" value="<?php echo _LANG_EF_AD_DRAFT; ?>" tabindex="6" /> 
   <input name="publish" type="submit" id="publish" tabindex="10" value="<?php echo _LANG_EF_AD_PUBLISH; ?>" /> 
   <input name="referredby" type="hidden" id="referredby" value="<?php echo $_SERVER['HTTP_REFERER']; ?>" />
 </p>
-
-
+<?php echo $form_trackback; ?>
 <?php
-echo $form_trackback;
-
-// if the level is 5+, allow user to edit the timestamp - not on 'new post' screen though
-// if (($user_level > 4) && ($action != "post"))
 if ($user_level > 4) {
 	touch_time(($action == 'edit'));
 }
-if ('edit' == $action) echo "
-<p><a href='post.php?action=delete&amp;post=$post->ID' onclick=\"return confirm('You are about to delete this post \'".addslashes($edited_post_title)."\'\\n  \'Cancel\' to stop, \'OK\' to delete.')\">"._LANG_EFA_DEL_THISPOST."</a></p>";
 ?>
-
+<fieldset id="postcustom">
+<legend><?php echo _LANG_EFA_POST_CUSTOM; ?></legend>
+<?php 
+if($metadata = has_meta($post_ID)) {
+?>
+<?php
+	list_meta($metadata); 
+?>
+<?php
+}
+	meta_form();
+?>
+</fieldset>
+<?php do_action('edit_form_advanced', ''); ?>
 </div>
 </form>
-
+<?php if ('edit' == $action) { ?>
+<p><a class='delete' href='post.php?action=confirmdelete&amp;post=$post->ID'><?php echo _LANG_EFA_DEL_THISPOST ?></a></p>
+<?php } ?>
 </div>
