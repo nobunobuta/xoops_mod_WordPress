@@ -1,10 +1,10 @@
-<?php
+<?php //* Brazilian Portuguese Translation by Marcelo Yuji Himoro <www.yuji.eu.org> *//
 $blog_charset = 'iso-8859-1';
 
 if (!defined('WP_LANGUAGE_FILE_READ')) {
 define ('WP_LANGUAGE_FILE_READ','1');
 /* This is Multilingual correspondence file */
-/* Brazilian Portuguese Translation: Marcelo Yuji Himoro <http://www.yuji.eu.org> */
+
 
 /* Copylight 2004 -----------------------
 Author : Otsukare
@@ -15,20 +15,20 @@ URL : http://wordpress.xwd.jp/
 define('_LANG_WA_SETTING_GUIDE','<p>O WordPress ME ainda não está instalado. Clique <a href=\'wp-admin/install.php\'>aqui</a> para começar a instalação.</p>');
 
 /* File Name wp-blog-header.php */
-define('_LANG_WA_HEADER_GUIDE1','<p>O arquivo <code>wp-config.php</code> não existe. Ele é necessário na instalação do WordPress ME. Precisa de ajuda? Clique <a href="http://wordpress.org/docs/faq/#wp-config">aqui</a>. Você pode <a href="wp-admin/install-config.php">criar um arquivo <code>wp-config.php</code></a> na interface web. Para isso, é necessário que as permissões de escrita estejam ativadas (707~777), mas ela pode não funcionar em todos os servidores. O jeito mais seguro é criá-lo manualmente.</p>');
+define('_LANG_WA_HEADER_GUIDE1','<p>O arquivo <code>wp-config.php</code> não existe. Ele é necessário na instalação do WordPress ME. Precisa de ajuda? Clique <a href="http://wordpress.org/docs/faq/#wp-config">aqui</a>. Você pode <a href="wp-admin/install-config.php">criar um arquivo <code>wp-config.php</code></a> na interface web. Para isso, é preciso dar as permissões de escrita corretamente (707~777), mas ela pode não funcionar em todos os servidores. O jeito mais seguro é criá-lo manualmente.</p>');
 
 /* File Name wp-admin/install-config.php */
 define('_LANG_WA_CONFIG_GUIDE1','<p>O arquivo \'wp-config.php\' já existe. Se você deseja zerar alguma configuração neste arquivo, por favor apague-o primeiro.</p>');
-define('_LANG_WA_CONFIG_GUIDE2','<p>Desculpe, é preciso de um arquivo wp-config-sample.php para continuar. Por favor, faça o upload deste arquivo novamente da sua instalação do WordPress.<p>');
-define('_LANG_WA_CONFIG_GUIDE3','<p>Desculpe, não é possível escrever no diretório. Por favor, dê as permissões de escrita ao diretório do WordPress ou crie seu wp-config.php manualmente usando o arquivo wp-config-sample.php como referência.</p>');
-define('_LANG_WA_CONFIG_GUIDE4','Bem-vindo ao WordPress. Antes de começar, serão necessárias algumas informações sobre o banco de dados. Você terá que ter em mãos os seguintes dados antes de prosseguir.');
+define('_LANG_WA_CONFIG_GUIDE2','<p>Lamento, é preciso de um arquivo wp-config-sample.php para continuar. Por favor, faça o upload deste arquivo da sua instalação do WordPress novamente.<p>');
+define('_LANG_WA_CONFIG_GUIDE3','<p>Lamento, não é possível escrever no diretório. Por favor, dê as permissões de escrita ao diretório do WordPress ou crie seu wp-config.php manualmente usando o arquivo wp-config-sample.php como referência.</p>');
+define('_LANG_WA_CONFIG_GUIDE4','Bem-vindo ao WordPress. Antes de começar, serão necessárias algumas informações sobre o banco de dados. Você terá que ter em mãos os seguintes dados antes de prosseguir:');
 define('_LANG_WA_CONFIG_DATABASE','Nome do banco de dados');
 define('_LANG_WA_CONFIG_USERNAME','Usuário');
 define('_LANG_WA_CONFIG_PASSWORD','Senha');
 define('_LANG_WA_CONFIG_LOCALHOST','Hostname');
 define('_LANG_WA_CONFIG_PREFIX','Prefixo da tabela');
-define('_LANG_WA_CONFIG_GUIDE5','<strong>Se por alguma razão a criação automática de arquivos não funcionar, não se preocupe, pois tudo o que é feito é transferir os dados para um arquivo de configuração. Você também pode simplesmente abrir o arquivo <code>wp-config-sample.php</code> em um editor de textos, alterar as configurações, e salvá-lo como <code>wp-config.php</code>. </strong></p><p>Provavelmente, esses dados foram fornecidos à você pelo seu provedor. Se você não tivé-los, precisará contatá-los antes de continuar. Caso você esteja pronto, clique <a href="install-config.php?step=1">aqui</a>.');
-define('_LANG_WA_CONFIG_GUIDE6','Digite abaixo os dados da sua conexão ao banco de dados. Se você não tiver certeza sobre eles, contate seu provedor de hospedagem.');
+define('_LANG_WA_CONFIG_GUIDE5','<strong>Se por alguma razão a criação automática de arquivos não funcionar, não se preocupe, pois tudo o que é feito é transferir os dados para um arquivo de configuração. Você também pode simplesmente abrir o arquivo <code>wp-config-sample.php</code> em um editor de textos, alterar as configurações, e salvá-lo como <code>wp-config.php</code>. </strong></p><p>Provavelmente, esses dados foram fornecidos à você pelo seu host. Se você não tivé-los, precisará contatá-los antes de continuar. Caso você esteja pronto, clique <a href="install-config.php?step=1">aqui</a>.');
+define('_LANG_WA_CONFIG_GUIDE6','Digite abaixo os dados da sua conexão ao banco de dados. Se você não tiver certeza sobre eles, contate seu host.');
 define('_LANG_WA_CONFIG_GUIDE7','<small>O nome do banco de dados onde o WordPress ME será instalado. </small>');
 define('_LANG_WA_CONFIG_GUIDE8','<small>Nome de usuário do MySQL</small>');
 define('_LANG_WA_CONFIG_GUIDE9','<small>Senha do MySQL</small>');
@@ -45,7 +45,7 @@ define('_LANG_WA_WPDB_GUIDE4','Tem certeza de que o servidor do banco de dados e
 
 
 /* File Name wp-include/functions.php */
-define('_LANG_F_TIMESTAMP','Editar hora');
+define('_LANG_F_TIMESTAMP','Editar formato da hora');
 define('_LANG_F_NEW_COMMENT','Tem um comentário novo no seu post.');
 define('_LANG_F_ALL_COMMENTS','Os comentários deste post podem ser vistos aqui:');
 define('_LANG_F_NEW_TRACKBACK','Tem uma nova trackback no seu post.');
@@ -53,7 +53,7 @@ define('_LANG_F_ALL_TRACKBACKS','As trackbacks deste post podem ser vistas aqui:
 define('_LANG_F_NEW_PINGBACK','Tem um novo pingback no seu post.');
 define('_LANG_F_ALL_PINGBACKS','Os pingbacks deste post podem ser vistos aqui:');
 define('_LANG_F_COMMENT_POST','Tem um novo comentário no post');
-define('_LANG_F_WAITING_APPROVAL','está esperando pela sua aprovação.');
+define('_LANG_F_WAITING_APPROVAL','está esperando por sua aprovação.');
 define('_LANG_F_APPROVAL_VISIT','Para aprovar este comentário:');
 define('_LANG_F_DELETE_VISIT','Para apagar este comentário:');
 define('_LANG_F_PLEASE_VISIT','No momento, existem comentários pendentes de aprovação. Vá para o Painel de Moderação:');
@@ -65,10 +65,10 @@ define('_LANG_R_SAME_PASS','<strong>ERRO</strong>: repita a mesma senha nos dois
 define('_LANG_R_MAIL_ADDRESS','<strong>ERRO</strong>: digite seu endereço de e-mail.');
 define('_LANG_R_ADDRESS_CORRECT','<strong>ERRO</strong>: o endereço de e-mail é inválido.');
 define('_LANG_R_CHOOSE_ANOTHER','<strong>ERRO</strong>: este nome de usuário já existe. Escolha outro e tente novamente.');
-define('_LANG_R_REGISTER_CONTACT','<strong>ERRO</strong>: não foi possível realizar o cadastro. Entre contate o administrador.');
+define('_LANG_R_REGISTER_CONTACT','<strong>ERRO</strong>: não foi possível realizar o cadastro. Contate o administrador.');
 define('_LANG_R_USER_REGISTRATION','Novo usuário no seu blog');
 define('_LANG_R_MAIL_REGISTRATION','Novo cadastro de usuário');
-define('_LANG_R_R_COMPLETE','Cadastro completo.');
+define('_LANG_R_R_COMPLETE','Cadastro completado.');
 define('_LANG_R_R_DISABLED','Cadastro desativado.');
 define('_LANG_R_R_CLOSED','No momento, não são aceitos novos cadastros.');
 define('_LANG_R_R_REGISTRATION','Cadastro');
@@ -78,8 +78,8 @@ define('_LANG_R_TWICE_PASSWORD','Repetir senha:');
 define('_LANG_R_USER_EMAIL','E-mail');
 
 /* File Name wp-login.php */
-define('_LANG_L_LOGIN_EMPTY','Preencha o campo nome de usuário.');
-define('_LANG_L_PASS_EMPTY','Preencha o campo senha.');
+define('_LANG_L_LOGIN_EMPTY','Preencha o campo <b>Usuário</b>.');
+define('_LANG_L_PASS_EMPTY','Preencha o campo <b>Senha</b>.');
 define('_LANG_L_WRONG_LOGPASS','O nome de usuário ou senha são inválidos.');
 define('_LANG_L_RECEIVE_PASSWORD','Basta preencher os dados e te enviaremos uma nova senha.');
 define('_LANG_L_EXIST_SORRY','Este usuário não existe. Clique <a href="wp-login.php?action=lostpassword">aqui</a> para receber sua senha por e-mail.');
@@ -88,25 +88,25 @@ define('_LANG_L_NOT_SENT','O e-mail não pôde ser enviado.');
 define('_LANG_L_DISABLED_FUNC','Possível razão: seu servidor pode ter desativado a função mail().');
 
 define('_LANG_L_SUCCESS_SEND',': o e-mail foi enviado com sucesso.');
-define('_LANG_L_CLICK_ENTER','Clique aqui para se conectar!');
+define('_LANG_L_CLICK_ENTER','Clique aqui para se identificar!');
 define('_LANG_L_WRONG_SESSION','Erro: usuário/senha inválidos.');
 define('_LANG_L_BACK_BLOG','Voltar ao blog');
 define('_LANG_L_WP_RESIST','Cadastrar-se agora!');
 define('_LANG_L_WPLOST_YOURPASS','Esqueceu sua senha?');
 
 /* File Name wp-admin/post.php */
-define('_LANG_P_NEWCOMER_MESS','Como você é um novato, você terá que esperar até que um administrador aumente seu nível para 1 para poder postar.<br />Você pode enviar um e-mail ao administrador pedindo uma promoção.<br />Quando você for promovido, basta atualizar esta página e você poderá postar.');
+define('_LANG_P_NEWCOMER_MESS','Como você é um novato, terá que esperar até que um administrador aumente seu nível para 1 para poder postar.<br />Você pode enviar um e-mail ao administrador pedindo uma promoção.<br />Quando você for promovido, basta atualizar esta página e poderá postar.');
 define('_LANG_P_DATARIGHT_EDIT',', você não tem permissão para editar posts.');
 define('_LANG_P_DATARIGHT_DELETE',', você não tem permissão para apagar posts.');
 define('_LANG_P_DATARIGHT_ERROR','Erro ao apagar. Contate o administrador.');
-define('_LANG_P_OOPS_IDCOM','Não existem comentários com este ID.');
-define('_LANG_P_OOPS_IDPOS','Não existem posts com este ID.');
+define('_LANG_P_OOPS_IDCOM','Não existem comentários com este nº ID.');
+define('_LANG_P_OOPS_IDPOS','Não existem posts com este nº ID.');
 define('_LANG_P_ABOUT_FOLLOW','Você está prestes a apagar o seguinte comentário:');
 define('_LANG_P_SURE_THAT','Tem certeza de que deseja continuar?');
 define('_LANG_P_NICKNAME_DELETE','Você não tem permissão para apagar comentários.');
 define('_LANG_P_COMHAS_APPR','O comentário foi aprovado.');
 define('_LANG_P_YOUR_DRAFTS','Seus rascunhos:');
-define('_LANG_P_WP_BOOKMARKLET','Você pode arrastar o link seguinte para sua barra de links ou adicioná-lo ao seus Favoritos. Quando você clicar sobre ele, se abrirá uma janela popup com informações e um link para o site que você esta visitando agora, permitindo que você faça um post rapidamente.');
+define('_LANG_P_WP_BOOKMARKLET','Você pode arrastar o link seguinte para sua barra de links ou adicioná-lo ao seus Favoritos. Quando você clicar sobre ele, se abrirá uma janela popup com informações e um link para a página que você está visualizando agora, permitindo que você faça um post rapidamente.');
 
 /* File Name wp-admin/categories.php */
 define('_LANG_C_DEFAULT_CAT','Não é possível apagar esta categoria pois ela é a padrão.');
@@ -123,9 +123,12 @@ define('_LANG_C_ADD_NEWCAT','Adicionar uma nova categoria');
 define('_LANG_C_NOTE_CATEGORY','Apagar uma categoria não exclui os posts existentes nela, apenas move-os à categoria padrão.');
 define('_LANG_C_NAME_EDIT','EDITAR');
 define('_LANG_C_NAME_DELETE','APAGAR');
-define('_LANG_C_NAME_ADD','Adicionar');
+define('_LANG_C_NAME_ADDBTN','Adicionar');
 define('_LANG_C_NAME_EDITBTN','Enviar');
 define('_LANG_C_NAME_PARENT','Categoria padrão:');
+define('_LANG_C_MESS_ADD','Categoria added.');
+define('_LANG_C_MESS_DELE','Categoria deleted.');
+define('_LANG_C_MESS_UP','Categoria updated.');
 
 /* File Name wp-admin/edit.php */
 define('_LANG_E_LATEST_POSTS','Últimos posts');
@@ -144,7 +147,7 @@ define('_LANG_EC_DELETE_COM','Apagar comentário');
 define('_LANG_EC_EDIT_POST','Editar post &#8220;');
 define('_LANG_EC_VIEW_POST','Ver post');
 define('_LANG_EC_SEARCH_MODE','Realiza pesquisas dentro dos comentários, e-mail, URL e endereço IP.');
-define('_LANG_EC_VIEW_MODE','Modo de visão');
+define('_LANG_EC_VIEW_MODE','Modo de visualização');
 define('_LANG_EC_EDIT_MODE','Modo de edição em massa');
 define('_LANG_EC_CHECK_INVERT','Inverter caixa de seleção');
 define('_LANG_EC_CHECK_DELETE','Apagar os comentários selecionados');
@@ -153,8 +156,8 @@ define('_LANG_EC_LINK_EDIT','Editar');
 define('_LANG_EC_LINK_DELETE','Apagar');
 
 /* File Name wp-admin/edit-form.php */
-define('_LANG_EF_PING_FORM','<label for="pingback"><strong>Fazer pingback</strong> nas <acronym title="Uniform Resource Locators">URL</acronym>s dos posts</label> <a href="http://wordpress.org/docs/reference/post/#pingback" title="Ajuda com pingbacks">?</a><br />');
-define('_LANG_EF_TRACK_FORM','<p><label for="trackback"><a href="http://wordpress.org/docs/reference/post/#trackback" title="Ajuda com trackbacks"><strong>Fazer trackback</strong> numa <acronym title="Uniform Resource Locator">URL</acronym></a>:</label> (Separar múltiplas <acronym title="Uniform Resource Locator">URL</acronym>s por espaços.)<br />');
+define('_LANG_EF_PING_FORM','<label for="pingback">Fazer <strong>pingback</strong> nas <acronym title="Uniform Resource Locators">URL</acronym>s dos posts</label> <a href="http://wordpress.org/docs/reference/post/#pingback" title="Ajuda com pingbacks">?</a><br />');
+define('_LANG_EF_TRACK_FORM','<p><label for="trackback"><a href="http://wordpress.org/docs/reference/post/#trackback" title="Ajuda com trackbacks">Fazer <strong>trackback</strong> numa <acronym title="Uniform Resource Locator">URL</acronym></a>:</label> (Separar múltiplas <acronym title="Uniform Resource Locator">URL</acronym>s por espaços.)<br />');
 define('_LANG_EF_AD_POSTTITLE','Título');
 define('_LANG_EF_AD_CATETITLE','Categorias');
 define('_LANG_EF_AD_POSTAREA','Post');
@@ -168,7 +171,7 @@ define('_LANG_EF_AD_EDITING','Edição avançada &raquo;');
 define('_LANG_EFA_POST_STATUS','Estado do post');
 define('_LANG_EFA_AD_COMMENTS','Comentários');
 define('_LANG_EFA_AD_PINGS','Pings');
-define('_LANG_EFA_POST_PASSWORD','Senha');
+define('_LANG_EFA_POST_PASSWORD','Senha do post');
 define('_LANG_EFA_POST_EXCERPT','Excerto');
 define('_LANG_EFA_POST_LATITUDE','Latitude:');
 define('_LANG_EFA_POST_LONGITUDE','Longitude:');
@@ -177,7 +180,7 @@ define('_LANG_EFA_DEL_THISPOST','Apagar este post');
 define('_LANG_EFA_SAVE_CONTINUE','Salvar e continuar editando');
 define('_LANG_EFA_STATUS_OPEN','Aberto');
 define('_LANG_EFA_STATUS_CLOSE','Fechado');
-define('_LANG_EFA_STATUS_UPLOAD','Enviar um arquivo ou imagem');
+define('_LANG_EFA_STATUS_UPLOAD','Fazer o upload de um arquivo ou imagem');
 define('_LANG_EFA_STATUS_DISCUSS','Discussão');
 define('_LANG_EFA_STATUS_ALLOWC','Permitir comentários');
 define('_LANG_EFA_STATUS_ALLOWP','Permitir pings');
@@ -196,7 +199,7 @@ define('_LANG_WLA_MANAGE_LINK','Gerenciar links');
 define('_LANG_WLA_ADD_LINK','Adicionar link');
 define('_LANG_WLA_LINK_CATE','Categorias de links');
 define('_LANG_WLA_IMPORT_BLOG','Importar blogroll');
-define('_LANG_WLA_LINK_TITLE','<strong>Adicionar</strong> um link:');
+define('_LANG_WLA_LINK_TITLE','Adicionar um<strong>link</strong>:');
 define('_LANG_WLA_SUB_URI','URL:');
 define('_LANG_WLA_SUB_NAME','Nome do link:');
 define('_LANG_WLA_SUB_IMAGE','Imagem:');
@@ -288,7 +291,7 @@ define('_LANG_WLI_ROLL_YOURURL','Sua URL OPML:');
 define('_LANG_WLI_ROLL_UPLOAD','<strong>Ou</strong> faça o upload do arquivo OPML:');
 define('_LANG_WLI_ROLL_THISFILE','Fazer upload do arquivo:');
 define('_LANG_WLI_ROLL_CATEGORY','Agora, escolha a categoria onde você deseja inserir estes links.<br />Categoria:');
-define('_LANG_WLI_ROLL_BUTTONTEXT','Enviar');
+define('_LANG_WLI_ROLL_BUTTONTEXT','Importar');
 
 /* File Name wp-admin/link-manager.php */
 define('_LANG_WLM_PAGE_TITLE','Gerenciar links');
@@ -307,7 +310,7 @@ define('_LANG_WLM_MOVE_TEXT','Mover');
 define('_LANG_WLM_TO_CATEGORY',' para categoria');
 define('_LANG_WLM_TOGGLE_BOXES','Selecionar tudo');
 define('_LANG_WLM_EDIT_LINK','Editar um link:');
-define('_LANG_WLM_SAVE_CHANGES','Enviar');
+define('_LANG_WLM_SAVE_CHANGES','Salvar alterações');
 define('_LANG_WLM_EDIT_CANCEL','Cancelar');
 
 /* File Name wp-admin/moderation.php */
@@ -347,32 +350,25 @@ define('_LANG_WOP_SUBMIT_TEXT','Enviar');
 define('_LANG_WOP_SETTING_SAVED',' Configurações salvas com sucesso.');
 
 /* File Name wp-admin/permalink.php */
-define('_LANG_WPL_EDIT_UPDATED','Permalink structure updated.');
-define('_LANG_WPL_EDIT_STRUCT','Edit Permalink Structure');
-define('_LANG_WPL_CREATE_CUSTOM','WordPress offers you the ability to create a custom URI structure for your permalinks and archives. The following &#8220;tags&#8221; are available:');
-define('_LANG_WPL_CODE_YEAR','The year of the post, 4 digits, for example <code>2004</code>');
-define('_LANG_WPL_CODE_MONTH','Month of the year, for example <code>05</code>');
-define('_LANG_WPL_CODE_DAY','Day of the month, for example <code>28</code>');
-define('_LANG_WPL_CODE_HOUR','Hour of the day, for example <code>15</code>');
-define('_LANG_WPL_CODE_MINUTE','Minute of the hour, for example <code>43</code>');
-define('_LANG_WPL_CODE_SECOND','Second of the minute, for example <code>33</code>');
-define('_LANG_WPL_CODE_POSTNAME','A sanitized version of the title of the post. So &#8220;This Is A Great Post!&#8221; becomes &#8220;<code>this-is-a-great-post</code>&#8221; in the URI');
-define('_LANG_WPL_CODE_POSTID','The unique ID # of the post, for example <code>423</code>');
-define('_LANG_WPL_USE_EXAMPLE','<p>So for example a value like:</p>
-<p><code>/archives/%year%/%monthnum%/%day%/%postname%/</code> </p>
-<p>would give you a permalink like:</p>
-<p><code>/archives/2003/05/23/my-cheese-sandwich/</code></p>
-<p> In general for this you must use mod_rewrite, however if you put a filename at the beginning WordPress will attempt to use that to pass the arguments, for example:</p>
-<p><code>/index.php/archives/%year%/%monthnum%/%day%/%postname%/</code> </p>
-<p>If you use this option you can ignore the mod_rewrite rules. </p>');
-define('_LANG_WPL_USE_TEMPTEXT','Use the template tags above to create a virtual site structure:');
-define('_LANG_WPL_USE_BLANK','If you like, you may enter a custom prefix for your category URIs here. For example, <code>/taxonomy/categorias</code> would make your category links like <code>http://example.org/taxonomy/categorias/general/</code>. If you leave this blank the default will be used.');
-define('_LANG_WPL_USE_HTACCESS','Using the permalink structure value you currently have, <code>%s</code>, these are the mod_rewrite rules you should have in your <code>.htaccess</code> file. Click in the field and press <kbd>CTRL + a</kbd> to select all.');
+define('_LANG_WPL_EDIT_UPDATED','Estrutura de permalinks atualizada.');
+define('_LANG_WPL_EDIT_STRUCT','Editar estrutura dos permalink');
+define('_LANG_WPL_CREATE_CUSTOM','WordPress oferece à você a possibilidade de criar uma estrutura URL para os seus permalinks e arquivos. As seguintes &#8220;tags&#8221; estão disponíveis:');
+define('_LANG_WPL_CODE_YEAR','Ano, com 4 digitos. Ex.: <code>2004</code>.');
+define('_LANG_WPL_CODE_MONTH','Mês, com 2 digitos. Ex.: <code>05</code>.');
+define('_LANG_WPL_CODE_DAY','Dia, com 2 digitos. Ex.: <code>28</code>.');
+define('_LANG_WPL_CODE_HOUR','Hora, com 2 dígitos. Ex.: <code>15</code>');
+define('_LANG_WPL_CODE_MINUTE','Minutos, com 2 dígitos. Ex.: <code>43</code>');
+define('_LANG_WPL_CODE_SECOND','Segundos, com 2 dígitos. Ex.: <code>33</code>');
+define('_LANG_WPL_CODE_POSTNAME','Uma versão limpa do título do post. Ex.: "This Is A Great Post!" seria "this-is-a-great-post" no URL.');
+define('_LANG_WPL_CODE_POSTID','O nº ID do post. Ex.: <code>423</code>.');
+define('_LANG_WPL_USE_EXAMPLE','Um valor como <code>/archives/%year%/%monthnum%/%day%/%postname%/</code> daria um permalink como <code>/archives/2003/05/23/my-cheese-sandwich/</code>. Para que isso funcione, você deverá ter o mod_rewrite instalado em seu servidor para a criação das regras. Futuramente, poderão haver mais opções.');
+define('_LANG_WPL_USE_TEMPTEXT','Use as tags de templates acima.');
+define('_LANG_WPL_USE_BLANK','Se você quiser, você pode digitar um prefixo personalizado para a sua categoria de URIs aqui. Ex.: <code>/taxonomy/categorias</code> faria seus links de categoria ficarem como <code>http://examplo.org/taxonomy/categorias/general/</code>. Se você deixar isto em branco, as configurações padrões serão usadas.');
+define('_LANG_WPL_USE_HTACCESS','No momento existem <code>%s</code> usando o valor da estrutura do permalink. Estas são as regras do mod_rewrite que você deve ter no seu <code>.htaccess</code>. Clique no campo e aperte <kbd>CTRL + A</kbd> para selecionar tudo.');
 define('_LANG_WPL_ENGINE_ON','RewriteEngine On RewriteBase');
-define('_LANG_WPL_EDIT_TEMPLATE','<p>If your <code>.htaccess</code> file is writable by WordPress, you can <a href="%s">edit it through your template interface</a>.</p>');
-define('_LANG_WPL_MOD_REWRITE','You are not currently using customized permalinks. No special mod_rewrite rules are needed.');
-define('_LANG_WPL_SUBMIT_UPDATE','Update Permalink Structure &raquo;');
-
+define('_LANG_WPL_EDIT_TEMPLATE','<p>Se o seu arquivo <code>.htaccess</code> tiver permissão de escrita pelo WordPress, você pode <a href="%s">editá-lo na tela de edição de templates</a>.</p>');
+define('_LANG_WPL_MOD_REWRITE','No momento, você não esta usando permalinks personalizados. Nenhuma regra especifica do mod_rewrite é necessária.');
+define('_LANG_WPL_SUBMIT_UPDATE','Enviar');
 
 /* File Name wp-admin/profile.php */
 define('_LANG_WPF_ERR_NICKNAME','<strong>ERRO</strong>: digite seu nick (pode ser o mesmo que o seu nome de usuário).');
@@ -394,7 +390,7 @@ define('_LANG_WPF_SUBT_MSN','MSN IM:');
 define('_LANG_WPF_SUBT_YAHOO','Yahoo IM:');
 define('_LANG_WPF_SUBT_ONE','IE one-click bookmarklet');
 define('_LANG_WPF_SUBT_COPY','Para ter um one-click bookmarklet, basta copiar e colar isso em um arquivo de texto:');
-define('_LANG_WPF_SUBT_BOOK','Salve-o como wordpress.reg, e clique duas vezes nele numa janela do Explorer.<br />Responda Sim a pergunta, e reinicie o Internet Explorer.<br /><br />Assim, você pode clicar com o botão direito numa janela do Internet Explorer<br />e selecionar "Postar no WP".');
+define('_LANG_WPF_SUBT_BOOK','Salve-o como wordpress.reg, e clique duas vezes nele numa janela do Explorer.<br />Responda \"Sim\" a pergunta, e reinicie o Internet Explorer.<br /><br />Assim, você pode clicar com o botão direito numa janela do Internet Explorer<br />e selecionar "Postar no WP".');
 define('_LANG_WPF_SUBT_CLOSE','Fechar esta janela');
 define('_LANG_WPF_SUBT_UPDATED','Perfil atualizado com sucesso.');
 define('_LANG_WPF_SUBT_EDIT','Editar seu perfil');
@@ -411,12 +407,12 @@ define('_LANG_WPF_SUBT_FAVORITES','Adicionar este link aos Favoritos:');
 define('_LANG_WPF_SUBT_UPDATE','Atualizar');
 
 /* File Name wp-admin/sidebar.php */
-define('_LANG_WAS_SIDE_POSTED','Post enviado com sucesso.');
+define('_LANG_WAS_SIDE_POSTED','Post realizado com sucesso.');
 define('_LANG_WAS_SIDE_AGAIN','Clique <a href="sidebar.php">aqui</a> para postar novamente.');
 
 /* File Name wp-admin/templates.php */
 define('_LANG_WAT_LEVEL_ERR','<p>Você não tem permissão para editar o template deste blog.<br />Peça uma promoção ao administrador do blog.</p>');
-define('_LANG_WAT_SORRY_EDIT','Lamento, não é possível editar arquivos com ".." no nome. Se você estiver tentando editar um arquivo no diretorio raiz do seu WordPress, você deve digitar apenas o nome dele.');
+define('_LANG_WAT_SORRY_EDIT','Lamento, não é possível editar arquivos com ".." no nome. Se você estiver tentando editar um arquivo no diretorio raiz do seu WordPress, você deve digitar apenas o seu nome.');
 define('_LANG_WAT_SORRY_PATH','Lamento, não é possível chamar arquivos pelo seu caminho real.');
 define('_LANG_WAT_EDITED_SUCCESS','<em>Arquivo editado com sucesso.</em>');
 define('_LANG_WAT_FILE_CHMOD','Você não pode editar este arquivo/template. Ele deve ter permissão de escrita. Ex.: CHMOD 766');
@@ -448,7 +444,7 @@ define('_LANG_WUS_AU_URI','URL');
 define('_LANG_WUS_AU_LEVEL','Nível');
 define('_LANG_WUS_AU_POSTS','Posts');
 define('_LANG_WUS_AU_USERS','Usuários');
-define('_LANG_WUS_AU_WARNING','Para apagar um usuário, mude seu nível para 0, e então clique no X vermelho.<br /><strong>ATENÇÃO:</strong> apagar um usuário também remove todos os posts feitos por ele.');
+define('_LANG_WUS_AU_WARNING','Para apagar um usuário, mude seu nível para 0, e então clique no X vermelho.<br /><strong>ATENÇÃO:</strong> apagar um usuário remove também todos os posts feitos por ele.');
 define('_LANG_WUS_ADD_USER','Adicionar usuário');
 define('_LANG_WUS_ADD_THEMSELVES','Os usuários podem registrar-se por si mesmos ou você pode criá-los manualmente por aqui.');
 define('_LANG_WUS_ADD_FIRST','Nome');
@@ -463,19 +459,19 @@ define('_LANG_WPCM_COM_RSS','<abbr title="Really Simple Syndication">RSS</abbr> 
 define('_LANG_WPCM_COM_TRACK','<acronym title="Uniform Resource Identifier">URL</acronym> da TrackBack:');
 define('_LANG_WPCM_COM_YET','Ainda não existem comentários.');
 define('_LANG_WPCM_COM_LEAVE','Comentar');
-define('_LANG_WPCM_HTML_ALLOWED','Parágrafos e quebra-linhas automáticos; websites substituem e-mails; <acronym title="Hypertext Markup Language">HTML</acronym> permitido.');
+define('_LANG_WPCM_HTML_ALLOWED','Parágrafos e quebra-linhas automáticos; site substitui o e-mail; <acronym title="Hypertext Markup Language">HTML</acronym> permitido.');
 define('_LANG_WPCM_COM_YOUR','Seu comentário:');
 define('_LANG_WPCM_PLEASE_NOTE','<strong>NOTA:</strong> a moderação de comentários está ativada, portanto pode haver algum atraso entre quando você enviar seu comentário e quando ele aparecer. Não há necessidade de enviá-lo novamente, seja paciente.');
 define('_LANG_WPCM_COM_SAYIT','Enviar');
-define('_LANG_WPCM_THIS_TIME','Desculpe, mas os comentários estão fechados no momento.');
+define('_LANG_WPCM_THIS_TIME','Lamento, no momento os comentários estão fechados.');
 define('_LANG_WPCM_GO_BACK','Voltar');
 define('_LANG_WPCM_COM_NAME','Nome');
 
 /* File Name wp-comments-post.php */
 define('_LANG_WPCP_SORRY_ITEM','Desculpe, os comentários estão fechados para este item.');
-define('_LANG_WPCP_ERR_FILL','ERRO: por favor, preencha os campos obrigatórios (nome e e-mail).');
-define('_LANG_WPCP_ERR_TYPE','ERRO: por favor, escreva um comentário.');
-define('_LANG_WPCP_SORRY_SECONDS','Desculpe, você so pode fazer um novo comentário após 10 segundos.');
+define('_LANG_WPCP_ERR_FILL','ERRO: preencha os campos obrigatórios (nome e e-mail).');
+define('_LANG_WPCP_ERR_TYPE','ERRO: escreva um comentário.');
+define('_LANG_WPCP_SORRY_SECONDS','Lamento, você só pode fazer um novo comentário após 10 segundos.');
 
 /* File Name wp-admin/upload.php */
 define('_LANG_WAU_UPLOAD_DISABLED','Esta opção foi desativada pelo administrador.');
@@ -502,13 +498,14 @@ define('_LANG_WAU_UPLOAD_ALTER','Nome alternativo:');
 define('_LANG_WAU_UPLOAD_REBTN','Renomear');
 define('_LANG_WAU_UPLOAD_CODEIN','Inserir código no formulário');
 define('_LANG_WAU_UPLOAD_AMAZON','Amazon Associate');
+define('_LANG_WAU_ATTACH_ICON','Apenas ícones anexos');
 
 /* File Name wp-admin/options-general.php */
-define('_LANG_WAO_GENERAL_DISABLED','Você não tem permissão o suficiente para editar as opções para este blog.');
-define('_LANG_WAO_GENERAL_WPTITLE','Título do Weblog:');
+define('_LANG_WAO_GENERAL_DISABLED','Você não tem permissão suficiente para editar as opções para este blog.');
+define('_LANG_WAO_GENERAL_WPTITLE','Título do weblog:');
 define('_LANG_WAO_GENERAL_TAGLINE','Tagline:');
-define('_LANG_WAO_GENERAL_URI','Endereço do Site (URL):');
-define('_LANG_WAO_GENERAL_MAIL','Endereço de E-mail:');
+define('_LANG_WAO_GENERAL_URI','Endereço do site (URL):');
+define('_LANG_WAO_GENERAL_MAIL','Endereço de e-mail:');
 define('_LANG_WAO_GENERAL_MEMBER','Usuário:');
 define('_LANG_WAO_GENERAL_GMT','<acronym title="Greenwich Meridian Time">Fuso horário</acronym>:');
 define('_LANG_WAO_GENERAL_DIFFER','Diferença de horas:');
@@ -522,9 +519,9 @@ define('_LANG_WAO_GENERAL_UPDATE','Enviar');
 define('_LANG_WAO_WRITING_ERROR','Você não tem permissão para editar as opções para este blog.');
 define('_LANG_WAO_WRITING_TITLE','Opções de escrita');
 define('_LANG_WAO_WRITING_SIMPLE','Opções básicas');
-define('_LANG_WAO_WRITING_ADVANCED','Opções avançados');
+define('_LANG_WAO_WRITING_ADVANCED','Opções avançadas');
 define('_LANG_WAO_WRITING_LINES','linhas');
-define('_LANG_WAO_WRITING_DISPLAY','Converter smilies como :-) e :-P em gráficos');
+define('_LANG_WAO_WRITING_DISPLAY','Transformar smilies como :-) e :-P em gráficos');
 define('_LANG_WAO_WRITING_XHTML','Detectar codigos XHTML inválidos automaticamente');
 define('_LANG_WAO_WRITING_CHARACTER','Codificação (UTF-8 recomendado)');
 define('_LANG_WAO_WRITING_STYLE','Quando começar um post, mostrar:');
@@ -532,21 +529,21 @@ define('_LANG_WAO_WRITING_BOX','Tamanho da caixa de texto:');
 define('_LANG_WAO_WRITING_FORMAT','Formatação:');
 define('_LANG_WAO_WRITING_ENCODE','Codificação:');
 define('_LANG_WAO_WRITING_SERVICES','Atualizar serviços');
-define('_LANG_WAO_WRITING_SOMETHING','Digite os sites que você gostaria de notificar quando publicar um novo texto. Para uma lista de sites recomendados a fazer ping, por favor veja [LINK TO SOMETHING]. Separar URLs múltiplos por quebra-linhas.');
+define('_LANG_WAO_WRITING_SOMETHING','Digite os sites que você gostaria de avisar quando publicar um novo texto. Para uma lista de sites recomendados a fazer ping, por favor veja [LINK TO SOMETHING]. Separar URLs múltiplos por quebra-linhas.');
 define('_LANG_WAO_WRITING_UPDATE','Enviar');
 
 /* File Name wp-admin/options-discussion.php */
 define('_LANG_WAO_DISCUSS_TITLE','Opções de discussão');
-define('_LANG_WAO_DISCUSS_INDIVIDUAL','Configurações-padrão para um artigo: <em>(Essas configurações podem ser sobrepostas por artigos individuais.)</em>');
-define('_LANG_WAO_DISCUSS_NOTIFY','Tentar notificar algum weblogs linkado sobre o artigo. (Deixa os posts mais lentos.)');
-define('_LANG_WAO_DISCUSS_PINGTRACK','Aceitar notificação de outros weblogs. (pingbacks e trackbacks.)');
+define('_LANG_WAO_DISCUSS_INDIVIDUAL','Configurações padrão para um artigo: <em>(estas configurações podem ser sobrepostas por artigos individuais.)</em>');
+define('_LANG_WAO_DISCUSS_NOTIFY','Tentar avisar alguns weblogs linkados sobre o artigo. (deixa os posts mais lentos.)');
+define('_LANG_WAO_DISCUSS_PINGTRACK','Aceitar aviso de outros weblogs. (pingbacks e trackbacks.)');
 define('_LANG_WAO_DISCUSS_PEOPLE','Permitir que comentários sejam enviados nos artigos');
 define('_LANG_WAO_DISCUSS_EMAIL','Contatar-me quando:');
 define('_LANG_WAO_DISCUSS_ANYONE','Um comentário for postado');
 define('_LANG_WAO_DISCUSS_DECLINED','Um comentário for aceito ou rejeitado');
 define('_LANG_WAO_DISCUSS_APPEARS','Antes que um comentário apareça:');
 define('_LANG_WAO_DISCUSS_ADMIN','Um administrador deve aprovar o comentário (independente de qualquer opção acima)');
-define('_LANG_WAO_DISCUSS_MODERATION','Quando um comentário tiver alguma dessas palavras em seu conteúdo, nome, URL, ou e-mail, colocá-lo na fila de moderação: (Separar novas palavras por quebra-linha.)');
+define('_LANG_WAO_DISCUSS_MODERATION','Quando um comentário tiver alguma destas palavras em seu conteúdo, nome, URL, ou e-mail, colocá-lo na fila de moderação: (separar novas palavras por quebra-linha.)');
 
 /* File Name wp-admin/options-reading.php */
 define('_LANG_WAO_READING_TITLE','Opções de leitura');
@@ -565,16 +562,16 @@ define('_LANG_P_CHEATING_ERROR','Você não tem permissão para realizar esta opera
 
 /* Start Install ************************************************/
 /* File Name install.php */
-define('_LANG_INST_GUIDE_WPCONFIG','O arquivo wp-config.php não existe. Ele é necessário na instalação do WordPress ME. Precisa de ajuda? Clique <a href="http://wordpress.org/docs/faq/#wp-config">aqui</a>. Você pode <a href="wp-admin/install-config.php">criar um arquivo <code>wp-config.php</code></a> na interface web. Para isso, é necessário que as permissões de escrita estejam ativadas (707~777), mas ela pode não funcionar em todos os servidores. O jeito mais seguro é criá-lo manualmente.</p>');
+define('_LANG_INST_GUIDE_WPCONFIG','<p>O arquivo <code>wp-config.php</code> não existe. Ele é necessário na instalação do WordPress ME. Precisa de ajuda? Clique <a href="http://wordpress.org/docs/faq/#wp-config">aqui</a>. Você pode <a href="wp-admin/install-config.php">criar um arquivo <code>wp-config.php</code></a> na interface web. Para isso, é preciso dar as permissões de escrita corretamente (707~777), mas ela pode não funcionar em todos os servidores. O jeito mais seguro é criá-lo manualmente.</p>');
 define('_LANG_INST_GUIDE_INSTALLED','<p>O WordPress já está instalado. Se você quiser reinstalá-lo, apague as informações antigas.</p></body></html>');
-define('_LANG_INST_GUIDE_WEL','<br />Bem-vindo ao WordPress. Você terá que passar por algumas etapas antes de ter rodando a última em plataformas de publicação pessoal. Antes de começarmos, lembre-se de que é necessária pelo menos a versão 4.0.6 do PHP.');
-define('_LANG_INST_GUIDE_COM','Você também deve determinar as configurações do banco de dados no <code>wp-config.php</code>. Você deve alterar a permissão do arquivo weblogs.com.changes.cache para 666.<br />Veja o leia-me <a href="../wp-readme/">aqui</a>.</p> Se você estiver pronto, clique <a href="install.php?step=1">aqui</a>! ');
+define('_LANG_INST_GUIDE_WEL','<br />Bem-vindo ao WordPress. Você terá que passar por algumas etapas antes de ter rodando a última em plataformas de publicação pessoal. Antes de começar, lembre-se de que é necessária pelo menos a versão 4.0.6 do PHP.');
+define('_LANG_INST_GUIDE_COM','Você também deve determinar as configurações do banco de dados no <code>wp-config.php</code>. Você deve alterar a permissão do arquivo weblogs.com.changes.cache para 666.<br />Veja o leia-me <a href="../wp-readme/">aqui</a>.</p> Se você estiver pronto, clique <a href="install.php?step=1">aqui</a>.');
 define('_LANG_INST_STEP1_FIRST','<p>O banco de dados de links será configurado. Isso te permitirá hospedar seu próprio blogroll completo, com atualizações do Weblogs.com.</p>');
 define('_LANG_INST_STEP1_LINKS','<p>Instalando WP-Links.</p><p>Checando as tabelas...</p>');
 define('_LANG_INST_STEP1_ALLDONE','Perfeito! Você está pronto para o <a href="install.php?step=2">2º passo</a>.');
 define('_LANG_INST_STEP2_INFO','As tabelas necessárias para o blog serão criadas no banco de dados.');
 /* base options from b2cofig */
-define('_LANG_INST_BASE_VALUE1','URL do blog. (sem a barra invertida)');
+define('_LANG_INST_BASE_VALUE1','URL do blog (sem a barra invertida).');
 define('_LANG_INST_BASE_VALUE2','Nome do arquivo padrão do blog.');
 define('_LANG_INST_BASE_VALUE3','Nome do blog.');
 define('_LANG_INST_BASE_VALUE4','Descrição do seu blog.');
@@ -586,9 +583,9 @@ define('_LANG_INST_BASE_VALUE9','O dia em que a semana começa.');
 define('_LANG_INST_BASE_VALUE11','Usar BBCode. Ex.: [b]negrito[/b].');
 define('_LANG_INST_BASE_VALUE12','Usar GreyMatter-styles. Ex.: **negrito** \\\\itálico\\\\ __sublinhado__.');
 define('_LANG_INST_BASE_VALUE13','Ativar botões de HTML tags. (ainda não funcionam no IE do Mac)');
-define('_LANG_INST_BASE_VALUE14','ATENÇÃO: desative isto caso esteja usando Chinês, Japonês, Coreano, ou outras línguas multi-bytes.');
-define('_LANG_INST_BASE_VALUE15','Isto deve ajudar a equilibrar o código HTML. Se der maus resultados, basta desativá-lo.');
-define('_LANG_INST_BASE_VALUE16','Ativar a conversão de smiley nos seus posts. (NOTA: ela é feita em TODOS os posts)');
+define('_LANG_INST_BASE_VALUE14','ATENÇÃO: desative isto caso esteja usando Chinês, Japonês, Coreano, ou outro idioma multi-byte.');
+define('_LANG_INST_BASE_VALUE15','Isto deve ajudar a equilibrar o código HTML. Caso dê maus resultados, basta desativá-lo.');
+define('_LANG_INST_BASE_VALUE16','Ativar a transformação de smilies nos seus posts. (NOTA: ela é feita em TODOS os posts)');
 define('_LANG_INST_BASE_VALUE17','Diretório de smilies. (sem a barra invertida)');
 define('_LANG_INST_BASE_VALUE18','Ative isto para fazer de e-mail and nome campos obrigatórios.');
 define('_LANG_INST_BASE_VALUE20','Ativar aviso de novos comentários aos autores dos posts.');
@@ -596,19 +593,19 @@ define('_LANG_INST_BASE_VALUE20','Ativar aviso de novos comentários aos autores 
 define('_LANG_INST_BASE_VALUE21','Número de últimos posts a sindicar.');
 define('_LANG_INST_BASE_VALUE22','Idioma do blog (veja <a href="http://backend.userland.com/stories/storyReader$16" target="_blank">http://backend.userland.com/stories/storyReader$16</a>)');
 define('_LANG_INST_BASE_VALUE23','Permitir HTML codificado na tag &lt;description> do b2rss.php.');
-define('_LANG_INST_BASE_VALUE24','Tamanho dos excerpts no RSS feed? (0=ilimitado) NOTA: no b2rss.php, ele será desativado se você usa HTML codificado');
+define('_LANG_INST_BASE_VALUE24','Tamanho dos excertos no RSS feed? (0=ilimitado) NOTA: no b2rss.php, ele será desativado se você usa HTML codificado');
 define('_LANG_INST_BASE_VALUE25','Usar o campo excerto para RSS feed.');
 define('_LANG_INST_BASE_VALUE26','Listar em http://weblogs.com quando um novo post for feito.');
 define('_LANG_INST_BASE_VALUE27','Listar em http://blo.gs quando um novo post for feito.');
 define('_LANG_INST_BASE_VALUE28','Você não deve precisar mudar isto.');
 define('_LANG_INST_BASE_VALUE29','Permitir trackbacks. Se desativado, o envio de trackbacks também será desligado.');
 define('_LANG_INST_BASE_VALUE30','Permitir pingbacks. Se desativado, o envio de pingbacks também será desligado.');
-define('_LANG_INST_BASE_VALUE31','Permitir o envio de arquivos');
-define('_LANG_INST_BASE_VALUE32','Digite o caminho real do diretório onde as imagens serão armazenadas. Se não tiver certeza do que é isto, por favor contate sua hospedagem. NOTA: o diretório deve ter permissão de escrita pelo servidor (CHMOD 766).');
+define('_LANG_INST_BASE_VALUE31','Permitir o upload de arquivos');
+define('_LANG_INST_BASE_VALUE32','Digite o caminho real do diretório onde as imagens serão armazenadas. Se não tiver certeza do que é isto, por favor contate seu host. NOTA: o diretório deve ter permissão de escrita pelo servidor (CHMOD 766).');
 define('_LANG_INST_BASE_VALUE33','Digite a URL do diretório. Ela será usada para gerar os links das imagens.');
 define('_LANG_INST_BASE_VALUE34','Extensões de arquivos permitidas, separadas por espaço.');
-define('_LANG_INST_BASE_VALUE35','Por padrão, na maioria dos servidores o envio de arquivos á 2048 KB. Para determinar um valor menor, mude isto. (você não poderá determinar um valor maior do que o limite do seu servidor)');
-define('_LANG_INST_BASE_VALUE36','Caso não queira permitir todos os usuários a fazer o upload arquivos, escolha um nível mínimo,');
+define('_LANG_INST_BASE_VALUE35','Por padrão, na maioria dos servidores o upload de arquivos á 2048 KB. Para determinar um valor menor, mude isto. (você não poderá determinar um valor maior do que o limite do seu servidor)');
+define('_LANG_INST_BASE_VALUE36','Caso não queira permitir o upload de arquivos à todos os usuários, escolha um nível mínimo,');
 define('_LANG_INST_BASE_VALUE37','Ou você pode especificar apenas alguns usuários. Digite seus nomes de usuário, separados por espaço. Se você deixar esta variável em branco, todos os usuários com o nível mínimo poderão fazer o upload de arquivos.');
 /* email settings */
 define('_LANG_INST_BASE_VALUE38','Servidor de e-mail.');
@@ -618,7 +615,7 @@ define('_LANG_INST_BASE_VALUE41','Porta.');
 define('_LANG_INST_BASE_VALUE42','Por padrão, os posts terão esta categoria.');
 define('_LANG_INST_BASE_VALUE43','Prefixo do assunto');
 define('_LANG_INST_BASE_VALUE44','Body terminator string (a partir disto, tudo será ignorado)');
-define('_LANG_INST_BASE_VALUE45','Ativar modo de teste.');
+define('_LANG_INST_BASE_VALUE45','Ativa modo de teste.');
 define('_LANG_INST_BASE_VALUE46','Ative isto caso seu serviço de e-mail por celulares envie assunto e conteúdo idênticos na mesma linha.');
 define('_LANG_INST_BASE_VALUE47','Se você ativou a opção acima, quando redigir uma mensagem, você terá que digitar o assunto, o string separador, usuário:senha, o string separador, e o conteúdo.');
 define('_LANG_INST_BASE_VALUE48','Número de posts mostrados na página principal.');
@@ -646,7 +643,7 @@ define('_LANG_INST_BASE_VALUE83','O número de linhas no formulário de edição. (m
 define('_LANG_INST_BASE_VALUE60','Nível mínimo para editar os links.');
 define('_LANG_INST_BASE_VALUE61','Desative isto para ter os links visíveis e editáveis por todos no gerenciador de links.');
 define('_LANG_INST_BASE_VALUE62','Escolha qual o tipo de avaliação a utilizar.');
-define('_LANG_INST_BASE_VALUE63','Qual caracter usar? (Caracter)');
+define('_LANG_INST_BASE_VALUE63','Se caracter, qual usar?');
 define('_LANG_INST_BASE_VALUE64','Ative para ignorar valores "0", ou desative para processá-lo normalmente. (Número/Imagem)');
 define('_LANG_INST_BASE_VALUE65','Usar a mesma imagem para cada ponto de avaliação?');
 define('_LANG_INST_BASE_VALUE66','Imagem 0 para avaliação.');
@@ -659,7 +656,7 @@ define('_LANG_INST_BASE_VALUE72','Imagem 6 para avaliação.');
 define('_LANG_INST_BASE_VALUE73','Imagem 7 para avaliação.');
 define('_LANG_INST_BASE_VALUE74','Imagem 8 para avaliação.');
 define('_LANG_INST_BASE_VALUE75','Imagem 9 para avaliação.');
-define('_LANG_INST_BASE_VALUE76','caminho/para/o/cache deve ter permissão de escrita pelo servidor.');
+define('_LANG_INST_BASE_VALUE76','O caminho para o cache deve ter permissão de escrita pelo servidor.');
 define('_LANG_INST_BASE_VALUE77','Receber arquivos de weblogs.com.');
 define('_LANG_INST_BASE_VALUE78','Tempo de cache em minutos.');
 define('_LANG_INST_BASE_VALUE79','Formato de data e hora.');
@@ -671,7 +668,7 @@ define('_LANG_INST_BASE_VALUE85','Ativar localização GeoURL ICBM padrão quando n
 define('_LANG_INST_BASE_VALUE86','O valor padrão da latitude ICBM - Veja <a href="http://www.geourl.org/resources.html" target="_blank">aqui</a>.');
 define('_LANG_INST_BASE_VALUE87','O valor-padrão da longitude ICBM');
 /* Last Question */
-define('_LANG_INST_STEP2_LAST','Certo, falta pouco. Há apenas algumas coisas que precisamos saber:');
+define('_LANG_INST_STEP2_LAST','Há apenas algumas coisas que precisam ser informadas:');
 define('_LANG_INST_STEP2_URL','Usuário criado com sucesso.');
 define('_LANG_INST_STEP3_SET','<p>Agora você pode se <a href="../wp-login.php">identificar</a> com o <strong>usuário</strong> "admin" e <strong>senha</strong> "');
 define('_LANG_INST_STEP3_UP','".</p><p><strong><em>Anote a senha</em></strong> com cuidado! É uma senha <em>randonômica</em> gerada especialmente para você. Se você perdê-la, terá que apagar as tabelas do banco de dados e reinstalar o WordPress.</p>');
@@ -681,16 +678,36 @@ define('_LANG_INST_CAUTIONS','<ul><li>Diretório : [755]</li><li>wp-config.php : 
 /* Start Upgrade ************************************************/
 /* File Name wp-admin/upgrade.php */
 define('_LANG_UPG_STEP_INFO','Parece que o arquivo wp-config.php não existe. Verifique se você atualizou o wp-config.sample.php com as informações corretas do banco de dados e renomeou-o para wp-config.php.');
-define('_LANG_UPG_STEP_INFO2','<p>Este arquivo atualiza seu WordPress para a última versão. Seja paciente, pode levar alguns instantes. </p><p>Se você estiver pronto, clique <a href="upgrade.php?step=1">aqui</a>! </p>');
-define('_LANG_UPG_STEP_INFO3','<p>A etapa é única, portanto se você está vendo isso, é porque ela foi concluída. <a href="../">Divirta-se</a>! </p>');
+define('_LANG_UPG_STEP_INFO2','<p>Este arquivo atualiza seu WordPress para a última versão. Seja paciente, pode levar alguns instantes. </p><p>Se você estiver pronto, clique <a href="upgrade.php?step=1">aqui</a>.</p>');
+define('_LANG_UPG_STEP_INFO3','<p>É uma única etapa, portanto se você está vendo isso, é porque a atualização foi concluída. <a href="../">Divirta-se</a>! </p>');
 
 /* File Name wp-admin/upgrade-functions.php */
 define('_LANG_INST_BASE_VALUE88','Mostrar comentários apenas após serem aprovados.');
 define('_LANG_INST_BASE_VALUE89','Avisar sobre novos comentários pendentes de aprovação.');
-define('_LANG_INST_BASE_VALUE90','Como os permalinks para o seu site são feitos. Veja <a href=\"options-permalink.php\">permalink options page</a> para as regras mod_rewrite necessárias e maiores informações.');
+define('_LANG_INST_BASE_VALUE90','Como os permalinks para o seu site são feitos. Veja <a href=\"options-permalink.php\">Configurações de permalinks</a> para as regras mod_rewrite necessárias e maiores informações.');
 define('_LANG_INST_BASE_VALUE91','Se o arquivo de destino deve ser Gzip ou não. Ative-o se você não tiver mod_gzip rodando ainda.');
 define('_LANG_INST_BASE_VALUE92','Altere este valor para verdadeiro se você planeja usar arquivos hackeados. Aqui você poderá guardar códigos hackeados que não serão sobreescritos quando você atualizar. O arquivo deve estar na pasta raiz do wordpress e se chamar <code>my-hacks.php</code>');
 define('_LANG_INST_BASE_VALUE93','blog_charset');
 define('_LANG_INST_BASE_VALUE94','Diferença em horas entre o fuso horário do servidor e o seu.');
+
+/* File Name wp-admin/plugins.php */
+define('_LANG_PG_LEAST_LEVEL','Para instalar um plug-in, é necessário ter pelo menos nível 8.');
+define('_LANG_PG_ACTIVATED_OK','Plug-ins <strong>ativados</strong>');
+define('_LANG_PG_DEACTIVATED_OK','Plug-ins <strong>desativados</strong>');
+define('_LANG_PG_PAGE_TITLE','Gerenciamento de plug-ins');
+define('_LANG_PG_NEED_PUT','Plug-ins são arquivos especiais que servem para adicionar novas opções no WordPress. Para instalar um plug-in, basta colocar os arquivos no diretório <code>wp-content/plugins</code>. Caso queira instalar um plug-in temporariamente, é possível ativá-lo e desativá-lo nesta página.');
+define('_LANG_PG_OPEN_ERROR','Não é possível acessar o diretório "plugins" ou não existem plug-ins a serem instalados.');
+define('_LANG_PG_SUB_PLUGIN','Plug-in');
+define('_LANG_PG_SUB_VERSION','Versão');
+define('_LANG_PG_SUB_AUTHOR','Autor');
+define('_LANG_PG_SUB_DESCR','Descrição');
+define('_LANG_PG_SUB_ACTION','Ação');
+define('_LANG_PG_SUB_DEACTIVATE','Desativar');
+define('_LANG_PG_SUB_ACTIVATE','Ativar');
+define('_LANG_PG_GOOGLE_HILITE','Quando alguém é indicado por um site de busca como Google e Yahoo, ou a pesquisa interna do WordPress, os termos pesquisados são marcados com este plug-in. Pacote por <a href="http://photomatt.net/">Matt</a>.');
+define('_LANG_PG_MARK_DOWN','Markdown é um conversor de texto para HTML para programadores. A <a href="http://daringfireball.net/projects/markdown/syntax">síntaxe Markdown</a> permite à você escrever em formato texto e convertê-lo em um XHTML estruturalmente válido. Este plug-in ativa <strong>Markdown</strong> em seus posts e comentários. Escrito por <a href="http://daringfireball.net/">John Gruber</a> em Perl, portado para PHP por <a href="http://www.michelf.com/">Michel Fortin</a>, e transformado em plug-in WP por <a href="http://photomatt.net/">Matt</a>. Se você ativar este plug-in, você deve desativar o Textile 1 e 2 por causa do conflito de síntaxe.');
+define('_LANG_PG_TEXTILE_2','Este é um wrapper simples para o Humane Web Text Generator de <a href="http://textism.com/?wp">Dean Allen</a>, também conhecido como <a href="http://www.textism.com/tools/textile/">Textile</a>. A versão 2 dá muita flexibilidade, o que faz dele quase um HTML meta-linguagem, porém é mais lento. Se você ativar este plug-in, deve desativar o Textile 1 e Markdown, pois eles não funcionam bem juntos.');
+define('_LANG_PG_HELLO_DOLLY','Este não é apenas um plug-in, ele simboliza a esperança e o entusiasmo de uma geração inteira somada em 2 palavras cantadas por Louis Armstrong. Este é o primeiro plug-in oficial do WordPress no mundo inteiro. Quando ativado, ele mostra randonomicamente uma frase de <cite>Hello, Dolly</cite> em todas as páginas da Administração, exceto nas configurações de plug-ins.');
+define('_LANG_PG_TEXTILE_1','Este é um wrapper simples para o Humane Web Text Generator de <a href="http://textism.com/?wp">Dean Allen</a>, também conhecido como <a href="http://www.textism.com/tools/textile/">Textile</a>. Se você ativar este plug-in, deve desativar o Textile 2 e Markdown, pois eles não funcionam muito bem juntos.');
 }
 ?>

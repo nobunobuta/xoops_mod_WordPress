@@ -24,8 +24,8 @@ if ($standalone == 0) {
 global $wp_inblock;
 $wp_inblock = 0;
 require('../wp-config.php');
+require('admin-functions.php');
 require_once(ABSPATH.'/wp-admin/auth.php');
-
 function gethelp_link($this_file, $helptag) {
     $url = 'http://wordpress.org/docs/reference/links/#'.$helptag;
     $s = ' <a href="'.$url.'" title="Click here for help">?</a>';
@@ -151,8 +151,8 @@ setTimeout("redirect();", 600);
 	
 	window.onload = blurry;
 //]]>
-<?php endif; ?>
 </script>
+<?php endif; ?>
 <?php do_action('admin_head', ''); ?>
 <?php
 if ($profile==0) {

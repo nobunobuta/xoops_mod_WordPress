@@ -119,8 +119,12 @@ define('_LANG_C_ADD_NEWCAT','Neue Kategorie hinzuf&uuml;gen');
 define('_LANG_C_NOTE_CATEGORY','<strong>Note:</strong><br />Deleting a category does not delete posts from that category, it will just set them back to the default category.');
 define('_LANG_C_NAME_EDIT','EDITIEREN');
 define('_LANG_C_NAME_DELETE','L&Ouml;SCHEN');
-define('_LANG_C_NAME_ADD','Hinzuf&uuml;gen');
+define('_LANG_C_NAME_ADDBTN','Hinzuf&uuml;gen &raquo;');
+define('_LANG_C_NAME_EDITBTN','Edit category &raquo;');
 define('_LANG_C_NAME_PARENT','&Uuml;bergeordnete Kategorie:');
+define('_LANG_C_MESS_ADD','Category added.');
+define('_LANG_C_MESS_DELE','Category deleted.');
+define('_LANG_C_MESS_UP','Category updated.');
 
 /* File Name wp-admin/edit.php */
 define('_LANG_E_LATEST_POSTS','Neueste Posts');
@@ -684,5 +688,25 @@ define('_LANG_INST_BASE_VALUE94','Zeitunterschied zwischen GMT und Deiner Zeitzo
 /* Missing tags */
 define('_WP_LIST_CAT_ALL','-----WP KAT-----');
 define('_LANG_C_NAME_EDITBTN','&Uuml;bernehmen');
+
+/* File Name wp-admin/plugins.php */
+define('_LANG_PG_LEAST_LEVEL','Sorry, you must be at least a level 8 user to modify plugins.');
+define('_LANG_PG_ACTIVATED_OK','Plugin <strong>activated</strong>');
+define('_LANG_PG_DEACTIVATED_OK','Plugin <strong>deactivated</strong>');
+define('_LANG_PG_PAGE_TITLE','Plugin Management');
+define('_LANG_PG_NEED_PUT','Plugins are files you usually download seperately from WordPress that add functionality. To install a plugin you generally just need to put the plugin file into your <code>wp-content/plugins</code> directory. Once a plugin is installed, you may activate it or deactivate it here.');
+define('_LANG_PG_OPEN_ERROR','Couldn\'t open plugins directory or there are no plugins available.');
+define('_LANG_PG_SUB_PLUGIN','Plugin');
+define('_LANG_PG_SUB_VERSION','Version');
+define('_LANG_PG_SUB_AUTHOR','Author');
+define('_LANG_PG_SUB_DESCR','Description');
+define('_LANG_PG_SUB_ACTION','Action');
+define('_LANG_PG_SUB_DEACTIVATE','Deactivate');
+define('_LANG_PG_SUB_ACTIVATE','Activate');
+define('_LANG_PG_GOOGLE_HILITE','When someone is referred from a search engine like Google, Yahoo, or WordPress\' own, the terms they search for are highlighted with this plugin. Packaged by <a href="http://photomatt.net/">Matt</a>.');
+define('_LANG_PG_MARK_DOWN','Markdown is a text-to-HTML conversion tool for web writers. <a href="http://daringfireball.net/projects/markdown/syntax">Markdown syntax</a> allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML. This plugin <strong>enables Markdown for your posts and comments</strong>. Written by <a href="http://daringfireball.net/">John Gruber</a> in Perl, translated to PHP by <a href="http://www.michelf.com/">Michel Fortin</a>, and made a WP plugin by <a href="http://photomatt.net/">Matt</a>. If you use this you should disable Textile 1 and 2 because the syntax conflicts.');
+define('_LANG_PG_TEXTILE_2','This is a simple wrapper for <a href="http://textism.com/?wp">Dean Allen\'s</a> Humane Web Text Generator, also known as <a href="http://www.textism.com/tools/textile/">Textile</a>. Version 2 adds a lot of flexibility that makes it almost a HTML meta-language. As a cost, it\'s slower. If you use this plugin you should disable Textile 1 and Markdown, as they don\'t play well together.');
+define('_LANG_PG_HELLO_DOLLY','This is not just a plugin, it symbolizes the hope and enthusiasm of an entire generation summed up in two words sung most famously by Louis Armstrong. Hello, Dolly. This is, by the way, the world\'s first official WordPress plugin. When enabled you will randomly see a lyric from <cite>Hello, Dolly</cite> in the upper right of your admin screen on every page but the plugins page.');
+define('_LANG_PG_TEXTILE_1','This is a simple wrapper for <a href="http://textism.com/?wp">Dean Allen\'s</a> Humane Web Text Generator, also known as <a href="http://www.textism.com/tools/textile/">Textile</a>. If you use this plugin you should disable Textile 2 and Markdown, as they don\'t play well together.');
 }
 ?>

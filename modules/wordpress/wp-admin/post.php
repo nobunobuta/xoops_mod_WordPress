@@ -210,7 +210,7 @@ switch($action) {
         $standalone = 0;
         require_once('admin-header.php');
 
-        $post = $_GET['post'];
+        $post = $post_ID = $p = $_GET['post'];
         if ($user_level > 0) {
 			$postdata = get_postdata($post);
 			$authordata = get_userdata($postdata['Author_ID']);

@@ -213,9 +213,11 @@ if ((empty($cat)) || ($cat == 'all') || ($cat == '0')) {
 	$join = " LEFT JOIN {$wpdb->post2cat[$wp_id]} ON ({$wpdb->posts[$wp_id]}.ID = {$wpdb->post2cat[$wp_id]}.post_id) ";
 	$cat_array = explode(' ',$cat);
     $whichcat .= ' AND (category_id '.$eq.' '.intval($cat_array[0]);
+    $whichcat .= get_category_children($cat_array[0], ' '.$andor.' category_id '.$eq.' ');
     for ($i = 1; $i < (count($cat_array)); $i = $i + 1) {
         $whichcat .= ' '.$andor.' category_id '.$eq.' '.intval($cat_array[$i]);
-    }
+        $whichcat .= get_category_children($cat_array[$i], ' '.$andor.' category_id '.$eq.' ');
+   }
     if ($eq == '!=') {
 	    $cat = '-'.$cat; //put back the knowledge that we are excluding a category.
     }
@@ -234,10 +236,11 @@ if ('' != $category_name) {
         }
     }
 	$category_name = preg_replace('|[^a-z0-9-]|', '', $category_name);
-//	$category_name = preg_replace('/\/$/', '', $category_name);
 	$tables = ", {$wpdb->post2cat[$wp_id]}, {$wpdb->categories[$wp_id]}";
 	$join = " LEFT JOIN {$wpdb->post2cat[$wp_id]} ON ({$wpdb->posts[$wp_id]}.ID = {$wpdb->post2cat[$wp_id]}.post_id) LEFT JOIN {$wpdb->categories[$wp_id]} ON ({$wpdb->post2cat[$wp_id]}.category_id = {$wpdb->categories[$wp_id]}.cat_ID) ";
 	$whichcat = " AND (category_nicename = '$category_name') ";
+    $whichcat .= get_category_children($cat, " OR category_id = ");
+
 		$cat = $wpdb->get_var("SELECT cat_ID FROM {$wpdb->categories[$wp_id]} WHERE category_nicename = '$category_name'");
 }
 

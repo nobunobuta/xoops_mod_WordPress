@@ -326,3 +326,8 @@
 #wpAdminMain #wphead a span {
 	display: none;
 }
+
+#wpAdminMain fieldset span.cat-nest {
+	display: block;
+	margin-left: 10px;
+}

@@ -4,14 +4,6 @@
 
 $allowed_users = explode(" ", trim(get_settings('fileupload_allowedusers')));
 
-function selected($selected, $current) {
-	if ($selected == $current) echo ' selected="selected"';
-}
-
-function checked($checked, $current) {
-	if ($checked == $current) echo ' checked="checked"';
-}
-
 
 		$submitbutton_text = _LANG_EFC_BUTTON_TEXT;
 		$toprow_title = 'Editing Comment # '.$commentdata['comment_ID'];

@@ -31,8 +31,8 @@ function get_lastpostdate() {
 }
 
 function user_pass_ok($user_login,$user_pass) {
-	global $cache_userdata,$use_cache;
-	if ((empty($cache_userdata[$user_login])) OR (!$use_cache)) {
+	global $cache_userdata,$use_cache,$wp_id;
+	if ((empty($cache_userdata[$wp_id][$user_login])) OR (!$use_cache)) {
 		$userdata = get_userdatabylogin($user_login);
 	} else {
 		$userdata = $cache_userdata[$user_login];
@@ -357,7 +357,7 @@ function profile($user_login) {
 	global $user_data;
 	echo "<a href='profile.php?user=".$user_data->user_login."' onclick=\"javascript:window.open('profile.php?user=".$user_data->user_login."','Profile','toolbar=0,status=1,location=0,directories=0,menuBar=1,scrollbars=1,resizable=0,width=480,height=320,left=100,top=100'); return false;\">$user_login</a>";
 }
-
+/*
 function dropdown_categories($default = 0) {
 	global $post,   $mode, $wpdb ,$wp_id;
 	$categories = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]} ORDER BY cat_name");
@@ -382,7 +382,7 @@ function dropdown_categories($default = 0) {
 	}
 
 }
-
+*/
 function touch_time($edit = 1) {
 	global $month, $postdata, $time_difference;
 	// echo $postdata['Date'];

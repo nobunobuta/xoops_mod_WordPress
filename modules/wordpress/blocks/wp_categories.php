@@ -84,15 +84,12 @@ if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
 				$category_name = preg_replace('|/+$|', '', $category_name);
 				$cat =$wpdb->get_var("SELECT cat_ID  FROM {$wpdb->categories[$wp_id]} WHERE category_nicename='$category_name'");
 			}
-		} else {
-			$cat = 0;
-			$category_name = "";
 		}
 
 		if ($block_style == 0) {
 			// Simple Listing
 			ob_start();
-			list_cats(0, 'All', $sorting_key, $sorting_order,'',true,0,$with_count);
+			wp_list_cats("sort_column=$sorting_key&sorting_order=$sorting_order&optioncount=$with_count");
 			$block['content'] = ob_get_contents();
 			ob_end_clean();
 		} else {

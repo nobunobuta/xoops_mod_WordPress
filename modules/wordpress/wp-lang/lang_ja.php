@@ -124,8 +124,12 @@ define('_LANG_C_NOTE_CATEGORY','カテゴリーを削除しても、そのカテゴリーの投稿自体
 define('_LANG_C_NAME_EDIT','編集');
 define('_LANG_C_NAME_DELETE','削除');
 define('_LANG_C_NAME_ADD','このカテゴリーを追加する');
-define('_LANG_C_NAME_EDITBTN','このカテゴリーを編集する');
+define('_LANG_C_NAME_ADDBTN','カテゴリーを追加する &raquo;');
+define('_LANG_C_NAME_EDITBTN','カテゴリーを編集する &raquo;');
 define('_LANG_C_NAME_PARENT','親カテゴリー選択');
+define('_LANG_C_MESS_ADD','カテゴリーが追加されました');
+define('_LANG_C_MESS_DELE','カテゴリーが削除されました');
+define('_LANG_C_MESS_UP','カテゴリーが更新されました');
 
 /* File Name wp-admin/edit.php */
 define('_LANG_E_LATEST_POSTS','投稿');
