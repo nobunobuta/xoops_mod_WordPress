@@ -133,13 +133,8 @@ case 'promote':
 	header('Location: users.php');
 
 break;
-/*
-case 'delete':
-//Not available with XOOPS;
-	if ( defined ('XOOPS_URL') {
-		header('Location: users.php');
-	}
 
+case 'delete':
 	$standalone = 1;
 	require_once('admin-header.php');
 	wp_refcheck("/wp-admin");
@@ -153,19 +148,29 @@ case 'delete':
 	$user_data = get_userdata($id);
 	$usertodelete_level = $user_data->user_level;
 
-	if ($user_level <= $usertodelete_level)
+	if (0 <>  $usertodelete_level)
 		die('Can&#8217;t delete a user whose level is higher than yours.');
 
-	$sql = "DELETE FROM {$wpdb->users[$wp_id]} WHERE ID = $id";
-	$result = $wpdb->query($sql) or die("Couldn&#8217;t delete user #$id.");
+	$post_ids = $wpdb->get_col("SELECT ID FROM {$wpdb->posts[$wp_id]} WHERE post_author = $id");
+	if ($post_ids) {
+		$post_ids = implode(',', $post_ids);
+		
+		// Delete comments, *backs
+		$wpdb->query("DELETE FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID IN ($post_ids)");
+		// Clean cats
+		$wpdb->query("DELETE FROM {$wpdb->post2cat[$wp_id]} WHERE post_id IN ($post_ids)");
+		// Clean links
+		$wpdb->query("DELETE FROM {$wpdb->links[$wp_id]} WHERE link_owner = $id");
+		// Delete posts
+		$wpdb->query("DELETE FROM {$wpdb->posts[$wp_id]} WHERE post_author = $id");
+	}
 
-	$sql = "DELETE FROM {$wpdb->posts[$wp_id]} WHERE post_author = $id";
-	$result = $wpdb->query($sql) or die("Couldn&#8217;t delete user #$id&#8217;s posts.");
-
+	// FINALLY, delete user
+	$wpdb->query("DELETE FROM {$wpdb->users[$wp_id]} WHERE ID = $id");
 	header('Location: users.php');
 
 break;
-*/
+
 default:
 	
 	$standalone = 0;
@@ -255,7 +260,7 @@ echo "\n<tr $style>
 <td><a href='$url' title='website: $url'>$short_url</a></td>
 <td align='center'>";
 		if ($user_level >= 3)
-			echo " <a href=\"users.php?action=delete&id=".$user_data->ID."\" style=\"color:red;font-weight:bold;\">X</a> ";
+			echo " <a href=\"users.php?action=delete&id=".$user_data->ID."\" style=\"color:red;font-weight:bold;\" onclick=\"return confirm('You are about to delete this user\\n  \'OK\' to delete, \'Cancel\' to stop.')\">X</a> ";
 		echo $user_data->user_level;
 		if ($user_level >= 2)
 			echo " <a href=\"users.php?action=promote&id=".$user_data->ID."&prom=up\">+</a> ";	
