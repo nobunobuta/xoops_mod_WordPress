@@ -164,7 +164,7 @@ function list_authors($optioncount = false, $exclude_admin = true, $show_fullnam
                 $link .= '>';
 
                 if (! empty($feed_image)) {
-                    $link .= "<img src=\"$feed_image\" border=\"0\"$alt$title" . ' />';
+                    $link .= "<img src=\"$feed_image\" border=\"0\" align=\"absbottom\"$alt$title" . ' />';
                 } else {
                     $link .= $name;
                 }
