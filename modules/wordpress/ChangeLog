@@ -1,3 +1,44 @@
+2004-05-18  0.0.2b
+	* wp-admin/edit-form-comment.php:
+		textareaのIDがXOOPSの既定で使用しているIDと重複していたのを修正
+
+	* wp-mail.php:
+		HTMLメールのユーザー認証が、うまくいかない場合があったのに対応
+		メールのDateヘッダ及びサーバのTIMEZONEを元にして投稿日時を算出するように変更
+		オプション設定のemailtestonlyが有効に動作していなかったのを変更
+
+	* wp-admin/edit.php:
+	* wp-blog-header.php:
+		Edit画面で検索が出来ないケースがあった事への対応
+
+	* wp-admin/admin-header.php:
+		Titleにブログ名と管理画面の機能を表示
+
+	* xoops_version.php:
+		最近のコメントブロックの設定を管理画面にて可能に
+
+	* blocks/wp_recent_posts.php:
+		未来日付の投稿記事を表示しないように変更
+
+	* blocks/wp_recent_comments.php:
+		コメント表示の形式を２つ用意しブロック管理画面にて設定を可能に
+
+	* blocks/wp_archives_monthly.php:
+	* blocks/wp_calendar.php:
+	* blocks/wp_categories.php:
+	* blocks/wp_links.php:
+		余分なob_flushを削除
+
+	* wp-moblog.php:
+		メールのDateヘッダ及びサーバのTIMEZONEを元にして投稿日時を算出するように変更
+		オプション設定のemailtestonlyが有効に動作していなかったのを変更
+
+	* header.php:
+		Titleにブログ名と記事名などを表示
+
+	* wp-admin/quicktags.js:
+		textareaの名前変更に伴うfaceマーク挿入不具合対応
+
 2004-05-16  0.0.2a
 	* wp-mail.php
 	* wp-moblog.php
