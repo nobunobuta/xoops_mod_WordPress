@@ -1,14 +1,18 @@
+<?php
 /////////////////////////////////////////////////
-//ƒXƒ^ƒCƒ‹class‚ÌƒvƒŒƒtƒBƒbƒNƒX
-	$_settings['style_prefix'] = 'modPukiWP_';
+//¥¹¥¿¥¤¥ëclass¤Î¥×¥ì¥Õ¥£¥Ã¥¯¥¹
+	PukiWikiConfig::setParam('style_prefix','modPukiWP_');
 /////////////////////////////////////////////////
-// URL•¶Žš—ñ‚ðŽ©“®“I‚ÉƒŠƒ“ƒN•ÏŠ·‚·‚éê‡‚Í1
-//	$_settings['autourllink'] = 1;
+// URLÊ¸»úÎó¤ò¼«Æ°Åª¤Ë¥ê¥ó¥¯ÊÑ´¹¤¹¤ë¾ì¹ç¤Ï1
+//	PukiWikiConfig::setParam('autourllink',3);
 /////////////////////////////////////////////////
-// Šg’£ƒe[ƒuƒ‹‘Ž®‚ðŽg—p‚·‚é
-//	$_settings['ExtTable'] = false;
+// ³ÈÄ¥¥Æ¡¼¥Ö¥ë½ñ¼°¤ò»ÈÍÑ¤¹¤ë
+//	PukiWikiConfig::setParam('ExtTable',true);
 /////////////////////////////////////////////////
-// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒLƒƒƒbƒVƒ…‚ð—LŒø‚É‚·‚é
+// ¥ì¥ó¥À¥ê¥ó¥°¥­¥ã¥Ã¥·¥å¤òÍ­¸ú¤Ë¤¹¤ë
 //	$_settings['use_cache'] = 0;
-//WordPress‹LŽ–‚Ö‚ÌInterWikiName‚ð’è‹`‚·‚é
+/////////////////////////////////////////////////
+// InterWikiName¤ÎÄêµÁ¥µ¥ó¥×¥ë
+//	PukiWikiConfig::addInterWiki('[http://www.google.co.jp/search?ie=utf8&oe=utf8&q=$1&lr=lang_ja&hl=ja Google] utf8');
 //	PukiWikiConfig::addInterWiki('['.XOOPS_URL.'/modules/wordpress/index.php? WordPress]');
+?>
