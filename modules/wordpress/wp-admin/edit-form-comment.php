@@ -69,7 +69,7 @@ if ($use_quicktags) {
      $rows = 10;
  }
 ?>
-<div><textarea rows="<?php echo $rows; ?>" cols="40" name="content" tabindex="4" id="content" style="width: 99%"><?php echo $content ?></textarea></div>
+<div><textarea rows="<?php echo $rows; ?>" cols="40" name="wp_content" tabindex="4" id="wp_content" style="width: 99%"><?php echo $content ?></textarea></div>
 </fieldset>
 
 <?php
@@ -77,7 +77,7 @@ if ($use_quicktags) {
 ?>
 <script type="text/javascript" language="JavaScript">
 <!--
-edCanvas = document.getElementById('content');
+edCanvas = document.getElementById('wp_content');
 //-->
 </script>
 <?php
