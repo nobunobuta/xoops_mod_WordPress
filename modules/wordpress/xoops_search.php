@@ -21,7 +21,7 @@ function wp_xoops_search($queryarray, $andor, $limit, $offset, $userid){
 	}
 	$request = "SELECT * FROM ".$xoopsDB->prefix("wp_posts")." WHERE ".$where;
 	$request .= " ORDER BY post_date DESC";
-	$result = $xoopsDB->query($request);
+	$result = $xoopsDB->query($request,$limit,$offset);
 
 	$ret = array();
 	$i = 0;
@@ -39,6 +39,10 @@ function wp_xoops_search($queryarray, $andor, $limit, $offset, $userid){
 		$ret[$i]['time'] = mktime( $hh,$nn,$ss,$mm,$dd,$yyyy);
 		$ret[$i]['uid'] = $myrow['post_author'];
 		$ret[$i]['page'] = $myrow['post_title'];
+		if (!empty($myrow['post_content']) && function_exists('xoops_make_context')) {
+			$ret[$i]['context'] = xoops_make_context(strip_tags($myrow['post_content']),$queryarray);
+		}
+
 		$i++;
 	}
 	return $ret;
