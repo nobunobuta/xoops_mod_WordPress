@@ -5,7 +5,7 @@ if( ! defined( 'WP_XOOPS_SEARCH_INCLUDED' ) ) {
 
 	function wp_xoops_search($queryarray, $andor, $limit, $offset, $userid, $wp_num=""){
 		global $xoopsDB,$siteurl;
-	    global $month, $wpdb, $wp_id;
+	    global $month, $wpdb, $wp_id,$wp_inblock;
 		if ($wp_num == "") {
 			$wp_id = $wp_num;
 			$wp_inblock = 1;
@@ -59,6 +59,8 @@ if( ! defined( 'WP_XOOPS_SEARCH_INCLUDED' ) ) {
 	for ($i = 0; $i < 10; $i++) {
 		eval ('
 		function wp'.$i.'_xoops_search($queryarray, $andor, $limit, $offset, $userid) {
+			global $xoopsDB,$siteurl;
+		    global $month, $wpdb, $wp_id,$wp_inblock;
 			$wp_id = '.$i.';
 			$wp_inblock = 1;
 			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
