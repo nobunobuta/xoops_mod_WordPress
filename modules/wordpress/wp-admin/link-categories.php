@@ -27,6 +27,7 @@ switch ($action) {
   {
       $standalone = 1;
       include_once('admin-header.php');
+	  wp_refcheck("/wp-admin");
 
       if ($user_level < get_settings('links_minadminlevel'))
           die ("Cheatin' uh ?");
@@ -84,8 +85,10 @@ switch ($action) {
   {
     $standalone = 1;
     include_once('admin-header.php');
+	wp_refcheck("/wp-admin");
 
     $cat_id = $HTTP_GET_VARS['cat_id'];
+    $cat_id = intval($cat_id);
     $cat_name=get_linkcatname($cat_id);
     $cat_name=addslashes($cat_name);
 
@@ -105,6 +108,7 @@ switch ($action) {
   {
     include_once ('admin-header.php');
     $cat_id = $HTTP_GET_VARS['cat_id'];
+    $cat_id = intval($cat_id);
     $row = $wpdb->get_row("SELECT cat_id, cat_name, auto_toggle, show_images, show_description, "
          . " show_rating, show_updated, sort_order, sort_desc, text_before_link, text_after_link, "
          . " text_after_all, list_limit FROM {$wpdb->linkcategories[$wp_id]} WHERE cat_id=$cat_id");
@@ -205,6 +209,7 @@ switch ($action) {
   {
     $standalone = 1;
     include_once("./admin-header.php");
+	wp_refcheck("/wp-admin");
 
     if ($user_level < get_settings('links_minadminlevel'))
       die ("Cheatin' uh ?");
@@ -213,6 +218,7 @@ switch ($action) {
     if (isset($submit) && ($submit == _LANG_WLC_SAVEBUTTON_TEXT)) {
 
     $cat_id=$HTTP_POST_VARS["cat_id"];
+    $cat_id = intval($cat_id);
 
     $cat_name=addslashes($HTTP_POST_VARS["cat_name"]);
     $auto_toggle = $HTTP_POST_VARS["auto_toggle"];
@@ -251,8 +257,11 @@ switch ($action) {
     $text_after_all = addslashes($HTTP_POST_VARS["text_after_all"]);
 
     $list_limit = $HTTP_POST_VARS["list_limit"];
-    if ($list_limit == '')
+    if ($list_limit == '') {
         $list_limit = -1;
+    } else {
+        $list_limit = intval($list_limit);
+    }
 
     $wpdb->query("UPDATE {$wpdb->linkcategories[$wp_id]} set
             cat_name='$cat_name',

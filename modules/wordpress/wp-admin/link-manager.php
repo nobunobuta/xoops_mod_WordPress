@@ -175,15 +175,18 @@ switch ($action) {
   {
     $standalone = 1;
     include_once('admin-header.php');
+	wp_refcheck("/wp-admin");
 
     $link_url = $HTTP_POST_VARS['linkurl'];
     $link_name = $HTTP_POST_VARS['name'];
     $link_image = $HTTP_POST_VARS['image'];
     $link_target = $HTTP_POST_VARS['target'];
     $link_category = $HTTP_POST_VARS['category'];
+    $link_category = intval($link_category);
     $link_description = $HTTP_POST_VARS['description'];
     $link_visible = $HTTP_POST_VARS['visible'];
     $link_rating = $HTTP_POST_VARS['rating'];
+    $link_rating = intval($link_rating);
     $link_rel = $HTTP_POST_VARS['rel'];
     $link_notes = $HTTP_POST_VARS['notes'];
 	$link_rss_uri =  $HTTP_POST_VARS['rss_uri'];
@@ -222,16 +225,20 @@ switch ($action) {
 
       $standalone = 1;
       include_once('admin-header.php');
+	  wp_refcheck("/wp-admin");
 
       $link_id = $HTTP_POST_VARS['link_id'];
+      $link_id = intval($link_id);
       $link_url = $HTTP_POST_VARS['linkurl'];
       $link_name = $HTTP_POST_VARS['name'];
       $link_image = $HTTP_POST_VARS['image'];
       $link_target = $HTTP_POST_VARS['target'];
       $link_category = $HTTP_POST_VARS['category'];
+      $link_category = intval($link_category);
       $link_description = $HTTP_POST_VARS['description'];
       $link_visible = $HTTP_POST_VARS['visible'];
       $link_rating = $HTTP_POST_VARS['rating'];
+      $link_rating = intval($link_rating);
       $link_rel = $HTTP_POST_VARS['rel'];
       $link_notes = $HTTP_POST_VARS['notes'];
 	  $link_rss_uri =  $HTTP_POST_VARS['rss_uri'];
@@ -265,9 +272,10 @@ switch ($action) {
   {
     $standalone = 1;
     include_once('admin-header.php');
+	wp_refcheck("/wp-admin");
 
     $link_id = $HTTP_GET_VARS["link_id"];
-
+	$link_id = intval($link_id);
     if ($user_level < get_settings('links_minadminlevel'))
       die ("Cheatin' uh ?");
 
@@ -293,6 +301,9 @@ switch ($action) {
     if ($user_level < get_settings('links_minadminlevel')) {
       die("You have no right to edit the links for this blog.<br />Ask for a promotion to your <a href='mailto:".get_settings('admin_email')."'>blog admin</a>. :)");
     }
+
+    $link_id = $HTTP_GET_VARS["link_id"];
+	$link_id = intval($link_id);
 
     $row = $wpdb->get_row("SELECT * 
 	FROM {$wpdb->links[$wp_id]} 
@@ -519,13 +530,13 @@ No</label></td>
   default:
   {
     if (isset($links_show_cat_id) && ($links_show_cat_id != ''))
-        $cat_id = $links_show_cat_id;
+        $cat_id = intval($links_show_cat_id);
 
     if (!isset($cat_id) || ($cat_id == '')) {
         if (!isset($links_show_cat_id) || ($links_show_cat_id == ''))
         $cat_id = 'All';
     }
-    $links_show_cat_id = $cat_id;
+    $links_show_cat_id = intval($cat_id);
     if (isset($links_show_order) && ($links_show_order != ''))
         $order_by = $links_show_order;
 
@@ -654,6 +665,7 @@ function checkAll(form)
             LEFT JOIN {$wpdb->users[$wp_id]} ON {$wpdb->users[$wp_id]}.ID = {$wpdb->links[$wp_id]}.link_owner ";
 
     if (isset($cat_id) && ($cat_id != 'All')) {
+      $cat_id = intval($cat_id);
       $sql .= " WHERE link_category = $cat_id ";
     }
     $sql .= ' ORDER BY link_' . $sqlorderby;

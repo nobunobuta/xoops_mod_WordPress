@@ -3,10 +3,10 @@ $title = 'Edit Comments';
 $parent_file = 'edit.php';
 require_once('admin-header.php');
 
-$showcomments = $HTTP_GET_VARS['showcomments'];
-$comment_per_page = $HTTP_GET_VARS['comments_per_page'];
-$commentstart = $HTTP_GET_VARS['commentstart'];
-$commentend = $HTTP_GET_VARS['commentend'];
+$showcomments = intval($HTTP_GET_VARS['showcomments']);
+$comment_per_page = intval($HTTP_GET_VARS['comments_per_page']);
+$commentstart = intval($HTTP_GET_VARS['commentstart']);
+$commentend = intval($HTTP_GET_VARS['commentend']);
 $order = $HTTP_GET_VARS['order'];
 
 if (!$showcomments) {

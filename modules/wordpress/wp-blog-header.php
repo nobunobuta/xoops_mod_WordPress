@@ -360,10 +360,12 @@ if ($pagenow != 'post.php' && $pagenow != 'edit.php') {
 $where .= ' AND (post_status = "publish"';
 
 // Get private posts
-if (isset($user_ID) && ('' != intval($user_ID)))
+if (isset($user_ID) && ('' != intval($user_ID))) {
+	$user_ID = intval($user_ID);
     $where .= " OR post_author = $user_ID AND post_status != 'draft')";
-else
+} else {
     $where .= ')';
+}
 $where .= " GROUP BY {$wpdb->posts[$wp_id]}.ID";
 $request = " SELECT $distinct * FROM {$wpdb->posts[$wp_id]} $join WHERE 1=1".$where." ORDER BY post_$orderby $limits";
 

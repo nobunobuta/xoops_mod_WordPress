@@ -39,10 +39,9 @@ for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 switch($action) {
 
     case 'post':
-
 			$standalone = 1;
 			require_once('admin-header.php');
-
+			wp_refcheck("/wp-admin");
 			$post_pingback = intval($HTTP_POST_VARS['post_pingback']);
 			$content = balanceTags($HTTP_POST_VARS['wp_content']);
 			$content = format_to_post($content);
@@ -241,9 +240,9 @@ switch($action) {
         break;
 
     case 'editpost':
-
         $standalone = 1;
         require_once('./admin-header.php');
+		wp_refcheck("/wp-admin");
 
         if ($user_level == 0)
             die ('Cheatin&#8217; uh?');
@@ -252,6 +251,7 @@ switch($action) {
             $blog_ID = 1;
         }
 			$post_ID = $HTTP_POST_VARS['post_ID'];
+			$post_ID = intval($post_ID);
 			$post_categories = $HTTP_POST_VARS['post_category'];
 			if (!$post_categories) $post_categories[] = 1;
 			$post_autobr = intval($HTTP_POST_VARS['post_autobr']);
@@ -386,6 +386,7 @@ switch($action) {
 
         $standalone = 1;
         require_once('./admin-header.php');
+		wp_refcheck("/wp-admin");
 
         if ($user_level == 0)
             die ('Cheatin&#8217; uh?');
@@ -453,7 +454,9 @@ switch($action) {
 		die ('Cheatin&#8217; uh?');
 	
 	$comment = $HTTP_GET_VARS['comment'];
+	$comment = intval($comment);
 	$p = $HTTP_GET_VARS['p'];
+	$p = intval($p);
 	$commentdata = get_commentdata($comment, 1, true) or die('Oops, no comment with this ID. <a href="edit.php">Go back</a>!');
 	
 	echo "<div class=\"wrap\">\n";
@@ -483,6 +486,7 @@ switch($action) {
 
 	$standalone = 1;
 	require_once('./admin-header.php');
+	wp_refcheck("/wp-admin");
 
 	if ($user_level == 0)
 		die ('Cheatin&#8217; uh?');
@@ -517,6 +521,7 @@ switch($action) {
 	
 	$standalone = 1;
 	require_once('./admin-header.php');
+	wp_refcheck("/wp-admin");
 	
 	if ($user_level == 0)
 		die ('Cheatin&#8217; uh?');
@@ -574,6 +579,7 @@ switch($action) {
     
 	$standalone = 1;
 	require_once('./admin-header.php');
+	wp_refcheck("/wp-admin");
 	
 	if ($user_level == 0)
 		die ('Cheatin&#8217; uh?');
@@ -605,11 +611,13 @@ switch($action) {
 
         $standalone = 1;
         require_once('./admin-header.php');
+		wp_refcheck("/wp-admin");
 
         if ($user_level == 0)
             die ('Cheatin&#8217; uh?');
 
         $comment_ID = $HTTP_POST_VARS['comment_ID'];
+        $comment_ID = intval($commnet_ID);
         $comment_post_ID = $HTTP_POST_VARS['comment_post_ID'];
         $newcomment_author = $HTTP_POST_VARS['newcomment_author'];
         $newcomment_author_email = $HTTP_POST_VARS['newcomment_author_email'];

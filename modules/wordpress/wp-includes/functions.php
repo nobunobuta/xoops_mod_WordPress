@@ -430,6 +430,7 @@ function get_currentuserinfo() { // a bit like get_userdata(), on steroids
 
 function get_userdata($userid) {
 	global $wpdb, $cache_userdata, $use_cache, $xoopsDB ,$wp_id;
+	$userid = intval($userid);
 	if ((empty($cache_userdata[$userid])) || (!$use_cache)) {
 		$user = $wpdb->get_row("SELECT * FROM {$wpdb->users[$wp_id]} WHERE ID = $userid");
 		$xuser = $wpdb->get_row("SELECT * FROM ".$xoopsDB->prefix('users')." WHERE uid=$userid");
@@ -489,6 +490,7 @@ function get_userid($user_login) {
 
 function get_usernumposts($userid) {
 	global   $wpdb ,$wp_id;
+	$userid = intval($userid);
 	return $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts[$wp_id]} WHERE post_author = $userid");
 }
 
@@ -610,6 +612,7 @@ function add_option() {
 function get_postdata($postid) {
 	global $post,     $wpdb ,$wp_id;
 
+	$postid = intval($postid);
 	$post = $wpdb->get_row("SELECT * FROM {$wpdb->posts[$wp_id]} WHERE ID = $postid");
 
 	$postdata = array (
@@ -654,6 +657,7 @@ function get_postdata2($postid=0) { // less flexible, but saves DB queries
 
 function get_commentdata($comment_ID,$no_cache=0,$include_unapproved=false) { // less flexible, but saves DB queries
 	global $postc,$id,$commentdata, $wpdb ,$wp_id;
+	$comment_ID = intval($comment_ID);
 	if ($no_cache) {
 		$query = "SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_ID = $comment_ID";
 		if (false == $include_unapproved) {
@@ -939,6 +943,7 @@ function pingBlogs($blog_ID="1") {
 // Send a Trackback
 function trackback($trackback_url, $title, $excerpt, $ID, $charset = "") {
 	global  $wpdb,  $blog_charset ,$wp_id;
+	$ID=intval($ID);
 	$title = stripslashes($title);
 	$excerpt = stripslashes($excerpt);
 	$blog_name = stripslashes(get_settings('blogname'));
@@ -1908,6 +1913,33 @@ EOD;
 	} else {
 		return trim($wp_block_style);
 	}
+}
+
+function wp_refcheck($offset = "", $redirect = true) {
+global $siteurl;
+global $HTTP_SERVER_VARS, $HTTP_ENV_VARS;
+	$ref = isset($HTTP_SERVER_VARS['HTTP_REFERER']) ? $HTTP_SERVER_VARS['HTTP_REFERER'] : $HTTP_ENV_VARS['HTTP_REFERER'];
+	if ($ref == '') {
+		if ($redirect) {
+			if (defined('XOOPS_URL')) { //XOOPS Module mode
+				redirect_header($siteurl, 1, "You cannot update Database contents.(Could not detect HTTP_REFERER)");
+			} else {
+				header("Location: $siteurl");
+			}
+		}
+		return false;
+	}
+	if (strpos($ref, $siteurl.$offset) !== 0 ) {
+		if ($redirect) {
+			if (defined('XOOPS_URL')) { //XOOPS Module mode
+				redirect_header($siteurl, 1, "You cannot update Database contents.(HTTP_REFERER is not valid site.)");
+			} else {
+				header("Location: $siteurl");
+			}
+		}
+		return false;
+	}
+	return true;
 }
 
 ?>

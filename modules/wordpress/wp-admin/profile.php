@@ -42,6 +42,7 @@ switch($action) {
 case 'update':
 
 	get_currentuserinfo();
+	wp_refcheck("/wp-admin");
 
 	/* checking the nickname has been typed */
 	if (empty($HTTP_POST_VARS["newuser_nickname"])) {

@@ -3,10 +3,10 @@ $title = 'Edit Posts';
 $parent_file = 'edit.php';
 require_once('admin-header.php');
 
-$showposts = $HTTP_GET_VARS['showposts'];
-$post_per_page = $HTTP_GET_VARS['posts_per_page'];
-$poststart = $HTTP_GET_VARS['poststart'];
-$postend = $HTTP_GET_VARS['postend'];
+$showposts = intval($HTTP_GET_VARS['showposts']);
+$post_per_page = intval($HTTP_GET_VARS['posts_per_page']);
+$poststart = intval($HTTP_GET_VARS['poststart']);
+$postend = intval($HTTP_GET_VARS['postend']);
 $order = $HTTP_GET_VARS['order'];
 
 if (!$showposts) {

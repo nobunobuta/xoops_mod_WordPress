@@ -72,7 +72,7 @@ function wp_get_linksbyname($category) {
  **/
 function wp_get_links($category) {
     global $wpdb, $wp_id;
-
+	$category = intval($category);
     $cat = $wpdb->get_row("SELECT cat_id, cat_name, auto_toggle, show_images, show_description, "
          . " show_rating, show_updated, sort_order, sort_desc, text_before_link, text_after_link, "
          . " text_after_all, list_limit FROM {$wpdb->linkcategories[$wp_id]} WHERE cat_id=$category");
@@ -450,6 +450,7 @@ function get_links_withrating($category = -1, $before = '', $after = '<br />',
 function get_linkcatname($id = 0) {
     global  $wpdb ,$wp_id;
     $cat_name = '';
+    $id = intval($id);
     if ('' != $id) {
         $cat_name = $wpdb->get_var("SELECT cat_name FROM {$wpdb->linkcategories[$wp_id]} WHERE cat_id=$id");
     }
@@ -463,6 +464,7 @@ function get_linkcatname($id = 0) {
  */
 function get_autotoggle($id = 0) {
     global  $wpdb ,$wp_id;
+    $id = intval($id);
     $auto_toggle = $wpdb->get_var("SELECT auto_toggle FROM {$wpdb->linkcategories[$wp_id]} WHERE cat_id=$id");
     if ('' == $auto_toggle)
         $auto_toggle = 'N';

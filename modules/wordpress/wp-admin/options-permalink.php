@@ -38,6 +38,7 @@ for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 require_once('optionhandler.php');
 
 if ($HTTP_POST_VARS['Submit'] == _LANG_WPL_SUBMIT_UPDATE) {
+	wp_refcheck("/wp-admin");
 	update_option('permalink_structure', $HTTP_POST_VARS['permalink_structure']);
 	$permalink_structure = $HTTP_POST_VARS['permalink_structure'];
 } else {

@@ -41,6 +41,8 @@ $non_was_selected = 0;
 if ($option_group_id == '') {
     $option_group_id = 1;
     $non_was_selected = 1;
+} else {
+    $option_group_id = intval($option_group_id);
 }
 $message = "";
 
@@ -49,6 +51,7 @@ switch($action) {
 case "update":
 	$standalone = 0;
 	include_once("./admin-header.php");
+	wp_refcheck("/wp-admin");
     $any_changed = 0;
     
     // iterate through the list of options in this group

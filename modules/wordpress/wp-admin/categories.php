@@ -42,6 +42,7 @@ case 'addcat':
 
 	$standalone = 1;
 	require_once('admin-header.php');
+	wp_refcheck("/wp-admin");
 	
 	if ($user_level < 3)
 		die ('Cheatin&#8217; uh?');
@@ -64,6 +65,7 @@ case 'Delete':
 
 	$standalone = 1;
 	require_once('admin-header.php');
+	wp_refcheck("/wp-admin");
 
 	$cat_ID = intval($HTTP_GET_VARS["cat_ID"]);
 	$cat_name = get_catname($cat_ID);
@@ -85,7 +87,8 @@ break;
 case 'edit':
 
 	require_once ('admin-header.php');
-	$category = $wpdb->get_row("SELECT * FROM {$wpdb->categories[$wp_id]} WHERE cat_ID = " . $HTTP_GET_VARS['cat_ID']);
+	$cat_ID = intval($HTTP_GET_VARS['cat_ID']);
+	$category = $wpdb->get_row("SELECT * FROM {$wpdb->categories[$wp_id]} WHERE cat_ID = " . $cat_ID);
 	$cat_name = stripslashes($category->cat_name);
 	?>
 
@@ -93,7 +96,7 @@ case 'edit':
 	<h2><?php echo _LANG_C_EDIT_TITLECAT; ?></h2>
 	<form name="editcat" action="categories.php" method="post">
 		<input type="hidden" name="action" value="editedcat" />
-		<input type="hidden" name="cat_ID" value="<?php echo $HTTP_GET_VARS['cat_ID'] ?>" />
+		<input type="hidden" name="cat_ID" value="<?php echo $cat_ID ?>" />
 		<p><?php echo _LANG_C_NAME_SUBCAT; ?><br />
 		<input type="text" name="cat_name" value="<?php echo $cat_name; ?>" /></p>
 		<p><? echo _LANG_C_NAME_SUBDESC; ?><br />
@@ -110,12 +113,13 @@ case 'editedcat':
 
 	$standalone = 1;
 	require_once('admin-header.php');
+	wp_refcheck("/wp-admin");
 
 	if ($user_level < 3)
 		die ('Cheatin&#8217; uh?');
 	
 	$cat_name = addslashes(stripslashes(stripslashes($HTTP_POST_VARS['cat_name'])));
-	$cat_ID = addslashes($HTTP_POST_VARS['cat_ID']);
+	$cat_ID = intval($HTTP_POST_VARS['cat_ID']);
 	$category_nicename = sanitize_title($cat_name);
 	if ($category_nicename == "")  $category_nicename = "category-".$cat_ID;
 	$category_description = $HTTP_POST_VARS['category_description'];

@@ -24,6 +24,7 @@ switch ($action) {
 case 'adduser':
 	$standalone = 1;
 	require_once('admin-header.php');
+	wp_refcheck("/wp-admin");
 	function filter($value)	{
 		return ereg('^[a-zA-Z0-9\_-\|]+$',$value);
 	}
@@ -103,12 +104,14 @@ case 'promote':
 
 	$standalone = 1;
 	require_once('admin-header.php');
+	wp_refcheck("/wp-admin");
 
 	if (empty($HTTP_GET_VARS['prom'])) {
 		header('Location: users.php');
 	}
 
 	$id = $HTTP_GET_VARS['id'];
+	$id = intval($id);
 	$prom = $HTTP_GET_VARS['prom'];
 
 	$user_data = get_userdata($id);
@@ -117,7 +120,7 @@ case 'promote':
 	if ($user_level <= $usertopromote_level) {
 		die('Can&#8217;t change the level of a user whose level is higher than yours.');
 	}
-
+	
 	if ('up' == $prom) {
 		$new_level = $usertopromote_level + 1;
 		$sql="UPDATE {$wpdb->users[$wp_id]} SET user_level=$new_level WHERE ID = $id AND $new_level < $user_level";
@@ -132,16 +135,21 @@ case 'promote':
 break;
 
 case 'delete':
+//Not available with XOOPS;
+	if ( defined ('XOOPS_URL') {
+		header('Location: users.php');
+	}
 
 	$standalone = 1;
 	require_once('admin-header.php');
+	wp_refcheck("/wp-admin");
 
 	$id = $HTTP_GET_VARS['id'];
+	$id = intval($id);
 
 	if (!$id) {
 		header('Location: users.php');
 	}
-
 	$user_data = get_userdata($id);
 	$usertodelete_level = $user_data->user_level;
 

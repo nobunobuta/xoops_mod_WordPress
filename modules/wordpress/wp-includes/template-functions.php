@@ -487,6 +487,7 @@ function get_calendar($daylength = 1) {
 function get_permalink($id=false) {
 	global $post, $wpdb, $wp_id;
 	global $siteurl;
+	$id = intval($id);
 	$rewritecode = array(
 		'%year%',
 		'%monthnum%',
@@ -1390,6 +1391,7 @@ function get_the_category() {
 
 function get_category_link($echo = false, $category_id, $category_nicename) {
 	global $wpdb,  $post, $siteurl ,$wp_id;
+	$category_id = intval($category_id);
 	$cat_ID = $category_id;
 	$permalink_structure = get_settings('permalink_structure');
 
@@ -1489,7 +1491,11 @@ function the_category_head($before='', $after='') {
 
 function category_description($category = 0) {
 	global $cat, $wpdb, $wp_id;
-	if (!$category) $category = $cat;
+	if (!$category) {
+		$category = $cat;
+	} else {
+		$category = intval($category);
+	}
 	$category_description = $wpdb->get_var("SELECT category_description FROM {$wpdb->categories[$wp_id]} WHERE cat_ID = $category");
 	$category_description = apply_filters('category_description', $category_description);
 	return $category_description;

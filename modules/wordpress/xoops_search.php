@@ -25,6 +25,7 @@ if( ! defined( 'WP_XOOPS_SEARCH_INCLUDED' ) ) {
 			$where .= ") ";
 		}
 		if ($userid) {
+			$userid = intval($userid);
 			$where  .= " AND (post_author=".$userid.")";
 		}
 		$request = "SELECT * FROM ".$xoopsDB->prefix("wp".$wp_num."_posts")." WHERE ".$where;
