@@ -7,7 +7,7 @@ require_once(ABSPATH.WPINC.'/class-pop3.php');
 timer_start();
 
 $use_cache = 1;
-$output_debugging_info = 0;	# =1 if you want to output debugging info
+$output_debugging_info = 1;	# =1 if you want to output debugging info
 $time_difference = get_settings('time_difference');
 
 if ($use_phoneemail) {
@@ -16,8 +16,6 @@ if ($use_phoneemail) {
 }
 
 error_reporting(2037);
-
-
 
 $pop3 = new POP3();
 
@@ -114,8 +112,8 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 
 
 	# starts buffering the output
-	ob_start();
-
+//	ob_start();
+	echo "aaaa<br>";
 	if ($ddate_difference_days > 14) {
 		echo 'Too old<br />';
 		continue;
@@ -209,19 +207,26 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		if ($user_level > 0) {
 
 			$post_title = xmlrpc_getposttitle($content);
-			$post_categories[] = xmlrpc_getpostcategory($content);
+//			$post_categories[] = xmlrpc_getpostcategory($content);
+			$post_category = xmlrpc_getpostcategory($content);
 
 			if ($post_title == '') {
 				$post_title = $subject;
 			}
 			if (empty($post_categories)) {
-				$post_categories[] = $default_category;
+//				$post_categories[] = $default_category;
+				$post_category = $default_category;
 			}
-
+			echo "Subject : $subject <br />";
+			echo "Category : $post_category <br />";
 			if (!$thisisforfunonly) {
-				$post_title = addslashes(trim($post_title));
+
+//				$post_title = addslashes(trim($post_title));
+//				$post_title = addslashes(trim(mb_decode_mimeheader($post_title)));
+				$post_title = addslashes(trim(mb_convert_encoding(mb_decode_mimeheader($post_title),"EUC-JP","auto")));
 				$content = preg_replace("|\n([^\n])|", " $1", $content);
-				$content = addslashes(trim($content));
+				$content = addslashes(mb_convert_encoding(trim($content),"EUC-JP","JIS"));
+//				$content = addslashes(trim($content));
                 if($flat > 500) {
                     $sql = "INSERT INTO $tableposts (post_author, post_date, post_content, post_title, post_category) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category)";
                 } else {
