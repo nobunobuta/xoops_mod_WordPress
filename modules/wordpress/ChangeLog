@@ -1,3 +1,8 @@
+2004-05-16  0.0.2a
+	* wp-mail.php
+	* wp-moblog.php
+		メールによる投稿時のパスワード確認をXOOPSのユーザ情報を利用するように変更
+
 2004-05-14  0.0.2
 	* wp-config.php:
 	* wp-admin/edit-form-advanced.php:
