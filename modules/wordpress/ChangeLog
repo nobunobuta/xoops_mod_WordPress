@@ -1,3 +1,12 @@
+2004-05-07  0.0.1e
+	* blocks/wp_recent_comments.php:
+	* blocks/wp_recent_posts.php:
+		記事ブロックと最新記事、最新コメント共存時の不具合に対応
+
+	* wp-admin/link-categories.php:
+		WordPress ME バグ修正
+		Submitボタンの名称を日本語化した事による不具合対応
+		
 2004-05-04  0.0.1d
 	* blocks/wp_recent_comments.php:
 	* blocks/wp_recent_posts.php:
