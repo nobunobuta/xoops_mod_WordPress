@@ -126,10 +126,9 @@ define('_LANG_C_NAME_DELETE','APAGAR');
 define('_LANG_C_NAME_ADDBTN','Adicionar');
 define('_LANG_C_NAME_EDITBTN','Enviar');
 define('_LANG_C_NAME_PARENT','Categoria padrão:');
-define('_LANG_C_MESS_ADD','Categoria added.');
-define('_LANG_C_MESS_DELE','Categoria deleted.');
-define('_LANG_C_MESS_UP','Categoria updated.');
-
+define('_LANG_C_MESS_ADD','Categoria adicionada com sucesso.');
+define('_LANG_C_MESS_DELE','Categoria apagada com sucesso.');
+define('_LANG_C_MESS_UP','Categoria atualizada com sucesso.');
 /* File Name wp-admin/edit.php */
 define('_LANG_E_LATEST_POSTS','Últimos posts');
 define('_LANG_E_LATEST_COMMENTS','Últimos comentários');
