@@ -1,4 +1,29 @@
-2004-05-19  0.0.2b
+2004-05-23  0.0.2d
+	* wp-includes/functions.php:
+		PING送信時の接続タイムアウトを30秒に
+		コメント及びトラックバックのメール通知の時にBlogのcharsetがうまく取得できなかった。
+
+	* wp-admin/edit-form.php:
+		SPAW投稿がPHP4.3.x以降にしか対応していなかった。
+
+	* wp-admin/edit-form-advanced.php:
+		SPAW投稿がPHP4.3.x以降にしか対応していなかった。
+		高度な編集画面にも「ファイルアップロード」ボタンを表示
+
+	* blocks/wp_recent_comments.php:
+	* blocks/wp_recent_posts.php:
+		一覧対象内容が0件の場合に、PHPがWarningを出力する。
+
+	* xmlrpc.php:
+		Blogのcharsetがうまく取得できていなかった
+
+	* wp-admin/wp-admin.css:
+		XOOPSと競合する一部のスタイルを無効に
+
+	* xoops_version.php:
+		匿名ユーザには、サブメニュー(投稿）を非表示に
+
+2004-05-19  0.0.2c
 	* blocks/wp_archives_monthly.php:
 	* blocks/wp_calendar.php:
 	* blocks/wp_categories.php:
