@@ -255,11 +255,7 @@ function wp_mail_receive() {
 			$blah = explode(':', $userpassstring);
 			$user_login = $blah[0];
 			$user_pass = $blah[1];
-			if (function_exists('mb_convert_encoding')) {
-				$user_login = mb_convert_encoding(trim($user_login), $blog_charset, $charset);
-			} else {
-				$user_login = trim($user_login);
-			}
+			$user_login = mb_conv(trim($user_login), $blog_charset, $charset);
 			
 			$content = $contentfirstline . str_replace($firstline, '', $content);
 			$content = trim($content); 
@@ -307,11 +303,7 @@ function wp_mail_receive() {
 				if ($post_category == '') {
 					$post_category = get_settings('default_post_category');
 				} 
-				if (function_exists('mb_convert_encoding')) {
-					echo "Subject : " . mb_convert_encoding($subject, $blog_charset, $sub_charset) . " <br />\n";
-				} else {
-					echo "Subject : " . $subject . " <br />\n";
-				} 
+				echo "Subject : " . mb_conv($subject, $blog_charset, $sub_charset) . " <br />\n";
 				echo "Category : $post_category <br />\n";
 				if (!get_settings('emailtestonly')) {
 					// Attaching Image Files Save
@@ -335,13 +327,8 @@ function wp_mail_receive() {
 
 					$content = preg_replace("|\n([^\n])|", " $1", $content);
 					$content = preg_replace("/\=([0-9a-fA-F]{2,2})/e", "pack('c',base_convert('\\1',16,10))", $content);
-					if (function_exists('mb_convert_encoding')) {
-						$content = addslashes(mb_convert_encoding(trim($content), $blog_charset, $charset));
-						$post_title = addslashes(trim(mb_convert_encoding($post_title, $blog_charset, $sub_charset)));
-					} else {
-						$content = addslashes(trim($content));
-						$post_title = addslashes(trim($post_title));
-					} 
+					$content = addslashes(mb_conv(trim($content), $blog_charset, $charset));
+					$post_title = addslashes(trim(mb_conv($post_title, $blog_charset, $sub_charset)));
 					// If we find an attachment, add it to the post
 					if ($attachment) {
 						if (file_exists("../attach/thumb-" . $attachment)) {
@@ -415,7 +402,7 @@ function wp_getattach($content, $prefix = "", $create_thumbs = 0)
 		if (($prefix == 0) && eregi("name=\"?([^\"\n]+)\"?", $contents[0], $filereg)) {
 			$filename = ereg_replace("[\t\r\n]", "", $filereg[1]);
 			if (function_exists('mb_convert_encoding')) {
-				$temp_file = mb_convert_encoding(mb_decode_mimeheader($filename, $blog_charset, "auto"));
+				$temp_file = mb_conv(mb_decode_mimeheader($filename, $blog_charset, "auto"));
 			} else {
 				$temp_file = $filename;
 			} 
