@@ -50,7 +50,11 @@ case 'addcat':
 	$category_description = addslashes(stripslashes(stripslashes($HTTP_POST_VARS['category_description'])));
 	
 	$wpdb->query("INSERT INTO $tablecategories (cat_ID, cat_name, category_nicename, category_description) VALUES ('0', '$cat_name', '$category_nicename', '$category_description')");
-	
+	if ($category_nicename == "") {
+		$lastID = $wpdb->get_var("SELECT LAST_INSERT_ID()");
+		$category_nicename = "category-".$lastID;
+		$wpdb->query("UPDATE $tablecategories SET category_nicename='$category_nicename' WHERE cat_ID = $lastID");
+	}
 	header('Location: categories.php');
 
 break;
@@ -112,6 +116,7 @@ case 'editedcat':
 	$cat_name = addslashes(stripslashes(stripslashes($HTTP_POST_VARS['cat_name'])));
 	$cat_ID = addslashes($HTTP_POST_VARS['cat_ID']);
 	$category_nicename = sanitize_title($cat_name);
+	if ($category_nicename == "")  $category_nicename = "category-".$cat_ID;
 	$category_description = $HTTP_POST_VARS['category_description'];
 
 	$wpdb->query("UPDATE $tablecategories SET cat_name = '$cat_name', category_nicename = '$category_nicename', category_description = '$category_description' WHERE cat_ID = $cat_ID");
