@@ -44,7 +44,7 @@ CREATE TABLE wp_comments (
 #
 # テーブルのダンプデータ `wp_comments`
 #
-INSERT INTO wp_comments (`comment_post_ID`, `comment_author`, `comment_author_email`, `comment_author_url`, `comment_author_IP`, `comment_date`, `comment_content`) VALUES ('1', 'NobuNobu Xoops', 'mail@example.com', 'http://www.kowa.org/', '127.0.0.1', '2004-04-01 01:00:00', 'Hi, this is a comment.<br />To delete a comment, just log in, and view the posts'' comments, there you will have the option to edit or delete them.');
+##INSERT INTO wp_comments (`comment_post_ID`, `comment_author`, `comment_author_email`, `comment_author_url`, `comment_author_IP`, `comment_date`, `comment_content`) VALUES ('1', 'NobuNobu Xoops', 'mail@example.com', 'http://www.kowa.org/', '127.0.0.1', '2004-04-01 01:00:00', 'Hi, this is a comment.<br />To delete a comment, just log in, and view the posts'' comments, there you will have the option to edit or delete them.');
 
 # --------------------------------------------------------
 
@@ -485,7 +485,7 @@ CREATE TABLE wp_posts (
 # テーブルのダンプデータ wp_posts
 #
 
-INSERT INTO wp_posts (`post_author`, `post_date`, `post_content`, `post_title`, `post_category`) VALUES ('1', '2004-04-01 00:00:00', 'Welcome to WordPress. This is the first post. Edit or delete it, then start blogging!', 'Hello world!', '1');
+##INSERT INTO wp_posts (`post_author`, `post_date`, `post_content`, `post_title`, `post_category`) VALUES ('1', '2004-04-01 00:00:00', 'Welcome to WordPress. This is the first post. Edit or delete it, then start blogging!', 'Hello world!', '1');
 
 # --------------------------------------------------------
 
