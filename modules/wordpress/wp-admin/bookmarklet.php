@@ -155,10 +155,11 @@ function launchupload() {
 </style>
 </head>
 <body id="wpbookmarklet">
+<div id="wpAdminMain">
 <h1 id="wphead"><a href="http://wordpress.xwd.jp/" rel="external"><span>WordPress Japan</span></a></h1>
 
 <?php require('edit-form.php'); ?>
-
+</div>
 </body>
 </html><?php
 }
