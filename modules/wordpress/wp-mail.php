@@ -53,6 +53,8 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 	$content = '';
 	$content_type = '';
 	$boundary = '';
+	$att_boundary = '';
+	$hatt_boundary = '';
 	$bodysignal = 0;
 	$dmonths = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
 					 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
@@ -63,17 +65,30 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		if ($bodysignal) {
 			$content .= $line;
 		} else {
-			if (preg_match('/Content-Type: /', $line)) {
+			if (preg_match('/Content-Type: /i', $line)) {
 				$content_type = trim($line);
 				$content_type = substr($content_type, 14, strlen($content_type)-14);
 				$content_type = explode(';', $content_type);
 				$content_type = $content_type[0];
 			}
+			if (($content_type == 'multipart/mixed') && (preg_match('/boundary="/', $line)) && ($att_boundary == '')) {
+				$att_boundary = trim($line);
+				$att_boundary = explode('"', $att_boundary);
+				$att_boundary = $att_boundary[1];
+			}
+
 			if (($content_type == 'multipart/alternative') && (preg_match('/boundary="/', $line)) && ($boundary == '')) {
 				$boundary = trim($line);
 				$boundary = explode('"', $boundary);
 				$boundary = $boundary[1];
 			}
+			
+			if (($content_type == 'multipart/related') && (preg_match('/boundary="/', $line)) && ($hatt_boundary == '')) {
+				$hatt_boundary = trim($line);
+				$hatt_boundary = explode('"', $hatt_boundary);
+				$hatt_boundary = $hatt_boundary[1];
+			}
+			
 			if (preg_match('/Subject: /', $line)) {
 				$subject = trim($line);
 				$subject = substr($subject, 9, strlen($subject)-9);
@@ -140,17 +155,47 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 
 		$subject = trim(str_replace($subjectprefix, '', $subject));
 
-		if ($content_type == 'multipart/alternative') {
-			$content = explode('--'.$boundary, $content);
-			$content = $content[2];
+		$attachment = false;
+		
+		if ($att_boundary != "") {
+			$contents = explode('--'.$att_boundary, $content);
+			$content = $contents[1];
+			$content = explode("\r\n\r\n",$content);
+			$content = $content[1];
+		}
+		if ($hatt_boundary != "") {
+			$contents = explode('--'.$hatt_boundary, $content);
+			$content = $contents[1];
+			if (preg_match('/Content-Type: multipart\/alternative\;[^"]*"([^"]*)"/',$content,$matches)) {
+				$boundary = trim($matches[0]);
+				$boundary = explode('"', $boundary);
+				$boundary = $boundary[1];
+				$content = explode('--'.$boundary, $content);
+				$content = $content[2];
+			}
 			$charset = preg_match("/charset=\"([^\"]*)\"/",$content,$matches);
 			if ($charset) $charset = $matches[1];
 			$content = explode('Content-Transfer-Encoding: quoted-printable', $content);
-			$content = strip_tags($content[1], '<img><p><br><i><b><u><em><strong><strike><font><span><div>');
+			$content = strip_tags($content[1], '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td>');
+		} else if ($boundary != "") {
+			$content = explode('--'.$boundary, $content);
+			$content = $content[2];
+			if (preg_match('/Content-Type: multipart\/related\;[^"]*"([^"]*)"/',$content,$matches)) {
+				$hatt_boundary = trim($matches[0]);
+				$hatt_boundary = explode('"', $hatt_boundary);
+				$hatt_boundary = $hatt_boundary[1];
+				$contents = explode('--'.$hatt_boundary, $content);
+				$content = $contents[1];
+			}
+			$charset = preg_match("/charset=\"([^\"]*)\"/",$content,$matches);
+			if ($charset) $charset = $matches[1];
+			$content = explode('Content-Transfer-Encoding: quoted-printable', $content);
+			$content = strip_tags($content[1], '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td>');
 		}
 		$content = trim($content);
 
 		echo "<p><b>Content-type:</b> $content_type, <b>boundary:</b> $boundary</p>\n";
+		echo "<p><b>att_boundary:</b> $att_boundary, <b>hatt_boundary:</b> $hatt_boundary</p>\n";
 //		echo "<p><b>Raw content:</b><br /><pre>".$content.'</pre></p>';
 		
 		$btpos = strpos($content, $bodyterminator);
@@ -159,8 +204,8 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		}
 		$content = trim($content);
 
-		$blah = explode("\n", $content);
-		$firstline = $blah[0];
+		$blah = explode("\n", preg_replace("/^[\n\r\s]*/","",strip_tags($content)));
+		$firstline = preg_replace("/[\n\r]/","",$blah[0]);
 		$secondline = $blah[1];
 
 		if ($use_phoneemail) {
@@ -255,6 +300,25 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 			}
 			echo "Category : $post_category <br />";
 			if (!$emailtestonly) {
+				//Attaching Image Files Save
+				if ($att_boundary != "") {
+					$attachment = wp_getattach($contents[2],trim($user_login),1);
+				}
+				if (($boundary != "")&&($hatt_boundary != "")) {
+					for ($i = 2; $i < count($contents); $i++) {
+						$hattachment = wp_getattach($contents[$i],trim($user_login),0);
+						if ($hattachment) {
+							if (preg_match("/Content-Id: \<([^\>]*)>/i",$contents[$i],$matches)) {
+								$content = preg_replace("/(cid:".preg_quote($matches[1]).")/","$siteurl/attach/".$hattachment,$content);
+							}
+						}
+					}
+				}
+				if($boundary != "") {
+					$content = preg_replace("/\=[\r\n]/","",$content);
+					$content = preg_replace("/[\r\n]/"," ",$content);
+				}
+				
 				$content = preg_replace("|\n([^\n])|", " $1", $content);
 				if ($charset == "") $charset = "JIS";
 				if (trim($charset) == "Shift_JIS") $charset = "SJIS";
@@ -265,6 +329,14 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				} else {
 					$content = addslashes(trim($content));
 					$post_title = addslashes(trim($post_title));
+				}
+				#If we find an attachment, add it to the post
+				if ($attachment) {
+					if (file_exists("attach/thumb-".$attachment)) {
+						$content = "<a href=\"".$siteurl."\/attach\/".$attachment."\"><img style=\"float: left;\" hspace=\"6\" src = \"".$siteurl."\/attach\/thumb-". $attachment."\"  alt=\"moblog\" ></a>".$content."<br clear=left>";
+					} else {
+						$content = "<a href=\"".$siteurl."\/attach\/".$attachment."\"><img style=\"float: left;\" hspace=\"6\" src = \"".$siteurl."\/attach\/". $attachment."\"  alt=\"moblog\" ></a>".$content."<br clear=left>";
+					}
 				}
                 if($flat > 500) {
                     $sql = "INSERT INTO $tableposts (post_author, post_date, post_content, post_title, post_category) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category)";
@@ -325,5 +397,138 @@ $pop3->quit();
 
 timer_stop($output_debugging_info);
 exit;
+
+function wp_getattach($content,$prefix="",$create_thumbs=0)
+{
+	$contents = explode("\r\n\r\n",$content);
+	$subtype = preg_match("/Content-Type: [^\/]*\/([^\;]*);/",$contents[0],$matches);
+	if ($subtype) $subtype = $matches[1];
+	$temp_file = "";
+	if (in_array($subtype, array("gif","jpg","jpeg","png"))) {
+		if (($prefix == 0) && eregi("name=\"?([^\"\n]+)\"?",$contents[0], $filereg)) {
+			$filename = ereg_replace("[\t\r\n]", "", $filereg[1]);
+			if (function_exists('mb_convert_encoding')) {
+				$temp_file = mb_convert_encoding(mb_decode_mimeheader($filename,$blog_charset,"auto"));
+			} else {
+				$temp_file = $filename;
+			}
+		}
+		// 添付データをデコードして保存
+		if (eregi("Content-Transfer-Encoding:.*base64", $contents[0])) {
+			$tmp = base64_decode($contents[1]);
+			if (!$temp_file) {
+				$temp_file_base = $prefix."_".time();
+			} else {
+				$temp_file_info = pathinfo($temp_file);
+				$temp_file_base = basename($temp_file,".".$temp_file_info["extension"]);
+			}
+			$i = 0;
+			$temp_file = $temp_file_base.".$subtype";
+			while (file_exists("attach/".$temp_file)) {
+				$temp_file = $temp_file_base."-".$i.".$subtype";;
+				$i++;
+			}
+			if (!($temp_fp = fopen("attach/" . $temp_file, "w"))) {
+				echo("error1");
+				continue;
+			}
+			fputs($temp_fp, $tmp);
+			fclose($temp_fp);
+			if ($create_thumbs) {
+				wp_create_thumbnail("attach/" .$temp_file,160,"");
+			}
+		}
+		echo "$temp_file <br/>";
+		return $temp_file;
+	}
+	return false;
+}
+
+function wp_create_thumbnail($file, $max_side, $effect = '') {
+
+    // 1 = GIF, 2 = JPEG, 3 = PNG
+
+    if(file_exists($file)) {
+        $type = getimagesize($file);
+        
+        // if the associated function doesn't exist - then it's not
+        // handle. duh. i hope.
+        
+        if(!function_exists('imagegif') && $type[2] == 1) {
+            $error = 'Filetype not supported. Thumbnail not created.';
+        }elseif(!function_exists('imagejpeg') && $type[2] == 2) {
+            $error = 'Filetype not supported. Thumbnail not created.';
+        }elseif(!function_exists('imagepng') && $type[2] == 3) {
+            $error = 'Filetype not supported. Thumbnail not created.';
+        } else {
+        
+            // create the initial copy from the original file
+            if($type[2] == 1) {
+                $image = imagecreatefromgif($file);
+            } elseif($type[2] == 2) {
+                $image = imagecreatefromjpeg($file);
+            } elseif($type[2] == 3) {
+                $image = imagecreatefrompng($file);
+            }
+            
+			if (function_exists('imageantialias'))
+	            imageantialias($image, TRUE);
+            
+            $image_attr = getimagesize($file);
+            
+            // figure out the longest side
+            
+            if($image_attr[0] > $image_attr[1]) {
+                $image_width = $image_attr[0];
+                $image_height = $image_attr[1];
+                $image_new_width = $max_side;
+                
+                $image_ratio = $image_width/$image_new_width;
+                $image_new_height = $image_height/$image_ratio;
+                //width is > height
+            } else {
+                $image_width = $image_attr[0];
+                $image_height = $image_attr[1];
+                $image_new_height = $max_side;
+                
+                $image_ratio = $image_height/$image_new_height;
+                $image_new_width = $image_width/$image_ratio;
+                //height > width
+            }
+            
+            $thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
+            @imagecopyresized($thumbnail, $image, 0, 0, 0, 0, $image_new_width, $image_new_height, $image_attr[0], $image_attr[1]);
+            
+            // move the thumbnail to it's final destination
+            
+            $path = explode('/', $file);
+            $thumbpath = substr($file, 0, strrpos($file, '/')) . '/thumb-' . $path[count($path)-1];
+            
+            if($type[2] == 1) {
+                if(!imagegif($thumbnail, $thumbpath)) {
+                    $error = "Thumbnail path invalid";
+                }
+            } elseif($type[2] == 2) {
+                if(!imagejpeg($thumbnail, $thumbpath)) {
+                    $error = "Thumbnail path invalid";
+                }
+            } elseif($type[2] == 3) {
+                if(!imagepng($thumbnail, $thumbpath)) {
+                    $error = "Thumbnail path invalid";
+                }
+            }
+            
+        }
+    }
+    
+    if(!empty($error))
+    {
+        return $error;
+    }
+    else
+    {
+        return 1;
+    }
+}
 
 ?>
