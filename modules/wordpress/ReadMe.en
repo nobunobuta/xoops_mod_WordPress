@@ -9,6 +9,11 @@ To install this module, you don't need to run install.php, like WordPress needs 
 ------------
 ChangeLog
 ------------
+0.2.0  [2004-06-26]
+Added Features)
+-Enable to clone this module.
+-Can custmize WordPress templates and Style sheet with each Xoops themes.
+
 0.1.4  [2004-06-10]
 Added Features)
 -If XOOPS user name is  changed , WordPress user name will be synchronized.

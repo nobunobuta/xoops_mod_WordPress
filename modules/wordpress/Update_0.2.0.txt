@@ -1,0 +1,118 @@
+WordPress 0.2.0 への移行方法 
+
+1.WordPress 0.2.0の新しい特徴 
+　WordPress 0.2.0では主に以下の２つの機能強化を行っています。 
+　・複数ブログ対応 
+　　　GIJOEが作っておられるTinyDの用にwordpress0からwordpress9というディレクトリに
+　　　コピーする事によって別のブログを作成出来るようになりました。 
+　・テーマによるスタイル切替対応 
+　　　別にテーマの切替に対応する事が目的で無く、小生が頻繁にリリースアップするたびに
+　　　スタイルシートなどを書き換えておられる方がいるようなので、カストマイズされた部分は
+　　　極力上書きをしない様にしようと考えた結果がこのテーマとの連動でした。 
+
+　このためにファイルのディレクトリ構成も以下のように少し変化しています。 
+
+XOOPS_ROOT_PATH
+ |
+ +-modules
+    |
+    :
+    +-wordpress
+    |  |
+    |  :
+    |  +- themes
+    |      |
+    |      +- default
+    |      |   |
+    |      |   +- index-template.php
+    |      |   +  content_block-template.php
+    |      |   +- comments-template.php
+    |      |   +  content_block-template.php
+    |      |   +- wp-layout.css
+    |      |   +- print.css
+    |      |   +- wp-admin.css
+    |      |   +- wp-blocks.css.php
+    |      |   +- wp-config-custom.php
+    |      |
+    |      +- テーマ名
+    |      :   |
+    :      :   :
+    :
+    +-wordpress0
+    :
+    +-wordpress1
+
+2.WordPress 0.1.x以前からの移行手順。 
+　1) バックアップ 
+　　　導入後にあなたがカストマイズを行ったファイルのバックアップを取って下さい。 
+　　　特に以下のファイルについては、どのようなカストマイズを行ったかを確実に確認して下さい。 
+
+	 index.php
+	 wp-comments.php
+	 wp-vars.php
+	 wp-config.php
+	 wp-layout.css
+	 print.css
+	 wp-admin/wp-admin.css
+	 blocks/wp-calendar.php
+	 templates/blocks/wp_block_contents.html
+	 
+　　　念のため、WordPressディレクトリ下の全てのファイルのバックアップをおすすめします。 
+
+　2) WordPress0.2.0のファイルのコピー 
+　　　ダウンロードしたtar.gzもしくはzipファイルを解凍して、上書きコピーを行って下さい。 
+
+　3) WordPressモジュールのアップデート 
+　　　XOOPSの管理者メニューからWordPressモジュールのアップデートを行って下さい。 
+
+　4) カストマイズの適用 
+　　　themesディレクトリ下に、現在使用しているXOOPSのテーマと同じ名前のディレクトリを作成して下さい。 
+　　　カスタマイズした内容にしたがって、themes/defaultsディレクトリから該当するファイルを作成した
+　　　ディレクトリにコピーし以前の変更点を適用して下さい。 
+　　　特にカストマイズを行っていない場合には、これらの作業は不要ですが、WordPressのスタイルを変更
+　　　したい場合には、これらの要領で行って下さい。 
+
+・index-template.php 
+　　WordPressのメインとなる画面のレイアウトを定義するテンプレートファイルです。 
+　　index.phpをカストマイズしていた場合には、当ファイルにその変更点と同様の修正を行って下さい。 
+
+・content_block-template.php 
+　　WordPressの記事ブロックのレイアウトを定義するテンプレートファイルです。 
+　　但しWordPressモジュールを導入したデフォルトの状態では、本ファイルは使用されずに、XOOPSの 
+　　smartyテンプレートwp_block_contents.htmlで定義したレイアウトが使用されます。 
+　　管理者メニューのWordPress一般設定にてテーマディレクトリ下のテンプレートを使用するオプションを 
+　　ONにしたときのみ、このcontent_block-template.phpでのレイアウト定義が有効になります。 
+　　WordPressモジュールを複数導入して、各モジュール毎に記事ブロックのレイアウトを変更したい場合や、 
+　　WordPressのテンプレート関数群を使用して高度な画面カストマイズを行いたい場合には上記オプションを 
+　　ONにして本ファイルのカストマイズを行って下さい。 
+
+・comments-template.php 
+　　WordPressのメインとなる画面の内コメントの一覧及び投稿フォームのレイアウトを定義するテンプレートファイルです。 
+　　wp-comments.phpをカストマイズしていた場合には、当ファイルにその変更点と同様の修正を行って下さい。 
+
+・wp-layout.css 
+　　wp-layout.cssをカストマイズしていた場合には、当ファイルにその変更点と同様の修正を行って下さい。 
+　　但し、このCSSが適用されるのはindex-template.phpで定義されている、 
+　　<div id="wpMainContent">・・・</div> 
+　　で囲まれたWordPressのメインコンテンツのみとなります。 
+　　という事で、従来のwp-layout.cssと異なり、全てのスタイル指定対象には、#wpMainContentが行頭に付けられています。 
+
+・print.css 
+　　print.cssをカストマイズしていた場合には、当ファイルにその変更点と同様の修正を行って下さい。 
+　　印刷時用のスタイルシートである事以外は、wp-layout.cssと同様です。 
+
+・wp-blocks.css.php 
+　　blocks/wp_calendar.php内のスタイルをカストマイズしていた場合には、当ファイルにその変更点と同様の修正を行って下さい。 
+　　さらに、このスタイルシートでは記事ブロックのスタイルの指定も行えます。 
+　　WordPress複数モジュール対応の必要性から、記事ブロックのスタイル指定対象には、 
+　　#wpBlockContent$wp_numが行頭に付けられていますので消さないように注意して下さい。
+
+・wp-admin.css 
+　　wp-admin/wp-admin.cssをカストマイズしていた場合には、当ファイルにその変更点と同様の修正を行って下さい。 
+　　従来のwp-admin.cssと異なり、たのXOOPS要素に影響を与えないために全てのスタイル指定対象には、
+　　#wpAdminMainが行頭に付けられています。 
+
+・wp-config-custom.php 
+　　wp-config.phpでPINGサーバ指定を行っていたり、wp-vars.phpで曜日の表示を英語に置き換えたりしていた場合には、 
+　　それらの変更内容を、wp-config-custom.phpに設定して下さい。 
+

@@ -1,3 +1,106 @@
+2004-06-26  0.2.0
+	* Almost all files
+		モジュールの複製可能化
+		（Enable to clone this module)
+		WordPressテンプレートやスタイルのXOOPSテーマとの連動を可能に
+		(Can custmize WordPress templates and Style sheet with each Xoops themes)
+
+	* blocks/wp_contents.php:
+	* language/english/modinfo.php:
+	* language/japanese/modinfo.php:
+	* language/portugues.do.brasil/modinfo.php:
+	* wp-admin/categories.php:
+	* wp-admin/edit-form.php:
+	* wp-admin/edit.php:
+	* wp-admin/link-add.php:
+	* wp-admin/link-manager.php:
+	* wp-admin/menu.php:
+	* wp-admin/moderation.php:
+	* wp-admin/options.php:
+	* wp-admin/post.php:
+	* wp-admin/profile.php:
+	* wp-admin/users.php:
+	* wp-includes/functions.php:
+		define定数の再定義warning防止
+		WordPress設定オプションメニューの改善
+
+	* wp-admin/bookmarklet.php:
+	* wp-admin/edit-form-advanced.php:
+	* wp-admin/edit-form.php:
+	* wp-admin/post.php:
+	* wp-includes/functions.php:
+	* wp-trackback.php:
+		トラックバックの文字化け対応強化
+
+	* language/english/main.php:
+	* language/japanese/main.php:
+	* language/portugues.do.brasil/main.php:
+	* wp-blog-header.php:
+	* wp-config-extra.php:
+	* wp-config.php:
+	* wp-includes/functions.php:
+	* wp-includes/vars.php:
+	* wp-lang/lang_en.php:
+	* wp-lang/lang_ja.php:
+	* wp-lang/lang_pt_BR.php:
+	* wp-settings.php:
+		define定数の再定義warning防止
+
+	* blocks/wp_contents.php:
+	* language/english/modinfo.php:
+	* language/japanese/modinfo.php:
+	* language/portugues.do.brasil/modinfo.php:
+	* templates/blocks/wp_block_contents.html:
+	* xoops_version.php:
+		テーマディレクトリに記事ブロックのテンプレートを追加し、モジュールのオプションにて利用可能に。
+
+	* wp-admin/upload.php:
+	* wp-images/file.gif:
+		ファイルアップロード時にアイコンによるリンクオプションを追加
+
+	* phpinfo.php.orig:
+	* wp-admin/change.php:
+	* wp-admin/change.php.orig:
+	* wp-admin/change-functions.php:
+	* wp-admin/change-functions.php.orig:
+	* wp-admin/import-b2.php:
+	* wp-admin/import-b2.php.orig:
+	* wp-admin/import-blogger.php:
+	* wp-admin/import-blogger.php.orig:
+	* wp-admin/import-greymatter.php:
+	* wp-admin/import-greymatter.php.orig:
+	* wp-admin/import-mt.php:
+	* wp-admin/import-mt.php.orig:
+	* wp-admin/import-textpattern.php:
+	* wp-admin/import-textpattern.php.orig:
+	* wp-admin/install-config.php:
+	* wp-admin/install-config.php.orig:
+	* wp-admin/install-helper.php:
+	* wp-admin/install-helper.php.orig:
+	* wp-admin/install.php:
+	* wp-admin/install.php.orig:
+	* wp-admin/templates.php:
+	* wp-admin/templates.php.orig:
+	* wp-admin/upgrade-functions.php:
+	* wp-admin/upgrade-functions.php.orig:
+	* wp-admin/upgrade.php:
+	* wp-admin/upgrade.php.orig:
+	* wp-login.php:
+	* wp-login.php.orig:
+	* wp-moblog.php.orig:
+	* wp-register.php:
+	* wp-register.php.orig:
+		XOOPSモジュールに対応していないファイルを無効化。(Disabling files, can't use with XOOPS)
+
+	* attach/index.html:
+	* blocks/.htaccess:
+	* blocks/index.html:
+	* wp-includes/.htaccess:
+		不法アクセス対策追加
+
+	* wp-mail.php:
+		添付ファイルのContent-Type:が大文字を含む場合にうまくいかなかった
+
 2004-06-10  0.1.4
 	* wp-admin/auth.php:
 		XOOPSのユーザ名を変更したときにWordPress側のユーザ名も連動するように変更
