@@ -121,7 +121,7 @@ if ($use_quicktags) {
 	$sw -> show();
     foreach($wpsmiliestrans as $smiley => $img) 
     { 
-        print '<a href="javascript:bbinsert(document.post,\'\',\''.str_replace("'","\'",$smiley).'\')"><img src="' . get_settings("smilies_directory") . '/'. $img . '" alt="' . $smiley . '" /></a> '; 
+        print '<a href="javascript:bbinsert(document.post,\'\',\''.str_replace("'","\'",$smiley).'\')"><img src="' . $smilies_directory . '/'. $img . '" alt="' . $smiley . '" /></a> '; 
     } 
 	echo "<script src=\"quicktags_spaw.js\" language=\"JavaScript\" type=\"text/javascript\"></script>";
 //

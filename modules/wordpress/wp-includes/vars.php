@@ -200,53 +200,75 @@ $is_IIS = strstr($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') ? 1 : 0;
 
 # if the config file does not provide the smilies array, let's define it here
 if (!isset($wpsmiliestrans)) {
-    $wpsmiliestrans = array(
-        ' :)'        => 'icon_smile.gif',
-        ' :D'        => 'icon_biggrin.gif',
-        ' :-D'       => 'icon_biggrin.gif',
-        ':grin:'    => 'icon_biggrin.gif',
-        ' :)'        => 'icon_smile.gif',
-        ' :-)'       => 'icon_smile.gif',
-        ':smile:'   => 'icon_smile.gif',
-        ' :('        => 'icon_sad.gif',
-        ' :-('       => 'icon_sad.gif',
-        ':sad:'     => 'icon_sad.gif',
-        ' :o'        => 'icon_surprised.gif',
-        ' :-o'       => 'icon_surprised.gif',
-        ':eek:'     => 'icon_surprised.gif',
-        ' 8O'        => 'icon_eek.gif',
-        ' 8-O'       => 'icon_eek.gif',
-        ':shock:'   => 'icon_eek.gif',
-        ' :?'        => 'icon_confused.gif',
-        ' :-?'       => 'icon_confused.gif',
-        ' :???:'     => 'icon_confused.gif',
-        ' 8)'        => 'icon_cool.gif',
-        ' 8-)'       => 'icon_cool.gif',
-        ':cool:'    => 'icon_cool.gif',
-        ':lol:'     => 'icon_lol.gif',
-        ' :x'        => 'icon_mad.gif',
-        ' :-x'       => 'icon_mad.gif',
-        ':mad:'     => 'icon_mad.gif',
-        ' :P'        => 'icon_razz.gif',
-        ' :-P'       => 'icon_razz.gif',
-        ':razz:'    => 'icon_razz.gif',
-        ':oops:'    => 'icon_redface.gif',
-        ':cry:'     => 'icon_cry.gif',
-        ':evil:'    => 'icon_evil.gif',
-        ':twisted:' => 'icon_twisted.gif',
-        ':roll:'    => 'icon_rolleyes.gif',
-        ':wink:'    => 'icon_wink.gif',
-        ' ;)'        => 'icon_wink.gif',
-        ' ;-)'       => 'icon_wink.gif',
-        ':!:'       => 'icon_exclaim.gif',
-        ':?:'       => 'icon_question.gif',
-        ':idea:'    => 'icon_idea.gif',
-        ':arrow:'   => 'icon_arrow.gif',
-        ' :|'        => 'icon_neutral.gif',
-        ' :-|'       => 'icon_neutral.gif',
-        ':neutral:' => 'icon_neutral.gif',
-        ':mrgreen:' => 'icon_mrgreen.gif',
-    );
+	if (get_xoops_option('wordpress','wp_use_xoops_smilies')) {
+	    $wpsmiliestrans = array(
+			':-D'   => 'smil3dbd4d4e4c4f2.gif',
+			':-)'   => 'smil3dbd4d6422f04.gif',
+			':-('   => 'smil3dbd4d75edb5e.gif',
+			':-o'   => 'smil3dbd4d8676346.gif',
+			':-?'   => 'smil3dbd4d99c6eaa.gif',
+			'8-)'   => 'smil3dbd4daabd491.gif',
+			':lol:'   => 'smil3dbd4dbc14f3f.gif',
+			':-x'   => 'smil3dbd4dcd7b9f4.gif',
+			':-P'   => 'smil3dbd4ddd6835f.gif',
+			':oops:'   => 'smil3dbd4df1944ee.gif',
+			':cry:'   => 'smil3dbd4e02c5440.gif',
+			':evil:'   => 'smil3dbd4e1748cc9.gif',
+			':roll:'   => 'smil3dbd4e29bbcc7.gif',
+			';-)'   => 'smil3dbd4e398ff7b.gif',
+			':pint:'   => 'smil3dbd4e4c2e742.gif',
+			':hammer:'   => 'smil3dbd4e5e7563a.gif',
+			':idea:'   => 'smil3dbd4e7853679.gif',
+	    );
+	} else {
+	    $wpsmiliestrans = array(
+	        ' :)'        => 'icon_smile.gif',
+	        ' :D'        => 'icon_biggrin.gif',
+	        ' :-D'       => 'icon_biggrin.gif',
+	        ':grin:'    => 'icon_biggrin.gif',
+	        ' :)'        => 'icon_smile.gif',
+	        ' :-)'       => 'icon_smile.gif',
+	        ':smile:'   => 'icon_smile.gif',
+	        ' :('        => 'icon_sad.gif',
+	        ' :-('       => 'icon_sad.gif',
+	        ':sad:'     => 'icon_sad.gif',
+	        ' :o'        => 'icon_surprised.gif',
+	        ' :-o'       => 'icon_surprised.gif',
+	        ':eek:'     => 'icon_surprised.gif',
+	        ' 8O'        => 'icon_eek.gif',
+	        ' 8-O'       => 'icon_eek.gif',
+	        ':shock:'   => 'icon_eek.gif',
+	        ' :?'        => 'icon_confused.gif',
+	        ' :-?'       => 'icon_confused.gif',
+	        ' :???:'     => 'icon_confused.gif',
+	        ' 8)'        => 'icon_cool.gif',
+	        ' 8-)'       => 'icon_cool.gif',
+	        ':cool:'    => 'icon_cool.gif',
+	        ':lol:'     => 'icon_lol.gif',
+	        ' :x'        => 'icon_mad.gif',
+	        ' :-x'       => 'icon_mad.gif',
+	        ':mad:'     => 'icon_mad.gif',
+	        ' :P'        => 'icon_razz.gif',
+	        ' :-P'       => 'icon_razz.gif',
+	        ':razz:'    => 'icon_razz.gif',
+	        ':oops:'    => 'icon_redface.gif',
+	        ':cry:'     => 'icon_cry.gif',
+	        ':evil:'    => 'icon_evil.gif',
+	        ':twisted:' => 'icon_twisted.gif',
+	        ':roll:'    => 'icon_rolleyes.gif',
+	        ':wink:'    => 'icon_wink.gif',
+	        ' ;)'        => 'icon_wink.gif',
+	        ' ;-)'       => 'icon_wink.gif',
+	        ':!:'       => 'icon_exclaim.gif',
+	        ':?:'       => 'icon_question.gif',
+	        ':idea:'    => 'icon_idea.gif',
+	        ':arrow:'   => 'icon_arrow.gif',
+	        ' :|'        => 'icon_neutral.gif',
+	        ' :-|'       => 'icon_neutral.gif',
+	        ':neutral:' => 'icon_neutral.gif',
+	        ':mrgreen:' => 'icon_mrgreen.gif',
+	    );
+	}
 }
 
 # sorts the smilies' array
@@ -258,7 +280,10 @@ if (!function_exists('smiliescmp')) {
 	   return (strlen($a) > strlen($b)) ? -1 : 1;
 	}
 }
-uksort($wpsmiliestrans, 'smiliescmp');
+
+if (get_xoops_option('wordpress','wp_use_xoops_smilies')==0) {
+	uksort($wpsmiliestrans, 'smiliescmp');
+}
 
 # generates smilies' search & replace arrays
 foreach($wpsmiliestrans as $smiley => $img) {

@@ -81,7 +81,11 @@ if (!strstr($_SERVER['REQUEST_URI'], 'install.php') && !strstr($_SERVER['REQUEST
     $require_name_email = get_settings('require_name_email');
     $comments_notify = get_settings('comments_notify');
     $use_smilies = get_settings('use_smilies');
-    $smilies_directory = get_settings('smilies_directory');
+   	if (get_xoops_option('wordpress','wp_use_xoops_smilies')) {
+		$smilies_directory = XOOPS_URL."/uploads";
+   	} else {
+		$smilies_directory = get_settings('smilies_directory');
+   	}
     $mailserver_url = get_settings('mailserver_url');
     $mailserver_login = get_settings('mailserver_login');
     $mailserver_pass = get_settings('mailserver_pass');
