@@ -48,4 +48,9 @@ require_once(ABSPATH.'wp-settings.php');
 require_once(ABSPATH.'wp-lang/lang_ja.php');
 
 /* Stop editing */
+if (get_xoops_option('wordpress','wp_use_spaw') == 1) {
+	$wp_use_spaw=true;
+} else {
+	$wp_use_spaw=false;
+}
 ?>
