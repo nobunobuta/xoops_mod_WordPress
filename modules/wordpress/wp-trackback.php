@@ -27,12 +27,12 @@ if ((strlen(''.$tb_id)) && (empty($HTTP_GET_VARS['__mode'])) && (strlen(''.$tb_u
 
 	if ('closed' == $pingstatus)
 		trackback_response(1, 'Sorry, trackbacks are closed for this item.');
-	if (($charset !="")&&((mb_http_input("P")=="")||(strtolower(ini_get("mbstring.http_input"))=="pass"))) {
-		$charset = strtoupper(trim($charset));
-	} else {
-		$charset="auto";
-	}
 	if (function_exists('mb_convert_encoding')) {
+		if (($charset !="")&&((mb_http_input("P")=="")||(strtolower(ini_get("mbstring.http_input"))=="pass"))) {
+			$charset = strtoupper(trim($charset));
+		} else {
+			$charset="auto";
+		}
 		if ($charset == "auto") {
 			$charset = mb_detect_encoding($title.$excerpt.$blog_name,$charset);
 		}
