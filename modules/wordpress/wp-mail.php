@@ -59,22 +59,21 @@ function wp_mail_receive() {
 			if ($bodysignal) {
 				$content .= $line;
 			} else {
-				if (preg_match('/^Content-Type:\s+(.*?)\;\s+boundary=(?:")?([^;"\s\n]*?)(?:")?\s*(?:$|;)/i', $line,$match)) {
+				if (preg_match('/^Content-Type:\s+(.*?)\;/i', $line,$match)) {
 					$content_type = $match[1];
 					$content_type = strtolower($match[1]);
 				} 
-				if (($content_type == 'multipart/mixed') && ($match[2]) && ($att_boundary == '')) {
-					$att_boundary = trim($match[2]);
+				if (($content_type == 'multipart/mixed') && (preg_match('/boundary=(?:")?([^;"\s\n]*?)(?:")?\s*(?:$|;)/',$line,$match)) && ($att_boundary == '')) {
+					$att_boundary = trim($match[1]);
 				} 
 
-				if (($content_type == 'multipart/alternative') && ($match[2]) && ($boundary == '')) {
-					$boundary = trim($match[2]);
+				if (($content_type == 'multipart/alternative') && (preg_match('/boundary=(?:")?([^;"\s\n]*?)(?:")?\s*(?:$|;)/',$line,$match)) && ($boundary == '')) {
+					$boundary = trim($match[1]);
 				} 
 
-				if (($content_type == 'multipart/related') && ($match[2]) && ($hatt_boundary == '')) {
-					$hatt_boundary = trim($match[2]);
+				if (($content_type == 'multipart/related') && (preg_match('/boundary=(?:")?([^;"\s\n]*?)(?:")?\s*(?:$|;)/',$line,$match)) && ($hatt_boundary == '')) {
+					$hatt_boundary = trim($match[1]);
 				} 
-
 				if (preg_match('/Subject: /', $line)) {
 					$subject = trim($line);
 					$subject = substr($subject, 9, strlen($subject)-9);
@@ -133,7 +132,7 @@ function wp_mail_receive() {
 
 		$ddate_today = time() + ($time_difference * 3600);
 		$ddate_difference_days = ($ddate_today - $ddate_U) / 86400; 
-		// starts buffering the output
+
 		if ($ddate_difference_days > 14) {
 			echo "Too old<br />\n";
 			continue;
@@ -184,11 +183,11 @@ function wp_mail_receive() {
 			$content = trim($content);
 			echo "<p><b>Content-type:</b> $content_type, <b>boundary:</b> $boundary</p>\n";
 			echo "<p><b>att_boundary:</b> $att_boundary, <b>hatt_boundary:</b> $hatt_boundary</p>\n";
-			echo "<p><b>charset:<b>$charset</p>\n"; 
+			echo "<p><b>charset:</b>$charset, <b>BLOG charset:</b>$blog_charset</p>\n"; 
 			// echo "<p><b>Raw content:</b><br /><pre>".$content.'</pre></p>';
 
-			if (($charset == "") || trim($charset == "ISO-2022-JP")) $charset = "JIS";
-			if (trim($charset) == "Shift_JIS") $charset = "SJIS";
+			if (($charset == "") || (trim(strtoupper($charset)) == "ISO-2022-JP")) $charset = "JIS";
+			if (trim(strtoupper($charset)) == "SHIFT_JIS") $charset = "SJIS";
 
 			$btpos = strpos($content, get_settings('bodyterminator'));
 			if ($btpos) {
@@ -201,6 +200,7 @@ function wp_mail_receive() {
 			$secondline = $blah[1];
 
 			if (get_settings('use_phoneemail')) {
+				echo "<p><b>Use Phone Mail:</b> Yes</p>\n";
 				$btpos = strpos($firstline, get_settings('phoneemail_separator'));
 				if ($btpos) {
 					$userpassstring = trim(substr($firstline, 0, $btpos));
@@ -213,6 +213,7 @@ function wp_mail_receive() {
 				} 
 				$contentfirstline = $blah[1];
 			} else {
+				echo "<p><b>Use Phone Mail:</b> No</p>\n";
 				$userpassstring = strip_tags($firstline);
 				$contentfirstline = '';
 			} 
@@ -248,6 +249,7 @@ function wp_mail_receive() {
 			$content = trim($content); 
 			// Please uncomment following line, only if you want to check user and password.
 			// echo "<p><b>Login:</b> $user_login, <b>Pass:</b> $user_pass</p>";
+			echo "<p><b>Login:</b> $user_login, <b>Pass:</b> *********</p>";
 			if ($xoopsDB) {
 				$sql = "SELECT ID, user_level FROM {$wpdb->users[$wp_id]} WHERE user_login='$user_login' ORDER BY ID DESC LIMIT 1";
 				$result = $wpdb->get_row($sql);
@@ -478,8 +480,18 @@ function wp_create_thumbnail($file, $max_side, $effect = '')
 				$image_new_width = $image_width / $image_ratio; 
 				// height > width
 			} 
-
-			$thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
+            if (function_exists('gd_info')) {
+	            $gdver=gd_info();
+	            if(strstr($gdver["GD Version"],"1.")!=false){
+	            	//For GD
+	                $thumbnail = imagecreate($image_new_width, $image_new_height);
+	            }else{
+	            	//For GD2
+	                $thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
+	            }
+			} else {
+                $thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
+			}
 			@imagecopyresized($thumbnail, $image, 0, 0, 0, 0, $image_new_width, $image_new_height, $image_attr[0], $image_attr[1]); 
 			// move the thumbnail to it's final destination
 			$path = explode('/', $file);
@@ -525,7 +537,7 @@ ob_start();
 if ($output_debugging_info) {
 	header("Content-Type: text/html; charset=EUC-JP");
 }
-echo <<< EOD
+echo <<<EOD
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
 <head>
