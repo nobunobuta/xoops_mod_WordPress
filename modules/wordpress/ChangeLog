@@ -1,3 +1,30 @@
+2004-06-10  0.1.4
+	* wp-admin/auth.php:
+		XOOPSのユーザ名を変更したときにWordPress側のユーザ名も連動するように変更
+
+	* wp-includes/functions.php:
+		パスワード情報をXOOPSのユーザ情報から取得するように変更
+
+	* wp-admin/profile.php:
+		パスワード変更を出来ないようにした。（XOOPSのユーザ情報と同期するため）
+
+	* wp-admin/users.php:
+		新規ユーザ登録を出来ないようにした。（XOOPSのユーザと同期するため）
+
+	* wp-admin/post.php:
+		コメントを編集するとコメントの本文が消えるバグに対応
+
+	* blocks/wp_contents.php:
+		幾つかの細かいバグに対応
+
+	* xoops_search.php:
+		nao-ponさんのXOOPS search hackに対応。
+
+	* wp-login.php:
+	* wp-login.php.orig:
+	* wp-register.php:
+		This file is obsolete.
+
 2004-06-06  0.1.3a
 	* wp-mail.php:
 		ボーダフォンからの写真投稿に対応

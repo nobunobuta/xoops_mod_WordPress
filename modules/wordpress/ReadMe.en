@@ -9,6 +9,20 @@ To install this module, you don't need to run install.php, like WordPress needs 
 ------------
 ChangeLog
 ------------
+0.1.4  [2004-06-10]
+Added Features)
+-If XOOPS user name is  changed , WordPress user name will be synchronized.
+-Registering new user function in WordPress is deleted.
+-Changing user password function in WordPress is deleted.
+
+Fixed Bugs)
+-The comment content was deleted, if user edits comment.
+-User synchronization between XOOPS & WordPress function had bugs.
+
+0.1.3a[2004-06-09]
+Fixed Bugs)
+-Some phone could not send a photo.
+
 0.1.3 [2004-06-06]
 Added Features)
 -When using Blog-by-Email, It can get image files from attached with a Text E-mail and embbeded with an HTML E-mail.
