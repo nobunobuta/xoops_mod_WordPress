@@ -165,7 +165,8 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		$content = $contentfirstline.str_replace($firstline, '', $content);
 		$content = trim($content);
 
-		echo "<p><b>Login:</b> $user_login, <b>Pass:</b> $user_pass</p>";
+//Please uncomment following line, only if you want to check user and password.
+//		echo "<p><b>Login:</b> $user_login, <b>Pass:</b> $user_pass</p>";
 
 		#Check to see if there is an attachment, if there is, save the filename in the temp directory
 		#First define some constants and message types
@@ -191,12 +192,30 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		}
 		else $attachment = false;
 
-		$sql = "SELECT ID, user_level FROM $tableusers WHERE user_login='$user_login' AND user_pass='$user_pass' ORDER BY ID DESC LIMIT 1";
-		$result = $wpdb->get_row($sql);
 
-		if (!$result) {
-			echo '<p><b>Wrong login or password.</b></p></div>';
-			continue;
+		if ($xooptDB) {
+			$sql = "SELECT ID, user_level FROM $tableusers WHERE user_login='$user_login' ORDER BY ID DESC LIMIT 1";
+			$result = $wpdb->get_row($sql);
+			if (!$result) {
+				echo '<p><b>Wrong login</b></p></div>';
+				continue;
+			} else {
+				$sql = "SELECT * FROM ".$xoopsDB->prefix('users')." WHERE uname='$user_login' AND pass='".md5(trim($user_pass))."' ORDER BY uid DESC LIMIT 1";
+				$result1 = $wpdb->get_row($sql);
+		
+				if (!$result1) {
+					echo '<p><b>Wrong password.</b></p></div>';
+					continue;
+				}
+			}
+		} else {
+			$sql = "SELECT ID, user_level FROM $tableusers WHERE user_login='$user_login' AND user_pass='$user_pass' ORDER BY ID DESC LIMIT 1";
+			$result = $wpdb->get_row($sql);
+
+			if (!$result) {
+				echo '<p><b>Wrong login or password.</b></p></div>';
+				continue;
+			}
 		}
 
 		$user_level = $result->user_level;
@@ -216,8 +235,13 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 			if (!$thisisforfunonly) {
 				$post_title = addslashes(trim($post_title));
 				#If we find an attachment, add it to the post
-				if (($attachment))
-				$content = "<a href=\"".$siteurl."\/attach\/".$temp_file."\"><img style=\"float: left;\" hspace=\"6\" src = \"".$siteurl."\/attach\/thumb-". $temp_file."\"  alt=\"moblog\" ></a>".$content."<br clear=left>";
+				if ($attachment) {
+					if (file_exists("attach/thumb-".$temp_file)) {
+						$content = "<a href=\"".$siteurl."\/attach\/".$temp_file."\"><img style=\"float: left;\" hspace=\"6\" src = \"".$siteurl."\/attach\/thumb-". $temp_file."\"  alt=\"moblog\" ></a>".$content."<br clear=left>";
+					} else {
+						$content = "<a href=\"".$siteurl."\/attach\/".$temp_file."\"><img style=\"float: left;\" hspace=\"6\" src = \"".$siteurl."\/attach\/". $temp_file."\"  alt=\"moblog\" ></a>".$content."<br clear=left>";
+					}
+				}
                 if($flat > 500) {
                     $sql = "INSERT INTO $tableposts (post_author, post_date, post_content, post_title, post_category) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category)";
                 } else {
@@ -238,7 +262,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
                 // is.  right now it's undefined and does not work
 				//rss_update($blog_ID);
 				pingWeblogs($blog_ID);
-				pingCafelog($cafelogID, $post_title, $post_ID);
+//				pingCafelog($cafelogID, $post_title, $post_ID);
 				pingBlogs($blog_ID);
 				pingback($content, $post_ID);
 

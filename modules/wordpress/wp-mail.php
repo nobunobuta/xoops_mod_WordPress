@@ -7,12 +7,12 @@ require_once(ABSPATH.WPINC.'/class-pop3.php');
 timer_start();
 
 $use_cache = 1;
-$output_debugging_info = 1;	# =1 if you want to output debugging info
+$output_debugging_info = 0;	# =1 if you want to output debugging info
 $time_difference = get_settings('time_difference');
 
 if ($use_phoneemail) {
 	// if you're using phone email, the email will already be in your timezone
-	$time_difference = 0;
+	$time_difference = 1;
 }
 
 error_reporting(2037);
@@ -71,6 +71,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 			if (preg_match('/Subject: /', $line)) {
 				$subject = trim($line);
 				$subject = substr($subject, 9, strlen($subject)-9);
+				$subject = mb_decode_mimeheader($subject);
 				if ($use_phoneemail) {
 					$subject = explode($phoneemail_separator, $subject);
 					$subject = trim($subject[0]);
@@ -112,13 +113,13 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 
 
 	# starts buffering the output
-//	ob_start();
-	echo "aaaa<br>";
+	ob_start();
 	if ($ddate_difference_days > 14) {
 		echo 'Too old<br />';
 		continue;
 	}
-
+	echo "$subjectprefix<br/>";
+	echo "$subject<br/>";
 	if (preg_match('/'.$subjectprefix.'/', $subject)) {
 
 		$userpassstring = '';
@@ -190,15 +191,32 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 
 		$content = $contentfirstline.str_replace($firstline, '', $content);
 		$content = trim($content);
+//Please uncomment following line, only if you want to check user and password.
+//		echo "<p><b>Login:</b> $user_login, <b>Pass:</b> $user_pass</p>";
 
-		echo "<p><b>Login:</b> $user_login, <b>Pass:</b> $user_pass</p>";
+		if ($xooptDB) {
+			$sql = "SELECT ID, user_level FROM $tableusers WHERE user_login='$user_login' ORDER BY ID DESC LIMIT 1";
+			$result = $wpdb->get_row($sql);
+			if (!$result) {
+				echo '<p><b>Wrong login</b></p></div>';
+				continue;
+			} else {
+				$sql = "SELECT * FROM ".$xoopsDB->prefix('users')." WHERE uname='$user_login' AND pass='".md5(trim($user_pass))."' ORDER BY uid DESC LIMIT 1";
+				$result1 = $wpdb->get_row($sql);
+		
+				if (!$result1) {
+					echo '<p><b>Wrong password.</b></p></div>';
+					continue;
+				}
+			}
+		} else {
+			$sql = "SELECT ID, user_level FROM $tableusers WHERE user_login='$user_login' AND user_pass='$user_pass' ORDER BY ID DESC LIMIT 1";
+			$result = $wpdb->get_row($sql);
 
-		$sql = "SELECT ID, user_level FROM $tableusers WHERE user_login='$user_login' AND user_pass='$user_pass' ORDER BY ID DESC LIMIT 1";
-		$result = $wpdb->get_row($sql);
-
-		if (!$result) {
-			echo '<p><b>Wrong login or password.</b></p></div>';
-			continue;
+			if (!$result) {
+				echo '<p><b>Wrong login or password.</b></p></div>';
+				continue;
+			}
 		}
 
 		$user_level = $result->user_level;
@@ -213,20 +231,17 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 			if ($post_title == '') {
 				$post_title = $subject;
 			}
-			if (empty($post_categories)) {
-//				$post_categories[] = $default_category;
+			if ($post_category == '') {
 				$post_category = $default_category;
 			}
-			echo "Subject : $subject <br />";
+			echo "Subject : ".mb_convert_encoding($subject,"EUC-JP","auto")." <br />";
 			echo "Category : $post_category <br />";
 			if (!$thisisforfunonly) {
 
-//				$post_title = addslashes(trim($post_title));
-//				$post_title = addslashes(trim(mb_decode_mimeheader($post_title)));
-				$post_title = addslashes(trim(mb_convert_encoding(mb_decode_mimeheader($post_title),"EUC-JP","auto")));
+				$post_title = addslashes(trim(mb_convert_encoding($post_title,"EUC-JP","auto")));
 				$content = preg_replace("|\n([^\n])|", " $1", $content);
 				$content = addslashes(mb_convert_encoding(trim($content),"EUC-JP","JIS"));
-//				$content = addslashes(trim($content));
+
                 if($flat > 500) {
                     $sql = "INSERT INTO $tableposts (post_author, post_date, post_content, post_title, post_category) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category)";
                 } else {
