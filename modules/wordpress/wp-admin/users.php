@@ -57,7 +57,7 @@ case 'adduser':
 	}
 
 	/* checking the login isn't already used by another user */
-	$loginthere = $wpdb->get_var("SELECT user_login FROM $tableusers WHERE user_login = '$user_login'");
+	$loginthere = $wpdb->get_var("SELECT user_login FROM {$wpdb->users[$wp_id]} WHERE user_login = '$user_login'");
     if ($loginthere) {
 		die ('<strong>ERROR</strong>: This login is already registered, please choose another one.');
 	}
@@ -70,13 +70,13 @@ case 'adduser':
 	$user_lastname = addslashes(stripslashes($user_lastname));
 	$now = current_time('mysql');
 
-	$result = $wpdb->query("INSERT INTO $tableusers 
+	$result = $wpdb->query("INSERT INTO {$wpdb->users[$wp_id]} 
 		(user_login, user_pass, user_nickname, user_email, user_ip, user_domain, user_browser, dateYMDhour, user_level, user_idmode, user_firstname, user_lastname)
 	VALUES 
-		('$user_login', '$pass1', '$user_nickname', '$user_email', '$user_ip', '$user_domain', '$user_browser', '$now', '$new_users_can_blog', 'nickname', '$user_firstname', '$user_lastname')");
+		('$user_login', '$pass1', '$user_nickname', '$user_email', '$user_ip', '$user_domain', '$user_browser', '$now', '".get_settings('new_users_can_blog')."', 'nickname', '$user_firstname', '$user_lastname')");
 	
 	if ($result == false) {
-		die ('<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:'.$admin_email.'">webmaster</a> !');
+		die ('<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:'.get_settings('admin_email').'">webmaster</a> !');
 	}
 
 	$stars = '';
@@ -84,15 +84,15 @@ case 'adduser':
 		$stars .= '*';
 	}
 
-	$message  = "$blogname: "._LANG_R_USER_REGISTRATION."\r\n\r\n";
+	$message  = "get_settings('blogname'): "._LANG_R_USER_REGISTRATION."\r\n\r\n";
 	$message .= "Login: $user_login\r\n\r\nE-mail: $user_email";
-	$wpm_title = "[$blogname] "._LANG_R_MAIL_REGISTRATION;
-	$header = "From: $admin_email\r\nErrors-To: $admin_email";
+	$wpm_title = "[get_settings('blogname')] "._LANG_R_MAIL_REGISTRATION;
+	$header = "From: ".get_settings('admin_email')."\r\nErrors-To: ".get_settings('admin_email');
 
 	if (function_exists('mb_send_mail')) {
-	mb_send_mail($admin_email, $wpm_title, $message, $header);
+	mb_send_mail(get_settings('admin_email'), $wpm_title, $message, $header);
 	} else {
-	@mail($admin_email, $wpm_title, $message, $header);
+	@mail(get_settings('admin_email'), $wpm_title, $message, $header);
 	}
 	header('Location: users.php');
 break;
@@ -118,10 +118,10 @@ case 'promote':
 
 	if ('up' == $prom) {
 		$new_level = $usertopromote_level + 1;
-		$sql="UPDATE $tableusers SET user_level=$new_level WHERE ID = $id AND $new_level < $user_level";
+		$sql="UPDATE {$wpdb->users[$wp_id]} SET user_level=$new_level WHERE ID = $id AND $new_level < $user_level";
 	} elseif ('down' == $prom) {
 		$new_level = $usertopromote_level - 1;
-		$sql="UPDATE $tableusers SET user_level=$new_level WHERE ID = $id AND $new_level < $user_level";
+		$sql="UPDATE {$wpdb->users[$wp_id]} SET user_level=$new_level WHERE ID = $id AND $new_level < $user_level";
 	}
 	$result = $wpdb->query($sql);
 
@@ -146,10 +146,10 @@ case 'delete':
 	if ($user_level <= $usertodelete_level)
 		die('Can&#8217;t delete a user whose level is higher than yours.');
 
-	$sql = "DELETE FROM $tableusers WHERE ID = $id";
+	$sql = "DELETE FROM {$wpdb->users[$wp_id]} WHERE ID = $id";
 	$result = $wpdb->query($sql) or die("Couldn&#8217;t delete user #$id.");
 
-	$sql = "DELETE FROM $tableposts WHERE post_author = $id";
+	$sql = "DELETE FROM {$wpdb->posts[$wp_id]} WHERE post_author = $id";
 	$result = $wpdb->query($sql) or die("Couldn&#8217;t delete user #$id&#8217;s posts.");
 
 	header('Location: users.php');
@@ -174,7 +174,7 @@ default:
 	<th><?php echo _LANG_WUS_AU_POSTS; ?></th>
 	</tr>
 	<?php
-	$users = $wpdb->get_results("SELECT ID FROM $tableusers WHERE user_level > 0 ORDER BY ID");
+	$users = $wpdb->get_results("SELECT ID FROM {$wpdb->users[$wp_id]} WHERE user_level > 0 ORDER BY ID");
 	foreach ($users as $user) {
 		$user_data = get_userdata($user->ID);
 		$email = $user_data->user_email;
@@ -186,7 +186,7 @@ default:
 		if (strlen($short_url) > 35)
 		$short_url =  substr($short_url, 0, 32).'...';
 		$style = ('class="alternate"' == $style) ? '' : 'class="alternate"';
-		$numposts = $wpdb->get_var("SELECT COUNT(*) FROM $tableposts WHERE post_author = $user->ID and post_status = 'publish'");
+		$numposts = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts[$wp_id]} WHERE post_author = $user->ID and post_status = 'publish'");
 		if (0 < $numposts) $numposts = "<a href='edit.php?author=$user_data->ID' title='View posts'>$numposts</a>";
 		echo "
 <tr $style>
@@ -211,7 +211,7 @@ default:
 </div>
 
 <?php
-	$users = $wpdb->get_results("SELECT * FROM $tableusers WHERE user_level = 0 ORDER BY ID");
+	$users = $wpdb->get_results("SELECT * FROM {$wpdb->users[$wp_id]} WHERE user_level = 0 ORDER BY ID");
 	if ($users) {
 ?>
 <div class="wrap">

@@ -53,9 +53,9 @@ case "update":
     // pull the vars from the post
     // validate ranges etc.
     // update the values
-    $options = $wpdb->get_results("SELECT $tableoptions.option_id, option_name, option_type, option_value, option_admin_level "
-                                  . "FROM $tableoptions "
-                                  . "LEFT JOIN $tableoptiongroup_options ON $tableoptions.option_id = $tableoptiongroup_options.option_id "
+    $options = $wpdb->get_results("SELECT {$wpdb->options[$wp_id]}.option_id, option_name, option_type, option_value, option_admin_level "
+                                  . "FROM {$wpdb->options[$wp_id]} "
+                                  . "LEFT JOIN {$wpdb->optiongroup_options[$wp_id]} ON {$wpdb->options[$wp_id]}.option_id = {$wpdb->optiongroup_options[$wp_id]}.option_id "
                                   . "WHERE group_id = $option_group_id "
                                   . "ORDER BY seq");
     if ($options) {
@@ -71,7 +71,7 @@ case "update":
                     $msg = validate_option($option, $this_name, $new_val);
                     if ($msg == '') {
                         //no error message
-                        $result = $wpdb->query("UPDATE $tableoptions SET option_value = '$new_val' WHERE option_id = $option->option_id");
+                        $result = $wpdb->query("UPDATE {$wpdb->options[$wp_id]} SET option_value = '$new_val' WHERE option_id = $option->option_id");
                         if (!$result) {
                             $db_errors .= " SQL error while saving $this_name. ";
                         } else {
@@ -83,7 +83,7 @@ case "update":
                 }
             }
         } // end foreach
-        unset($cache_settings); // so they will be re-read
+        unset($cache_settings[$wp_id]); // so they will be re-read
         get_settings('siteurl'); // make it happen now
     } // end if options
     
@@ -104,7 +104,7 @@ default:
 	$standalone = 0;
 	include_once("./admin-header.php");
 	if ($user_level <= 3) {
-		die("You have no right to edit the options for this blog.<br>Ask for a promotion from your <a href=\"mailto:$admin_email\">blog admin</a> :)");
+		die("You have no right to edit the options for this blog.<br>Ask for a promotion from your <a href=\"mailto:".get_settings('admin_email')."\">blog admin</a> :)");
 	}
 ?>
 
@@ -115,7 +115,7 @@ if ($non_was_selected) { // no group pre-selected, display opening page
 <dl>
 <?php
     //iterate through the available option groups. output them as a definition list.
-    $option_groups = $wpdb->get_results("SELECT group_id, group_name, group_desc, group_longdesc FROM $tableoptiongroups ORDER BY group_id");
+    $option_groups = $wpdb->get_results("SELECT group_id, group_name, group_desc, group_longdesc FROM {$wpdb->optiongroups[$wp_id]} ORDER BY group_id");
     foreach ($option_groups as $option_group) {
         echo("  <dt><a href=\"$this_file?option_group_id={$option_group->group_id}\" title=\"".replace_constant($option_group->group_desc)."\">{$option_group->group_name}</a></dt>\n");
         $current_long_desc = $option_group->group_longdesc;
@@ -137,7 +137,7 @@ if ($non_was_selected) { // no group pre-selected, display opening page
 <ul id="adminmenu2">
 <?php
     //Iterate through the available option groups.
-    $option_groups = $wpdb->get_results("SELECT group_id, group_name, group_desc, group_longdesc FROM $tableoptiongroups ORDER BY group_id");
+    $option_groups = $wpdb->get_results("SELECT group_id, group_name, group_desc, group_longdesc FROM {$wpdb->optiongroups[$wp_id]} ORDER BY group_id");
     foreach ($option_groups as $option_group) {
         if ($option_group->group_id == $option_group_id) {
             $current_desc=replace_constant($option_group->group_desc);
@@ -159,9 +159,9 @@ if ($non_was_selected) { // no group pre-selected, display opening page
   <table width="90%" cellpadding="2" cellspacing="2" border="0">
 <?php
     //Now display all the options for the selected group.
-    $options = $wpdb->get_results("SELECT $tableoptions.option_id, option_name, option_type, option_value, option_width, option_height, option_description, option_admin_level "
-                                  . "FROM $tableoptions "
-                                  . "LEFT JOIN $tableoptiongroup_options ON $tableoptions.option_id = $tableoptiongroup_options.option_id "
+    $options = $wpdb->get_results("SELECT {$wpdb->options[$wp_id]}.option_id, option_name, option_type, option_value, option_width, option_height, option_description, option_admin_level "
+                                  . "FROM {$wpdb->options[$wp_id]} "
+                                  . "LEFT JOIN {$wpdb->optiongroup_options[$wp_id]} ON {$wpdb->options[$wp_id]}.option_id = {$wpdb->optiongroup_options[$wp_id]}.option_id "
                                   . "WHERE group_id = $option_group_id "
                                   . "ORDER BY seq");
     if ($options) {

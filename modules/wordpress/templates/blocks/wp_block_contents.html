@@ -1,10 +1,10 @@
 <style type="text/css">
-	@import url( <{$block.siteurl}>/wp-layout.css );
+	<{$block.style}>
 </style>
-<div id='content'>
+<div id='<{$block.divid}>'>
   <{foreach item=content from=$block.contents}>
     <{if $content.date != ""}>
-        <{$content.date}>
+        <h2><{$content.date}></h2>
     <{/if}>
         <div class="post">
             <h3 class="storytitle" id="post-<{$content.date}>"><a href="<{$content.permlink}>" rel="bookmark" title="Permanent Link: <{$content.title}>"><{$content.title}></a></h3>
@@ -19,7 +19,7 @@
                 <{$content.linkpage}> <{$content.comments}> 
             </div>
 <!--
-<$content.trackback>
+<{$content.trackback}>
 -->
         </div>
   <{/foreach}>

@@ -8,7 +8,7 @@ foreach ($posts as $post) { start_wp();
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title><?php echo $blogname ?> - Comments on "<?php the_title() ?>"</title>
+	<title><?php echo get_settings('blogname') ?> - Comments on "<?php the_title() ?>"</title>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<style type="text/css" media="screen">
@@ -19,7 +19,7 @@ foreach ($posts as $post) { start_wp();
 </head>
 <body id="commentspopup">
 
-<h1 id="header"><a href="" title="<?php echo $blogname ?>"><?php echo $blogname ?></a></h1>
+<h1 id="header"><a href="" title="<?php echo get_settings('blogname') ?>"><?php echo get_settings('blogname') ?></a></h1>
 
 <h2 id="comments">Comments</h2>
 
@@ -34,8 +34,8 @@ foreach ($posts as $post) { start_wp();
 $comment_author = (isset($HTTP_COOKIE_VARS['comment_author_'.$cookiehash])) ? trim($HTTP_COOKIE_VARS['comment_author_'.$cookiehash]) : '';
 $comment_author_email = (isset($HTTP_COOKIE_VARS['comment_author_email_'.$cookiehash])) ? trim($HTTP_COOKIE_VARS['comment_author_email_'.$cookiehash]) : '';
 $comment_author_url = (isset($HTTP_COOKIE_VARS['comment_author_url_'.$cookiehash])) ? trim($HTTP_COOKIE_VARS['comment_author_url_'.$cookiehash]) : '';
-$comments = $wpdb->get_results("SELECT * FROM $tablecomments WHERE comment_post_ID = $id AND comment_approved = '1' ORDER BY comment_date");
-$commentstatus = $wpdb->get_row("SELECT comment_status, post_password FROM $tableposts WHERE ID = $id");
+	$comments = $wpdb->get_results("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $id AND comment_approved = '1' ORDER BY comment_date");
+	$commentstatus = $wpdb->get_row("SELECT comment_status, post_password FROM {$wpdb->posts[$wp_id]} WHERE ID = $id");
 if (!empty($commentstatus->post_password) && $HTTP_COOKIE_VARS['wp-postpass_'.$cookiehash] != $commentstatus->post_password) {  // and it doesn't match the cookie
 	echo(get_the_password_form());
 } else { ?>

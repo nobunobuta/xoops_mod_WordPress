@@ -2,7 +2,7 @@
 <div class="wrap">
 <?php
 
-$allowed_users = explode(" ", trim($fileupload_allowedusers));
+$allowed_users = explode(" ", trim(get_settings('fileupload_allowedusers')));
 
 function selected($selected, $current) {
 	if ($selected == $current) echo ' selected="selected"';
@@ -57,7 +57,7 @@ window.onload = focusit;
 <legend><?php echo _LANG_EFC_COM_COMMENT; ?></legend>
 		<div id="quicktags">
 <?php
-if ($use_quicktags) {
+if (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))) {
 	echo '<a href="http://wordpress.org/docs/reference/post/#quicktags" title="Help with quicktags">'._LANG_EF_AD_POSTQUICK.'</a>: ';
 	include('quicktags.php');
 }
@@ -73,7 +73,7 @@ if ($use_quicktags) {
 </fieldset>
 
 <?php
-if ($use_quicktags) {
+if (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))) {
 ?>
 <script type="text/javascript" language="JavaScript">
 <!--

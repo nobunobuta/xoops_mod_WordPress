@@ -49,7 +49,7 @@ ob_start();
 </ul>
 <?php
 get_currentuserinfo();
-$drafts = $wpdb->get_results("SELECT ID, post_title FROM $tableposts WHERE post_status = 'draft' AND post_author = $user_ID");
+$drafts = $wpdb->get_results("SELECT ID, post_title FROM {$wpdb->posts[$wp_id]} WHERE post_status = 'draft' AND post_author = $user_ID");
 if ($drafts) {
 	?>
 	<div class="wrap">
@@ -173,7 +173,7 @@ echo $posts_nav_bar;
 		<select name="cat" style="width:140px;">
 		<option value="all">All Categories</option>
 		<?php
-	$categories = $wpdb->get_results("SELECT * FROM $tablecategories");
+	$categories = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]}");
 	$width = ($mode=="sidebar") ? "100%" : "170px";
 	foreach ($categories as $category) {
 		echo "<option value=\"".$category->cat_ID."\"";
@@ -192,11 +192,11 @@ echo $posts_nav_bar;
 
 	if ($archive_mode == "monthly") {
 		echo "<select name=\"m\" style=\"width:120px;\">";
-		$arc_result=$wpdb->get_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date) FROM $tableposts ORDER BY post_date DESC",ARRAY_A);
+		$arc_result=$wpdb->get_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date) FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC",ARRAY_A);
 		foreach ($arc_result as $arc_row) {
 			$arc_year  = $arc_row["YEAR(post_date)"];
 			$arc_month = $arc_row["MONTH(post_date)"];
-       		$month_str = ereg_replace('%MONTH',$month[zeroise($arc_month,2)],_WP_MONTH_FORMAT);
+       		$month_str = ereg_replace('%MONTH',$month[zeroise($arc_month,2)],$wp_month_format);
 			$month_str = ereg_replace('%YEAR',$arc_year,$month_str);
 			echo "<option value=\"$arc_year".zeroise($arc_month,2)."\">";
 			echo $month_str;
@@ -205,7 +205,7 @@ echo $posts_nav_bar;
 	} elseif ($archive_mode == "daily") {
 		echo "<select name=\"d\" style=\"width:120px;\">";
 		$archive_day_date_format = "Y/m/d";
-		$arc_result=$wpdb->get_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date), DAYOFMONTH(post_date) FROM $tableposts ORDER BY post_date DESC", ARRAY_A);
+		$arc_result=$wpdb->get_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date), DAYOFMONTH(post_date) FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC", ARRAY_A);
 		foreach ($arc_result as $arc_row) {
 			$arc_year  = $arc_row["YEAR(post_date)"];
 			$arc_month = $arc_row["MONTH(post_date)"];
@@ -216,13 +216,10 @@ echo $posts_nav_bar;
 		}
 	} elseif ($archive_mode == "weekly") {
 		echo "<select name=\"w\" style=\"width:120px;\">";
-		if (!isset($start_of_week)) {
-			$start_of_week = 1;
-		}
 		$archive_week_start_date_format = "Y/m/d";
 		$archive_week_end_date_format   = "Y/m/d";
 		$archive_week_separator = " - ";
-		$arc_result=$wpdb->geT_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date), DAYOFMONTH(post_date), WEEK(post_date) FROM $tableposts ORDER BY post_date DESC", ARRAY_A);
+		$arc_result=$wpdb->geT_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date), DAYOFMONTH(post_date), WEEK(post_date) FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC", ARRAY_A);
 		$arc_w_last = '';
         foreach ($arc_result as $arc_row) {
 			$arc_year = $arc_row["YEAR(post_date)"];
@@ -230,7 +227,7 @@ echo $posts_nav_bar;
 			if ($arc_w != $arc_w_last) {
 				$arc_w_last = $arc_w;
 				$arc_ymd = $arc_year."-".zeroise($arc_row["MONTH(post_date)"],2)."-" .zeroise($arc_row["DAYOFMONTH(post_date)"],2);
-				$arc_week = get_weekstartend($arc_ymd, $start_of_week);
+				$arc_week = get_weekstartend($arc_ymd, get_settings('start_of_week'));
 				$arc_week_start = date($archive_week_start_date_format, $arc_week['start']);
 				$arc_week_end = date($archive_week_end_date_format, $arc_week['end']);
 				echo "<option value=\"$arc_w\">";
@@ -241,7 +238,7 @@ echo $posts_nav_bar;
 	} elseif ($archive_mode == "postbypost") {
 		echo '<input type="hidden" name="more" value="1" />';
 		echo '<select name="p" style="width:120px;">';
-		$resultarc = $wpdb->get_results("SELECT ID,post_date,post_title FROM $tableposts ORDER BY post_date DESC");
+		$resultarc = $wpdb->get_results("SELECT ID,post_date,post_title FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC");
 		foreach ($resultarc as $row) {
 			if ($row->post_date != "0000-00-00 00:00:00") {
 				echo "<option value=\"".$row->ID."\">";
@@ -264,9 +261,7 @@ echo $posts_nav_bar;
 </table>
 
 <?php
-$do_force=true;
-include(ABSPATH.'wp-blog-header.php');
-$do_force=false;
+include(dirname(__FILE__)."/../wp-blog-header.php");
 
 if ($posts) {
 foreach ($posts as $post) { start_wp();
@@ -295,7 +290,7 @@ foreach ($posts as $post) { start_wp();
 				// comments
 				if (($withcomments) or ($c)) {
 
-					$comments = $wpdb->get_results("SELECT * FROM $tablecomments WHERE comment_post_ID = $id ORDER BY comment_date");
+					$comments = $wpdb->get_results("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $id ORDER BY comment_date");
 					if ($comments) {
 					?>
 

@@ -35,7 +35,7 @@ for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 }
 
 require_once('../wp-config.php');
-require_once('auth.php');
+require_once(ABSPATH.'/wp-admin/auth.php');
 switch($action) {
 
 case 'update':
@@ -91,10 +91,10 @@ case 'update':
 	$newuser_idmode=addslashes(stripslashes($HTTP_POST_VARS['newuser_idmode']));
 	$user_description = addslashes(stripslashes($HTTP_POST_VARS['user_description']));
 
-	$query = "UPDATE $tableusers SET user_firstname='$newuser_firstname', $updatepassword user_lastname='$newuser_lastname', user_nickname='$newuser_nickname', user_icq='$newuser_icq', user_email='$newuser_email', user_url='$newuser_url', user_aim='$newuser_aim', user_msn='$newuser_msn', user_yim='$newuser_yim', user_idmode='$newuser_idmode', user_description = '$user_description' WHERE ID = $user_ID";
+	$query = "UPDATE {$wpdb->users[$wp_id]} SET user_firstname='$newuser_firstname', $updatepassword user_lastname='$newuser_lastname', user_nickname='$newuser_nickname', user_icq='$newuser_icq', user_email='$newuser_email', user_url='$newuser_url', user_aim='$newuser_aim', user_msn='$newuser_msn', user_yim='$newuser_yim', user_idmode='$newuser_idmode', user_description = '$user_description' WHERE ID = $user_ID";
 	$result = $wpdb->query($query);
 	if (!$result) {
-		die ("<strong>ERROR</strong>: couldn't update your profile... please contact the <a href=\"mailto:$admin_email\">webmaster</a> !<br /><br />$query<br /><br />");
+		die ("<strong>ERROR</strong>: couldn't update your profile... please contact the <a href=\"mailto:".get_settings('admin_email')."\">webmaster</a> !<br /><br />$query<br /><br />");
 	}
 	header('Location: profile.php?updated=true');
 break;
@@ -175,9 +175,9 @@ break;
 case 'IErightclick':
 
 
-	$bookmarklet_tbpb  = ($use_trackback) ? '&trackback=1' : '';
-	$bookmarklet_tbpb .= ($use_pingback)  ? '&pingback=1'  : '';
-	$bookmarklet_height= ($use_trackback) ? 590 : 550;
+	$bookmarklet_tbpb  = (get_settings('use_trackback')) ? '&trackback=1' : '';
+	$bookmarklet_tbpb .= (get_settings('use_pingback'))  ? '&pingback=1'  : '';
+	$bookmarklet_height= (get_settings('use_trackback')) ? 590 : 550;
 
 	?>
 
@@ -188,7 +188,7 @@ case 'IErightclick':
 
 	<p><?php echo _LANG_WPF_SUBT_COPY; ?></p>
 	<?php
-	$regedit = "REGEDIT4\r\n[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\MenuExt\Post To &WP : ".$blogname."]\r\n@=\"javascript:doc=external.menuArguments.document;Q=doc.selection.createRange().text;void(btw=window.open('".$siteurl."/wp-admin/bookmarklet.php?text='+escape(Q)+'".$bookmarklet_tbpb."&popupurl='+escape(doc.location.href)+'&popuptitle='+escape(doc.title),'bookmarklet','scrollbars=no,width=480,height=".$bookmarklet_height.",left=100,top=150,status=yes'));btw.focus();\"\r\n\"contexts\"=hex:31\"";
+	$regedit = "REGEDIT4\r\n[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\MenuExt\Post To &WP : ".get_settings('blogname')."]\r\n@=\"javascript:doc=external.menuArguments.document;Q=doc.selection.createRange().text;void(btw=window.open('".$siteurl."/wp-admin/bookmarklet.php?text='+escape(Q)+'".$bookmarklet_tbpb."&popupurl='+escape(doc.location.href)+'&popuptitle='+escape(doc.title),'bookmarklet','scrollbars=no,width=480,height=".$bookmarklet_height.",left=100,top=150,status=yes'));btw.focus();\"\r\n\"contexts\"=hex:31\"";
 	?>
 	<pre style="margin: 20px; background-color: #cccccc; border: 1px dashed #333333; padding: 5px; font-size: 12px;"><?php echo $regedit; ?></pre>
 	<p><?php echo _LANG_WPF_SUBT_BOOK; ?></p>
@@ -210,9 +210,9 @@ default:
 	include_once('admin-header.php');
 	$profiledata=get_userdata($user_ID);
 
-	$bookmarklet_tbpb  = ($use_trackback) ? '&trackback=1' : '';
-	$bookmarklet_tbpb .= ($use_pingback)  ? '&pingback=1'  : '';
-	$bookmarklet_height= ($use_trackback) ? 480 : 440;
+	$bookmarklet_tbpb  = (get_settings('use_trackback')) ? '&trackback=1' : '';
+	$bookmarklet_tbpb .= (get_settings('use_pingback'))  ? '&pingback=1'  : '';
+	$bookmarklet_height= (get_settings('use_trackback')) ? 480 : 440;
 
 	?>
 <?php if ($updated) { ?>
@@ -319,7 +319,7 @@ default:
 function addPanel()
         {
           if ((typeof window.sidebar == "object") && (typeof window.sidebar.addPanel == "function"))
-            window.sidebar.addPanel("WordPress Post: <?php echo $blogname ?>","<?php echo $siteurl ?>/wp-admin/sidebar.php","");
+            window.sidebar.addPanel("WordPress Post: <?php echo get_settings('blogname') ?>","<?php echo $siteurl ?>/wp-admin/sidebar.php","");
           else
             alert(_LANG_WPF_SUBT_MOZILLA);
         }

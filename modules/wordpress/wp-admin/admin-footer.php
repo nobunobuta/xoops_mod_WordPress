@@ -10,5 +10,10 @@
 </body>
 </html>
 */
-include(XOOPS_ROOT_PATH.'/footer.php');
+if ($standalone == 0) {
+	if ($profile == 0) {
+		include(XOOPS_ROOT_PATH.'/footer.php');
+	}
+}
+
 ?>

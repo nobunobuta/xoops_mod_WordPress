@@ -418,6 +418,7 @@ define('_LANG_WAU_CAN_TYPE','Extensões Permitidas:');
 define('_LANG_WAU_MAX_SIZE','Tamanho Máximo:');
 define('_LANG_WAU_FILE_DESC','Descrição da Imagem:');
 define('_LANG_WAU_BUTTON_TEXT','Enviar');
+define('_LANG_WAU_ATTACH_ICON','File attachment ICON only');
 
 /* File Name wp-admin/users.php */
 define('_LANG_WUS_WHOSE_LEVEL','Não é possível alterar o nível de um usuário cujo nível é maior que o seu.');

@@ -47,7 +47,7 @@ switch ($step) {
        <label><?php echo _LANG_WLI_ROLL_THISFILE; ?><input name="userfile" type="file" /></label></li>
     <li><?php echo _LANG_WLI_ROLL_CATEGORY; ?><select name="cat_id">
 <?php
-	$categories = $wpdb->get_results("SELECT cat_id, cat_name, auto_toggle FROM $tablelinkcategories ORDER BY cat_id");
+	$categories = $wpdb->get_results("SELECT cat_id, cat_name, auto_toggle FROM {$wpdb->linkcategories[$wp_id]} ORDER BY cat_id");
 	foreach ($categories as $category) {
 ?>
     <option value="<?php echo $category->cat_id; ?>"><?php echo $category->cat_id.': '.$category->cat_name; ?></option>
@@ -88,7 +88,7 @@ switch ($step) {
                 }
                 else // try to get the upload file.
 				{
-					$uploaddir = $fileupload_realpath;
+					$uploaddir = get_settings('fileupload_realpath');
 					$uploadfile = $uploaddir.'/'.$_FILES['userfile']['name'];
 
 					if (move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadfile))
@@ -111,7 +111,7 @@ switch ($step) {
                             $titles[$i] = '';
                         if ('http' == substr($titles[$i], 0, 4))
                             $titles[$i] = '';
-                        $query = "INSERT INTO $tablelinks (link_url, link_name, link_target, link_category, link_description, link_owner)
+                        $query = "INSERT INTO {$wpdb->links[$wp_id]} (link_url, link_name, link_target, link_category, link_description, link_owner)
                                   VALUES('{$urls[$i]}', '".addslashes($names[$i])."', '', $cat_id, '".addslashes($descriptions[$i])."', $user_ID)\n";
                         $result = $wpdb->query($query);
                         echo "<p>Inserted <strong>{$names[$i]}</strong></p>";

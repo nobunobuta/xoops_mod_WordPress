@@ -5,21 +5,26 @@ require_once('../wp-config.php');
 /* checking login & pass in the database */
 function veriflog() {
 	global $HTTP_COOKIE_VARS,$cookiehash;
-	global $tableusers, $wpdb;
+	global  $wpdb ,$wp_id;
 	global $xoopsUser, $xoopsDB;
 	if($xoopsUser){
-		$sql = "select ID,user_login from $tableusers where ID = ".$xoopsUser->uid();
+		$sql = "select ID,user_login from {$wpdb->users[$wp_id]} where ID = ".$xoopsUser->uid();
 		$r = $xoopsDB->query($sql);
 		if(list($id,$user_login) = $xoopsDB->fetchRow($r)){
 			if ($xoopsUser->getVar('uname') != $user_login) {
-				$sql = "UPDATE $tableusers SET user_login = ".$xoopsDB->quoteString($xoopsUser->getVar('uname'))." WHERE ID = ".$xoopsUser->uid();
+				$sql = "UPDATE {$wpdb->users[$wp_id]} SET user_login = ".$xoopsDB->quoteString($xoopsUser->getVar('uname'))." WHERE ID = ".$xoopsUser->uid();
 				$xoopsDB->queryF($sql);
 			}
 		}else{
 			$level = 0;
 			$group = is_object($xoopsUser) ? $xoopsUser->getGroups() : array(XOOPS_GROUP_ANONYMOUS);
-			$edit_groups = get_xoops_option('wordpress','wp_edit_authgrp');
-			$admin_groups = get_xoops_option('wordpress','wp_admin_authgrp');
+			if ($wp_id == "-") {
+				$edit_groups = get_xoops_option('wordpress','wp_edit_authgrp');
+				$admin_groups = get_xoops_option('wordpress','wp_admin_authgrp');
+			} else {
+				$edit_groups = get_xoops_option('wordpress'.$wp_id,'wp_edit_authgrp');
+				$admin_groups = get_xoops_option('wordpress'.$wp_id,'wp_admin_authgrp');
+			}
 			if (count(array_intersect($group,$edit_groups)) > 0) {
 				$level = 1;
 			}
@@ -28,7 +33,7 @@ function veriflog() {
 			}
 			$uname = $xoopsDB->quoteString($xoopsUser->getVar('uname'));
 			$email = $xoopsDB->quoteString($xoopsUser->getVar('email'));
-			$sql = "INSERT INTO $tableusers(ID, user_login,user_nickname,user_email, user_level,user_idmode) values(".$xoopsUser->uid().", $uname , $uname , $email , $level, 'nickname' )";
+			$sql = "INSERT INTO {$wpdb->users[$wp_id]} (ID, user_login,user_nickname,user_email, user_level,user_idmode) values(".$xoopsUser->uid().", $uname , $uname , $email , $level, 'nickname' )";
 			$xoopsDB->queryF($sql);
 		}
 		return true;
@@ -47,7 +52,7 @@ function veriflog() {
 	if (!$user_pass_md5)
 		return false;
 
-	$login = $wpdb->get_row("SELECT user_login, user_pass FROM $tableusers WHERE user_login = '$user_login'");
+	$login = $wpdb->get_row("SELECT user_login, user_pass FROM {$wpdb->users[$wp_id]} WHERE user_login = '$user_login'");
 
 	if (!$login) {
 		return false;

@@ -4,9 +4,9 @@ $title = 'Add Link';
 $this_file = 'link-manager.php';
 
 function category_dropdown($fieldname, $selected = 0) {
-    global $wpdb, $tablelinkcategories;
+    global $wpdb,  $wp_id;
 
-    $results = $wpdb->get_results("SELECT cat_id, cat_name, auto_toggle FROM $tablelinkcategories ORDER BY cat_id");
+    $results = $wpdb->get_results("SELECT cat_id, cat_name, auto_toggle FROM {$wpdb->linkcategories[$wp_id]} ORDER BY cat_id");
     echo '        <select name="'.$fieldname.'" size="1">'."\n";
     foreach ($results as $row) {
       echo "          <option value=\"".$row->cat_id."\"";

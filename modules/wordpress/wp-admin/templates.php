@@ -42,7 +42,7 @@ case 'update':
 	require_once("admin-header.php");
 
 	if ($user_level < 3) {
-		die('<p>You have no right to edit the template for this blog.<br />Ask for a promotion to your <a href="mailto:$admin_email">blog admin</a>. :)</p>');
+		die('<p>You have no right to edit the template for this blog.<br />Ask for a promotion to your <a href="mailto:'.get_settings('admin_email').'">blog admin</a>. :)</p>');
 	}
 
 	$newcontent = stripslashes($HTTP_POST_VARS['newcontent']);
@@ -62,15 +62,11 @@ default:
 	require_once('admin-header.php');
 
 	if ($user_level <= 3) {
-		die('<p>You have no right to edit the template for this blog.<br>Ask for a promotion to your <a href="mailto:$admin_email">blog admin</a>. :)</p>');
+		die('<p>You have no right to edit the template for this blog.<br>Ask for a promotion to your <a href="mailto:'.get_settings('admin_email').'">blog admin</a>. :)</p>');
 	}
 
 	if ('' == $file) {
-		if ('' != $blogfilename) {
-			$file = $blogfilename;
-		} else {
-			$file = 'index.php';
-		}
+		$file = 'index.php';
 	}
 	
 	if ('..' == substr($file,0,2))

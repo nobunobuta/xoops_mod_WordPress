@@ -49,11 +49,11 @@ case 'addcat':
 	$category_nicename = sanitize_title($cat_name);
 	$category_description = addslashes(stripslashes(stripslashes($HTTP_POST_VARS['category_description'])));
 	
-	$wpdb->query("INSERT INTO $tablecategories (cat_ID, cat_name, category_nicename, category_description) VALUES ('0', '$cat_name', '$category_nicename', '$category_description')");
+	$wpdb->query("INSERT INTO {$wpdb->categories[$wp_id]} (cat_ID, cat_name, category_nicename, category_description) VALUES ('0', '$cat_name', '$category_nicename', '$category_description')");
 	if ($category_nicename == "") {
 		$lastID = $wpdb->get_var("SELECT LAST_INSERT_ID()");
 		$category_nicename = "category-".$lastID;
-		$wpdb->query("UPDATE $tablecategories SET category_nicename='$category_nicename' WHERE cat_ID = $lastID");
+		$wpdb->query("UPDATE {$wpdb->categories[$wp_id]} SET category_nicename='$category_nicename' WHERE cat_ID = $lastID");
 	}
 	header('Location: categories.php');
 
@@ -74,8 +74,8 @@ case 'Delete':
 	if ($user_level < 3)
 		die ('Cheatin&#8217; uh?');
 
-	$wpdb->query("DELETE FROM $tablecategories WHERE cat_ID = $cat_ID");
-	$wpdb->query("UPDATE $tablepost2cat SET category_id='1' WHERE category_id='$cat_ID'");
+	$wpdb->query("DELETE FROM {$wpdb->categories[$wp_id]} WHERE cat_ID = $cat_ID");
+	$wpdb->query("UPDATE {$wpdb->post2cat[$wp_id]} SET category_id='1' WHERE category_id='$cat_ID'");
 
 	header('Location: categories.php');
 
@@ -84,7 +84,7 @@ break;
 case 'edit':
 
 	require_once ('admin-header.php');
-	$category = $wpdb->get_row("SELECT * FROM $tablecategories WHERE cat_ID = " . $HTTP_GET_VARS['cat_ID']);
+	$category = $wpdb->get_row("SELECT * FROM {$wpdb->categories[$wp_id]} WHERE cat_ID = " . $HTTP_GET_VARS['cat_ID']);
 	$cat_name = stripslashes($category->cat_name);
 	?>
 
@@ -119,7 +119,7 @@ case 'editedcat':
 	if ($category_nicename == "")  $category_nicename = "category-".$cat_ID;
 	$category_description = $HTTP_POST_VARS['category_description'];
 
-	$wpdb->query("UPDATE $tablecategories SET cat_name = '$cat_name', category_nicename = '$category_nicename', category_description = '$category_description' WHERE cat_ID = $cat_ID");
+	$wpdb->query("UPDATE {$wpdb->categories[$wp_id]} SET cat_name = '$cat_name', category_nicename = '$category_nicename', category_description = '$category_description' WHERE cat_ID = $cat_ID");
 	
 	header('Location: categories.php');
 
@@ -130,7 +130,7 @@ default:
 	$standalone = 0;
 	require_once ('admin-header.php');
 	if ($user_level < 3) {
-		die("You have no right to edit the categories for this blog.<br />Ask for a promotion to your <a href='mailto:$admin_email'>blog admin</a>. :)");
+		die("You have no right to edit the categories for this blog.<br />Ask for a promotion to your <a href='mailto:".get_settings('admin_email')."'>blog admin</a>. :)");
 	}
 	?>
 
@@ -144,9 +144,9 @@ default:
 		<th colspan="2"><?php echo _LANG_C_NAME_CATACTION; ?></th>
 	</tr>
 	<?php
-	$categories = $wpdb->get_results("SELECT * FROM $tablecategories ORDER BY cat_name");
+	$categories = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]} ORDER BY cat_name");
 	foreach ($categories as $category) {
-		$count = $wpdb->get_var("SELECT COUNT(post_id) FROM $tablepost2cat WHERE category_id = $category->cat_ID");
+		$count = $wpdb->get_var("SELECT COUNT(post_id) FROM {$wpdb->post2cat[$wp_id]} WHERE category_id = $category->cat_ID");
 		$bgcolor = ('#eee' == $bgcolor) ? 'none' : '#eee';
 		echo "<tr style='background-color: $bgcolor'><td>$category->cat_name</td>
 		<td>$category->category_description</td>

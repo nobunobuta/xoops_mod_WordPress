@@ -420,6 +420,7 @@ define('_LANG_WAU_CAN_TYPE','アップロード可能なファイル拡張子:');
 define('_LANG_WAU_MAX_SIZE','ファイルの最大サイズ:');
 define('_LANG_WAU_FILE_DESC','画像の説明(alt):');
 define('_LANG_WAU_BUTTON_TEXT','アップロード !');
+define('_LANG_WAU_ATTACH_ICON','添付ファイルのアイコンのみ');
 
 /* File Name wp-admin/users.php */
 define('_LANG_WUS_WHOSE_LEVEL','あなたより高いユーザーレベルのレベルを変更することはできません。');

@@ -1,5 +1,5 @@
 <?php
-
+/* Don't remove this line */ if (!defined('XOOPS_ROOT_PATH')) { exit; }
 /* This file sets various arrays and variables for use in WordPress */
 
 # WordPress version
@@ -141,7 +141,7 @@ $pagenow = trim($pagenow[(sizeof($pagenow)-1)]);
 $pagenow = explode('?', $pagenow);
 $pagenow = $pagenow[0];
 if (($querystring_start == '/') && ($pagenow != 'post.php')) {
-	$pagenow = $siteurl.'/'.$blogfilename;
+	$pagenow = $siteurl.'/index.php';
 }
 
 # browser detection
@@ -199,19 +199,19 @@ $is_Apache = strstr($_SERVER['SERVER_SOFTWARE'], 'Apache') ? 1 : 0;
 $is_IIS = strstr($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') ? 1 : 0;
 
 # if the config file does not provide the smilies array, let's define it here
-if (!isset($wpsmiliestrans)) {
-	if (get_xoops_option('wordpress','wp_use_xoops_smilies')) {
+if (!isset($wpsmiliestrans[$wp_id])) {
+	if (get_xoops_option( 'wordpress'.(($wp_id=='-')?'':$wp_id) ,'wp_use_xoops_smilies')) {
 		$db =& Database::getInstance();
 		$getsmiles = $db->query("SELECT id, code, smile_url FROM ".$db->prefix("smiles")." ORDER BY id");
 		if (($numsmiles = $db->getRowsNum($getsmiles)) == "0") {
 			//EMPTY
 		} else {
 			while ($smiles = $db->fetchArray($getsmiles)) {
-				$wpsmiliestrans[$smiles['code']] = $smiles['smile_url'];
+				$wpsmiliestrans[$wp_id][$smiles['code']] = $smiles['smile_url'];
 			}
 		}
 	} else {
-	    $wpsmiliestrans = array(
+	    $wpsmiliestrans[$wp_id] = array(
 	        ' :)'        => 'icon_smile.gif',
 	        ' :D'        => 'icon_biggrin.gif',
 	        ' :-D'       => 'icon_biggrin.gif',
@@ -271,15 +271,17 @@ if (!function_exists('smiliescmp')) {
 	}
 }
 
-if (get_xoops_option('wordpress','wp_use_xoops_smilies')==0) {
-	uksort($wpsmiliestrans, 'smiliescmp');
+if (get_xoops_option('wordpress'.(($wp_id=='-')?'':$wp_id),'wp_use_xoops_smilies')==0) {
+	uksort($wpsmiliestrans[$wp_id], 'smiliescmp');
 }
 
 # generates smilies' search & replace arrays
-foreach($wpsmiliestrans as $smiley => $img) {
-	$wp_smiliessearch[] = $smiley;
+$wp_smiliessearch[$wp_id] = array();
+$wp_smiliesreplace[$wp_id] = array();
+foreach($wpsmiliestrans[$wp_id] as $smiley => $img) {
+	$wp_smiliessearch[$wp_id][] = $smiley;
 	$smiley_masked = str_replace(' ', '', $smiley);
-	$wp_smiliesreplace[] = " <img src='$smilies_directory/$img' alt='$smiley_masked' />";
+	$wp_smiliesreplace[$wp_id][] = " <img src='$smilies_directory/$img' alt='$smiley_masked' />";
 }
 
 

@@ -1,78 +1,50 @@
 <?php
-function b_wp_calendar_show($option)
-{
-	$id=1;
-	global $dateformat, $time_difference, $siteurl, $blogfilename;
-	global $tablelinks,$tablelinkcategories;
-    global $querystring_start, $querystring_equal, $querystring_separator, $month, $wpdb, $start_of_week;
-	global $tableposts,$tablepost2cat,$tablecomments,$tablecategories;
-	global $smilies_directory, $use_smilies, $wp_smiliessearch, $wp_smiliesreplace;
-	global $wp_bbcode, $use_bbcode, $wp_gmcode, $use_gmcode, $use_htmltrans, $wp_htmltrans, $wp_htmltranswinuni;
-	require_once(dirname(__FILE__).'/../wp-blog-header.php');
-	ob_start();
-	echo <<< EOD
-	<style type="text/css" media="screen">
-		#wp-calendar {
-			empty-cells: show;
-			font-size: 14px;
-			margin: 0;
-			width: 90%;
-		}
-		#wp-calendar #next a {
-			padding-right: 10px;
-			text-align: right;
-		}
+if( ! defined( 'WP_CALENDAR_POSTS_INCLUDED' ) ) {
 
-		#wp-calendar #prev a {
-			padding-left: 10px;
-			text-align: left;
-		}
+	define( 'WP_CALENDAR_POSTS_INCLUDED' , 1 ) ;
 
-		#wp-calendar a {
-			display: block;
-			color: #000000;
-			text-decoration: none;
-		}
+	function b_wp_calendar_show($option, $wp_num = "")
+	{
+		global $wpdb, $siteurl, $wp_id, $wp_inblock, $xoopsConfig, $use_cache;
+		$id=1;
+		$use_cache = 1;
 
-		#wp-calendar a:hover {
-			background: #A6C9E6;
-			color: #333;
+		if ($wp_num == "") {
+			$wp_id = $wp_num;
+			$wp_inblock = 1;
+			include(dirname(__FILE__).'/../wp-config.php');
+			$wp_inblock = 0;
 		}
-
-		#wp-calendar caption {
-			font-weight: bold;
-			font-size: 110%;
-			color: #632;
-			text-align: left;
+		if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/wp-blocks.css.php')) {
+			$themes = $xoopsConfig['theme_set'];
+		} else {
+			$themes = "default";
 		}
-
-		#wp-calendar td {
-			color: #aaa;
-			font: normal 12px "ƒqƒ‰ƒMƒmŠpƒS Pro W3", Osaka, Verdana, "‚l‚r ‚oƒSƒVƒbƒN", sans-serif;
-			letter-spacing: normal;
-			padding: 2px 0;
-			text-align: center;
-		}
-
-		#wp-calendar td.pad:hover {
-			background: #fff;
-		}
-
-		#wp-calendar #today {
-			background: #D85F7D;
-			color: #ffffff;
-		}
-
-		#wp-calendar th {
-			font-style: normal;
-			font-size: 11px;
-			text-transform: capitalize;
-		}
-	</style>
+		include_once(XOOPS_ROOT_PATH."/modules/wordpress". (($wp_id=='-')?'':$wp_id) ."/themes/".$themes."/wp-blocks.css.php");
+		ob_start();
+		echo <<< EOD
+		<style type="text/css" media="screen">
+				$wp_block_style
+		</style>
 EOD;
-	get_calendar(1);
-	$block['content'] = ob_get_contents();
-	ob_end_clean();
-	return $block;
+		get_calendar(1);
+		$block['content'] = ob_get_contents();
+		ob_end_clean();
+		return $block;
+	}
+
+	for ($i = 0; $i < 10; $i++) {
+		eval ('
+		function b_wp'.$i.'_calendar_show($options) {
+			global $wpdb, $wp_id, $wp_inblock, $xoopsConfig, $use_cache;
+
+			$wp_id = "'.$i.'";
+			$wp_inblock = 1;
+			include(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
+			$wp_inblock = 0;
+			return (b_wp_calendar_show($options,"'.$i.'"));
+		}
+	');
+	}
 }
 ?>

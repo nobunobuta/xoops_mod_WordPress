@@ -2,7 +2,7 @@
 // Module Info
 
 // The name of this module
-define("_MI_WORDPRESS_NAME","WordPress");
+define("_MI_WORDPRESS_NAME","WordPress%s");
 
 // A brief description of this module
 define("_MI_WORDPRESS_DESC","WordPress MEのXOOPSモジュールです。");
@@ -32,28 +32,28 @@ define("_MI_WPADMINAUTHGRP_CFG_DESC","ユーザ登録時に管理権限(WordPressのユーザレ
 define("_MI_WP_USE_XOOPS_SMILE","XOOPSのスマイルアイコンを使用");
 define("_MI_WP_USE_XOOPS_SMILE_DESC","スマイルアイコンをXOOPSで使用しているものに置き換える。");
 // Block Name
-define("_MI_WORDPRESS_BNAME1","WordPress カレンダー");
+define("_MI_WORDPRESS_BNAME1","WordPress%s カレンダー");
 define("_MI_WORDPRESS_BDESC1","WordPress カレンダー");
 
-define("_MI_WORDPRESS_BNAME2","WordPress 月別過去ログ");
+define("_MI_WORDPRESS_BNAME2","WordPress%s 月別過去ログ");
 define("_MI_WORDPRESS_BDESC2","WordPress 月別過去ログ");
 
-define("_MI_WORDPRESS_BNAME3","WordPress カテゴリ一覧");
+define("_MI_WORDPRESS_BNAME3","WordPress%s カテゴリ一覧");
 define("_MI_WORDPRESS_BDESC3","WordPress カテゴリ一覧");
 
-define("_MI_WORDPRESS_BNAME4","WordPress Link");
+define("_MI_WORDPRESS_BNAME4","WordPress%s Link");
 define("_MI_WORDPRESS_BDESC4","WordPress Link");
 
-define("_MI_WORDPRESS_BNAME5","WordPress 検索");
+define("_MI_WORDPRESS_BNAME5","WordPress%s 検索");
 define("_MI_WORDPRESS_BDESC5","WordPress 検索");
 
-define("_MI_WORDPRESS_BNAME6","WordPress 最近の投稿");
+define("_MI_WORDPRESS_BNAME6","WordPress%s 最近の投稿");
 define("_MI_WORDPRESS_BDESC6","WordPress 最近の投稿");
 
-define("_MI_WORDPRESS_BNAME7","WordPress 最近のコメント");
+define("_MI_WORDPRESS_BNAME7","WordPress%s 最近のコメント");
 define("_MI_WORDPRESS_BDESC7","WordPress 最近のコメント");
 
-define("_MI_WORDPRESS_BNAME8","WordPress 記事ブロック");
+define("_MI_WORDPRESS_BNAME8","WordPress%s 記事ブロック");
 define("_MI_WORDPRESS_BDESC8","WordPress 記事ブロック");
 
 define("_MI_WORDPRESS_AD_MENU1","WordPressオプション");

@@ -51,13 +51,13 @@ default:
 	$standalone = 0;
 	include_once('admin-header.php');
 	if ($user_level <= 3) {
-		die("You have no right to edit the options for this blog.<br>Ask for a promotion to your <a href=\"mailto:$admin_email\">blog admin</a> :)");
+		die("You have no right to edit the options for this blog.<br>Ask for a promotion to your <a href=\"mailto:".get_settings('admin_email')."\">blog admin</a> :)");
 	}
 ?>
  <ul id="adminmenu2"> 
   <?php
     //we need to iterate through the available option groups.
-    $option_groups = $wpdb->get_results("SELECT group_id, group_name, group_desc, group_longdesc FROM $tableoptiongroups ORDER BY group_id");
+    $option_groups = $wpdb->get_results("SELECT group_id, group_name, group_desc, group_longdesc FROM {$wpdb->optiongroups[$wp_id]} ORDER BY group_id");
     foreach ($option_groups as $option_group) {
         if ($option_group->group_id == $option_group_id) {
             $current_desc=$option_group->group_desc;

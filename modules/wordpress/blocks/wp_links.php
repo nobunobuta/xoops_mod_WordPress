@@ -1,18 +1,40 @@
 <?php
-function b_wp_links_show($option)
-{
-	$id=1;
-	global $dateformat, $time_difference, $siteurl, $blogfilename;
-	global $tablelinks,$tablelinkcategories;
-    global $querystring_start, $querystring_equal, $querystring_separator, $month, $wpdb, $start_of_week;
-	global $tableposts,$tablepost2cat,$tablecomments,$tablecategories;
-	global $smilies_directory, $use_smilies, $wp_smiliessearch, $wp_smiliesreplace;
-	global $wp_bbcode, $use_bbcode, $wp_gmcode, $use_gmcode, $use_htmltrans, $wp_htmltrans, $wp_htmltranswinuni;
-	require_once(dirname(__FILE__).'/../wp-blog-header.php');
-	ob_start();
-	get_links_list();
-	$block['content'] = ob_get_contents();
-	ob_end_clean();
-	return $block;
+if( ! defined( 'WP_LINKS_INCLUDED' ) ) {
+
+	define( 'WP_LINKS_INCLUDED' , 1 ) ;
+
+	function b_wp_links_show($option,$wp_num="")
+	{
+		global $wpdb;
+		global $wp_id, $wp_inblock, $use_cache;
+
+		$id=1;
+		$use_cache = 1;
+
+		if ($wp_num == "") {
+			$wp_id = $wp_num;
+			$wp_inblock = 1;
+			require(dirname(__FILE__).'/../wp-config.php');
+			$wp_inblock = 0;
+		}
+		ob_start();
+		get_links_list();
+		$block['content'] = ob_get_contents();
+		ob_end_clean();
+		return $block;
+	}
+
+	for ($i = 0; $i < 10; $i++) {
+		eval ('
+		function b_wp'.$i.'_links_show($options) {
+			global $wp_id, $wp_inblock, $use_cache;
+			$wp_id = "'.$i.'";
+			$wp_inblock = 1;
+			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
+			$wp_inblock = 0;
+			return (b_wp_links_show($options,"'.$i.'"));
+		}
+	');
+	}
 }
 ?>

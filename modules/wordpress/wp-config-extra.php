@@ -7,7 +7,7 @@ if ( file_exists(dirname(__FILE__)."/language/".$xoopsConfig['language']."/main.
 	include dirname(__FILE__)."/language/english/main.php";
 }
 
-global $weekday;
+global $weekday, $s_weekday_length;
 // the weekdays and the months.. translate them if necessary
 $weekday[0]=_WP_CAL_SUNDAY;
 $weekday[1]=_WP_CAL_MONDAY;
@@ -17,8 +17,10 @@ $weekday[4]=_WP_CAL_THURSDAY;
 $weekday[5]=_WP_CAL_FRIDAY;
 $weekday[6]=_WP_CAL_SATURDAY;
 
+$s_weekday_length = _WP_CAL_SWEEK_LEN;
+
 // the months, translate them if necessary - note: this isn't active everywhere yet
-global $month;
+global $month, $s_month_length, $wp_month_format;
 $month['01']=_WP_CAL_JANUARY;
 $month['02']=_WP_CAL_FEBRUARY;
 $month['03']=_WP_CAL_MARCH;
@@ -32,9 +34,12 @@ $month['10']=_WP_CAL_OCTOBER;
 $month['11']=_WP_CAL_NOVEMBER;
 $month['12']=_WP_CAL_DECEMBER;
 
+$s_month_length = _WP_CAL_SMONTH_LEN;
+$wp_month_format = _WP_MONTH_FORMAT;
+
 // here's the conversion table, you can modify it if you know what you're doing
 global $wpsmiliestrans;
-if (get_xoops_option('wordpress','wp_use_xoops_smilies')) {
+if (get_xoops_option('wordpress'.(($wp_id=='-')?'':$wp_id),'wp_use_xoops_smilies')) {
 	// Get smilies infomation from XOOPS DB
 	$db =& Database::getInstance();
 	$getsmiles = $db->query("SELECT id, code, smile_url FROM ".$db->prefix("smiles")." ORDER BY id");
@@ -42,11 +47,11 @@ if (get_xoops_option('wordpress','wp_use_xoops_smilies')) {
 		//EMPTY
 	} else {
 		while ($smiles = $db->fetchArray($getsmiles)) {
-			$wpsmiliestrans[$smiles['code']] = $smiles['smile_url'];
+			$wpsmiliestrans[$wp_id][$smiles['code']] = $smiles['smile_url'];
 		}
 	}
 } else {
-	$wpsmiliestrans = array(
+	$wpsmiliestrans[$wp_id] = array(
 	    ' :)'        => 'icon_smile.gif',
 	    ' :D'        => 'icon_biggrin.gif',
 	    ' :-D'       => 'icon_biggrin.gif',
@@ -94,4 +99,12 @@ if (get_xoops_option('wordpress','wp_use_xoops_smilies')) {
 	    ':mrgreen:' => 'icon_mrgreen.gif',
 	);
 }
+
+if (file_exists(ABSPATH.'/themes/'.$xoopsConfig['theme_set'].'/wp-config-custom.php')) {
+	$themes = $xoopsConfig['theme_set'];
+} else {
+	$themes = "default";
+}
+include(ABSPATH.'/themes/'.$themes.'/wp-config-custom.php');
+
 ?>

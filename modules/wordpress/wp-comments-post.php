@@ -35,11 +35,11 @@ $comment_post_ID = intval($HTTP_POST_VARS['comment_post_ID']);
 $user_ip = $_SERVER['REMOTE_ADDR'];
 $user_domain = gethostbyaddr($user_ip);
 
-$commentstatus = $wpdb->get_var("SELECT comment_status FROM $tableposts WHERE ID = $comment_post_ID");
+	$commentstatus = $wpdb->get_var("SELECT comment_status FROM {$wpdb->posts[$wp_id]} WHERE ID = $comment_post_ID");
 if ('closed' == $commentstatus)
 	die('Sorry, comments are closed for this item.');
 
-if ($require_name_email && ($email == '' || $author == '')) { //original fix by Dodo, and then Drinyth
+if (get_settings('require_name_email') && ($email == '' || $author == '')) { //original fix by Dodo, and then Drinyth
 	die('Error: please fill the required fields (name, email).');
 }
 if ($comment == 'comment' || $comment == '') {
@@ -62,7 +62,7 @@ $email = addslashes($email);
 $url = addslashes($url);
 
 /* Flood-protection */
-$lasttime = $wpdb->get_var("SELECT comment_date FROM $tablecomments WHERE comment_author_IP = '$user_ip' ORDER BY comment_date DESC LIMIT 1");
+$lasttime = $wpdb->get_var("SELECT comment_date FROM {$wpdb->comments[$wp_id]} WHERE comment_author_IP = '$user_ip' ORDER BY comment_date DESC LIMIT 1");
 $ok = true;
 if (!empty($lasttime)) {
 	$time_lastcomment= mysql2date('U', $lasttime);
@@ -77,8 +77,6 @@ if (!empty($lasttime)) {
 if ($ok) { // if there was no comment from this IP in the last 10 seconds
 	$comment_moderation = get_settings('comment_moderation');
 	$moderation_notify = get_settings('moderation_notify');
-	$comments_notify = get_settings('comments_notify');
-
 	// o42: this place could be the hook for further comment spam checking
 	// $approved should be set according the final approval status
 	// of the new comment
@@ -89,7 +87,7 @@ if ($ok) { // if there was no comment from this IP in the last 10 seconds
 	} else { // none
 		$approved = 1;
 	}
-	$wpdb->query("INSERT INTO $tablecomments 
+	$wpdb->query("INSERT INTO {$wpdb->comments[$wp_id]} 
 	(comment_ID, comment_post_ID, comment_author, comment_author_email, comment_author_url, comment_author_IP, comment_date, comment_content, comment_approved) 
 	VALUES 
 	('0', '$comment_post_ID', '$author', '$email', '$url', '$user_ip', '$now', '$comment', '$approved')
@@ -101,7 +99,7 @@ if ($ok) { // if there was no comment from this IP in the last 10 seconds
 	    wp_notify_moderator($comment_ID);
 	}
 	
-	if (($comments_notify) && ($approved)) {
+	if ((get_settings('comments_notify')) && ($approved)) {
 	    wp_notify_postauthor($comment_ID, 'comment');
 	}
 

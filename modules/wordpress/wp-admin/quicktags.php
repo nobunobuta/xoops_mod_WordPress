@@ -1,5 +1,5 @@
 <?php 
-    foreach($wpsmiliestrans as $smiley => $img) 
+    foreach($wpsmiliestrans[$wp_id] as $smiley => $img) 
     { 
         print '<a href="javascript:bbinsert(document.post,\'\',\''.str_replace("'","\'",$smiley).'\')"><img src="' . $smilies_directory . '/'. $img . '" alt="' . $smiley . '" /></a> '; 
     } 

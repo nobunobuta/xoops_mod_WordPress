@@ -1,39 +1,86 @@
 <?
-function b_wp_recent_posts_edit($options)
-{
-	$form = "";
-	$form .= "Posts List Count: ";
-	$form .= "<input type='text' name='options[]' value='".$options[0]."' /><br />";
-	return $form;
+if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 
-}
-function b_wp_recent_posts_show($options)
-{
-	$no_posts = (empty($options[0]))? 10 : $options[0];
+	define( 'WP_RECENT_POSTS_INCLUDED' , 1 ) ;
 
-	$id=1;
-	global $dateformat, $time_difference, $siteurl, $blogfilename;
-	global $tablelinks,$tablelinkcategories;
-	global $querystring_start, $querystring_equal, $querystring_separator, $month, $wpdb, $start_of_week;
-	global $tableposts,$tablepost2cat,$tablecomments,$tablecategories;
-	global $smilies_directory, $use_smilies, $wp_smiliessearch, $wp_smiliesreplace;
-	global $wp_bbcode, $use_bbcode, $wp_gmcode, $use_gmcode, $use_htmltrans, $wp_htmltrans, $wp_htmltranswinuni;
-	require_once(dirname(__FILE__).'/../wp-blog-header.php');
-	$skip_posts = 0;
-	$now = date('Y-m-d H:i:s',(time() + ($time_difference * 3600)));
-	$request = "SELECT * FROM $tableposts WHERE post_status = 'publish' ";
-	$request .= " AND post_date <= '".$now."'";
-	$request .= " ORDER BY post_date DESC LIMIT $skip_posts, $no_posts";
-	$lposts = $wpdb->get_results($request);
-	$output = '';
-	if ($lposts) {
-		foreach ($lposts as $lpost) {
-			$post_title = stripslashes($lpost->post_title);
-			$permalink = get_permalink($lpost->ID);
-			$output .= '<li style="font-size:90%"><a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '">' . $post_title . '</a></li>';
+	function b_wp_recent_posts_edit($options)
+	{
+		$form = "";
+		$form .= "Posts List Count: ";
+		$form .= "<input type='text' name='options[]' value='".$options[0]."' /><br />";
+		$form .= "<br />Display Posted Date:&nbsp;";
+		if ( $options[1] == 1 ) {
+			$chk = " checked='checked'";
 		}
+		$form .= "<input type='radio' name='options[1]' value='1'".$chk." />&nbsp;"._YES."";
+		$chk = "";
+		if ( $options[1] == 0 ) {
+			$chk = " checked=\"checked\"";
+		}
+		$form .= "&nbsp;<input type='radio' name='options[1]' value='0'".$chk." />"._NO."";
+		return $form;
+
 	}
-	$block['content'] = $output;
-	return $block;
+
+	function b_wp_recent_posts_show($options, $wp_num = "")
+	{
+		$no_posts = (empty($options[0]))? 10 : $options[0];
+		$cat_date = (empty($options[1]))? 0 : $options[1];
+	
+		global $xoopsDB;
+		global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache;
+
+		$id=1;
+		$use_cache = 1;
+
+		if ($wp_num == "") {
+			$wp_id = $wp_num;
+			$wp_inblock = 1;
+			require(dirname(__FILE__).'/../wp-config.php');
+			$wp_inblock = 0;
+		}
+		$now = date('Y-m-d H:i:s',(time() + ($time_difference * 3600)));
+		$request = "SELECT * FROM ".$xoopsDB->prefix("wp{$wp_num}_posts")." WHERE post_status = 'publish' ";
+		$request .= " AND post_date <= '".$now."'";
+		$request .= " ORDER BY post_date DESC LIMIT 0, $no_posts";
+		$lposts = $wpdb->get_results($request);
+		$output = '';
+		$date = "";
+		$pdate = "";
+		if ($lposts) {
+			foreach ($lposts as $lpost) {
+				if ($cat_date) {
+					$date=mysql2date("Y-n-j", $lpost->post_date);
+					if ($date <> $pdate) {
+						if ($pdate) $output .= "</ul>";
+						$output .= "<strong>".$date."</strong><ul>";
+						$pdate = $date;
+					}
+				}
+				$post_title = stripslashes($lpost->post_title);
+				$permalink = get_permalink($lpost->ID);
+				$output .= '<li style="font-size:90%"><a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '">' . $post_title . '</a></li>';
+			}
+		}
+		$block['content'] = $output;
+		return $block;
+	}
+
+	for ($i = 0; $i < 10; $i++) {
+		eval ('
+		function b_wp'.$i.'_recent_posts_edit($options) {
+			return (b_wp_recent_posts_edit($options));
+		}
+
+		function b_wp'.$i.'_recent_posts_show($options) {
+			global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache;
+			$wp_id = "'.$i.'";
+			$wp_inblock = 1;
+			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
+			$wp_inblock = 0;
+			return (b_wp_recent_posts_show($options,"'.$i.'"));
+		}
+	');
+	}
 }
 ?>

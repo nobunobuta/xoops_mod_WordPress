@@ -25,12 +25,12 @@ error_reporting(2037);
 
 $pop3 = new POP3();
 
-if(!$pop3->connect($mailserver_url, $mailserver_port)) {
+if(!$pop3->connect(get_settings('mailserver_url'), get_settings('mailserver_port'))) {
 	echo "Ooops $pop3->ERROR <br />\n";
 	exit;
 }
 
-$Count = $pop3->login($mailserver_login, $mailserver_pass);
+$Count = $pop3->login(get_settings('mailserver_login'), get_settings('mailserver_pass'));
 if((!$Count) || ($Count == -1)) {
 	echo "<h1>Login Failed: $pop3->ERROR</h1>\n";
 	$pop3->quit();
@@ -95,11 +95,11 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				if (function_exists('mb_decode_mimeheader')) {
 					$subject = mb_decode_mimeheader($subject);
 				}
-				if ($use_phoneemail) {
-					$subject = explode($phoneemail_separator, $subject);
+				if (get_settings('use_phoneemail')) {
+					$subject = explode(get_settings('phoneemail_separator'), $subject);
 					$subject = trim($subject[0]);
 				}
-				if (!ereg($subjectprefix, $subject)) {
+				if (!ereg(get_settings('subjectprefix'), $subject)) {
 					continue;
 				}
 			}
@@ -145,14 +145,14 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		echo 'Too old<br />';
 		continue;
 	}
-	if (preg_match('/'.$subjectprefix.'/', $subject)) {
+	if (preg_match('/'.get_settings('subjectprefix').'/', $subject)) {
 
 		$userpassstring = '';
 
 		echo '<div style="border: 1px dashed #999; padding: 10px; margin: 10px;">';
 		echo "<p><b>$iCount</b></p><p><b>Subject: </b>$subject</p>\n";
 
-		$subject = trim(str_replace($subjectprefix, '', $subject));
+		$subject = trim(str_replace(get_settings('subjectprefix'), '', $subject));
 
 		$attachment = false;
 		
@@ -196,7 +196,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		echo "<p><b>att_boundary:</b> $att_boundary, <b>hatt_boundary:</b> $hatt_boundary</p>\n";
 //		echo "<p><b>Raw content:</b><br /><pre>".$content.'</pre></p>';
 		
-		$btpos = strpos($content, $bodyterminator);
+		$btpos = strpos($content, get_settings('bodyterminator'));
 		if ($btpos) {
 			$content = substr($content, 0, $btpos);
 		}
@@ -206,15 +206,15 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		$firstline = preg_replace("/[\n\r]/","",$blah[0]);
 		$secondline = $blah[1];
 
-		if ($use_phoneemail) {
-			$btpos = strpos($firstline, $phoneemail_separator);
+		if (get_settings('use_phoneemail')) {
+			$btpos = strpos($firstline, get_settings('phoneemail_separator'));
 			if ($btpos) {
 				$userpassstring = trim(substr($firstline, 0, $btpos));
-				$content = trim(substr($content, $btpos+strlen($phoneemail_separator), strlen($content)));
-				$btpos = strpos($content, $phoneemail_separator);
+				$content = trim(substr($content, $btpos+strlen(get_settings('phoneemail_separator')), strlen($content)));
+				$btpos = strpos($content, get_settings('phoneemail_separator'));
 				if ($btpos) {
 					$userpassstring = trim(substr($content, 0, $btpos));
-					$content = trim(substr($content, $btpos+strlen($phoneemail_separator), strlen($content)));
+					$content = trim(substr($content, $btpos+strlen(get_settings('phoneemail_separator')), strlen($content)));
 				}
 			}
 			$contentfirstline = $blah[1];
@@ -251,7 +251,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 //		echo "<p><b>Login:</b> $user_login, <b>Pass:</b> $user_pass</p>";
 		
 		if ($xoopsDB) {
-			$sql = "SELECT ID, user_level FROM $tableusers WHERE user_login='".trim($user_login)."' ORDER BY ID DESC LIMIT 1";
+			$sql = "SELECT ID, user_level FROM {$wpdb->users[$wp_id]} WHERE user_login='".trim($user_login)."' ORDER BY ID DESC LIMIT 1";
 			$result = $wpdb->get_row($sql);
 			if (!$result) {
 				echo '<p><b>Wrong login</b></p></div>';
@@ -266,7 +266,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				}
 			}
 		} else {
-			$sql = "SELECT ID, user_level FROM $tableusers WHERE user_login='$user_login' AND user_pass='$user_pass' ORDER BY ID DESC LIMIT 1";
+			$sql = "SELECT ID, user_level FROM {$wpdb->users[$wp_id]} WHERE user_login='$user_login' AND user_pass='$user_pass' ORDER BY ID DESC LIMIT 1";
 			$result = $wpdb->get_row($sql);
 
 			if (!$result) {
@@ -297,7 +297,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				echo "Subject : ".$subject." <br />";
 			}
 			echo "Category : $post_category <br />";
-			if (!$emailtestonly) {
+			if (!get_settings('emailtestonly')) {
 				//Attaching Image Files Save
 				if ($att_boundary != "") {
 					$attachment = wp_getattach($contents[2],trim($user_login),1);
@@ -337,9 +337,9 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 					}
 				}
                 if($flat > 500) {
-                    $sql = "INSERT INTO $tableposts (post_author, post_date, post_content, post_title, post_category) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category)";
+                    $sql = "INSERT INTO {$wpdb->posts[$wp_id]} (post_author, post_date, post_content, post_title, post_category) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category)";
                 } else {
-                    $sql = "INSERT INTO $tableposts (post_author, post_date, post_content, post_title, post_category, post_lat, post_lon) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category, $flat, $flon)";
+                    $sql = "INSERT INTO {$wpdb->posts[$wp_id]} (post_author, post_date, post_content, post_title, post_category, post_lat, post_lon) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category, $flat, $flon)";
                 }
 				$result = $wpdb->query($sql);
 				$post_ID = $wpdb->insert_id;
@@ -361,10 +361,10 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 			echo "\n<b>Posted content:</b><br /><pre>".$content.'</pre></p>';
 
 			// Double check it's not there already
-			$exists = $wpdb->get_row("SELECT * FROM $tablepost2cat WHERE post_id = $post_ID AND category_id = $post_category");
+			$exists = $wpdb->get_row("SELECT * FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID AND category_id = $post_category");
 			 if (!$exists && $result) { 
 			 	$wpdb->query("
-				INSERT INTO $tablepost2cat
+				INSERT INTO {$wpdb->post2cat[$wp_id]}
 				(post_id, category_id)
 				VALUES
 				($post_ID, $post_category)
@@ -411,7 +411,7 @@ function wp_getattach($content,$prefix="",$create_thumbs=0)
 				$temp_file = $filename;
 			}
 		}
-		// 添付データをデコードして保存
+		// ﾅｺﾉﾕ･ﾇ｡ｼ･ｿ､ﾇ･ｳ｡ｼ･ﾉ､ｷ､ﾆﾊﾝﾂｸ
 		if (eregi("Content-Transfer-Encoding:.*base64", $contents[0])) {
 			$tmp = base64_decode($contents[1]);
 			if (!$temp_file) {

@@ -20,9 +20,9 @@ function xfn_check($class, $value = '', $type = 'check') {
 }
 
 function category_dropdown($fieldname, $selected = 0) {
-	global $wpdb, $tablelinkcategories;
+	global $wpdb,  $wp_id;
 	
-	$results = $wpdb->get_results("SELECT cat_id, cat_name, auto_toggle FROM $tablelinkcategories ORDER BY cat_id");
+	$results = $wpdb->get_results("SELECT cat_id, cat_name, auto_toggle FROM {$wpdb->linkcategories[$wp_id]} ORDER BY cat_id");
 	echo "\n<select name='$fieldname' size='1'>";
 	foreach ($results as $row) {
 		echo "\n\t<option value='$row->cat_id'";
@@ -80,7 +80,7 @@ if (!empty($action2)) {
 }
 
 switch ($action) {
-  case 'Assign':
+  case _LANG_WLM_ASSIGN_TEXT:
   {
     $standalone = 1;
     include_once('admin-header.php');
@@ -97,7 +97,7 @@ switch ($action) {
         exit;
     }
     $all_links = join(',', $linkcheck);
-    $results = $wpdb->get_results("SELECT link_id, link_owner, user_level FROM $tablelinks LEFT JOIN $tableusers ON link_owner = ID WHERE link_id in ($all_links)");
+    $results = $wpdb->get_results("SELECT link_id, link_owner, user_level FROM {$wpdb->links[$wp_id]} LEFT JOIN {$wpdb->users[$wp_id]} ON link_owner = ID WHERE link_id in ($all_links)");
     foreach ($results as $row) {
       if (!get_settings('links_use_adminlevels') || ($user_level >= $row->user_level)) { // ok to proceed
         $ids_to_change[] = $row->link_id;
@@ -106,12 +106,12 @@ switch ($action) {
 
     // should now have an array of links we can change
     $all_links = join(',', $ids_to_change);
-    $q = $wpdb->query("update $tablelinks SET link_owner='$newowner' WHERE link_id IN ($all_links)");
+    $q = $wpdb->query("update {$wpdb->links[$wp_id]} SET link_owner='$newowner' WHERE link_id IN ($all_links)");
 
     header('Location: ' . $this_file);
     break;
   }
-  case 'Visibility':
+  case _LANG_WLM_VISIVILITY_TEXT:
   {
     $standalone = 1;
     include_once('admin-header.php');
@@ -126,7 +126,7 @@ switch ($action) {
         exit;
     }
     $all_links = join(',', $linkcheck);
-    $results = $wpdb->get_results("SELECT link_id, link_visible FROM $tablelinks WHERE link_id in ($all_links)");
+    $results = $wpdb->get_results("SELECT link_id, link_visible FROM {$wpdb->links[$wp_id]} WHERE link_id in ($all_links)");
     foreach ($results as $row) {
         if ($row->link_visible == 'Y') { // ok to proceed
             $ids_to_turnoff[] = $row->link_id;
@@ -138,18 +138,18 @@ switch ($action) {
     // should now have two arrays of links to change
     if (count($ids_to_turnoff)) {
         $all_linksoff = join(',', $ids_to_turnoff);
-        $q = $wpdb->query("update $tablelinks SET link_visible='N' WHERE link_id IN ($all_linksoff)");
+        $q = $wpdb->query("update {$wpdb->links[$wp_id]} SET link_visible='N' WHERE link_id IN ($all_linksoff)");
     }
 
     if (count($ids_to_turnon)) {
         $all_linkson = join(',', $ids_to_turnon);
-        $q = $wpdb->query("update $tablelinks SET link_visible='Y' WHERE link_id IN ($all_linkson)");
+        $q = $wpdb->query("update {$wpdb->links[$wp_id]} SET link_visible='Y' WHERE link_id IN ($all_linkson)");
     }
 
     header('Location: ' . $this_file);
     break;
   }
-  case 'Move':
+  case _LANG_WLM_MOVE_TEXT:
   {
     $standalone = 1;
     include_once('admin-header.php');
@@ -164,7 +164,7 @@ switch ($action) {
     }
     $all_links = join(',', $linkcheck);
     // should now have an array of links we can change
-    $q = $wpdb->query("update $tablelinks SET link_category='$category' WHERE link_id IN ($all_links)");
+    $q = $wpdb->query("update {$wpdb->links[$wp_id]} SET link_category='$category' WHERE link_id IN ($all_links)");
 
     header('Location: ' . $this_file);
     break;
@@ -194,9 +194,9 @@ switch ($action) {
     // if we are in an auto toggle category and this one is visible then we
     // need to make the others invisible before we add this new one.
     if (($auto_toggle == 'Y') && ($link_visible == 'Y')) {
-      $wpdb->query("UPDATE $tablelinks set link_visible = 'N' WHERE link_category = $link_category");
+      $wpdb->query("UPDATE {$wpdb->links[$wp_id]} set link_visible = 'N' WHERE link_category = $link_category");
     }
-    $wpdb->query("INSERT INTO $tablelinks (link_url, link_name, link_image, link_target, link_category, link_description, link_visible, link_owner, link_rating, link_rel, link_notes, link_rss) " .
+    $wpdb->query("INSERT INTO {$wpdb->links[$wp_id]} (link_url, link_name, link_image, link_target, link_category, link_description, link_visible, link_owner, link_rating, link_rel, link_notes, link_rss) " .
       " VALUES('" . addslashes($link_url) . "','"
            . addslashes($link_name) . "', '"
            . addslashes($link_image) . "', '$link_target', $link_category, '"
@@ -242,10 +242,10 @@ switch ($action) {
       // if we are in an auto toggle category and this one is visible then we
       // need to make the others invisible before we update this one.
       if (($auto_toggle == 'Y') && ($link_visible == 'Y')) {
-        $wpdb->query("UPDATE $tablelinks set link_visible = 'N' WHERE link_category = $link_category");
+        $wpdb->query("UPDATE {$wpdb->links[$wp_id]} set link_visible = 'N' WHERE link_category = $link_category");
       }
 
-      $wpdb->query("UPDATE $tablelinks SET link_url='" . addslashes($link_url) . "',
+      $wpdb->query("UPDATE {$wpdb->links[$wp_id]} SET link_url='" . addslashes($link_url) . "',
 	  link_name='" . addslashes($link_name) . "',\n link_image='" . addslashes($link_image) . "',
 	  link_target='$link_target',\n link_category=$link_category,
 	  link_visible='$link_visible',\n link_description='" . addslashes($link_description) . "',
@@ -270,7 +270,7 @@ switch ($action) {
     if ($user_level < get_settings('links_minadminlevel'))
       die ("Cheatin' uh ?");
 
-    $wpdb->query("DELETE FROM $tablelinks WHERE link_id = $link_id");
+    $wpdb->query("DELETE FROM {$wpdb->links[$wp_id]} WHERE link_id = $link_id");
 
     if (isset($links_show_cat_id) && ($links_show_cat_id != ''))
         $cat_id = $links_show_cat_id;
@@ -290,11 +290,11 @@ switch ($action) {
     $standalone=0;
     include_once ('admin-header.php');
     if ($user_level < get_settings('links_minadminlevel')) {
-      die("You have no right to edit the links for this blog.<br />Ask for a promotion to your <a href='mailto:$admin_email'>blog admin</a>. :)");
+      die("You have no right to edit the links for this blog.<br />Ask for a promotion to your <a href='mailto:".get_settings('admin_email')."'>blog admin</a>. :)");
     }
 
     $row = $wpdb->get_row("SELECT * 
-	FROM $tablelinks 
+	FROM {$wpdb->links[$wp_id]} 
 	WHERE link_id = $link_id");
 
     if ($row) {
@@ -537,7 +537,7 @@ No</label></td>
     $standalone=0;
     include_once ("./admin-header.php");
     if ($user_level < get_settings('links_minadminlevel')) {
-      die("You have no right to edit the links for this blog.<br>Ask for a promotion to your <a href=\"mailto:$admin_email\">blog admin</a> :)");
+      die("You have no right to edit the links for this blog.<br>Ask for a promotion to your <a href=\"mailto:get_settings('admin_email')\">blog admin</a> :)");
     }
 
     switch ($order_by)
@@ -589,7 +589,7 @@ function checkAll(form)
       <tr>
         <td>
 <?php
-    $results = $wpdb->get_results("SELECT cat_id, cat_name, auto_toggle FROM $tablelinkcategories ORDER BY cat_id");
+    $results = $wpdb->get_results("SELECT cat_id, cat_name, auto_toggle FROM {$wpdb->linkcategories[$wp_id]} ORDER BY cat_id");
     echo "        <select name=\"cat_id\">\n";
     echo "          <option value=\"All\"";
     if ($cat_id == 'All')
@@ -646,11 +646,11 @@ function checkAll(form)
   </tr>
 <?php
     $sql = "SELECT link_url, link_name, link_image, link_description, link_visible,
-            link_category AS cat_id, cat_name AS category, $tableusers.user_login, link_id,
-            link_rating, link_rel, $tableusers.user_level
-            FROM $tablelinks
-            LEFT JOIN $tablelinkcategories ON $tablelinks.link_category = $tablelinkcategories.cat_id
-            LEFT JOIN $tableusers ON $tableusers.ID = $tablelinks.link_owner ";
+            link_category AS cat_id, cat_name AS category, {$wpdb->users[$wp_id]}.user_login, link_id,
+            link_rating, link_rel, {$wpdb->users[$wp_id]}.user_level
+            FROM {$wpdb->links[$wp_id]}
+            LEFT JOIN {$wpdb->linkcategories[$wp_id]} ON {$wpdb->links[$wp_id]}.link_category = {$wpdb->linkcategories[$wp_id]}.cat_id
+            LEFT JOIN {$wpdb->users[$wp_id]} ON {$wpdb->users[$wp_id]}.ID = {$wpdb->links[$wp_id]}.link_owner ";
 
     if (isset($cat_id) && ($cat_id != 'All')) {
       $sql .= " WHERE link_category = $cat_id ";
@@ -719,7 +719,7 @@ LINKS;
         <td>
           <input type="submit" name="action2" value="<?php echo _LANG_WLM_ASSIGN_TEXT; ?>" /> <?php echo _LANG_WLM_OWNER_SHIP; ?>
 <?php
-    $results = $wpdb->get_results("SELECT ID, user_login FROM $tableusers WHERE user_level > 0 ORDER BY ID");
+    $results = $wpdb->get_results("SELECT ID, user_login FROM {$wpdb->users[$wp_id]} WHERE user_level > 0 ORDER BY ID");
     echo "          <select name=\"newowner\" size=\"1\">\n";
     foreach ($results as $row) {
       echo "            <option value=\"".$row->ID."\"";

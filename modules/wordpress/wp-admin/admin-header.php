@@ -1,6 +1,29 @@
 <?php
+$wpvarstoreset = array('profile','standalone','redirect','redirect_url','a','popuptitle','popupurl','text', 'trackback', 'pingback');
+for ($i=0; $i<count($wpvarstoreset); $i += 1) {
+	$wpvar = $wpvarstoreset[$i];
+	if (!isset($$wpvar)) {
+		if (empty($HTTP_POST_VARS["$wpvar"])) {
+			if (empty($HTTP_GET_VARS["$wpvar"])) {
+				$$wpvar = '';
+			} else {
+				$$wpvar = $HTTP_GET_VARS["$wpvar"];
+			}
+		} else {
+			$$wpvar = $HTTP_POST_VARS["$wpvar"];
+		}
+	}
+}
+if ($standalone == 0) {
+	if ($profile == 0) {
+		include_once (dirname(__FILE__)."/../../../mainfile.php");
+		include(XOOPS_ROOT_PATH.'/header.php');
+	}
+}
 
-require_once('../wp-config.php');
+global $wp_inblock;
+$wp_inblock = 0;
+require('../wp-config.php');
 require_once(ABSPATH.'/wp-admin/auth.php');
 
 function gethelp_link($this_file, $helptag) {
@@ -25,42 +48,29 @@ $time_format = stripslashes(get_settings('time_format'));
 
 $admin_area_charset = (!isset($admin_area_charset)) ? 'iso-8859-15' : $admin_area_charset;
 
-// let's deactivate quicktags on IE Mac and Lynx, because they don't work there.
-if (($is_macIE) || ($is_lynx))
-	$use_quicktags = 0;
-
-$wpvarstoreset = array('profile','standalone','redirect','redirect_url','a','popuptitle','popupurl','text', 'trackback', 'pingback');
-for ($i=0; $i<count($wpvarstoreset); $i += 1) {
-	$wpvar = $wpvarstoreset[$i];
-	if (!isset($$wpvar)) {
-		if (empty($HTTP_POST_VARS["$wpvar"])) {
-			if (empty($HTTP_GET_VARS["$wpvar"])) {
-				$$wpvar = '';
-			} else {
-				$$wpvar = $HTTP_GET_VARS["$wpvar"];
-			}
-		} else {
-			$$wpvar = $HTTP_POST_VARS["$wpvar"];
-		}
-	}
+if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. (($wp_id=='-')?'':$wp_id) .'/themes/'.$xoopsConfig['theme_set'].'/wp-admin.css')) {
+	$themes = $xoopsConfig['theme_set'];
+} else {
+	$themes = "default";
 }
+$css_file = $siteurl.'/themes/'.$themes.'/wp-admin.css';
 
 if ($standalone == 0) {
 	if ($profile == 0) {
-		include(XOOPS_ROOT_PATH.'/header.php');
+//		include(XOOPS_ROOT_PATH.'/header.php');
 		ob_start();
 		echo  bloginfo('name');
 		$blog_name =  ob_get_contents();
 		ob_end_clean();
-		$module_title = $blog_name ." : ".$title;
-		$xoopsTpl->assign('xoops_module_header', '<link rel="stylesheet" href="wp-admin.css" type="text/css" />');
+		$module_title = $blog_name ." &raquo;".$title;
+		$xoopsTpl->assign('xoops_module_header', '<link rel="stylesheet" href="'.$css_file.'" type="text/css" />');
 		$xoopsTpl->assign("xoops_pagetitle",$module_title);
 	}else{
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>WordPress &rsaquo; <?php bloginfo('name') ?> &rsaquo; <?php echo $title; ?></title>
-<link rel="stylesheet" href="wp-admin.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $css_file;?>" type="text/css" />
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $blog_charset ?>" />
 <?php
 if ($redirect==1) {
@@ -82,7 +92,7 @@ setTimeout("redirect();", 600);
 //<![CDATA[
 
 	function profile(userID) {
-		window.open ("profile.php?action=viewprofile&user="+userID, "Profile", "width=500, height=450, location=0, menubar=0, resizable=0, scrollbars=1, status=1, titlebar=0, toolbar=0, screenX=60, left=60, screenY=60, top=60");
+		window.open ("profile.php?action=viewprofile&profile=1&user="+userID, "Profile", "width=500, height=450, location=0, menubar=0, resizable=0, scrollbars=1, status=1, titlebar=0, toolbar=0, screenX=60, left=60, screenY=60, top=60");
 	}
 
 	function launchupload() {

@@ -1,13 +1,4 @@
 <?php
-
-/* new and improved ! now with more querystring stuff ! */
-
-if (!isset($querystring_start)) {
-	$querystring_start = '?';
-	$querystring_equal = '=';
-	$querystring_separator = '&amp;';
-}
-
 /* template functions... */
 
 
@@ -38,13 +29,13 @@ function bloginfo_unicode($show='') {
 }
 
 function get_bloginfo($show='') {
-	global $siteurl, $blogfilename, $blogname, $blogdescription, $siteurl, $admin_email;
+	global $siteurl;
 	switch($show) {
 		case "url":
-			$output = $siteurl."/".$blogfilename;
+			$output = $siteurl."/index.php";
 			break;
 		case "description":
-			$output = $blogdescription;
+			$output = get_settings('blogdescription');
 			break;
 		case "rdf_url":
 			$output = $siteurl.'/wp-rdf.php';
@@ -65,18 +56,18 @@ function get_bloginfo($show='') {
 			$output = $siteurl.'/xmlrpc.php';
 			break;
 		case "admin_email":
-			$output = $admin_email;
+			$output = get_settings('admin_email');
 			break;
 		case "name":
 		default:
-			$output = $blogname;
+			$output = get_settings('blogname');
 			break;
 	}
 	return $output;
 }
 
 function wp_title($sep = '&raquo;', $display = true) {
-	global $wpdb, $tableposts, $tablecategories;
+	global $wpdb,  $wp_id;
 	global $year, $monthnum, $day, $cat, $p, $name, $month;
 
 	// If there's a category
@@ -86,7 +77,7 @@ function wp_title($sep = '&raquo;', $display = true) {
         }
     }
 	if (!empty($category_name)) {
-		$title = stripslashes($wpdb->get_var("SELECT cat_name FROM $tablecategories WHERE category_nicename = '$category_name'"));
+		$title = stripslashes($wpdb->get_var("SELECT cat_name FROM {$wpdb->categories[$wp_id]} WHERE category_nicename = '$category_name'"));
 	}
 
 	// If there's a month
@@ -123,7 +114,7 @@ function wp_title($sep = '&raquo;', $display = true) {
 			$day = '' . intval($day);
 			$where .= ' AND DAYOFMONTH(post_date)=' . $day;
 		}
-			$p = $wpdb->get_var("SELECT ID FROM $tableposts WHERE post_name = '$name' $where");
+			$p = $wpdb->get_var("SELECT ID FROM {$wpdb->posts[$wp_id]} WHERE post_name = '$name' $where");
 		}
 		$post_data = get_postdata($p);
 		$title = strip_tags(stripslashes($post_data['Title']));
@@ -139,10 +130,10 @@ function wp_title($sep = '&raquo;', $display = true) {
 }
 
 function single_post_title($prefix = '', $display = true) {
-	global $p, $name, $wpdb, $tableposts;
+	global $p, $name, $wpdb, $wp_id;
 	if (intval($p) || '' != $name) {
 		if (!$p) {
-			$p = $wpdb->get_var("SELECT ID FROM $tableposts WHERE post_name = '$name'");
+			$p = $wpdb->get_var("SELECT ID FROM {$wpdb->posts[$wp_id]} WHERE post_name = '$name'");
 		}
 		$post_data = get_postdata($p);
 		$title = $post_data['Title'];
@@ -194,8 +185,8 @@ function get_archives_link($url, $text, $format = "html", $before = "", $after =
 }
 
 function get_archives($type='', $limit='', $format='html', $before = "", $after = "", $show_post_count = false) {
-	global $tableposts, $dateformat, $time_difference, $siteurl, $blogfilename;
-    global $querystring_start, $querystring_equal, $querystring_separator, $month, $wpdb, $start_of_week;
+	global  $dateformat, $time_difference, $siteurl,$wp_id;
+    global $month, $wpdb,  $wp_month_format;
 
     if ('' == $type) {
         $type = get_settings('archive_mode');
@@ -209,9 +200,9 @@ function get_archives($type='', $limit='', $format='html', $before = "", $after 
 	$archive_week_separator = '&#8211;';
 
 	// archive link url
-	$archive_link_m = $siteurl.'/'.$blogfilename.$querystring_start.'m'.$querystring_equal;	# monthly archive;
-	$archive_link_w = $siteurl.'/'.$blogfilename.$querystring_start.'w'.$querystring_equal;	# weekly archive;
-	$archive_link_p = $siteurl.'/'.$blogfilename.$querystring_start.'p'.$querystring_equal;	# post-by-post archive;
+	$archive_link_m = $siteurl.'/index.php?m=';	# monthly archive;
+	$archive_link_w = $siteurl.'/index.php?w=';	# weekly archive;
+	$archive_link_p = $siteurl.'/index.php?p=';	# post-by-post archive;
 
     // over-ride general date format ? 0 = no: use the date format set in Options, 1 = yes: over-ride
     $archive_date_format_over_ride = 0;
@@ -232,23 +223,23 @@ function get_archives($type='', $limit='', $format='html', $before = "", $after 
 	$now = date('Y-m-d H:i:s',(time() + ($time_difference * 3600)));
 
 	if ('monthly' == $type) {
-		$arcresults = $wpdb->get_results("SELECT DISTINCT YEAR(post_date) AS `year`, MONTH(post_date) AS `month`, count(ID) as posts FROM $tableposts WHERE post_date < '$now' AND post_status = 'publish' GROUP BY YEAR(post_date), MONTH(post_date) ORDER BY post_date DESC" . $limit);
+		$arcresults = $wpdb->get_results("SELECT DISTINCT YEAR(post_date) AS `year`, MONTH(post_date) AS `month`, count(ID) as posts FROM {$wpdb->posts[$wp_id]} WHERE post_date < '$now' AND post_status = 'publish' GROUP BY YEAR(post_date), MONTH(post_date) ORDER BY post_date DESC" . $limit);
         if ($arcresults) {
             foreach ($arcresults as $arcresult) {
                 $url  = get_month_link($arcresult->year,   $arcresult->month);
                 if ($show_post_count) {
-               		$text = ereg_replace('%MONTH',$month[zeroise($arcresult->month,2)],_WP_MONTH_FORMAT);
+               		$text = ereg_replace('%MONTH',$month[zeroise($arcresult->month,2)],$wp_month_format);
 					$text = ereg_replace('%YEAR',sprintf("%d",$arcresult->year),$text);
                     $after = "&nbsp;($arcresult->posts)";
                 } else {
-                	$text = ereg_replace('%MONTH',$month[zeroise($arcresult->month,2)],_WP_MONTH_FORMAT);
+                	$text = ereg_replace('%MONTH',$month[zeroise($arcresult->month,2)],$wp_month_format);
 					$text = ereg_replace('%YEAR',sprintf("%d",$arcresult->year),$text);
                 }
                 echo get_archives_link($url, $text, $format, $before, $after);
             }
         }
 	} elseif ('daily' == $type) {
-		$arcresults = $wpdb->get_results("SELECT DISTINCT YEAR(post_date) AS `year`, MONTH(post_date) AS `month`, DAYOFMONTH(post_date) AS `dayofmonth` FROM $tableposts WHERE post_date < '$now' AND post_status = 'publish' ORDER BY post_date DESC" . $limit);
+		$arcresults = $wpdb->get_results("SELECT DISTINCT YEAR(post_date) AS `year`, MONTH(post_date) AS `month`, DAYOFMONTH(post_date) AS `dayofmonth` FROM {$wpdb->posts[$wp_id]} WHERE post_date < '$now' AND post_status = 'publish' ORDER BY post_date DESC" . $limit);
         if ($arcresults) {
             foreach ($arcresults as $arcresult) {
                 $url  = get_day_link($arcresult->year, $arcresult->month, $arcresult->dayofmonth);
@@ -258,29 +249,24 @@ function get_archives($type='', $limit='', $format='html', $before = "", $after 
             }
         }
 	} elseif ('weekly' == $type) {
-		if (!isset($start_of_week)) {
-			$start_of_week = 1;
-		}
-		$arcresults = $wpdb->get_results("SELECT DISTINCT WEEK(post_date, $start_of_week) AS `week`, YEAR(post_date) AS yr, DATE_FORMAT(post_date, '%Y-%m-%d') AS yyyymmdd FROM $tableposts WHERE post_date < '$now' AND post_status = 'publish' ORDER BY post_date DESC" . $limit);
+		$arcresults = $wpdb->get_results("SELECT DISTINCT WEEK(post_date, ".get_settings('start_of_week').") AS `week`, YEAR(post_date) AS yr, DATE_FORMAT(post_date, '%Y-%m-%d') AS yyyymmdd FROM {$wpdb->posts[$wp_id]} WHERE post_date < '$now' AND post_status = 'publish' ORDER BY post_date DESC" . $limit);
 		$arc_w_last = '';
         if ($arcresults) {
             foreach ($arcresults as $arcresult) {
                 if ($arcresult->week != $arc_w_last) {
                     $arc_year = $arcresult->yr;
                     $arc_w_last = $arcresult->week;
-                    $arc_week = get_weekstartend($arcresult->yyyymmdd, $start_of_week);
+                    $arc_week = get_weekstartend($arcresult->yyyymmdd, get_settings('start_of_week'));
                     $arc_week_start = date_i18n($archive_week_start_date_format, $arc_week['start']);
                     $arc_week_end = date_i18n($archive_week_end_date_format, $arc_week['end']);
-                    $url  = sprintf("%s/%s%sm%s%s%sw%s%d", $siteurl, $blogfilename, $querystring_start,
-                                    $querystring_equal, $arc_year, $querystring_separator,
-                                    $querystring_equal, $arcresult->week);
+                    $url  = sprintf("%s/index.php?m=%s&amp;w=%d", $siteurl, $arc_year, $arcresult->week);
                     $text = $arc_week_start . $archive_week_separator . $arc_week_end;
                     echo get_archives_link($url, $text, $format, $before, $after);
                 }
             }
         }
 	} elseif ('postbypost' == $type) {
-		$arcresults = $wpdb->get_results("SELECT ID, post_date, post_title FROM $tableposts WHERE post_date < '$now' AND post_status = 'publish' ORDER BY post_date DESC" . $limit);
+		$arcresults = $wpdb->get_results("SELECT ID, post_date, post_title FROM {$wpdb->posts[$wp_id]} WHERE post_date < '$now' AND post_status = 'publish' ORDER BY post_date DESC" . $limit);
         if ($arcresults) {
             foreach ($arcresults as $arcresult) {
                 if ($arcresult->post_date != '0000-00-00 00:00:00') {
@@ -299,11 +285,11 @@ function get_archives($type='', $limit='', $format='html', $before = "", $after 
 }
 
 function get_calendar($daylength = 1) {
-	global $wpdb, $HTTP_GET_VARS, $m, $monthnum, $year, $timedifference, $month, $weekday, $tableposts, $posts;
+	global $wpdb ,$wp_id, $HTTP_GET_VARS, $m, $monthnum, $year, $timedifference, $month, $weekday,  $posts, $wp_month_format;
 
     // Quick check. If we have no posts at all, abort!
     if (!$posts) {
-        $gotsome = $wpdb->get_var("SELECT ID from $tableposts WHERE post_status = 'publish' ORDER BY post_date DESC LIMIT 1");
+        $gotsome = $wpdb->get_var("SELECT ID from {$wpdb->posts[$wp_id]} WHERE post_status = 'publish' ORDER BY post_date DESC LIMIT 1");
         if (!$gotsome)
             return;
     }
@@ -339,19 +325,19 @@ function get_calendar($daylength = 1) {
 
 	// Get the next and previous month and year with at least one post
 	$previous = $wpdb->get_row("SELECT DISTINCT MONTH( post_date ) AS month, YEAR( post_date ) AS year
-			FROM $tableposts
+			FROM {$wpdb->posts[$wp_id]}
 			WHERE post_date < '$thisyear-$thismonth-01'
 			AND post_status = 'publish'
 							  ORDER BY post_date DESC
 							  LIMIT 1");
 	$next = $wpdb->get_row("SELECT  DISTINCT MONTH( post_date ) AS month, YEAR( post_date ) AS year
-			FROM $tableposts
+			FROM {$wpdb->posts[$wp_id]}
 			WHERE post_date >  '$thisyear-$thismonth-01'
 			AND MONTH( post_date ) != MONTH( '$thisyear-$thismonth-01' )
 			AND post_status = 'publish'
 							  ORDER  BY post_date ASC
 							  LIMIT 1");
-	$month_str = ereg_replace('%MONTH',$month[zeroise($thismonth, 2)],_WP_MONTH_FORMAT);
+	$month_str = ereg_replace('%MONTH',$month[zeroise($thismonth, 2)],$wp_month_format);
 	$month_str = ereg_replace('%YEAR',date('Y', $unixmonth),$month_str);
 	echo '<table id="wp-calendar">
 	<caption>' . $month_str . '</caption>
@@ -378,7 +364,7 @@ function get_calendar($daylength = 1) {
 		} else {
 			$smonth_name = substr($month[zeroise($previous->month, 2)], 0, 3);
 		}
-		$month_str = ereg_replace('%MONTH',$month[zeroise($previous->month, 2)],_WP_MONTH_FORMAT);
+		$month_str = ereg_replace('%MONTH',$month[zeroise($previous->month, 2)],$wp_month_format);
 		$month_str = ereg_replace('%YEAR',date('Y', mktime(0, 0 , 0, $previous->month, 1, $previous->year)),$month_str);
 		echo "\n\t\t".'<td abbr="' . $month[zeroise($previous->month, 2)] . '" colspan="3" id="prev"><a href="' .
 				get_month_link($previous->year, $previous->month) . '" title="View posts for ' . $month_str . '">&laquo; ' . $smonth_name . '</a></td>';
@@ -394,7 +380,7 @@ function get_calendar($daylength = 1) {
 		} else {
 			$smonth_name = substr($month[zeroise($next->month, 2)], 0, 3);
 		}
-		$month_str = ereg_replace('%MONTH',$month[zeroise($next->month, 2)],_WP_MONTH_FORMAT);
+		$month_str = ereg_replace('%MONTH',$month[zeroise($next->month, 2)],$wp_month_format);
 		$month_str = ereg_replace('%YEAR',date('Y', mktime(0, 0 , 0, $next->month, 1, $next->year)),$month_str);
 		echo "\n\t\t".'<td abbr="' . $month[zeroise($next->month, 2)] . '" colspan="3" id="next"><a href="' .
 				get_month_link($next->year, $next->month) . '" title="View posts for ' . $month_str . '">' . $smonth_name . ' &raquo;</a></td>';
@@ -411,7 +397,7 @@ function get_calendar($daylength = 1) {
 
 	// Get days with posts
 	$dayswithposts = $wpdb->get_results("SELECT DISTINCT DAYOFMONTH(post_date)
-			FROM $tableposts WHERE MONTH(post_date) = $thismonth
+			FROM {$wpdb->posts[$wp_id]} WHERE MONTH(post_date) = $thismonth
 			AND YEAR(post_date) = $thisyear
 			AND post_status = 'publish'
 			AND post_date < '" . date("Y-m-d H:i:s", (time() + ($time_difference * 3600)))."'", ARRAY_N);
@@ -435,7 +421,7 @@ function get_calendar($daylength = 1) {
 
 	$ak_titles_for_day = array();
 	$ak_post_titles = $wpdb->get_results("SELECT post_title, DAYOFMONTH(post_date) as dom "
-										 ."FROM $tableposts "
+										 ."FROM {$wpdb->posts[$wp_id]} "
 										 ."WHERE YEAR(post_date) = '$thisyear' "
 										 ."AND MONTH(post_date) = '$thismonth' "
 										 ."AND post_date < '".date("Y-m-d H:i:s", (time() + ($time_difference * 3600)))."' "
@@ -493,9 +479,8 @@ function get_calendar($daylength = 1) {
 
 /***** Links *****/
 function get_permalink($id=false) {
-	global $post, $wpdb, $tableposts;
-	global $siteurl, $blogfilename, $querystring_start, $querystring_equal;
-
+	global $post, $wpdb, $wp_id;
+	global $siteurl;
 	$rewritecode = array(
 		'%year%',
 		'%monthnum%',
@@ -515,10 +500,10 @@ function get_permalink($id=false) {
 			);
 			return $siteurl . str_replace($rewritecode, $rewritereplace, get_settings('permalink_structure'));
 		} else { // if they're not using the fancy permalink option
-			return $siteurl . '/' . $blogfilename.$querystring_start.'p'.$querystring_equal.$post->ID;
+			return $siteurl . '/index.php?p='.$post->ID;
 		}
 	} else { // if an ID is given
-		$idpost = $wpdb->get_row("SELECT post_date, post_name FROM $tableposts WHERE ID = $id");
+		$idpost = $wpdb->get_row("SELECT post_date, post_name FROM {$wpdb->posts[$wp_id]} WHERE ID = $id");
 		if ('' != get_settings('permalink_structure')) {
 			$unixtime = strtotime($idpost->post_date);
 			$rewritereplace = array(
@@ -530,13 +515,13 @@ function get_permalink($id=false) {
 			);
 			return $siteurl . str_replace($rewritecode, $rewritereplace, get_settings('permalink_structure'));
 		} else {
-			return $siteurl . '/' . $blogfilename.$querystring_start.'p'.$querystring_equal.$id;
+			return $siteurl . '/index.php?p='.$id;
 		}
 	}
 }
 
 function get_month_link($year, $month) {
-	global $siteurl, $blogfilename, $querystring_start, $querystring_equal;
+	global $siteurl;
 	if (!$year) $year = date('Y', time()+($time_difference * 3600));
 	if (!$month) $month = date('m', time()+($time_difference * 3600));
 	if ('' != get_settings('permalink_structure')) {
@@ -549,12 +534,12 @@ function get_month_link($year, $month) {
 		$monthlink = str_replace('%post_id%', '', $monthlink);
 		return $siteurl . $monthlink;
 	} else {
-		return $siteurl.'/'.$blogfilename.$querystring_start.'m'.$querystring_equal.$year.zeroise($month, 2);
+		return $siteurl.'/index.php?m='.$year.zeroise($month, 2);
 	}
 }
 
 function get_day_link($year, $month, $day) {
-	global $siteurl, $blogfilename, $querystring_start, $querystring_equal;
+	global $siteurl;
 	if (!$year) $year = date('Y', time()+($time_difference * 3600));
 	if (!$month) $month = date('m', time()+($time_difference * 3600));
 	if (!$day) $day = date('j', time()+($time_difference * 3600));
@@ -569,7 +554,7 @@ function get_day_link($year, $month, $day) {
 		$daylink = str_replace('%post_id%', '', $daylink);
 		return $siteurl . $daylink;
 	} else {
-		return $siteurl.'/'.$blogfilename.$querystring_start.'m'.$querystring_equal.$year.zeroise($month, 2).zeroise($day, 2);
+		return $siteurl.'/index.php?m='.$year.zeroise($month, 2).zeroise($day, 2);
 	}
 }
 
@@ -921,7 +906,7 @@ function get_the_title() {
 	return $output;
 }
 
-function the_content($more_link_text='(more...)', $stripteaser=0, $more_file='') {
+function the_content($more_link_text=_WP_TPL_MORE, $stripteaser=0, $more_file='') {
 	$content = get_the_content($more_link_text, $stripteaser, $more_file);
 	$content = convert_bbcode($content);
 	$content = convert_gmcode($content);
@@ -931,7 +916,7 @@ function the_content($more_link_text='(more...)', $stripteaser=0, $more_file='')
 	echo $content;
 }
 
-function the_content_rss($more_link_text='(more...)', $stripteaser=0, $more_file='', $cut = 0, $encode_html = 0) {
+function the_content_rss($more_link_text=_WP_TPL_MORE, $stripteaser=0, $more_file='', $cut = 0, $encode_html = 0) {
 	$content = get_the_content($more_link_text, $stripteaser, $more_file);
 	$content = convert_bbcode($content);
 	$content = convert_gmcode($content);
@@ -945,7 +930,7 @@ function the_content_rss($more_link_text='(more...)', $stripteaser=0, $more_file
 	} elseif ($encode_html == 0) {
 		$content = make_url_footnote($content);
 	} elseif ($encode_html == 2) {
-		$content = strip_tags($content);
+		$content = htmlspecialchars(strip_tags($content));
 	}
 	if ($cut) {
 		$blah = explode(' ', $content);
@@ -965,7 +950,7 @@ function the_content_rss($more_link_text='(more...)', $stripteaser=0, $more_file
 	echo $content;
 }
 
-function the_content_unicode($more_link_text='(more...)', $stripteaser=0, $more_file='') {
+function the_content_unicode($more_link_text=_WP_TPL_MORE, $stripteaser=0, $more_file='') {
 	$content = get_the_content($more_link_text, $stripteaser, $more_file);
 	$content = convert_bbcode($content);
 	$content = convert_gmcode($content);
@@ -978,7 +963,6 @@ function the_content_unicode($more_link_text='(more...)', $stripteaser=0, $more_
 function get_the_content($more_link_text='(more...)', $stripteaser=0, $more_file='') {
 	global $id, $post, $more, $c, $withcomments, $page, $pages, $multipage, $numpages;
 	global $HTTP_COOKIE_VARS, $preview, $cookiehash;
-	global $querystring_start, $querystring_equal, $querystring_separator;
     global $pagenow;
 	$output = '';
 
@@ -1111,7 +1095,6 @@ function get_the_excerpt($fakeit = false) {
 function link_pages($before='<br />', $after='<br />', $next_or_number='number', $nextpagelink='next page', $previouspagelink='previous page', $pagelink='%', $more_file='') {
 	global $id, $page, $numpages, $multipage, $more;
 	global $pagenow;
-	global $querystring_start, $querystring_equal, $querystring_separator;
 	if ($more_file != '') {
 		$file = $more_file;
 	} else {
@@ -1125,7 +1108,7 @@ function link_pages($before='<br />', $after='<br />', $next_or_number='number',
 				echo " ";
 				if (($i != $page) || ((!$more) && ($page==1))) {
 				if ('' == get_settings('permalink_structure')) {
-					echo '<a href="'.get_permalink().$querystring_separator.'page'.$querystring_equal.$i.'">';
+					echo '<a href="'.get_permalink().'&amp;page='.$i.'">';
 				} else {
 					echo '<a href="'.get_permalink().$i.'/">';
 				}
@@ -1141,7 +1124,7 @@ function link_pages($before='<br />', $after='<br />', $next_or_number='number',
 				$i=$page-1;
 				if ($i && $more) {
 				if ('' == get_settings('permalink_structure')) {
-					echo '<a href="'.get_permalink().$querystring_separator.'page'.$querystring_equal.$i.'">';
+					echo '<a href="'.get_permalink().'&amp;page='.$i.'">';
 				} else {
 					echo '<a href="'.get_permalink().$i.'/">';
 				}
@@ -1149,7 +1132,7 @@ function link_pages($before='<br />', $after='<br />', $next_or_number='number',
 				$i=$page+1;
 				if ($i<=$numpages && $more) {
 				if ('' == get_settings('permalink_structure')) {
-					echo '<a href="'.get_permalink().$querystring_separator.'page'.$querystring_equal.$i.'">';
+					echo '<a href="'.get_permalink().'&amp;page='.$i.'">';
 				} else {
 					echo '<a href="'.get_permalink().$i.'/">';
 				}
@@ -1162,9 +1145,8 @@ function link_pages($before='<br />', $after='<br />', $next_or_number='number',
 
 
 function previous_post($format='%', $previous='previous post: ', $title='yes', $in_same_cat='no', $limitprev=1, $excluded_categories='') {
-	global $tableposts, $id, $post, $siteurl, $blogfilename, $wpdb;
+	global  $id, $post, $siteurl, $wpdb ,$wp_id;
 	global $p, $posts, $posts_per_page, $s, $single;
-	global $querystring_start, $querystring_equal, $querystring_separator;
 
 	if(($p) || ($posts_per_page == 1) || 1 == $single) {
 
@@ -1186,7 +1168,7 @@ function previous_post($format='%', $previous='previous post: ', $title='yes', $
 		}
 
 		$limitprev--;
-		$lastpost = @$wpdb->get_row("SELECT ID, post_title FROM $tableposts WHERE post_date < '$current_post_date' AND post_status = 'publish' $sqlcat $sql_exclude_cats ORDER BY post_date DESC LIMIT $limitprev, 1");
+		$lastpost = @$wpdb->get_row("SELECT ID, post_title FROM {$wpdb->posts[$wp_id]} WHERE post_date < '$current_post_date' AND post_status = 'publish' $sqlcat $sql_exclude_cats ORDER BY post_date DESC LIMIT $limitprev, 1");
 		if ($lastpost) {
 			$string = '<a href="'.get_permalink($lastpost->ID).'">'.$previous;
 			if ($title == 'yes') {
@@ -1200,9 +1182,8 @@ function previous_post($format='%', $previous='previous post: ', $title='yes', $
 }
 
 function next_post($format='%', $next='next post: ', $title='yes', $in_same_cat='no', $limitnext=1, $excluded_categories='') {
-	global $tableposts, $p, $posts, $id, $post, $siteurl, $blogfilename, $wpdb;
+	global  $p, $posts, $id, $post, $siteurl, $wpdb ,$wp_id;
 	global $time_difference, $single;
-	global $querystring_start, $querystring_equal, $querystring_separator;
 	if(($p) || ($posts==1) || 1 == $single) {
 
 		$current_post_date = $post->post_date;
@@ -1226,7 +1207,7 @@ function next_post($format='%', $next='next post: ', $title='yes', $in_same_cat=
 
 		$limitnext--;
 
-		$nextpost = @$wpdb->get_row("SELECT ID,post_title FROM $tableposts WHERE post_date > '$current_post_date' AND post_date < '$now' AND post_status = 'publish' $sqlcat $sql_exclude_cats ORDER BY post_date ASC LIMIT $limitnext,1");
+		$nextpost = @$wpdb->get_row("SELECT ID,post_title FROM {$wpdb->posts[$wp_id]} WHERE post_date > '$current_post_date' AND post_date < '$now' AND post_status = 'publish' $sqlcat $sql_exclude_cats ORDER BY post_date ASC LIMIT $limitnext,1");
 		if ($nextpost) {
 			$string = '<a href="'.get_permalink($nextpost->ID).'">'.$next;
 			if ($title=='yes') {
@@ -1240,8 +1221,7 @@ function next_post($format='%', $next='next post: ', $title='yes', $in_same_cat=
 }
 
 function next_posts($max_page = 0) { // original by cfactor at cooltux.org
-	global $siteurl, $blogfilename, $p, $paged, $what_to_show, $pagenow;
-	global $querystring_start, $querystring_equal, $querystring_separator;
+	global $siteurl, $p, $paged, $what_to_show, $pagenow;
 	if (empty($p) && ($what_to_show == 'paged')) {
 		$qstr = $_SERVER['QUERY_STRING'];
 		if (!empty($qstr)) {
@@ -1259,15 +1239,15 @@ function next_posts($max_page = 0) { // original by cfactor at cooltux.org
 		if (!$paged) $paged = 1;
 		$nextpage = intval($paged) + 1;
 		if (!$max_page || $max_page >= $nextpage) {
-			echo  $siteurl.'/'.$pagenow.$querystring_start.
-				($qstr == '' ? '' : $qstr.$querystring_separator) .
-				'paged'.$querystring_equal.$nextpage;
+			echo  $siteurl.'/'.$pagenow.'?'.
+				($qstr == '' ? '' : $qstr.'&amp;') .
+				'paged='.$nextpage;
 		}
 	}
 }
 
 function next_posts_link($label='Next Page &raquo;', $max_page=0) {
-	global $p, $paged, $result, $request, $posts_per_page, $what_to_show, $wpdb;
+	global $p, $paged, $result, $request, $posts_per_page, $what_to_show, $wpdb, $wp_id;
 	if ($what_to_show == 'paged') {
 		if (!$max_page) {
 			$nxt_request = $request;
@@ -1293,8 +1273,7 @@ function next_posts_link($label='Next Page &raquo;', $max_page=0) {
 
 
 function previous_posts() { // original by cfactor at cooltux.org
-	global $siteurl, $blogfilename, $p, $paged, $what_to_show, $pagenow;
-	global $querystring_start, $querystring_equal, $querystring_separator;
+	global $siteurl, $p, $paged, $what_to_show, $pagenow;
 	if (empty($p) && ($what_to_show == 'paged')) {
 		$qstr = $_SERVER['QUERY_STRING'];
 		if (!empty($qstr)) {
@@ -1311,9 +1290,9 @@ function previous_posts() { // original by cfactor at cooltux.org
 		}
 		$nextpage = intval($paged) - 1;
 		if ($nextpage < 1) $nextpage = 1;
-		echo  $siteurl.'/'.$pagenow.$querystring_start.
-			($qstr == '' ? '' : $qstr.$querystring_separator) .
-			'paged'.$querystring_equal.$nextpage;
+		echo  $siteurl.'/'.$pagenow.'?'.
+			($qstr == '' ? '' : $qstr.'&amp;') .
+			'paged='.$nextpage;
 	}
 }
 
@@ -1327,7 +1306,7 @@ function previous_posts_link($label='&laquo; Previous Page') {
 }
 
 function posts_nav_link($sep=' :: ', $prelabel='<< Previous Page', $nxtlabel='Next Page >>') {
-	global $p, $what_to_show, $request, $posts_per_page, $wpdb;
+	global $p, $what_to_show, $request, $posts_per_page, $wpdb, $wp_id;
 	if (empty($p) && ($what_to_show == 'paged')) {
 		$nxt_request = $request;
 		if ($pos = strpos(strtoupper($request), 'LIMIT')) {
@@ -1352,14 +1331,14 @@ function posts_nav_link($sep=' :: ', $prelabel='<< Previous Page', $nxtlabel='Ne
 /***** Category tags *****/
 
 function get_the_category() {
-	global $post, $tablecategories, $tablepost2cat, $wpdb, $category_cache;
+	global $post,   $wpdb, $category_cache ,$wp_id;
 	if ($category_cache[$post->ID]) {
 		return $category_cache[$post->ID];
 	} else {
 		$categories = $wpdb->get_results("
 			SELECT category_id, cat_name, category_nicename, category_description
-			FROM  $tablecategories, $tablepost2cat
-			WHERE $tablepost2cat.category_id = cat_ID AND $tablepost2cat.post_id = $post->ID
+			FROM  {$wpdb->categories[$wp_id]}, {$wpdb->post2cat[$wp_id]}
+			WHERE {$wpdb->post2cat[$wp_id]}.category_id = cat_ID AND {$wpdb->post2cat[$wp_id]}.post_id = $post->ID
 			");
 
 		return $categories;
@@ -1367,15 +1346,15 @@ function get_the_category() {
 }
 
 function get_category_link($echo = false, $category_id, $category_nicename) {
-	global $wpdb, $tablecategories, $post, $querystring_start, $querystring_equal, $siteurl, $blogfilename;
+	global $wpdb,  $post, $siteurl ,$wp_id;
 	$cat_ID = $category_id;
 	$permalink_structure = get_settings('permalink_structure');
 
 	if ('' == $permalink_structure) {
-		$file = "$siteurl/$blogfilename";
-		$link = $file.$querystring_start.'cat'.$querystring_equal.$cat_ID;
+		$file = "$siteurl/index.php";
+		$link = $file.'?cat='.$cat_ID;
 	} else {
-		if ('' == $category_nicename) $category_nicename = $wpdb->get_var("SELECT category_nicename FROM $tablecategories WHERE cat_ID = $category_id");
+		if ('' == $category_nicename) $category_nicename = $wpdb->get_var("SELECT category_nicename FROM {$wpdb->categories[$wp_id]} WHERE cat_ID = $category_id");
 		// Get any static stuff from the front
 		$front = substr($permalink_structure, 0, strpos($permalink_structure, '%'));
 		$link = $siteurl . $front . 'category/' . $category_nicename . '/';
@@ -1426,9 +1405,9 @@ function the_category_unicode() {
 
 
 function get_the_category_by_ID($cat_ID) {
-	global $tablecategories, $cache_categories, $use_cache, $wpdb;
+	global  $cache_categories, $use_cache, $wpdb ,$wp_id;
 	if ((!$cache_categories[$cat_ID]) OR (!$use_cache)) {
-		$cat_name = $wpdb->get_var("SELECT cat_name FROM $tablecategories WHERE cat_ID = '$cat_ID'");
+		$cat_name = $wpdb->get_var("SELECT cat_name FROM {$wpdb->categories[$wp_id]} WHERE cat_ID = '$cat_ID'");
 		$cache_categories[$cat_ID] = $cat_name;
 	} else {
 		$cat_name = $cache_categories[$cat_ID];
@@ -1456,9 +1435,9 @@ function the_category_head($before='', $after='') {
 }
 
 function category_description($category = 0) {
-	global $cat, $wpdb, $tablecategories;
+	global $cat, $wpdb, $wp_id;
 	if (!$category) $category = $cat;
-	$category_description = $wpdb->get_var("SELECT category_description FROM $tablecategories WHERE cat_ID = $category");
+	$category_description = $wpdb->get_var("SELECT category_description FROM {$wpdb->categories[$wp_id]} WHERE cat_ID = $category");
 	$category_description = apply_filters('category_description', $category_description);
 	return $category_description;
 }
@@ -1466,14 +1445,14 @@ function category_description($category = 0) {
 // out of the WordPress loop
 function dropdown_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_order = 'asc',
                        $optiondates = 0, $optioncount = 0, $hide_empty = 1) {
-    global $cat, $tablecategories, $tableposts, $tablepost2cat, $wpdb;
+    global $cat,    $wpdb ,$wp_id;
     $sort_column = 'cat_'.$sort_column;
 
     $query  = "SELECT cat_ID, cat_name, category_nicename,category_parent,
-        COUNT($tablepost2cat.post_id) AS cat_count,
+        COUNT({$wpdb->post2cat[$wp_id]}.post_id) AS cat_count,
         DAYOFMONTH(MAX(post_date)) AS lastday, MONTH(MAX(post_date)) AS lastmonth
-        FROM $tablecategories LEFT JOIN $tablepost2cat ON (cat_ID = category_id)
-        LEFT JOIN $tableposts ON (ID = post_id)
+        FROM {$wpdb->categories[$wp_id]} LEFT JOIN {$wpdb->post2cat[$wp_id]} ON (cat_ID = category_id)
+        LEFT JOIN {$wpdb->posts[$wp_id]} ON (ID = post_id)
         WHERE cat_ID > 0";
     $query .= " GROUP BY cat_ID ";
     if (intval($hide_empty) == 1) {
@@ -1507,18 +1486,17 @@ function dropdown_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_
 
 // out of the WordPress loop
 function list_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_order = 'asc', $file = '', $list = true, $optiondates = 0, $optioncount = 0, $hide_empty = 1, $use_desc_for_title = 0) {
-	global $tablecategories, $tableposts, $tablepost2cat, $wpdb;
-	global $pagenow, $siteurl, $blogfilename;
-	global $querystring_start, $querystring_equal, $querystring_separator;
+	global    $wpdb ,$wp_id;
+	global $pagenow, $siteurl;
 	// Optiondates does not currently work
     if ('' == $file) {
-        $file = "$siteurl/$blogfilename";
+        $file = "$siteurl/index.php";
     }
 	$sort_column = 'cat_'.$sort_column;
 
     $query  = "
 		SELECT cat_ID, cat_name, category_nicename, category_description
-		FROM $tablecategories
+		FROM {$wpdb->categories[$wp_id]}
 		WHERE cat_ID > 0
 		ORDER BY $sort_column $sort_order";
 
@@ -1526,9 +1504,9 @@ function list_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_orde
 
     if (intval($hide_empty) == 1) {
 		$cat_counts = $wpdb->get_results("	SELECT cat_ID,
-		COUNT($tablepost2cat.post_id) AS cat_count
-		FROM $tablecategories LEFT JOIN $tablepost2cat ON (cat_ID = category_id)
-		LEFT JOIN $tableposts ON (ID = post_id)
+		COUNT({$wpdb->post2cat[$wp_id]}.post_id) AS cat_count
+		FROM {$wpdb->categories[$wp_id]} LEFT JOIN {$wpdb->post2cat[$wp_id]} ON (cat_ID = category_id)
+		LEFT JOIN {$wpdb->posts[$wp_id]} ON (ID = post_id)
 		GROUP BY category_id");
 		foreach ($cat_counts as $cat_count) {
 			$category_posts["$cat_count->cat_ID"] = $cat_count->cat_count;
@@ -1591,8 +1569,8 @@ function list_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_orde
 // generic comments/trackbacks/pingbacks numbering
 
 function comments_number($zero='No Comments', $one='1 Comment', $more='% Comments', $number='') {
-	global $id, $comment, $tablecomments, $wpdb;
-	if ('' == $number) $number = $wpdb->get_var("SELECT COUNT(*) FROM $tablecomments WHERE comment_post_ID = $id AND comment_approved = '1'");
+	global $id, $comment,  $wpdb ,$wp_id;
+	if ('' == $number) $number = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $id AND comment_approved = '1'");
 	if ($number == 0) {
 		$blah = $zero;
 	} elseif ($number == 1) {
@@ -1620,11 +1598,11 @@ function comments_popup_script($width=400, $height=400, $file='wp-comments-popup
 }
 
 function comments_popup_link($zero='No Comments', $one='1 Comment', $more='% Comments', $CSSclass='', $none='Comments Off') {
-	global $id, $wpcommentspopupfile, $wpcommentsjavascript, $post, $wpdb, $tablecomments, $HTTP_COOKIE_VARS, $cookiehash;
-	global $querystring_start, $querystring_equal, $querystring_separator, $siteurl;
+	global $id, $wpcommentspopupfile, $wpcommentsjavascript, $post, $wpdb,  $HTTP_COOKIE_VARS, $cookiehash ,$wp_id;
+	global $siteurl;
 	global $comment_count_cache;
 	if ('' == $comment_count_cache["$id"]) {
-		$number = $wpdb->get_var("SELECT COUNT(comment_ID) FROM $tablecomments WHERE comment_post_ID = $id AND comment_approved = '1';");
+		$number = $wpdb->get_var("SELECT COUNT(comment_ID) FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $id AND comment_approved = '1';");
 	} else {
 		$number = $comment_count_cache["$id"];
 	}
@@ -1640,7 +1618,7 @@ function comments_popup_link($zero='No Comments', $one='1 Comment', $more='% Com
         }
         echo '<a href="';
         if ($wpcommentsjavascript) {
-            echo $siteurl.'/'.$wpcommentspopupfile.$querystring_start.'p'.$querystring_equal.$id.$querystring_separator.'c'.$querystring_equal.'1';
+            echo $siteurl.'/'.$wpcommentspopupfile.'?p='.$id.'&amp;c=1';
             //echo get_permalink();
             echo '" onclick="wpopen(this.href); return false"';
         } else {
@@ -1796,8 +1774,8 @@ function comment_time($d='') {
 
 function comments_rss_link($link_text='Comments RSS', $commentsrssfilename = 'wp-commentsrss2.php') {
 	global $id;
-	global $querystring_start, $querystring_equal, $querystring_separator, $siteurl;
-	$url = $siteurl.'/'.$commentsrssfilename.$querystring_start.'p'.$querystring_equal.$id;
+	global $siteurl;
+	$url = $siteurl.'/'.$commentsrssfilename.'?p='.$id;
 	$url = '<a href="'.$url.'">'.$link_text.'</a>';
 	echo $url;
 }
@@ -1892,7 +1870,7 @@ function permalink_anchor($mode = 'id') {
 }
 
 function permalink_link($file='', $mode = 'id') {
-	global $post, $pagenow, $cacheweekly, $wpdb;
+	global $post, $pagenow, $cacheweekly, $wpdb, $wp_id;
 	$file = ($file=='') ? $pagenow : $file;
 	switch(strtolower($mode)) {
 		case 'title':

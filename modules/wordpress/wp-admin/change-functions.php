@@ -69,7 +69,7 @@ function maybe_add_column($table_name, $column_name, $create_ddl) {
 }
 
 function upgrade_103() {
-  global $wpdb, $tableusers, $tablecomments, $tableposts, $tableoptiongroups, $tableoptiongroup_options, $tableoptions, $tablepostmeta;
+  global $wpdb;
 
 	$query = "INSERT INTO $tableoptiongroups (group_id,  group_name, group_desc) VALUES (1, 'Other Options', '_LANG_INST_BASE_HELP1')"; $q = $wpdb->query($query);
 	$query = "INSERT INTO $tableoptiongroups (group_id,  group_name, group_desc) VALUES (2, 'General blog settings', '_LANG_INST_BASE_HELP2')"; $q = $wpdb->query($query);

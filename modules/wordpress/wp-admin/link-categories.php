@@ -71,7 +71,7 @@ switch ($action) {
       if ($list_limit == '')
           $list_limit = -1;
 
-      $wpdb->query("INSERT INTO $tablelinkcategories (cat_id, cat_name, auto_toggle, show_images, show_description, \n" .
+      $wpdb->query("INSERT INTO {$wpdb->linkcategories[$wp_id]} (cat_id, cat_name, auto_toggle, show_images, show_description, \n" .
              " show_rating, show_updated, sort_order, sort_desc, text_before_link, text_after_link, text_after_all, list_limit) \n" .
              " VALUES ('0', '$cat_name', '$auto_toggle', '$show_images', '$show_description', \n" .
              " '$show_rating', '$show_updated', '$sort_order', '$sort_desc', '$text_before_link', '$text_after_link', \n" .
@@ -95,8 +95,8 @@ switch ($action) {
     if ($user_level < get_settings('links_minadminlevel'))
     die ("Cheatin' uh ?");
 
-    $wpdb->query("DELETE FROM $tablelinkcategories WHERE cat_id='$cat_id'");
-    $wpdb->query("UPDATE $tablelinks SET link_category=1 WHERE link_category='$cat_id'");
+    $wpdb->query("DELETE FROM {$wpdb->linkcategories[$wp_id]} WHERE cat_id='$cat_id'");
+    $wpdb->query("UPDATE {$wpdb->links[$wp_id]} SET link_category=1 WHERE link_category='$cat_id'");
 
     header('Location: link-categories.php');
     break;
@@ -107,7 +107,7 @@ switch ($action) {
     $cat_id = $HTTP_GET_VARS['cat_id'];
     $row = $wpdb->get_row("SELECT cat_id, cat_name, auto_toggle, show_images, show_description, "
          . " show_rating, show_updated, sort_order, sort_desc, text_before_link, text_after_link, "
-         . " text_after_all, list_limit FROM $tablelinkcategories WHERE cat_id=$cat_id");
+         . " text_after_all, list_limit FROM {$wpdb->linkcategories[$wp_id]} WHERE cat_id=$cat_id");
     if ($row) {
         if ($row->list_limit == -1) {
             $row->list_limit = '';
@@ -254,7 +254,7 @@ switch ($action) {
     if ($list_limit == '')
         $list_limit = -1;
 
-    $wpdb->query("UPDATE $tablelinkcategories set
+    $wpdb->query("UPDATE {$wpdb->linkcategories[$wp_id]} set
             cat_name='$cat_name',
             auto_toggle='$auto_toggle',
             show_images='$show_images',
@@ -280,7 +280,7 @@ switch ($action) {
     $standalone=0;
     include_once ("./admin-header.php");
     if ($user_level < get_settings('links_minadminlevel')) {
-      die("You have no right to edit the link categories for this blog.<br>Ask for a promotion to your <a href=\"mailto:$admin_email\">blog admin</a> :)");
+      die("You have no right to edit the link categories for this blog.<br>Ask for a promotion to your <a href=\"mailto:".get_settings('admin_email')."\">blog admin</a> :)");
     }
 ?>
 <ul id="adminmenu2">
@@ -318,7 +318,7 @@ switch ($action) {
 <?php
 $results = $wpdb->get_results("SELECT cat_id, cat_name, auto_toggle, show_images, show_description, "
          . " show_rating, show_updated, sort_order, sort_desc, text_before_link, text_after_link, "
-         . " text_after_all, list_limit FROM $tablelinkcategories ORDER BY cat_id");
+         . " text_after_all, list_limit FROM {$wpdb->linkcategories[$wp_id]} ORDER BY cat_id");
 foreach ($results as $row) {
     if ($row->list_limit == -1) {
         $row->list_limit = 'none';

@@ -1,6 +1,7 @@
 <?php
 
 # fix for mozBlog and other cases where '<?xml' isn't on the very first line
+$HTTP_RAW_POST_DATA = $GLOBALS['HTTP_RAW_POST_DATA'];
 $HTTP_RAW_POST_DATA = trim($HTTP_RAW_POST_DATA);
 
 include('wp-config.php');
@@ -48,7 +49,7 @@ logIO("I",$HTTP_RAW_POST_DATA);
  * generic function for inserting data into the posts table.
  */
 function wp_insert_post($postarr = array()) {
-	global $wpdb, $tableposts, $blog_charset;
+	global $wpdb, $wp_id, $blog_charset;
 
 	// export array as variables
 	extract($postarr);
@@ -64,7 +65,7 @@ function wp_insert_post($postarr = array()) {
 	
 	$post_cat = $post_category[0];
 	
-	$sql = "INSERT INTO $tableposts 
+	$sql = "INSERT INTO {$wpdb->posts[$wp_id]} 
 		(post_author, post_date, post_content, post_title, post_excerpt, post_category, post_status) 
 		VALUES ('$post_author','$post_date','$post_content','$post_title', '$post_excerpt','$post_cat', '$post_status')";
 
@@ -78,30 +79,30 @@ function wp_insert_post($postarr = array()) {
 }
 
 function wp_get_single_post($postid = 0, $mode = OBJECT) {
-	global $wpdb, $tableposts;
+	global $wpdb, $wp_id;
 
-	$sql = "SELECT * FROM $tableposts WHERE ID=$postid";
+	$sql = "SELECT * FROM {$wpdb->posts[$wp_id]} WHERE ID=$postid";
 	$result = $wpdb->get_row($sql, $mode);
 
 	return $result;
 }
 
 function wp_get_recent_posts($num = 10) {
-	global $wpdb, $tableposts;
+	global $wpdb, $wp_id;
 
 	// Set the limit clause, if we got a limit
 	if ($num) {
 		$limit = "LIMIT $num";
 	}
 
-	$sql = "SELECT * FROM $tableposts ORDER BY post_date DESC $limit";
+	$sql = "SELECT * FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC $limit";
 	$result = $wpdb->get_results($sql,ARRAY_A);
 
 	return $result?$result:array();
 }
 
 function wp_update_post($postarr = array()) {
-	global $wpdb, $tableposts, $blog_charset;
+	global $wpdb, $wp_id, $blog_charset;
 
 	// First get all of the original fields
 	extract(wp_get_single_post($postarr['ID']));	
@@ -119,7 +120,7 @@ function wp_update_post($postarr = array()) {
 	$post_excerpt = $wpdb->escape($post_excerpt);
 
 	
-	$sql = "UPDATE $tableposts 
+	$sql = "UPDATE {$wpdb->posts[$wp_id]} 
 		SET post_content = '$post_content',
 		post_title = '$post_title',
 		post_excerpt = '$post_excerpt',
@@ -140,9 +141,9 @@ function wp_update_post($postarr = array()) {
 }
 
 function wp_get_post_cats($blogid = '1', $post_ID = 0) {
-	global $wpdb, $tablepost2cat;
+	global $wpdb, $wp_id;
 	
-	$sql = "SELECT category_id FROM $tablepost2cat WHERE post_id = $post_ID ORDER BY category_id";
+	$sql = "SELECT category_id FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID ORDER BY category_id";
 	logIO("O",$sql);
 	$result = $wpdb->get_col($sql);
 
@@ -150,7 +151,7 @@ function wp_get_post_cats($blogid = '1', $post_ID = 0) {
 }
 
 function wp_set_post_cats($blogid = '1', $post_ID = 0, $post_categories = array()) {
-	global $wpdb, $tablepost2cat;
+	global $wpdb, $wp_id;
 	// If $post_categories isn't already an array, make it one:
 	if (!is_array($post_categories)) {
 		if (!$post_categories) {
@@ -160,30 +161,30 @@ function wp_set_post_cats($blogid = '1', $post_ID = 0, $post_categories = array(
 	}
 
 	// First the old categories
-	$old_categories = $wpdb->get_col("SELECT category_id FROM $tablepost2cat WHERE post_id = $post_ID");
+	$old_categories = $wpdb->get_col("SELECT category_id FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID");
 
 	// Delete any?
 	foreach ($old_categories as $old_cat) {
 		if (!in_array($old_cat, $post_categories)) // If a category was there before but isn't now
-			$wpdb->query("DELETE FROM $tablepost2cat WHERE category_id = $old_cat AND post_id = $post_ID LIMIT 1");
+			$wpdb->query("DELETE FROM {$wpdb->post2cat[$wp_id]} WHERE category_id = $old_cat AND post_id = $post_ID LIMIT 1");
 logio("O","deleting post/cat: $post_ID, $old_cat");
 	}
 
 	// Add any?
 	foreach ($post_categories as $new_cat) {
 		if (!in_array($new_cat, $old_categories))
-			$wpdb->query("INSERT INTO $tablepost2cat (post_id, category_id) VALUES ($post_ID, $new_cat)");
+			$wpdb->query("INSERT INTO {$wpdb->post2cat[$wp_id]} (post_id, category_id) VALUES ($post_ID, $new_cat)");
 logio("O","adding post/cat: $post_ID, $new_cat");
 	}
 }
 
 function wp_delete_post($postid = 0) {
-	global $wpdb, $tableposts, $tablepost2cat;
+	global $wpdb, $wp_id;
 	
-	$sql = "DELETE FROM $tablepost2cat WHERE post_id = $postid";
+	$sql = "DELETE FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $postid";
 	$wpdb->query($sql);
 		
-	$sql = "DELETE FROM $tableposts WHERE ID = $postid";
+	$sql = "DELETE FROM {$wpdb->posts[$wp_id]} WHERE ID = $postid";
 	
 	$wpdb->query($sql);
 
@@ -198,11 +199,10 @@ function wp_delete_post($postid = 0) {
 
 // get permalink from post ID
 function post_permalink($post_ID=0, $mode = 'id') {
-    global $wpdb;
-	global $tableposts;
-	global $siteurl, $blogfilename, $querystring_start, $querystring_equal, $querystring_separator;
+    global $wpdb, $wp_id;
+	global $siteurl;
 
-	$blog_URL = $siteurl.'/'.$blogfilename;
+	$blog_URL = $siteurl.'/index.php';
 
 	$postdata = get_postdata($post_ID);
 
@@ -225,10 +225,10 @@ function post_permalink($post_ID=0, $mode = 'id') {
 		$archive_mode = get_settings('archive_mode');
 		switch($archive_mode) {
 			case 'daily':
-				$post_URL = $blog_URL.$querystring_start.'m'.$querystring_equal.substr($postdata['Date'],0,4).substr($postdata['Date'],5,2).substr($postdata['Date'],8,2).'#'.$title;
+				$post_URL = $blog_URL.'?m='.substr($postdata['Date'],0,4).substr($postdata['Date'],5,2).substr($postdata['Date'],8,2).'#'.$title;
 				break;
 			case 'monthly':
-				$post_URL = $blog_URL.$querystring_start.'m'.$querystring_equal.substr($postdata['Date'],0,4).substr($postdata['Date'],5,2).'#'.$title;
+				$post_URL = $blog_URL.'?m='.substr($postdata['Date'],0,4).substr($postdata['Date'],5,2).'#'.$title;
 				break;
 			case 'weekly':
 				if((!isset($cacheweekly)) || (empty($cacheweekly[$postdata['Date']]))) {
@@ -236,10 +236,10 @@ function post_permalink($post_ID=0, $mode = 'id') {
 	                    $row = $wpdb->get_row($sql);
 					$cacheweekly[$postdata['Date']] = $row->wk;
 				}
-				$post_URL = $blog_URL.$querystring_start.'m'.$querystring_equal.substr($postdata['Date'],0,4).$querystring_separator.'w'.$querystring_equal.$cacheweekly[$postdata['Date']].'#'.$title;
+				$post_URL = $blog_URL.'?m='.substr($postdata['Date'],0,4).'&amp;w='.$cacheweekly[$postdata['Date']].'#'.$title;
 				break;
 			case 'postbypost':
-				$post_URL = $blog_URL.$querystring_start.'p'.$querystring_equal.$post_ID;
+				$post_URL = $blog_URL.'?p='.$post_ID;
 				break;
 		}
 	} 
@@ -249,19 +249,19 @@ function post_permalink($post_ID=0, $mode = 'id') {
 
 // Get the name of a category from its ID
 function get_cat_name($cat_id) {
-	global $wpdb,$tablecategories;
+	global $wpdb, $wp_id;
 	
 	$cat_id -= 0; 	// force numeric
-	$name = $wpdb->get_var("SELECT cat_name FROM $tablecategories WHERE cat_ID=$cat_id");
+	$name = $wpdb->get_var("SELECT cat_name FROM {$wpdb->categories[$wp_id]} WHERE cat_ID=$cat_id");
 	
 	return $name;
 }
 
 // Get the ID of a category from its name
 function get_cat_ID($cat_name='General') {
-	global $wpdb,$tablecategories;
+	global $wpdb, $wp_id;
 	
-	$cid = $wpdb->get_var("SELECT cat_ID FROM $tablecategories WHERE cat_name='$cat_name'");
+	$cid = $wpdb->get_var("SELECT cat_ID FROM {$wpdb->categories[$wp_id]} WHERE cat_name='$cat_name'");
 
 	return $cid?$cid:1;	// default to cat 1
 }
@@ -359,10 +359,10 @@ $wpnewpost_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcString, $xmlrpcS
 $wpnewpost_doc='Adds a post, blogger-api like, +title +category +postdate';
 
 function b2newpost($m) {
-    global $wpdb;
+    global $wpdb, $wp_id;
 
 	global $xmlrpcerruser; // import user errcode value
-	global $blog_ID,$cache_userdata,$tableposts,$use_rss,$use_weblogsping,$post_autobr;
+	global $blog_ID,$cache_userdata,$use_rss,$post_autobr;
 	global $post_default_title,$post_default_category;
 	global $cafelogID, $sleep_after_edit;
 	$err="";
@@ -448,8 +448,8 @@ $wpgetcategories_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcString, $x
 $wpgetcategories_doc='given a blogID, gives a struct that list categories in that blog, using categoryID and categoryName. categoryName is there so the user would choose a category name from the client, rather than just a number. however, when using b2.newPost, only the category ID number should be sent.';
 
 function b2getcategories($m) {
-    global $wpdb;
-	global $xmlrpcerruser,$tablecategories;
+    global $wpdb, $wp_id;
+	global $xmlrpcerruser;
 
 
 	$blogid=$m->getParam(0);
@@ -466,7 +466,7 @@ function b2getcategories($m) {
 
 	if (user_pass_ok($username,$password)) {
 
-		$results = $wpdb->get_results("SELECT * FROM $tablecategories ORDER BY cat_ID ASC");
+		$results = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]} ORDER BY cat_ID ASC");
 	if (!$results) die("Error getting data");
 		$i = 0;
 	foreach($results as $row) {
@@ -503,9 +503,9 @@ $wp_getPostURL_sig = array(array($xmlrpcString, $xmlrpcString, $xmlrpcString, $x
 $wp_getPostURL_doc = 'Given a blog ID, username, password, and a post ID, returns the URL to that post.';
 
 function b2_getPostURL($m) {
-    global $wpdb;
-	global $xmlrpcerruser, $tableposts;
-	global $siteurl, $blogfilename, $querystring_start, $querystring_equal, $querystring_separator;
+    global $wpdb, $wp_id;
+	global $xmlrpcerruser;
+	global $siteurl;
 
 
 	// ideally, this would be used:
@@ -532,7 +532,7 @@ function b2_getPostURL($m) {
 
 	if (user_pass_ok($username,$password)) {
 
-		$blog_URL = $siteurl.'/'.$blogfilename;
+		$blog_URL = $siteurl.'/index.php';
 
 		$postdata = get_postdata($post_ID);
 
@@ -544,10 +544,10 @@ function b2_getPostURL($m) {
 			$archive_mode = get_settings('archive_mode');
 			switch($archive_mode) {
 				case 'daily':
-					$post_URL = $blog_URL.$querystring_start.'m'.$querystring_equal.substr($postdata['Date'],0,4).substr($postdata['Date'],5,2).substr($postdata['Date'],8,2).'#'.$title;
+					$post_URL = $blog_URL.'&m='.substr($postdata['Date'],0,4).substr($postdata['Date'],5,2).substr($postdata['Date'],8,2).'#'.$title;
 					break;
 				case 'monthly':
-					$post_URL = $blog_URL.$querystring_start.'m'.$querystring_equal.substr($postdata['Date'],0,4).substr($postdata['Date'],5,2).'#'.$title;
+					$post_URL = $blog_URL.'&m='.substr($postdata['Date'],0,4).substr($postdata['Date'],5,2).'#'.$title;
 					break;
 				case 'weekly':
 					if((!isset($cacheweekly)) || (empty($cacheweekly[$postdata['Date']]))) {
@@ -555,10 +555,10 @@ function b2_getPostURL($m) {
 			$row = $wpdb->get_row($sql);
 						$cacheweekly[$postdata['Date']] = $row->wk;
 					}
-					$post_URL = $blog_URL.$querystring_start.'m'.$querystring_equal.substr($postdata['Date'],0,4).$querystring_separator.'w'.$querystring_equal.$cacheweekly[$postdata['Date']].'#'.$title;
+					$post_URL = $blog_URL.'&m='.substr($postdata['Date'],0,4).'&amp;w='.$cacheweekly[$postdata['Date']].'#'.$title;
 					break;
 				case 'postbypost':
-					$post_URL = $blog_URL.$querystring_start.'p'.$querystring_equal.$post_ID;
+					$post_URL = $blog_URL.'?p='.$post_ID;
 					break;
 			}
 		} else {
@@ -600,10 +600,10 @@ $bloggernewpost_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcString, $xm
 $bloggernewpost_doc='Adds a post, blogger-api like';
 
 function bloggernewpost($m) {
-    global $wpdb;
+    global $wpdb, $wp_id;
 
 	global $xmlrpcerruser; // import user errcode value
-	global $blog_ID,$cache_userdata,$tableposts,$use_rss,$use_weblogsping,$post_autobr;
+	global $blog_ID,$cache_userdata,$use_rss,$post_autobr;
 	global $post_default_title,$post_default_category;
 	global $cafelogID, $sleep_after_edit;
 	$err="";
@@ -678,10 +678,10 @@ $bloggereditpost_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcString, $x
 $bloggereditpost_doc='Edits a post, blogger-api like';
 
 function bloggereditpost($m) {
-    global $wpdb;
+    global $wpdb, $wp_id;
 
 	global $xmlrpcerruser; // import user errcode value
-	global $blog_ID,$cache_userdata,$tableposts,$use_rss,$use_weblogsping,$post_autobr;
+	global $blog_ID,$cache_userdata,$use_rss,$post_autobr;
 	global $post_default_title,$post_default_category, $sleep_after_edit;
 	$err="";
 
@@ -768,10 +768,10 @@ $bloggerdeletepost_sig=array(array($xmlrpcBoolean, $xmlrpcString, $xmlrpcString,
 $bloggerdeletepost_doc='Deletes a post, blogger-api like';
 
 function bloggerdeletepost($m) {
-    global $wpdb;
+    global $wpdb, $wp_id;
 
 	global $xmlrpcerruser; // import user errcode value
-	global $blog_ID,$cache_userdata,$tableposts,$use_rss,$use_weblogsping,$post_autobr;
+	global $blog_ID,$cache_userdata,$use_rss,$post_autobr;
 	global $post_default_title,$post_default_category, $sleep_after_edit;
 	$err="";
 
@@ -786,7 +786,7 @@ function bloggerdeletepost($m) {
 	$password = $password->scalarval();
 	$newcontent = $newcontent->scalarval();
 
-	$sql = "SELECT * FROM $tableposts WHERE ID = '$post_ID'";
+	$sql = "SELECT * FROM {$wpdb->posts[$wp_id]} WHERE ID = '$post_ID'";
     $result = $wpdb->get_results($sql);
 	if (!$result)
 		return new xmlrpcresp(0, $xmlrpcerruser+2, // user error 2
@@ -844,26 +844,25 @@ $bloggergetusersblogs_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcStrin
 $bloggergetusersblogs_doc='returns the user\'s blogs - this is a dummy function, just so that BlogBuddy and other blogs-retrieving apps work';
 
 function bloggergetusersblogs($m) {
-    global $wpdb;
+    global $wpdb, $wp_id;
 	// this function will have a real purpose with CafeLog's multiple blogs capability
 
-	global $xmlrpcerruser,$siteurl,$blogfilename,$blogname;
-	global $tableusers;
+	global $xmlrpcerruser,$siteurl;
 
 	$user_login = $m->getParam(1);
 	$user_login = $user_login->scalarval();
 
 
-	$sql = "SELECT user_level FROM $tableusers WHERE user_login = '$user_login' AND user_level > 3";
+	$sql = "SELECT user_level FROM {$wpdb->users[$wp_id]} WHERE user_login = '$user_login' AND user_level > 3";
     $result = $wpdb->get_results($sql);
 
 
 	$is_admin = $wpdb->num_rows;
 
 	$struct = new xmlrpcval(array("isAdmin" => new xmlrpcval($is_admin,"boolean"),
-									"url" => new xmlrpcval($siteurl."/".$blogfilename),
+									"url" => new xmlrpcval($siteurl."/index.php"),
 									"blogid" => new xmlrpcval("1"),
-									"blogName" => new xmlrpcval(mb_conv($blogname,"UTF-8","auto"))
+									"blogName" => new xmlrpcval(mb_conv(get_settings('blogname'),"UTF-8","auto"))
 									),"struct");
     $resp = new xmlrpcval(array($struct), "array");
 
@@ -879,7 +878,7 @@ $bloggergetuserinfo_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcString,
 $bloggergetuserinfo_doc='gives the info about a user';
 
 function bloggergetuserinfo($m) {
-	global $xmlrpcerruser,$tableusers;
+	global $xmlrpcerruser;
 
 
 	$username=$m->getParam(1);
@@ -916,7 +915,7 @@ $bloggergetpost_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcString, $xm
 $bloggergetpost_doc='fetches a post, blogger-api like';
 
 function bloggergetpost($m) {
-	global $xmlrpcerruser,$tableposts;
+	global $xmlrpcerruser;
 
 
 	$post_ID=$m->getParam(1);
@@ -968,8 +967,8 @@ $bloggergetrecentposts_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcStri
 $bloggergetrecentposts_doc='fetches X most recent posts, blogger-api like';
 
 function bloggergetrecentposts($m) {
-    global $wpdb;
-	global $xmlrpcerruser,$tableposts;
+    global $wpdb, $wp_id;
+	global $xmlrpcerruser;
 
 	error_reporting(0); // there is a bug in phpxmlrpc that makes it say there are errors while the output is actually valid, so let's disable errors for that function
 
@@ -993,7 +992,7 @@ function bloggergetrecentposts($m) {
 
 	if (user_pass_ok($username,$password)) {
 
-		$sql = "SELECT * FROM $tableposts ORDER BY post_date DESC".$limit;
+		$sql = "SELECT * FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC".$limit;
 		$result = $wpdb->get_results($sql);
 		if (!$result)
 			return new xmlrpcresp(0, $xmlrpcerruser+2, // user error 2
@@ -1087,7 +1086,7 @@ $bloggergettemplate_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcString,
 $bloggergettemplate_doc='returns the default template file\'s code';
 
 function bloggergettemplate($m) {
-	global $xmlrpcerruser,$tableusers,$blogfilename;
+	global $xmlrpcerruser;
 
 	error_reporting(0); // there is a bug in phpxmlrpc that makes it say there are errors while the output is actually valid, so let's disable errors for that function
 
@@ -1113,13 +1112,9 @@ function bloggergettemplate($m) {
 	if (user_pass_ok($username,$password)) {
 
 	if ($templateType == "main") {
-		if ($blogfilename != "") {
-			$file = $blogfilename;
-		} else {
-			$file = "wp.php";
-		}
+		$file = "index.php";
 	} elseif ($templateType == "archiveIndex") {
-		$file = "wp.php";
+		$file = "index.php";
 	}
 
 	$f = fopen($file,"r");
@@ -1147,7 +1142,7 @@ $bloggersettemplate_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcString,
 $bloggersettemplate_doc='saves the default template file\'s code';
 
 function bloggersettemplate($m) {
-	global $xmlrpcerruser,$tableusers,$blogfilename;
+	global $xmlrpcerruser;
 
 	error_reporting(0); // there is a bug in phpxmlrpc that makes it say there are errors while the output is actually valid, so let's disable errors for that function
 
@@ -1176,13 +1171,9 @@ function bloggersettemplate($m) {
 	if (user_pass_ok($username,$password)) {
 
 	if ($templateType == "main") {
-		if ($blogfilename != "") {
-			$file = $blogfilename;
-		} else {
-			$file = "wp.php";
-		}
+		$file = "index.php";
 	} elseif ($templateType == "archiveIndex") {
-		$file = "wp.php";
+		$file = "index.php";
 	}
 
 	$f = fopen($file,"w+");
@@ -1217,8 +1208,8 @@ $mwnewpost_doc = 'Add a post, MetaWeblog API-style';
 
 function mwnewpost($params) {
 	global $xmlrpcerruser;
-	global $blog_ID, $cache_userdata,$tableposts;
-	global $use_rss,$use_weblogsping,$post_autobr,$post_default_title;
+	global $blog_ID, $cache_userdata;
+	global $use_rss,$post_autobr,$post_default_title;
 	global $post_default_category,$cafelogID,$sleep_after_edit;
 
 	$xblogid = $params->getParam(0);
@@ -1565,18 +1556,17 @@ $mwgetcats_sig =  array(array($xmlrpcArray,$xmlrpcString,$xmlrpcString,$xmlrpcSt
 $mwgetcats_doc = 'Get a post, MetaWeblog API-style';
 
 function mwgetcats ($params) {	// ($blogid, $user, $pass) 
-	global $xmlrpcerruser,$wpdb,$tablecategories;
-	global $querystring_start, $querystring_equal, $querystring_separator;
-	global $siteurl,$blogfilename;
+	global $xmlrpcerruser,$wpdb, $wp_id;
+	global $siteurl;
 	
-	$blog_URL = $siteurl . '/' . $blogfilename;
+	$blog_URL = $siteurl . '/index.php';
 //	logIO("O",$blog_URL);
-	if ($cats = $wpdb->get_results("SELECT cat_ID,cat_name FROM $tablecategories",ARRAY_A)) {
+	if ($cats = $wpdb->get_results("SELECT cat_ID,cat_name FROM {$wpdb->categories[$wp_id]}",ARRAY_A)) {
 		foreach ($cats as $cat) {
 			$struct['categoryId'] = $cat['cat_ID'];
 			$struct['description'] = mb_conv($cat['cat_name'],"UTF-8","EUC-JP");
 			$struct['categoryName'] = mb_conv($cat['cat_name'],"UTF-8","EUC-JP");
-			$struct['htmlUrl'] = htmlspecialchars($blog_URL . $querystring_start . 'cat' . $querystring_equal . $cat['cat_ID']);
+			$struct['htmlUrl'] = htmlspecialchars($blog_URL . '?cat='. $cat['cat_ID']);
 			$struct['rssUrl'] = ''; // will probably hack alexking's stuff in here
 			
 			$arr[] = xmlrpc_encode1($struct);
@@ -1756,7 +1746,7 @@ $mt_getRecentPostTitles_sig = array(array($xmlrpcArray,$xmlrpcString,$xmlrpcStri
 $mt_getRecentPostTitles_doc = "Returns a bandwidth-friendly list of the most recent posts in the system.";
 
 function mt_getRecentPostTitles($params) {
-	global $xmlrpcusererr, $wpdb, $tableposts;
+	global $xmlrpcusererr, $wpdb, $wp_id;
 
 	$xblogid = $params->getParam(0);
 	$xuser = $params->getParam(1);
@@ -1769,7 +1759,7 @@ function mt_getRecentPostTitles($params) {
 	$numposts = intval($xnumposts->scalarval());
 
 	if (user_pass_ok($username,$password)) {
-		$sql = "SELECT post_date, post_author, ID, post_title FROM $tableposts ORDER BY post_date DESC LIMIT $numposts";
+		$sql = "SELECT post_date, post_author, ID, post_title FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC LIMIT $numposts";
 		$posts = $wpdb->get_results($sql,ARRAY_A);
 		$result = array();
 		foreach($posts as $post) {
@@ -1898,12 +1888,11 @@ $pingback_ping_doc = 'Gets a pingback and registers it as a comment prefixed by 
 
 function pingback_ping($m) { // original code by Mort
 	// (http://mort.mine.nu:8080)
-	global $tableposts,$tablecomments, $comments_notify, $wpdb; 
-	global $siteurl, $blogfilename,$wp_version, $use_pingback; 
-	global $wpdb;
+	global   $wpdb, $wp_id; 
+	global $siteurl,$wp_version; 
 
 	    
-	if (!$use_pingback) {
+	if (!get_settings('use_pingback')) {
 		return new xmlrpcresp(new xmlrpcval('Sorry, this weblog does not allow you to pingback its posts.'));
 	}
 
@@ -1968,7 +1957,7 @@ function pingback_ping($m) { // original code by Mort
 			} elseif (is_string($urltest['fragment'])) {
 				// ...or a string #title, a little more complicated
 				$title = preg_replace('/[^a-zA-Z0-9]/', '.', $urltest['fragment']);
-				$sql = "SELECT ID FROM $tableposts WHERE post_title RLIKE '$title'";
+				$sql = "SELECT ID FROM {$wpdb->posts[$wp_id]} WHERE post_title RLIKE '$title'";
 				$post_ID = $wpdb->get_var($sql) or die("Query: $sql\n\nError: ");
 				$way = 'from the fragment (title)';
 			}
@@ -1982,7 +1971,7 @@ function pingback_ping($m) { // original code by Mort
 
 		//debug_fwrite($log, "Found post ID $way: $post_ID\n");
 
-		$sql = 'SELECT post_author FROM '.$tableposts.' WHERE ID = '.$post_ID;
+		$sql = "SELECT post_author FROM {$wpdb->posts[$wp_id]} WHERE ID = $post_ID";
 		$result = $wpdb->get_results($sql);
 
 		if ($wpdb->num_rows) {
@@ -1990,7 +1979,7 @@ function pingback_ping($m) { // original code by Mort
 			//debug_fwrite($log, 'Post exists'."\n");
 
 			// Let's check that the remote site didn't already pingback this entry
-			$sql = 'SELECT * FROM '.$tablecomments.' 
+			$sql = 'SELECT * FROM '.$wpdb->comments[$wp_id].' 
 				WHERE comment_post_ID = '.$post_ID.' 
 					AND comment_author_url = \''.$pagelinkedfrom.'\' 
 					AND comment_content LIKE \'%<pingback />%\'';
@@ -2035,7 +2024,7 @@ function pingback_ping($m) { // original code by Mort
 
 				if (!empty($context)) {
 					// Check if pings are on, inelegant exit
-					$pingstatus = $wpdb->get_var("SELECT ping_status FROM $tableposts WHERE ID = $post_ID");
+					$pingstatus = $wpdb->get_var("SELECT ping_status FROM {$wpdb->posts[$wp_id]} WHERE ID = $post_ID");
 					if ('closed' == $pingstatus) die('Sorry, pings are turned off for this post.');
 
 					$pagelinkedfrom = preg_replace('#&([^amp\;])#is', '&amp;$1', $pagelinkedfrom);
@@ -2048,14 +2037,14 @@ function pingback_ping($m) { // original code by Mort
 					$original_title = $title;
 					$title = addslashes(strip_tags(trim($title)));
 					$now = current_time('mysql');
-					$consulta = $wpdb->query("INSERT INTO $tablecomments 
+					$consulta = $wpdb->query("INSERT INTO ${$wpdb->comments[$wp_id]} 
 						(comment_post_ID, comment_author, comment_author_url, comment_date, comment_content) 
 						VALUES 
 						($post_ID, '$title', '$pagelinkedfrom', '$now', '$context')
 						");
 
 					$comment_ID = $wpdb->get_var('SELECT last_insert_id()');
-					if ($comments_notify)
+					if (get_settings('comments_notify'))
 						wp_notify_postauthor($comment_ID, 'pingback');
 				} else {
 					// URL pattern not found

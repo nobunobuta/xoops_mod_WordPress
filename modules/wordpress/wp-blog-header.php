@@ -1,6 +1,5 @@
 <?php
 /* ÈþÆý */
-include_once (dirname(__FILE__)."/../../mainfile.php");
 if (!defined('_LANGCODE')) {
 	define("_LANGCODE","en");
 }
@@ -9,10 +8,8 @@ if (file_exists("wp-lang/lang_"._LANGCODE.".php")) {
 } else {
 	require("wp-lang/lang_en.php");
 }
-global $xoopsDB,$xoopsUser,$wpdb;
+global $xoopsDB,$xoopsUser,$wpdb, $wp_id, $wp_inblock;
 global $wp_once_called;
-if (!($wp_once_called) || ($do_force)) {
-$wp_once_called = 1;
 $wpj_head = <<<EOD
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -63,7 +60,10 @@ $curpath = dirname(__FILE__).'/';
 if (!file_exists($curpath . '/wp-config.php'))
 	die($wpj_head . _LANG_WA_HEADER_GUIDE1 . $wpj_foot);
 
+$wp_inblock = 0;
 require($curpath.'/wp-config.php');
+$day="";
+
 $wpvarstoreset = array('m','p','posts','w','c', 'cat','withcomments','s','search','exact', 'sentence','poststart','postend','preview','debug', 'calendar','page','paged','more','tb', 'pb','author','order','orderby', 'year', 'monthnum', 'day', 'name', 'category_name');
 
 	for ($i=0; $i<count($wpvarstoreset); $i += 1) {
@@ -79,6 +79,7 @@ $wpvarstoreset = array('m','p','posts','w','c', 'cat','withcomments','s','search
 				$$wpvar = $HTTP_POST_VARS[$wpvar];
 			}
 		}
+//		if (isset($$wpvar)) echo $wpvar . " = " . $$wpvar . "<br/>";
 	}
 
 
@@ -209,7 +210,7 @@ if ((empty($cat)) || ($cat == 'all') || ($cat == '0')) {
 		$eq = '=';
 		$andor = 'OR';
 	}
-	$join = " LEFT JOIN $tablepost2cat ON ($tableposts.ID = $tablepost2cat.post_id) ";
+	$join = " LEFT JOIN {$wpdb->post2cat[$wp_id]} ON ({$wpdb->posts[$wp_id]}.ID = {$wpdb->post2cat[$wp_id]}.post_id) ";
 	$cat_array = explode(' ',$cat);
     $whichcat .= ' AND (category_id '.$eq.' '.intval($cat_array[0]);
     for ($i = 1; $i < (count($cat_array)); $i = $i + 1) {
@@ -226,10 +227,10 @@ if ((empty($cat)) || ($cat == 'all') || ($cat == '0')) {
 if ('' != $category_name) {
 	$category_name = preg_replace('|[^a-z0-9-]|', '', $category_name);
 	$category_name = preg_replace('/\/$/', '', $category_name);
-	$tables = ", $tablepost2cat, $tablecategories";
-	$join = " LEFT JOIN $tablepost2cat ON ($tableposts.ID = $tablepost2cat.post_id) LEFT JOIN $tablecategories ON ($tablepost2cat.category_id = $tablecategories.cat_ID) ";
+	$tables = ", {$wpdb->post2cat[$wp_id]}, {$wpdb->categories[$wp_id]}";
+	$join = " LEFT JOIN {$wpdb->post2cat[$wp_id]} ON ({$wpdb->posts[$wp_id]}.ID = {$wpdb->post2cat[$wp_id]}.post_id) LEFT JOIN {$wpdb->categories[$wp_id]} ON ({$wpdb->post2cat[$wp_id]}.category_id = {$wpdb->categories[$wp_id]}.cat_ID) ";
 	$whichcat = " AND (category_nicename = '$category_name') ";
-	$cat = $wpdb->get_var("SELECT cat_ID FROM $tablecategories WHERE category_nicename = '$category_name'");
+		$cat = $wpdb->get_var("SELECT cat_ID FROM {$wpdb->categories[$wp_id]} WHERE category_nicename = '$category_name'");
 }
 
 // author stuff
@@ -363,8 +364,8 @@ if (isset($user_ID) && ('' != intval($user_ID)))
     $where .= " OR post_author = $user_ID AND post_status != 'draft')";
 else
     $where .= ')';
-$where .= " GROUP BY $tableposts.ID";
-$request = " SELECT $distinct * FROM $tableposts $join WHERE 1=1".$where." ORDER BY post_$orderby $limits";
+$where .= " GROUP BY {$wpdb->posts[$wp_id]}.ID";
+$request = " SELECT $distinct * FROM {$wpdb->posts[$wp_id]} $join WHERE 1=1".$where." ORDER BY post_$orderby $limits";
 
 
 if ($preview) {
@@ -389,7 +390,7 @@ if ($posts) {
 
     $dogs = $wpdb->get_results("SELECT DISTINCT
     	ID, category_id, cat_name, category_nicename, category_description
-    	FROM $tablecategories, $tablepost2cat, $tableposts
+    	FROM {$wpdb->categories[$wp_id]}, {$wpdb->post2cat[$wp_id]}, {$wpdb->posts[$wp_id]}
     	WHERE category_id = cat_ID AND post_id = ID AND post_id IN ($post_id_list)");
 
     foreach ($dogs as $catt) {
@@ -398,8 +399,8 @@ if ($posts) {
 
     // Do the same for comment numbers
 	$comment_counts = $wpdb->get_results("SELECT ID, COUNT( comment_ID ) AS ccount
-		FROM $tableposts
-		LEFT JOIN $tablecomments ON ( comment_post_ID = ID  AND comment_approved =  '1')
+		FROM {$wpdb->posts[$wp_id]}
+		LEFT JOIN {$wpdb->comments[$wp_id]} ON ( comment_post_ID = ID  AND comment_approved =  '1')
 		WHERE post_status =  'publish' AND ID IN ($post_id_list)
 		GROUP BY ID");
 
@@ -416,7 +417,6 @@ if ($posts) {
     	if ($s && empty($paged)) { // If they were doing a search and got one result
     		header('Location: ' . get_permalink($posts[0]->ID));
     	}
-}
 }
 }
 ?>

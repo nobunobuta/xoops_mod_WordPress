@@ -8,7 +8,7 @@
 // Module Info
 
 // The name of this module
-define("_MI_WORDPRESS_NAME","WordPress");
+define("_MI_WORDPRESS_NAME","WordPress%s");
 
 // A brief description of this module
 define("_MI_WORDPRESS_DESC","Módulo do WordPress ME para XOOPS.");
@@ -38,28 +38,28 @@ define("_MI_WPADMINAUTHGRP_CFG_DESC","O(s) grupo(s) que têm autorização para alt
 define("_MI_WP_USE_XOOPS_SMILE","Usar os Smilies-Padrão do XOOPS");
 define("_MI_WP_USE_XOOPS_SMILE_DESC","");
 // Block Name
-define("_MI_WORDPRESS_BNAME1","Calendário do WordPress");
+define("_MI_WORDPRESS_BNAME1","Calendário do WordPress%s");
 define("_MI_WORDPRESS_BDESC1","Calendário do WordPress");
 
-define("_MI_WORDPRESS_BNAME2","Arquivos Mensais do WordPress");
+define("_MI_WORDPRESS_BNAME2","Arquivos Mensais do WordPress%s");
 define("_MI_WORDPRESS_BDESC2","Arquivos Mensais do WordPress");
 
-define("_MI_WORDPRESS_BNAME3","Lista de Categorias do WordPress");
+define("_MI_WORDPRESS_BNAME3","Lista de Categorias do WordPress%s");
 define("_MI_WORDPRESS_BDESC3","Lista de Categorias do WordPress");
 
-define("_MI_WORDPRESS_BNAME4","Links do WordPress");
+define("_MI_WORDPRESS_BNAME4","Links do WordPress%s");
 define("_MI_WORDPRESS_BDESC4","Links do WordPress");
 
-define("_MI_WORDPRESS_BNAME5","Pesquisa no WordPress");
+define("_MI_WORDPRESS_BNAME5","Pesquisa no WordPress%s");
 define("_MI_WORDPRESS_BDESC5","Pesquisa no WordPress");
 
-define("_MI_WORDPRESS_BNAME6","Últimos Posts no WordPress");
+define("_MI_WORDPRESS_BNAME6","Últimos Posts no WordPress%s");
 define("_MI_WORDPRESS_BDESC6","Últimos Posts no WordPress");
 
-define("_MI_WORDPRESS_BNAME7","Últimos Comentários no WordPress");
+define("_MI_WORDPRESS_BNAME7","Últimos Comentários no WordPress%s");
 define("_MI_WORDPRESS_BDESC7","Últimos Comentários no WordPress");
 
-define("_MI_WORDPRESS_BNAME8","Último Post do WordPress");
+define("_MI_WORDPRESS_BNAME8","Último Post do WordPress%s");
 define("_MI_WORDPRESS_BDESC8","Último Post do WordPress");
 
 define("_MI_WORDPRESS_AD_MENU1","Configurações do WordPress");

@@ -4,40 +4,35 @@ $REMOTE_ADDR = getenv('REMOTE_ADDR'); /* visitor's IP */
 $HTTP_USER_AGENT = getenv('HTTP_USER_AGENT'); /* visitor's browser */
 
 // Change to E_ALL for development/debugging
-error_reporting(E_ALL ^ E_NOTICE);
-global $siteurl,$tableoptions,$tableposts,$tableusers,$tablecategories,$tablecomments,$tablepost2cat;
+//error_reporting(E_ALL ^ E_NOTICE);
+global $siteurl;
 
-// Table names
-$tableposts               = $table_prefix . 'posts';
-$tableusers               = $table_prefix . 'users';
-$tablesettings            = $table_prefix . 'settings'; // only used during upgrade
-$tablecategories          = $table_prefix . 'categories';
-$tablepost2cat            = $table_prefix . 'post2cat';
-$tablecomments            = $table_prefix . 'comments';
-$tablelinks               = $table_prefix . 'links';
-$tablelinkcategories      = $table_prefix . 'linkcategories';
-$tableoptions             = $table_prefix . 'options';
-$tableoptiontypes         = $table_prefix . 'optiontypes';
-$tableoptionvalues        = $table_prefix . 'optionvalues';
-$tableoptiongroups        = $table_prefix . 'optiongroups';
-$tableoptiongroup_options = $table_prefix . 'optiongroup_options';
 define('WPINC', 'wp-includes');
-require (ABSPATH . WPINC . '/wp-db.php');
-$wpdb->hide_errors();
-//if (!$wpdb->get_row("SELECT * FROM $tableusers LIMIT 1") && !strstr($_SERVER['REQUEST_URI'], 'install.php')) {
-//	die("It doesn't look like you've installed WP yet. Try running <a href='wp-admin/install.php'>install.php</a>.");
-//}
-$wpdb->show_errors();
+require_once (ABSPATH . WPINC . '/wp-db.php');
+// Table names
+$wpdb->posts[$wp_id]               = $table_prefix[$wp_id] . 'posts';
+$wpdb->users[$wp_id]               = $table_prefix[$wp_id] . 'users';
+$wpdb->settings[$wp_id]            = $table_prefix[$wp_id] . 'settings'; // only used during upgrade
+$wpdb->categories[$wp_id]          = $table_prefix[$wp_id] . 'categories';
+$wpdb->post2cat[$wp_id]            = $table_prefix[$wp_id] . 'post2cat';
+$wpdb->comments[$wp_id]            = $table_prefix[$wp_id] . 'comments';
+$wpdb->links[$wp_id]               = $table_prefix[$wp_id] . 'links';
+$wpdb->linkcategories[$wp_id]      = $table_prefix[$wp_id] . 'linkcategories';
+$wpdb->options[$wp_id]             = $table_prefix[$wp_id] . 'options';
+$wpdb->optiontypes[$wp_id]         = $table_prefix[$wp_id] . 'optiontypes';
+$wpdb->optionvalues[$wp_id]        = $table_prefix[$wp_id] . 'optionvalues';
+$wpdb->optiongroups[$wp_id]        = $table_prefix[$wp_id] . 'optiongroups';
+$wpdb->optiongroup_options[$wp_id] = $table_prefix[$wp_id] . 'optiongroup_options';
 
 // This is the name of the include directory. No "/" allowed.
 
-require (ABSPATH . WPINC . '/functions.php');
-require (ABSPATH . 'wp-config-extra.php');
-require (ABSPATH . WPINC . '/template-functions.php');
-require (ABSPATH . WPINC . '/class-xmlrpc.php');
-require (ABSPATH . WPINC . '/class-xmlrpcs.php');
-require (ABSPATH . WPINC . '/links.php');
-require (ABSPATH . WPINC . '/kses.php');
+require_once (ABSPATH . WPINC . '/functions.php');
+require ('wp-config-extra.php');
+require_once (ABSPATH . WPINC . '/template-functions.php');
+require_once (ABSPATH . WPINC . '/class-xmlrpc.php');
+require_once (ABSPATH . WPINC . '/class-xmlrpcs.php');
+require_once (ABSPATH . WPINC . '/links.php');
+require_once (ABSPATH . WPINC . '/kses.php');
 
 //setup the old globals from b2config.php
 //
@@ -46,70 +41,15 @@ require (ABSPATH . WPINC . '/kses.php');
 // accessing a single global $all_settings var
 if (!strstr($_SERVER['REQUEST_URI'], 'install.php') && !strstr($_SERVER['REQUEST_URI'], 'wp-admin/import')) {
     $siteurl = get_settings('siteurl');
-	// "When trying to design a foolproof system, 
-	//  never underestimate the ingenuity of the fools :)"
 	$siteurl = preg_replace('|/+$|', '', $siteurl);
-    $blogfilename = get_settings('blogfilename');
-    $blogname = get_settings('blogname');
-    $blogdescription = get_settings('blogdescription');
-    $admin_email = get_settings('admin_email');
-    $new_users_can_blog = get_settings('new_users_can_blog');
-    $users_can_register = get_settings('users_can_register');
-    $start_of_week = get_settings('start_of_week');
-    $use_bbcode = get_settings('use_bbcode');
-    $use_gmcode = get_settings('use_gmcode');
-    $use_quicktags = get_settings('use_quicktags');
-    $use_htmltrans = get_settings('use_htmltrans');
-    $use_balanceTags = get_settings('use_balanceTags');
-    $use_fileupload = get_settings('use_fileupload');
-    $fileupload_realpath = get_settings('fileupload_realpath');
-    $fileupload_url = get_settings('fileupload_url');
-    $fileupload_allowedtypes = get_settings('fileupload_allowedtypes');
-    $fileupload_maxk = get_settings('fileupload_maxk');
-    $fileupload_minlevel = get_settings('fileupload_minlevel');
-    $fileupload_allowedusers = get_settings('fileupload_allowedusers');
-    $posts_per_rss = get_settings('posts_per_rss');
-    $rss_language = get_settings('rss_language');
-    $rss_encoded_html = get_settings('rss_encoded_html');
-    $rss_excerpt_length = get_settings('rss_excerpt_length');
-    $rss_use_excerpt = get_settings('rss_use_excerpt');
-    $use_weblogsping = get_settings('use_weblogsping');
-    $use_blodotgsping = get_settings('use_blodotgsping');
-    $blodotgsping_url = get_settings('blodotgsping_url');
-    $use_trackback = get_settings('use_trackback');
-    $use_pingback = get_settings('use_pingback');
-    $require_name_email = get_settings('require_name_email');
-    $comments_notify = get_settings('comments_notify');
-    $use_smilies = get_settings('use_smilies');
-   	if (get_xoops_option('wordpress','wp_use_xoops_smilies')) {
+	if (get_xoops_option('wordpress'.(($wp_id=='-')?'':$wp_id),'wp_use_xoops_smilies')) {
 		$smilies_directory = XOOPS_URL."/uploads";
-   	} else {
+	} else {
 		$smilies_directory = get_settings('smilies_directory');
-   	}
-    $mailserver_url = get_settings('mailserver_url');
-    $mailserver_login = get_settings('mailserver_login');
-    $mailserver_pass = get_settings('mailserver_pass');
-    $mailserver_port = get_settings('mailserver_port');
-    $default_category = get_settings('default_category');
-    $subjectprefix = get_settings('subjectprefix');
-    $bodyterminator = get_settings('bodyterminator');
-    $emailtestonly = get_settings('emailtestonly');
-    $use_phoneemail = get_settings('use_phoneemail');
-    $phoneemail_separator = get_settings('phoneemail_separator');
-    $use_default_geourl = get_settings('use_default_geourl');
-    $default_geourl_lat = get_settings('default_geourl_lat');
-    $default_geourl_lon = get_settings('default_geourl_lon');
-
-    $querystring_start = '?';
-    $querystring_equal = '=';
-    $querystring_separator = '&amp;';
-    //}
-    // Used to guarantee unique cookies
-    $cookiehash = md5($siteurl);
-
-} //end !$_wp_installing
-
-
+	}
+}
+// Used to guarantee unique cookies
+$cookiehash = md5($siteurl);
 
 require (ABSPATH . WPINC . '/vars.php');
 ?>

@@ -51,7 +51,7 @@ case 'update':
 	require_once('admin-header.php');
 
 	if ($user_level < 3) {
-		die('<p>Your level is not high enough to moderate comments. Ask for a promotion from your <a href="mailto:$admin_email">blog admin</a>. :)</p>');
+		die('<p>Your level is not high enough to moderate comments. Ask for a promotion from your <a href="mailto:'.get_settings('admin_email').'">blog admin</a>. :)</p>');
 	}
 
 	$item_ignored = 0;
@@ -92,7 +92,7 @@ default:
 	require_once('admin-header.php');
 
 	if ($user_level <= 3) {
-		die('<p>Your level is not high enough to moderate comments. Ask for a promotion from your <a href="mailto:$admin_email">blog admin</a>. :)</p>');
+		die('<p>Your level is not high enough to moderate comments. Ask for a promotion from your <a href="mailto:get_settings('admin_email')">blog admin</a>. :)</p>');
 	}
 ?>
 <ul id="adminmenu2">
@@ -135,7 +135,7 @@ default:
 	
 <div class="wrap">
 <?php
-$comments = $wpdb->get_results("SELECT * FROM $tablecomments WHERE comment_approved = '0'");
+$comments = $wpdb->get_results("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_approved = '0'");
 
 if ($comments) {
     // list all comments that are waiting for approval
@@ -148,7 +148,7 @@ if ($comments) {
 <?php
     foreach($comments as $comment) {
 	$comment_date = mysql2date(get_settings("date_format") . " @ " . get_settings("time_format"), $comment->comment_date);
-	$post_title = $wpdb->get_var("SELECT post_title FROM $tableposts WHERE ID='$comment->comment_post_ID'");
+	$post_title = $wpdb->get_var("SELECT post_title FROM {$wpdb->posts[$wp_id]} WHERE ID='$comment->comment_post_ID'");
 	
 	echo "\n\t<li id='comment-$comment->comment_ID'>"; 
 	?>

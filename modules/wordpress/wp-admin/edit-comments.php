@@ -139,7 +139,7 @@ echo $comments_nav_bar;
 <div class="wrap">
 
 	<?php
-	$comments = $wpdb->get_results("SELECT * FROM $tablecomments
+	$comments = $wpdb->get_results("SELECT * FROM {$wpdb->comments[$wp_id]}
 									ORDER BY comment_date $commentorder 
 									LIMIT $commentstart, $commentend"
 	                              );
@@ -165,7 +165,7 @@ echo $comments_nav_bar;
 				echo " | <a href=\"post.php?action=deletecomment&amp;p=".$comment->comment_post_ID."&amp;comment=".$comment->comment_ID."\" onclick=\"return confirm('You are about to delete this comment by \'".$comment->comment_author."\'\\n  \'Cancel\' to stop, \'OK\' to delete.')\">Delete Comment</a> &#8212; ";
 			} // end if any comments to show
 			// Get post title
-			$post_title = $wpdb->get_var("SELECT post_title FROM $tableposts WHERE ID = $comment->comment_post_ID");
+			$post_title = $wpdb->get_var("SELECT post_title FROM {$wpdb->posts[$wp_id]} WHERE ID = $comment->comment_post_ID");
 			$post_title = ('' == $post_title) ? "# $comment->comment_post_ID" : $post_title;
 			?> <a href="post.php?action=edit&amp;post=<?php echo $comment->comment_post_ID; ?>"><?php echo _LANG_EC_EDIT_POST; ?><?php echo stripslashes($post_title); ?>&#8221;</a> | <a href="<?php echo get_permalink($comment->comment_post_ID); ?>"><?php echo _LANG_EC_VIEW_POST; ?></a></p>
 		</li>
