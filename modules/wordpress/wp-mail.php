@@ -7,7 +7,7 @@ require_once(ABSPATH.WPINC.'/class-pop3.php');
 timer_start();
 
 $use_cache = 1;
-$output_debugging_info = 0;	# =1 if you want to output debugging info
+#$output_debugging_info = 0;	# =1 if you want to output debugging info
 $time_difference = get_settings('time_difference');
 
 if ($use_phoneemail) {
@@ -138,7 +138,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		$content = trim($content);
 
 		echo "<p><b>Content-type:</b> $content_type, <b>boundary:</b> $boundary</p>\n";
-		echo "<p><b>Raw content:</b><br /><pre>".$content.'</pre></p>';
+//		echo "<p><b>Raw content:</b><br /><pre>".$content.'</pre></p>';
 		
 		$btpos = strpos($content, $bodyterminator);
 		if ($btpos) {

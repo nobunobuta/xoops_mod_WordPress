@@ -113,7 +113,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		$content = imap_fetchbody($mbox, $iCount, 1);
 		$struct = imap_fetchstructure($mbox, $iCount);
 		$content = trim($content);
-		echo "<p><b>Raw content:</b><br /><pre>".$content.'</pre></p>';
+//		echo "<p><b>Raw content:</b><br /><pre>".$content.'</pre></p>';
 
 		$btpos = strpos($content, $bodyterminator);
 		if ($btpos) {
