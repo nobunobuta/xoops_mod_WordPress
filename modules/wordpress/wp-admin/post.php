@@ -622,7 +622,7 @@ switch($action) {
         } else {
             $datemodif = '';
         }
-        $content = balanceTags($content);
+		$content = balanceTags($HTTP_POST_VARS['wp_content']);
         $content = format_to_post($content);
 
         $result = $wpdb->query("
