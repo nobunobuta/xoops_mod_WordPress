@@ -116,7 +116,7 @@ function wp_kses_split2($string, $allowed_html, $allowed_protocols)
   $elem = $matches[2];
   $attrlist = $matches[3];
 
-  if (empty($allowed_html[strtolower($elem)]) || !is_array($allowed_html[strtolower($elem)]))
+  if (!is_array($allowed_html[strtolower($elem)]))
     return '';
     # They are using a not allowed HTML element
 
@@ -143,7 +143,7 @@ function wp_kses_attr($element, $attr, $allowed_html, $allowed_protocols)
 
 # Are any attributes allowed at all for this element?
 
-  if (empty($allowed_html[strtolower($element)]) || count($allowed_html[strtolower($element)]) == 0)
+  if (count($allowed_html[strtolower($element)]) == 0)
     return "<$element$xhtml_slash>";
 
 # Split it

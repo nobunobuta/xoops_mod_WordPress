@@ -12,6 +12,12 @@ if (!function_exists('_e')) {
 	}
 }
 
+if (!function_exists('__')) {
+	function __($string) {
+		echo $string;
+	}
+}
+
 if (!function_exists('floatval')) {
 	function floatval($string) {
 		return ((float) $string);
@@ -246,10 +252,13 @@ function get_userid($user_login) {
 	return $user_id;
 }
 
-function get_usernumposts($userid) {
+function get_usernumposts($userid, $published=false) {
 	global   $wpdb ,$wp_id;
 	$userid = intval($userid);
-	return $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts[$wp_id]} WHERE post_author = $userid");
+	if ($published) {
+		$pub_where = ' AND (post_status = "publish")';
+	}
+	return $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts[$wp_id]} WHERE (post_author = $userid)".$pub_where);
 }
 
 // examine a url (supposedly from this blog) and try to

@@ -108,8 +108,8 @@ function sanitize_text($str, $isArea=false, $isURL=false) {
 	$replacements[] = '&amp;nbsp;';
 
 	if ($isArea) {
-		$patterns[] = "/&lt;(\/)?\s*script.*?&gt;/si";
-		$replacements[] = '[$1script]';
+//		$patterns[] = "/&lt;(\/)?\s*script.*?&gt;/si";
+//		$replacements[] = '[$1script]';
 		$patterns[] = "/&lt;(\/)?\s*style.*?&gt;/si";
 		$replacements[] = '[$style]';
 		$patterns[] = "/&lt;(\/)?\s*body.*?&gt;/si";

@@ -199,7 +199,7 @@ function list_authors2($optioncount = false, $exclude_admin = true, $idmode = ''
     $authors = $wpdb->get_results($query);
 
     foreach($authors as $author) {
-        $posts = get_usernumposts($author->ID);
+        $posts = get_usernumposts($author->ID, true);
         
         $name = $author->user_nickname;
 
