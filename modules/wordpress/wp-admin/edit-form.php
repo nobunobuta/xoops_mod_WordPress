@@ -133,7 +133,7 @@ edCanvas = document.getElementById('wp_content');
 if ($action != 'editcomment') {
     if ( (get_settings('use_fileupload')) && ($user_level >= get_settings('fileupload_minlevel'))
          && (in_array($user_login, $allowed_users) || (trim(get_settings('fileupload_allowedusers'))=="")) ) { ?>
-<input type="button" value="<? echo _LANG_EFA_STATUS_UPLOAD; ?>" onclick="launchupload();" tabindex="10" />
+<input type="button" value="<?php echo _LANG_EFA_STATUS_UPLOAD; ?>" onclick="launchupload();" tabindex="10" />
 <?php }
 }
 ?>
