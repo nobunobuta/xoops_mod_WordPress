@@ -23,5 +23,15 @@ ob_start();
 $my_header = ob_get_contents();
 ob_end_clean();
 //include(XOOPS_ROOT_PATH.'/header.php');
-$xoopsTpl->assign('xoops_module_header', $my_header);
+ob_start();
+echo  bloginfo('name');
+$blog_name =  ob_get_contents();
+ob_end_clean();
+$module_title = $blog_name ." &raquo;".single_post_title(' :: ',false).single_cat_title(' :: ',false).single_month_title(' :: ',false);
+global $xoopsTpl;
+if ($xoopsTpl){
+	$xoopsTpl->assign("xoops_pagetitle",$module_title);
+	$xoopsTpl->assign('xoops_module_header', $my_header);
+}
+
 ?>
