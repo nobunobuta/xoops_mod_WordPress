@@ -1,6 +1,18 @@
 <?php
+if (file_exists(dirname(__FILE__) .'/wp-mail-conf.php')) {
+	@include_once(dirname(__FILE__) .'/wp-mail-conf.php');
+	if ($exec_key) {
+		if (!(isset($_GET['execkey'])) || $_GET['execkey']!=$exec_key) {
+			return;
+		}
+	}
+}
+function wp_mail_quit() {
+  global $wp_pop3;
+  $wp_pop3->quit();
+}
 function wp_mail_receive() {
-  global $xoopsDB, $wpdb, $wp_id, $siteurl, $blog_charset;
+  global $xoopsDB, $wpdb, $wp_id, $siteurl, $blog_charset, $wp_pop3;
   
 	require_once(ABSPATH . WPINC . '/class-pop3.php');
 	timer_start();
@@ -20,27 +32,32 @@ function wp_mail_receive() {
 
 	error_reporting(2037);
 
-	$pop3 = new POP3();
+	$wp_pop3 = new POP3();
 
-	if (!$pop3->connect(get_settings('mailserver_url'), get_settings('mailserver_port'))) {
-		echo "Ooops $pop3->ERROR <br />\n";
+	if (!$wp_pop3->connect(get_settings('mailserver_url'), get_settings('mailserver_port'))) {
+		echo "Ooops $wp_pop3->ERROR <br />\n";
 		return;
 	} 
 
-	$Count = $pop3->login(get_settings('mailserver_login'), get_settings('mailserver_pass'));
-	if ((!$Count) || ($Count == -1)) {
-		echo "<h1>Login Failed: $pop3->ERROR</h1>\n";
-		$pop3->quit();
+	$Count = $wp_pop3->login(get_settings('mailserver_login'), get_settings('mailserver_pass'));
+	if ($Count == false) {
+		if (!$wp_pop3->FP) {
+			echo "Oooops Login Failed: $wp_pop3->ERROR<br />\n";
+		} else {
+			echo "No Message<br />\n";
+			$wp_pop3->quit();
+		}
 		return;
-	} 
+	}
+	
 	// ONLY USE THIS IF YOUR PHP VERSION SUPPORTS IT!
-	// register_shutdown_function($pop3->quit());
+	register_shutdown_function('wp_mail_quit');
 	
 	for ($iCount = 1; $iCount <= $Count; $iCount++) {
-		$MsgOne = $pop3->get($iCount);
+		$MsgOne = $wp_pop3->get($iCount);
 		if ((!$MsgOne) || (gettype($MsgOne) != 'array')) {
-			echo "oops, $pop3->ERROR<br />\n";
-			$pop3->quit();
+			echo "oops, $wp_pop3->ERROR<br />\n";
+			$wp_pop3->quit();
 			return;
 		} 
 
@@ -370,9 +387,9 @@ function wp_mail_receive() {
 				echo "\n<p><b>Posted title:</b> $post_title<br />\n";
 				echo "<b>Posted content:</b><br /><pre>" . $content . "</pre></p>\n";
 
-				if (!$pop3->delete($iCount)) {
-					echo "<p>Oops " . $pop3->ERROR . "</p></div>\n";
-					$pop3->reset();
+				if (!$wp_pop3->delete($iCount)) {
+					echo "<p>Oops " . $wp_pop3->ERROR . "</p></div>\n";
+					$wp_pop3->reset();
 					return;
 				} else {
 					echo "<p>Mission complete, message <strong>$iCount</strong> deleted.</p>\n";
@@ -384,7 +401,7 @@ function wp_mail_receive() {
 		} 
 	} 
 
-	$pop3->quit();
+	$wp_pop3->quit();
 
 	timer_stop($output_debugging_info);
 	return;
@@ -536,17 +553,17 @@ if ( function_exists('debug_backtrace') ) {
 ob_start();
 if ($output_debugging_info) {
 	header("Content-Type: text/html; charset=EUC-JP");
-}
-echo <<<EOD
+	echo <<<EOD
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=EUC-JP" />
 </head><body>
 EOD;
+}
 wp_mail_receive();
-echo "</body></html>";
 if ($output_debugging_info) {
+	echo "</body></html>";
 	ob_end_flush();
 } else {
 	ob_end_clean();
