@@ -153,7 +153,7 @@ $modversion['blocks'][8]['template'] = "wp_block_contents.html";
 
 //Hacked by nobunobu  Keep Block option values when update
 if($_POST) {
-	if(($_POST['fct']=='modulesadmin')&&($_POST['op']=='update_ok')&&($_POST['module']==$modversion['dirname'])) {
+	if(($_POST['fct']=='modulesadmin')&&($_POST['op']=='update_ok')&&($_POST['dirname']==$modversion['dirname'])) {
 		global $xoopsDB, $msgs;
 		$query = "SELECT mid FROM ".$xoopsDB->prefix('modules')." WHERE dirname='".$modversion['dirname']."' ";
 		$result = $xoopsDB->query($query);
