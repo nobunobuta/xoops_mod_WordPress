@@ -1,9 +1,14 @@
 <?php
 function b_wp_contents_show($options) {
-	global $xoopsDB,$xoopsUser,$wpdb,$siteurl;
-	global $tableoptions,$tableposts,$tableusers,$tablecategories,$tablecomments,$tablepost2cat;
-    global $querystring_start, $querystring_equal, $querystring_separator;
-	global $id, $posts, $post, $day, $previousday, $dateformat, $newday;
+//	global $xoopsDB,$xoopsUser;
+//	global $tableoptions,$tableusers;
+//	global $id, $posts, $post, $day, $previousday, $newday;
+	$id=1;
+	global $posts, $post, $day, $previousday, $newday;
+	global $dateformat, $time_difference, $siteurl, $blogfilename;
+	global $tablelinks,$tablelinkcategories;
+    global $querystring_start, $querystring_equal, $querystring_separator, $month, $wpdb, $start_of_week;
+	global $tableposts,$tablepost2cat,$tablecomments,$tablecategories;
 	require_once (dirname(__FILE__).'/../wp-blog-header.php');
 	$blog = 1;
 	$block = array();
