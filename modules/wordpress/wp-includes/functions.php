@@ -1309,4 +1309,591 @@ function wp_notify_moderator($comment_id) {
 
     $comment_author_domain = gethostbyaddr($comment->comment_author_IP);
     
-	$comments_waiting = $commentHandler->getCount(new Criteria('comment_approved', '0 '));//”τώ‚τώτώτώτώ—τώτώτώX•τώτώ
+	$comments_waiting = $commentHandler->getCount(new Criteria('comment_approved', '0 '));
+	$notify_message	 = _LANG_F_COMMENT_POST." #$comment->comment_post_ID ".$post->post_title._LANG_F_WAITING_APPROVAL."\r\n\r\n";
+    $notify_message .= "Author : $comment->comment_author (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
+    $notify_message .= "E-mail : $comment->comment_author_email\r\n";
+	$notify_message .= "URL	   : $comment->comment_author_url\r\n";
+    $notify_message .= "Whois  : http://ws.arin.net/cgi-bin/whois.pl?queryinput=$comment->comment_author_IP\r\n";
+    $notify_message .= "Comment:\r\n".$comment->comment_content."\r\n\r\n";
+    $notify_message .= _LANG_F_APPROVAL_VISIT." ".wp_siteurl()." /wp-admin/post.php?action=mailapprovecomment&p=".$comment->comment_post_ID."&comment=$comment_id\r\n";
+    $notify_message .= _LANG_F_DELETE_VISIT." ".wp_siteurl()."/wp-admin/post.php?action=confirmdeletecomment&p=".$comment->comment_post_ID."&comment=$comment_id\r\n";
+    $notify_message .= "\"$comments_waiting\""._LANG_F_PLEASE_VISIT."\r\n";
+    $notify_message .= wp_siteurl()."/wp-admin/moderation.php\r\n";
+
+    $subject = '[' . get_settings('blogname') . '] Please approve: "' .$post->post_title.'"';
+    $from  = "From: ".get_settings('admin_email');
+
+	if (defined('XOOPS_URL')) {
+		$xoopsMailer =& getMailer();
+		$xoopsMailer->useMail();
+		$xoopsMailer->setToEmails(get_settings('admin_email'));
+		$xoopsMailer->setFromEmail(get_settings('admin_email'));
+		$xoopsMailer->setSubject($subject);
+		$xoopsMailer->setBody($notify_message);
+		$xoopsMailer->send();
+	} else {
+	    if (function_exists('mb_send_mail')) {
+		    mb_send_mail(get_settings('admin_email'), $subject, $notify_message, $from);
+	    } else {
+		    @mail(get_settings('admin_email'), $subject, $notify_message, $from);
+	    }
+	}
+    return true;
+}
+
+
+function start_wp() {
+	if (empty($GLOBALS['preview'])) {
+		$GLOBALS['wp_post_id'] = $GLOBALS['post']->ID;
+	} else {
+		$GLOBALS['wp_post_id'] = 0;
+		$GLOBALS['postdata'] = array (
+			'ID' => 0,
+			'Author_ID' => $_GET['preview_userid'],
+			'Date' => $_GET['preview_date'],
+			'Content' => $_GET['preview_content'],
+			'Excerpt' => $_GET['preview_excerpt'],
+			'Title' => $_GET['preview_title'],
+			'Category' => $_GET['preview_category'],
+			'Notify' => 1
+			);
+	}
+	$GLOBALS['authordata'] = get_userdata($GLOBALS['post']->post_author);
+	$GLOBALS['day'] = mysql2date('d.m.y', $GLOBALS['post']->post_date);
+	$GLOBALS['numpages'] = 1;
+	if (empty($GLOBALS['page'])) {
+		$GLOBALS['page'] = 1;
+	}
+	if (!empty($GLOBALS['p'])) {
+		$GLOBALS['more'] = 1;
+	}
+	$content = $GLOBALS['post']->post_content;
+	if (preg_match('/<!--nextpage-->/', $GLOBALS['post']->post_content)) {
+		if ($GLOBALS['page'] > 1)
+			$GLOBALS['more'] = 1;
+		$GLOBALS['multipage'] = 1;
+		$content = stripslashes($GLOBALS['post']->post_content);
+		$content = str_replace("\n<!--nextpage-->\n", '<!--nextpage-->', $content);
+		$content = str_replace("\n<!--nextpage-->", '<!--nextpage-->', $content);
+		$content = str_replace("<!--nextpage-->\n", '<!--nextpage-->', $content);
+		$GLOBALS['pages'] = explode('<!--nextpage-->', $content);
+		$GLOBALS['numpages'] = count($GLOBALS['pages']);
+	} else {
+		$GLOBALS['pages'][0] = stripslashes($GLOBALS['post']->post_content);
+		$GLOBALS['multipage'] = 0;
+	}
+	return true;
+}
+
+function is_new_day() {
+	if ($GLOBALS['day'] != $GLOBALS['previousday']) {
+		return(1);
+	} else {
+		return(0);
+	}
+}
+
+function wp_head() {
+	do_action('wp_head', '');
+}
+
+function permlink_to_param() {
+	if ( !empty( $_SERVER['PATH_INFO'] ) ) {
+		// Fetch the rewrite rules.
+		$rewrite = rewrite_rules('matches');
+		$pathinfo = $_SERVER['PATH_INFO'];
+		// Trim leading '/'.
+		$pathinfo = preg_replace('!^/!', '', $pathinfo);
+
+		if (! empty($rewrite)) {
+			// Get the name of the file requesting path info.
+			$req_uri = $_SERVER['REQUEST_URI'];
+			$req_uri = str_replace($pathinfo, '', $req_uri);
+			$req_uri = preg_replace("!/+$!", '', $req_uri);
+			$req_uri = explode('/', $req_uri);
+			$req_uri = $req_uri[count($req_uri)-1];
+			// Look for matches.
+			$pathinfomatch = $pathinfo;
+			foreach ($rewrite as $match => $query) {
+				// If the request URI is the anchor of the match, prepend it
+				// to the path info.
+				if ((! empty($req_uri)) && (strpos($match, $req_uri) === 0)) {
+					$pathinfomatch = $req_uri . '/' . $pathinfo;
+				}
+
+				if (preg_match("!^$match!", $pathinfomatch, $matches)) {
+					// Got a match.
+					// Trim the query of everything up to the '?'.
+					$query = preg_replace("!^.+\?!", '', $query);
+
+					// Substitute the substring matches into the query.
+					eval("\$query = \"$query\";");
+
+					// Parse the query.
+					parse_str($query, $_GET);
+					break;
+				}
+			}
+		}	 
+	}
+}
+
+/* rewrite_rules
+ * Construct rewrite matches and queries from permalink structure.
+ * matches - The name of the match array to use in the query strings.
+ *           If empty, $1, $2, $3, etc. are used.
+ * Returns an associate array of matches and queries.
+ */
+function rewrite_rules($matches = '', $permalink_structure = '') {
+    function preg_index($number, $matches = '') {
+        $match_prefix = '$';
+        $match_suffix = '';
+        
+        if (! empty($matches)) {
+            $match_prefix = '$' . $matches . '['; 
+                                               $match_suffix = ']';
+        }        
+        return "$match_prefix$number$match_suffix";        
+    }
+    
+    $rewrite = array();
+
+    if (empty($permalink_structure)) {
+        $permalink_structure = get_settings('permalink_structure');
+        
+        if (empty($permalink_structure)) {
+            return $rewrite;
+        }
+    }
+
+    $rewritecode = 
+	array(
+	'%year%',
+	'%monthnum%',
+	'%day%',
+	'%hour%',
+	'%minute%',
+	'%second%',
+	'%postname%',
+	'%post_id%'
+	);
+
+    $rewritereplace = 
+	array(
+	'([0-9]{4})?',
+	'([0-9]{1,2})?',
+	'([0-9]{1,2})?',
+	'([0-9]{1,2})?',
+	'([0-9]{1,2})?',
+	'([0-9]{1,2})?',
+	'([_0-9a-z-]+)?',
+	'([0-9]+)?'
+	);
+
+    $queryreplace = 
+	array (
+	'year=',
+	'monthnum=',
+	'day=',
+	'hour=',
+	'minute=',
+	'second=',
+	'name=',
+	'p='
+	);
+
+
+    $match = str_replace('/', '/?', $permalink_structure);
+    $match = preg_replace('|/[?]|', '', $match, 1);
+
+    $match = str_replace($rewritecode, $rewritereplace, $match);
+    $match = preg_replace('|[?]|', '', $match, 1);
+
+    $feedmatch = trailingslashit(str_replace('?/?', '/', $match));
+    $trackbackmatch = $feedmatch;
+
+    preg_match_all('/%.+?%/', $permalink_structure, $tokens);
+
+    $query = 'index.php?';
+    $feedquery = 'wp-feed.php?';
+    $trackbackquery = 'wp-trackback.php?';
+    for ($i = 0; $i < count($tokens[0]); ++$i) {
+             if (0 < $i) {
+                 $query .= '&';
+                 $feedquery .= '&';
+                 $trackbackquery .= '&';
+             }
+             
+             $query_token = str_replace($rewritecode, $queryreplace, $tokens[0][$i]) . preg_index($i+1, $matches);
+             $query .= $query_token;
+             $feedquery .= $query_token;
+             $trackbackquery .= $query_token;
+             }
+    ++$i;
+
+    // Add post paged stuff
+    $match .= '([0-9]+)?/?$';
+    $query .= '&page=' . preg_index($i, $matches);
+
+    // Add post feed stuff
+    $feedregex = '(feed|rdf|rss|rss2|atom)/?$';
+    $feedmatch .= $feedregex;
+    $feedquery .= '&feed=' . preg_index($i, $matches);
+
+    // Add post trackback stuff
+    $trackbackregex = 'trackback/?$';
+    $trackbackmatch .= $trackbackregex;
+
+    // Site feed
+    $sitefeedmatch = 'feed/?([_0-9a-z-]+)?/?$';
+    $sitefeedquery = 'wp-feed.php?feed=' . preg_index(1, $matches);
+
+    // Site comment feed
+    $sitecommentfeedmatch = 'comments/feed/?([_0-9a-z-]+)?/?$';
+    $sitecommentfeedquery = 'wp-feed.php?feed=' . preg_index(1, $matches) . '&withcomments=1';
+
+    // Code for nice categories and authors, currently not very flexible
+    $front = substr($permalink_structure, 0, strpos($permalink_structure, '%'));
+	if ( '' == get_settings('category_base') )
+		$catmatch = $front . 'category/';
+	else
+	    $catmatch = get_settings('category_base') . '/';
+    $catmatch = preg_replace('|^/+|', '', $catmatch);
+    
+    $catfeedmatch = $catmatch . '(.*)/' . $feedregex;
+    $catfeedquery = 'wp-feed.php?category_name=' . preg_index(1, $matches) . '&feed=' . preg_index(2, $matches);
+
+    $catmatch = $catmatch . '?(.*)';
+    $catquery = 'index.php?category_name=' . preg_index(1, $matches);
+
+    $authormatch = $front . 'author/';
+    $authormatch = preg_replace('|^/+|', '', $authormatch);
+
+    $authorfeedmatch = $authormatch . '(.*)/' . $feedregex;
+    $authorfeedquery = 'wp-feed.php?author_name=' . preg_index(1, $matches) . '&feed=' . preg_index(2, $matches);
+
+    $authormatch = $authormatch . '?(.*)';
+    $authorquery = 'index.php?author_name=' . preg_index(1, $matches);
+
+    $rewrite = array(
+                     $catfeedmatch => $catfeedquery,
+                     $catmatch => $catquery,
+                     $authorfeedmatch => $authorfeedquery,
+                     $authormatch => $authorquery,
+                     $match => $query,
+                     $feedmatch => $feedquery,
+                     $trackbackmatch => $trackbackquery,
+                     $sitefeedmatch => $sitefeedquery,
+                     $sitecommentfeedmatch => $sitecommentfeedquery
+                     );
+
+    return $rewrite;
+}
+
+function get_posts($args) {
+	parse_str($args, $r);
+	if (!isset($r['numberposts'])) $r['numberposts'] = 5;
+	if (!isset($r['offset'])) $r['offset'] = 0;
+	// The following not implemented yet
+	if (!isset($r['category'])) $r['category'] = '';
+	if (!isset($r['orderby'])) $r['orderby'] = '';
+	if (!isset($r['order'])) $r['order'] = '';
+
+	$now = current_time('mysql');
+	
+	$criteria =& new CriteriaCompo(new Criteria('post_date', $now, '<='));
+	$criteria->add(new Criteria('post_status', 'publish'));
+	$criteria->setSort('post_date');
+	$criteria->setOrder('DESC');
+	$criteria->setStart(intval($r['offset']));
+	$criteria->setLimit(intval($r['numberposts']));
+	$criteria->setGroupBy('ID');
+
+	$postHandler =& wp_handler('Post');
+	$postObjects =& $postHandler->getObjects($criteria, false, '', true);
+	$posts = array();
+	foreach($postObjects as $postObject) {
+		$posts[] =& $postObjects->exportWpObject();
+	}
+	return $posts;
+}
+
+function check_comment($author, $email, $url, $comment, $user_ip) {
+	if (get_settings('comment_moderation') == 1) return false; // If moderation is set to manual
+
+	if ( (count(explode('http:', $comment)) - 1) >= get_settings('comment_max_links') )
+		return false; // Check # of external links
+
+	if ('' == trim( get_settings('moderation_keys') ) ) return true; // If moderation keys are empty
+	$words = explode("\n", get_settings('moderation_keys') );
+	foreach ($words as $word) {
+	$word = trim($word);
+	$pattern = "#$word#i";
+		if ( preg_match($pattern, $author) ) return false;
+		if ( preg_match($pattern, $email) ) return false;
+		if ( preg_match($pattern, $url) ) return false;
+		if ( preg_match($pattern, $comment) ) return false;
+		if ( preg_match($pattern, $user_ip) ) return false;
+	}
+
+	return true;
+}
+
+function get_xoops_option($dirname,$conf_name) {
+	$module_handler =& xoops_gethandler('module');
+	$module=$module_handler->getByDirname($dirname);
+	$mid=$module->getVar('mid');
+    
+	$query = "SELECT conf_value,conf_valuetype FROM ".$GLOBALS['xoopsDB']->prefix('config')." WHERE conf_modid=".$mid." AND conf_name='".$conf_name."' ";
+	$result = $GLOBALS['xoopsDB']->query($query);
+	$record= $GLOBALS['xoopsDB']->fetcharray($result);
+	$value = $record['conf_value'];
+	$valuetype = $record['conf_valuetype'];
+	
+    switch ($valuetype) {
+    case 'int':
+        return intval($value);
+        break;
+    case 'array':
+        return unserialize($value);
+    case 'float':
+        return (float)$value;
+        break;
+    case 'textarea':
+        return $value;
+    default:
+        return $value;
+        break;
+    }
+	
+	return($value);
+}
+function block_style_get($wp_num, $echo = 'true') {
+	if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. $wp_num .'/themes/'.$GLOBALS['xoopsConfig']['theme_set'].'/wp-blocks.css.php')) {
+		$themes = $GLOBALS['xoopsConfig']['theme_set'];
+	} else {
+		$themes = "default";
+	}
+	$wp_block_style="";
+	include_once(XOOPS_ROOT_PATH."/modules/wordpress". $wp_num ."/themes/".$themes."/wp-blocks.css.php");
+	if ($echo) {
+		if (trim($wp_block_style) != "") {
+		echo <<< EOD
+<style type="text/css" media="screen">
+    <!--
+	$wp_block_style
+    -->
+</style>
+EOD;
+		}
+	} else {
+		return trim($wp_block_style);
+	}
+}
+
+function wp_refcheck($offset = "", $redirect = true) {
+	$ref = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : $_ENV['HTTP_REFERER'];
+	if ($ref == '') {
+		if ($redirect) {
+			if (defined('XOOPS_URL')) { //XOOPS Module mode
+				redirect_header(wp_siteurl(), 1, "You cannot update Database contents.(Could not detect HTTP_REFERER)");
+			} else {
+				header("Location: ".wp_siteurl());
+			}
+		}
+		return false;
+	}
+	if (strpos($ref, wp_siteurl().$offset) !== 0 ) {
+		if ($redirect) {
+			if (defined('XOOPS_URL')) { //XOOPS Module mode
+				redirect_header(wp_siteurl(), 1, "You cannot update Database contents.(HTTP_REFERER is not valid site.)");
+			} else {
+				header("Location: ".wp_siteurl());
+			}
+		}
+		return false;
+	}
+	return true;
+}
+
+function wp_get_rss_charset() {
+	if (function_exists('mb_convert_encoding')) {
+		if ($GLOBALS['blog_charset'] != 'iso-8859-1') {
+			$rss_charset = 'utf-8';
+		} else {
+			$rss_charset = $GLOBALS['blog_charset'];
+		}
+	}else{
+		$rss_charset = $GLOBALS['blog_charset'];
+	}
+	return $rss_charset;
+}
+
+function wp_convert_rss_charset($srcstr) {
+	$rss_charset = wp_get_rss_charset();
+	if ($GLOBALS['blog_charset'] != $rss_charset) {
+		if ((strtolower($GLOBALS['blog_charset']) == 'euc-jp')&&(strtolower($rss_charset)=='utf-8')) {
+			return mb_convert_encoding(mb_convert_encoding($srcstr,"SJIS","EUC-JP"),"UTF-8","SJIS-win");
+		}
+		return mb_convert_encoding($srcstr,	 $rss_charset, $GLOBALS['blog_charset']);
+	} else {
+		return $srcstr;
+	}
+}
+
+function mb_conv($str,$to,$from)
+{
+	if (function_exists('mb_convert_encoding')) {
+		if ($to != $from) {
+			if ((strtolower($from) == 'euc-jp')&&(strtolower($to)=='utf-8')) {
+				$retstr = mb_convert_encoding(mb_convert_encoding($str,"SJIS","EUC-JP"),"UTF-8","SJIS-win");
+			} else if (((strtolower($from) == 'sjis')||(strtolower($from) == 'shiftjis'))&&(strtolower($to)=='utf-8')) {
+				$retstr = mb_convert_encoding($str,"UTF-8","SJIS-win");
+			} else {
+				$retstr = mb_convert_encoding($str,$to,$from);
+			}
+		} else {
+			$retstr = $str;
+		}
+	} else {
+		$retstr = $str;
+	}
+	return $retstr;
+}
+
+function mb_substring($string, $start, $length, $charset="") {
+	if (function_exists('mb_convert_encoding')) {
+		if (!$charset) {
+			if (!empty($GLOBALS['blog_charset'])) {
+				$charset = $GLOBALS['blog_charset'];
+			} else {
+				$charset = mb_internal_encoding();
+			}
+		}
+		return mb_substr($string, $start, $length, $charset);
+	} else {
+		return substr($string, $start, $length);
+	}
+}
+
+function trailingslashit($string) {
+    if ( '/' != substr($string, -1)) {
+        $string .= '/';
+    }
+    return $string;
+}
+
+function get_version() {
+	return $GLOBALS['wp_version_str'];
+}
+
+function get_custom_path($filename) {
+	if (file_exists(wp_base().'/themes/'.$GLOBALS['xoopsConfig']['theme_set'].'/'. $filename)) {
+		$themes = $GLOBALS['xoopsConfig']['theme_set'];
+	} else {
+		$themes = "default";
+	}
+	return wp_base().'/themes/'.$themes.'/'. $filename;
+}
+
+function get_custom_url($filename) {
+	if (file_exists(wp_base().'/themes/'.$GLOBALS['xoopsConfig']['theme_set'].'/'. $filename)) {
+		$themes = $GLOBALS['xoopsConfig']['theme_set'];
+	} else {
+		$themes = "default";
+	}
+	return wp_siteurl().'/themes/'.$themes.'/'. $filename;
+}
+
+function auto_upgrade() {
+	global $wpdb;
+	$wpdb->hide_errors();
+
+	if ($wpdb->query("SHOW COLUMNS FROM ".wp_table('postmeta'))==false) {
+		$sql1 = "CREATE TABLE ".wp_table('postmeta')." (
+					meta_id int(11) NOT NULL auto_increment,
+					post_id int(11) NOT NULL default '0',
+					meta_key varchar(255) default NULL,
+					meta_value text,
+					PRIMARY KEY	 (meta_id),
+					KEY post_id (post_id),
+					KEY meta_key (meta_key)
+				)";
+		$wpdb->query($sql1);
+	}
+
+	if ($wpdb->query("SHOW COLUMNS FROM ".wp_table('comments')." LIKE 'comment_type'")==false) {
+		$sql1 = "ALTER TABLE ".wp_table('comments')." ADD (
+					comment_agent varchar(255) NOT NULL default '',
+					comment_type varchar(20) NOT NULL default '',
+					comment_parent int(11) NOT NULL default '0',
+					user_id int(11) NOT NULL default '0',
+				)";
+		$wpdb->query($sql1);
+	}
+	$wpdb->show_errors();
+	add_option('use_comment_preview','0', 2, "Display Preview Screen after comment posting.", 2, 8);
+}
+
+function current_wp() {
+	$cur_PATH = $_SERVER['SCRIPT_FILENAME'];
+	if (preg_match("/^".preg_quote(wp_base()."/","/")."/i",$cur_PATH)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+//May not Used now, but keeping for compatiblity
+function alert_error($msg) { // displays a warning box with an error message (original by KYank)
+	?>
+	<html>
+	<head>
+	<script language="JavaScript">
+	<!--
+	alert("<?php echo $msg ?>");
+	history.back();
+	//-->
+	</script>
+	</head>
+	<body>
+	<!-- this is for non-JS browsers (actually we should never reach that code, but hey, just in case...) -->
+	<?php echo $msg; ?><br />
+	<a href="<?php echo $_SERVER["HTTP_REFERER"]; ?>">go back</a>
+	</body>
+	</html>
+	<?php
+	exit;
+}
+
+function alert_confirm($msg) { // asks a question - if the user clicks Cancel then it brings them back one page
+	?>
+	<script language="JavaScript">
+	<!--
+	if (!confirm("<?php echo $msg ?>")) {
+	history.back();
+	}
+	//-->
+	</script>
+	<?php
+}
+
+function redirect_js($url,$title="...") {
+	?>
+	<script language="JavaScript">
+	<!--
+	function redirect() {
+	window.location = "<?php echo $url; ?>";
+	}
+	setTimeout("redirect();", 100);
+	//-->
+	</script>
+	<p>Redirecting you : <b><?php echo $title; ?></b><br />
+	<br />
+	If nothing happens, click <a href="<?php echo $url; ?>">here</a>.</p>
+	<?php
+	exit();
+}
+
+?>
