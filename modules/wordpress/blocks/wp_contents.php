@@ -131,8 +131,12 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 				ob_end_clean();
 			}
 		}
-		$previousday = 0;
-		$day = '';
+		$previousday=0;
+		$day=0;
+		$category_cache[$wp_id]=array();
+		$comment_count_cache=array();
+//		unset(category_cache);
+//		unset(comment_count_cache);
 		return $block;
 	}
 
