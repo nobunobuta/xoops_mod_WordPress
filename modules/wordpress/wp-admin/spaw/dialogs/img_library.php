@@ -13,63 +13,49 @@
 // ================================================
 
 // include wysiwyg config
+// include wysiwyg config
 include '../config/spaw_control.config.php';
 include $spaw_root.'class/lang.class.php';
+include_once '../../../mainfile.php';
+//include_once 'header.php';
 
-$theme = empty($_POST['theme'])?(empty($_GET['theme'])?$spaw_default_theme:$_GET['theme']):$_POST['theme'];
-$theme_path = $spaw_dir.'lib/themes/'.$theme.'/';
+$theme = empty($HTTP_GET_VARS['theme'])?$spaw_default_theme:$HTTP_GET_VARS['theme'];
+$theme_path = '../lib/themes/'.$theme.'/';
 
-$l = new SPAW_Lang(empty($_POST['lang'])?$_GET['lang']:$_POST['lang']);
+$l = new SPAW_Lang(empty($HTTP_POST_VARS['lang'])?$HTTP_GET_VARS['lang']:$HTTP_POST_VARS['lang']);
 $l->setBlock('image_insert');
-?>
 
-<?php 
-$lib = isset( $_GET['lib'] ) ? $_GET['lib'] : '' ;
-$lib = isset( $_POST['lib'] ) ? $_POST['lib'] : $lib ;
+$imglib = (isset($HTTP_GET_VARS['lib'])) ? $HTTP_GET_VARS['lib'] : $HTTP_POST_VARS['lib'];
 
 $value_found = false;
 // callback function for preventing listing of non-library directory
 function is_array_value($value, $key, $_imglib)
 {
-  global $value_found,$lib;
-  // echo $value.'-'.$_imglib.'<br>';
-  
-  if (in_array($_imglib,$value)){
+  global $value_found;
+  if (is_array($value)) array_walk($value, 'is_array_value',$_imglib);
+  if ($value == $_imglib){
     $value_found=true;
-    $lib = $spaw_imglibs[$key]['catID'];
-    var_dump($key);
   }
 }
-//array_walk($spaw_imglibs, 'is_array_value',$imglib);
-foreach ($spaw_imglibs as $spawimg){
-    if ($lib == $spawimg['catID']){
-        $imagelib= $spawimg['value'];
-        $imagetype= $spawimg['storetype'];
-        $value_found=true;
-        break;
-        }
+array_walk($spaw_imglibs, 'is_array_value',$imglib);
 
-}
-if (!$value_found || empty($lib))
+if (!$value_found || empty($imglib))
 {
   $imglib = $spaw_imglibs[0]['value'];
-  $lib = $spaw_imglibs[0]['catID'];
-  $imagetype= $spawimg['storetype'];
 }
+$lib_options = liboptions($spaw_imglibs,'',$imglib);
 
-$lib_options = liboptions($spaw_imglibs,'',$lib);
 
-
-$img = isset( $_POST['imglist'] ) ? $_POST['imglist'] : '' ;
+$img = $HTTP_POST_VARS['imglist'];
 
 $preview = '';
 
 $errors = array();
-if( isset( $_FILES['img_file']['size'] ) && $_FILES['img_file']['size'] > 0 )
+if ($HTTP_POST_FILES['img_file']['size']>0)
 {
   if ($img = uploadImg('img_file'))
   {
-    $preview = $spaw_base_url.$imglib.$img;
+    $preview = XOOPS_URL.'/'.$imglib.$img;
   }
 }
 ?>
@@ -78,7 +64,7 @@ if( isset( $_FILES['img_file']['size'] ) && $_FILES['img_file']['size'] > 0 )
 <html>
 <head>
   <title><?php echo $l->m('title')?></title>
-	<meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $l->getCharset()?>">
   <link rel="stylesheet" type="text/css" href="<?php echo $theme_path.'css/'?>dialog.css">
   <script language="javascript" src="utils.js"></script>
@@ -89,8 +75,7 @@ if( isset( $_FILES['img_file']['size'] ) && $_FILES['img_file']['size'] > 0 )
     {
       if (document.libbrowser.lib.selectedIndex>=0 && document.libbrowser.imglist.selectedIndex>=0)
       {
-		//+document.libbrowser.lib.options[document.libbrowser.lib.selectedIndex].value 
-        window.returnValue = '<?php if ($imagetype == "file") { echo XOOPS_URL.'/uploads/'; } else { echo XOOPS_URL.'/image.php?id='; }?>'+document.libbrowser.imglist.options[document.libbrowser.imglist.selectedIndex].value;
+        window.returnValue = '<?php echo XOOPS_URL.'/'?>'+document.libbrowser.lib.options[document.libbrowser.lib.selectedIndex].value + document.libbrowser.imglist.options[document.libbrowser.imglist.selectedIndex].value;
         window.close();
       }
       else
@@ -132,7 +117,7 @@ if( isset( $_FILES['img_file']['size'] ) && $_FILES['img_file']['size'] > 0 )
   </td>
   <td valign="top" align="left" rowspan="3">&nbsp;</td>
   <td valign="top" align="left" rowspan="3">
-  <iframe name="imgpreview" src="<?php echo $preview?>" style="width: 200px; height: 100%;" scrolling="Auto" marginheight="0" marginwidth="0" frameborder="0"></iframe>
+  <iframe name="imgpreview" src="<?php echo $preview?>" style="width: 300px; height: 200%;" scrolling="Auto" marginheight="0" marginwidth="0" frameborder="0"></iframe>
   </td>
 </tr>
 <tr>
@@ -141,39 +126,42 @@ if( isset( $_FILES['img_file']['size'] ) && $_FILES['img_file']['size'] > 0 )
 <tr>
   <td valign="top" align="left">
   <?php 
-/*
-    if (!ereg('/$', $HTTP_SERVER_VARS['DOCUMENT_ROOT']))
-      $_root = $HTTP_SERVER_VARS['DOCUMENT_ROOT'].'/';
-    else
-      $_root = $HTTP_SERVER_VARS['DOCUMENT_ROOT'];
-*/
-	$_root = XOOPS_ROOT_PATH.'/';    
+    
+    $_root = XOOPS_ROOT_PATH."/";
+    
     $d = @dir($_root.$imglib);
-  echo $imagetype;
   ?>
   <select name="imglist" size="15" class="input" style="width: 150px;" 
-    onchange="if (this.selectedIndex &gt;=0) imgpreview.location.href = '<?php if ($imagetype == "file") { echo XOOPS_URL.'/uploads/'; } else { echo XOOPS_URL.'/image.php?id='; }?>' + this.options[this.selectedIndex].value;" ondblclick="selectClick();">
+    onchange="if (this.selectedIndex &gt;=0) imgpreview.location.href = '<?php echo XOOPS_URL.'/'.$imglib?>' + this.options[this.selectedIndex].value;" ondblclick="selectClick();">
   <?php 
-	  global $xoopsDB;
-
-	  if ($imagetype == "file") {
-		  $result = $xoopsDB->query("SELECT image_name,image_nicename FROM ".$xoopsDB->prefix(image)." WHERE imgcat_id = $lib");
-		  while($image = $xoopsDB->fetcharray($result)){
-		  ?>
-		  
-		  <option value="<?php echo $image["image_name"]?>" <?php echo ($image["image_name"] == $img)?'selected':''?>><?php echo $image["image_nicename"]?></option>
-          <?php 
-		  }
-	  } else {
-		  $result = $xoopsDB->query("SELECT image_id, image_name,image_nicename FROM ".$xoopsDB->prefix(image)." WHERE imgcat_id = $lib");
-		  while($image = $xoopsDB->fetcharray($result)){
-		  ?>
-		  
-		  <option value="<?php echo $image["image_id"]?>" <?php echo ($image["image_id"] == $img)?'selected':''?>><?php echo $image["image_nicename"]?></option>
-          <?php 
-		  }
-	  }
+    if ($d) 
+    {
+      while (false !== ($entry = $d->read())) {
+        if (is_file($_root.$imglib.$entry))
+        {
+        	if (ereg('^thumb-.*',$entry)) continue;
+        	if (ereg('\.(jpg|jpeg|gif|png)',$entry)) {
+        		if (file_exists($_root.$imglib.'thumb-'.$entry)) {
+          		?>
+          			<option value="<?php echo 'thumb-'.$entry?>" <?php echo ($entry == $img)?'selected':''?>><?php echo $entry?></option>
+          		<?php 
+        		} else {
+          		?>
+          			<option value="<?php echo $entry?>" <?php echo ($entry == $img)?'selected':''?>><?php echo $entry?></option>
+          		<?php 
+        		}
+        	}
+        }
+      }
+      $d->close();
+    }
+    else
+    {
+      $errors[] = $l->m('error_no_dir');
+    }
   ?>
+
+
   </select>
   </td>
 </tr>
@@ -224,7 +212,7 @@ function liboptions($arr, $prefix = '', $sel = '')
 {
   $buf = '';
   foreach($arr as $lib) {
-    $buf .= '<option value="'.$lib['catID'].'"'.(($lib['catID'] == $sel)?' selected':'').'>'.$prefix.$lib['text'].'</option>'."\n";
+    $buf .= '<option value="'.$lib['value'].'"'.(($lib['value'] == $sel)?' selected':'').'>'.$prefix.$lib['text'].'</option>'."\n";
   }
   return $buf;
 }
@@ -241,10 +229,7 @@ function uploadImg($img) {
   
   if (!$spaw_upload_allowed) return false;
 
-  if (!ereg('/$', $HTTP_SERVER_VARS['DOCUMENT_ROOT']))
-    $_root = $HTTP_SERVER_VARS['DOCUMENT_ROOT'].'/';
-  else
-    $_root = $HTTP_SERVER_VARS['DOCUMENT_ROOT'];
+  	$_root = XOOPS_ROOT_PATH."/";
   
   if ($HTTP_POST_FILES[$img]['size']>0) {
     $data['type'] = $HTTP_POST_FILES[$img]['type'];
@@ -263,7 +248,8 @@ function uploadImg($img) {
         $img_name = ereg_replace('(.*)(\.[a-zA-Z]+)$', '\1_'.$i.'\2', $data['name']);
         $i++;
       }
-      if (!move_uploaded_file($data['tmp_name'], $dir_name.$img_name)) {
+
+	  if (!move_uploaded_file($data['tmp_name'], $dir_name.$img_name)) {
         $errors[] = $l->m('error_uploading');
         return false;
       }

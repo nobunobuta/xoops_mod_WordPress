@@ -184,9 +184,13 @@
     var imgSrc = showModalDialog('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value, '', 
       'dialogHeight:420px; dialogWidth:420px; resizable:no; status:no');
     
-    if(imgSrc != null)    
+  	if(imgSrc != null) {
     	this[editor+'_rEdit'].document.execCommand('insertimage', false, imgSrc);
-
+  		var match = imgSrc.match(/(.*)\/thumb-(.*)/);
+  		if (match) {
+  			this[editor+'_rEdit'].document.execCommand('createlink',false,match[1]+'/'+match[2]);
+  		}
+  	}
     SPAW_update_toolbar(editor, true);    
   }
     

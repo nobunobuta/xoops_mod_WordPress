@@ -19,6 +19,7 @@ if( ! defined( 'XOOPS_ROOT_PATH' ) ) {
 	} else {
 		include_once("../../../language/english/admin.php");
 	}
+	include_once("../../../wp-config.php");
 }
 
 // directory where spaw files are located
@@ -73,7 +74,7 @@ $spaw_dropdown_data['paragraph']['Heading 6'] = 'Heading 6';
 $spaw_valid_imgs = array('gif', 'jpg', 'jpeg', 'png');
 
 // allow upload in image library
-$spaw_upload_allowed = true;
+$spaw_upload_allowed = false;
 
 // image libraries
 global $xoopsDB;
@@ -81,24 +82,10 @@ global $xoopsDB;
 $result = $xoopsDB->query("SELECT imgcat_name, imgcat_id, imgcat_storetype FROM ".$xoopsDB->prefix('imagecategory')." ORDER BY imgcat_name ASC");
 $i=0;
 
-while($imgcat = $xoopsDB->fetcharray($result)){
-
-	$spaw_imglibs[$i]["value"] = 'uploads/';
-	$spaw_imglibs[$i]["text"] = $imgcat["imgcat_name"];
-	$spaw_imglibs[$i]["catID"] = $imgcat["imgcat_id"];
-	$spaw_imglibs[$i]["storetype"] = $imgcat["imgcat_storetype"];
-	$spaw_imglibs[$i]["autoID"] = $i;
-
-	$i++;
-}
-
-/*
 $spaw_imglibs = array(
   array(
-    'value'   => 'uploads/',
+  	'value'   => ereg_replace(XOOPS_URL.'\/(.*)',"\\1",get_settings('fileupload_url'))."/" ,
     'text'    => 'Uploads',
   )
 );
-*/
-
 ?>
