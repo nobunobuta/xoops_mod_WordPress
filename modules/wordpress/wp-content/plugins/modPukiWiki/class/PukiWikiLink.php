@@ -20,32 +20,18 @@ class PukiWikiInlineConverter
 		
 		if ($converters === NULL)
 		{
-			if (PukiWikiConfig::GetParam('autourllink')) {
-				$converters = array(
-					'plugin',        // インラインプラグイン
-					'note',          // 注釈
-					'url',           // URL
-					'url_interwiki', // URL (interwiki definition)
-					'mailto',        // mailto:
-					'interwikiname', // InterWikiName
-					'autolink',      // AutoLink
-					'bracketname',   // BracketName
-					'wikiname',      // WikiName
-					'autolink_a',    // AutoLink(アルファベット)
-				);
-			} else {
-				$converters = array(
-					'plugin',        // インラインプラグイン
-					'note',          // 注釈
-					'url_interwiki', // URL (interwiki definition)
-					'mailto',        // mailto:
-					'interwikiname', // InterWikiName
-					'autolink',      // AutoLink
-					'bracketname',   // BracketName
-					'wikiname',      // WikiName
-					'autolink_a',    // AutoLink(アルファベット)
-				);
-			}
+			$converters = array(
+				'plugin',        // インラインプラグイン
+				'note',          // 注釈
+				'url',           // URL
+				'url_interwiki', // URL (interwiki definition)
+				'mailto',        // mailto:
+				'interwikiname', // InterWikiName
+				'autolink',      // AutoLink
+				'bracketname',   // BracketName
+				'wikiname',      // WikiName
+				'autolink_a',    // AutoLink(アルファベット)
+			);
 		}
 		if ($excludes !== NULL)
 		{
@@ -213,15 +199,19 @@ class PukiWikiLink
 			if (PukiWikiFunc::is_local_page($page)) {
 				$passage = "";
 				$title = PukiWikiConfig::getParam('link_compact') ? '' : " title=\"$s_page$passage\"";
-				$url = sprintf(PukiWikiConfig::getParam('LocalShowURL'),$r_page);
-				return "<a href=\"$url$anchor\"$title>$s_alias</a>";
+				$url = sprintf(PukiWikiConfig::getParam('LocalShowURL'),$r_page.$anchor);
+				return "<a href=\"$url\"$title>$s_alias</a>";
 			}
 		}
 		if (defined('MOD_PUKI_WIKI_URL')) {
 			if (PukiWikiFunc::is_page($page)) {
 				$passage = "";
 				$title = PukiWikiConfig::getParam('link_compact') ? '' : " title=\"$s_page$passage\"";
-				return "<a href=\"".MOD_PUKI_WIKI_URL."?$r_page$anchor\"$title>$s_alias</a>";
+				if (defined('XOOPS_URL') and MOD_PUKI_WIKI_VER=='1.3' and PukiWikiConfig::getParam('use_static_url')) {
+					return "<a href=\"".XOOPS_URL.'/modules/pukiwiki/'.PukiWikiFunc::get_pgid_by_name($page).".html{$anchor}\"$title>$s_alias</a>";
+				} else {
+					return "<a href=\"".MOD_PUKI_WIKI_URL."?$r_page$anchor\"$title>$s_alias</a>";
+				}
 			} else {
 				$retval = "$s_alias<a href=\"".MOD_PUKI_WIKI_URL."?cmd=edit&amp;page=$r_page$r_refer\">".PukiWikiConfig::getParam('_symbol_noexists')."</a>";
 				if (!PukiWikiConfig::getParam('link_compact')) {
@@ -231,7 +221,7 @@ class PukiWikiLink
 			}
 		} else {
 			return $s_alias;
-		}
+			}
 	}
 }
 // インラインプラグイン
@@ -311,29 +301,51 @@ class PukiWikiLink_url extends PukiWikiLink
 	function get_pattern()
 	{
 		$s1 = $this->start + 1;
+		if (PukiWikiConfig::GetParam('autourllink')) {
 		return <<<EOD
 (\[\[             # (1) open bracket
  ((?:(?!\]\]).)+) # (2) alias
- (?:>|:)
+ (>|:)            # (3) separator
 )?
-(                 # (3) url
+(                 # (4) url
  (?:https?|ftp|news):\/\/[!~*'();\/?:\@&=+\$,%#\w.-]+
 )
 (?($s1)\]\])      # close bracket
 EOD;
+		} else {
+		return <<<EOD
+(\[\[             # (1) open bracket
+ ((?:(?!\]\]).)+) # (2) alias
+ (>|:)            # (3) separator
+)
+(                 # (4) url
+ (?:https?|ftp|news):\/\/[!~*'();\/?:\@&=+\$,%#\w.-]+
+)
+(?($s1)\]\])      # close bracket
+EOD;
+		}
 	}
 	function get_count()
 	{
-		return 3;
+		return 4;
 	}
 	function set($arr,$page)
 	{
-		list(,,$alias,$name) = $this->splice($arr);
+		list(,,$alias,$separator,$name) = $this->splice($arr);
+		$this->separator = $separator;
 		return parent::setParam($page,htmlspecialchars($name),'','url',$alias == '' ? $name : $alias);
 	}
 	function toString()
 	{
-		return "<a href=\"{$this->name}\">{$this->alias}</a>";
+		if ($this->separator == ">")
+			return "<a href=\"{$this->name}\">{$this->alias}</a>";
+		else
+		{
+			$target = "";
+			if ($target = PukiWikiConfig::getParam('link_target'))
+				$target = " target=\"{$target}\"";
+			return "<a href=\"{$this->name}\"{$target}>{$this->alias}</a>";
+		}
 	}
 }
 // url (InterWiki definition type)
@@ -381,6 +393,7 @@ class PukiWikiLink_mailto extends PukiWikiLink
 	function get_pattern()
 	{
 		$s1 = $this->start + 1;
+		if (PukiWikiConfig::GetParam('autourllink')) {
 		return <<<EOD
 (?:
  \[\[
@@ -389,6 +402,16 @@ class PukiWikiLink_mailto extends PukiWikiLink
 ([\w.-]+@[\w-]+\.[\w.-]+) # (2) mailto
 (?($s1)\]\])              # close bracket if (1)
 EOD;
+		} else {
+		return <<<EOD
+(?:
+ \[\[
+ ((?:(?!\]\]).)+)(?:>|:)  # (1) alias
+)
+([\w.-]+@[\w-]+\.[\w.-]+) # (2) mailto
+(?($s1)\]\])              # close bracket if (1)
+EOD;
+		}
 	}
 	function get_count()
 	{
@@ -528,15 +551,19 @@ class PukiWikiLink_wikiname extends PukiWikiLink
 			if (PukiWikiFunc::is_local_page($page)) {
 				$passage = "";
 				$title = PukiWikiConfig::getParam('link_compact') ? '' : " title=\"$s_page$passage\"";
-				$url = sprintf(PukiWikiConfig::getParam('LocalShowURL'),$r_page);
-				return "<a href=\"$url$anchor\"$title>$s_alias</a>";
+				$url = sprintf(PukiWikiConfig::getParam('LocalShowURL'),$r_page.$anchor);
+				return "<a href=\"$url\"$title>$s_alias</a>";
 			}
 		}
 		if (defined('MOD_PUKI_WIKI_URL')) {
 			if (PukiWikiFunc::is_page($page)) {
 				$passage = "";
 				$title = PukiWikiConfig::getParam('link_compact') ? '' : " title=\"$s_page$passage\"";
-				return "<a href=\"".MOD_PUKI_WIKI_URL."?$r_page$anchor\"$title>$s_alias</a>";
+				if (defined('XOOPS_URL') and MOD_PUKI_WIKI_VER=='1.3' and PukiWikiConfig::getParam('use_static_url')) {
+					return "<a href=\"".XOOPS_URL.'/modules/pukiwiki/'.PukiWikiFunc::get_pgid_by_name($page).".html{$anchor}\"$title>$s_alias</a>";
+				} else {
+					return "<a href=\"".MOD_PUKI_WIKI_URL."?$r_page$anchor\"$title>$s_alias</a>";
+				}
 			} else {
 				// ページ作成リンクをつけないオプション追加 by nao-pon
 				if (PukiWikiConfig::getParam('makepage_link')) return $s_alias;

@@ -14,11 +14,20 @@
 // レンダリングキャッシュを有効にする
 	$_settings['use_cache'] = 0;
 /////////////////////////////////////////////////
+// PukiWikiModへのリンクを静的URL形式にする
+	$_settings['use_static_url'] = 0;
+/////////////////////////////////////////////////
 // 改行を反映する(改行を<br />に置換する)
 	$_settings['line_break'] = 0;
 /////////////////////////////////////////////////
 // <pre>の行頭スペースをひとつ取り除く
 	$_settings['preformat_ltrim'] = 1;
+/////////////////////////////////////////////////
+// <pre>をスクロールバーを出さずに表示する行数(環境やスタイルによっては正確ではない)
+	$_settings['pre_maxlines'] = 20;
+/////////////////////////////////////////////////
+// URLリンクを、[[alias:URL]]と指定したときのターゲット
+	$_settings['link_target'] = '_blank';
 /////////////////////////////////////////////////
 // 拡張テーブル書式を使用する
 	$_settings['ExtTable'] = false;
@@ -115,4 +124,15 @@
 		'^#contents$'=>'<del>#contents</del>',
 		'&amp;(#[0-9]+|#x[0-9a-f]+|'.$_entity_pattern.');'=>'&$1;',
 	);
+	if (defined('MOD_PUKI_UPLOAD_URL')) {
+		$_rules= array_merge($_rules, array(
+			'\s(\:\))' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'smile.gif" alt="$1" />',
+			'\s(\:D)' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'bigsmile.gif" alt="$1" />',
+			'\s(\:p)' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'huh.gif" alt="$1" />',
+			'\s(XD)' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'oh.gif" alt="$1" />',
+			'\s(\;\))' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'wink.gif" alt="$1" />',
+			'\s(\;\()' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'sad.gif" alt="$1" />',
+			'(&amp;heart;)' => ' <img src="'.MOD_PUKI_UPLOAD_URL.'heart.gif" alt="$1" />',
+		));
+	}
 ?>

@@ -791,7 +791,7 @@ class PukiWikiTable extends PukiWikiElement
 		return $lines_tmp;
 	}
 	function get_table_style($string) {
-//		echo "TABLE: $string \n";
+//		echo "TABLE: $string <br>\n";
 		$colors_reg = "aqua|navy|black|olive|blue|purple|fuchsia|red|gray|silver|green|teal|lime|white|maroon|yellow|transparent";
 		//$this->table_around = "<br clear=all /><br />";
 		$this->table_around = "<br clear=all />";
@@ -871,7 +871,7 @@ class PukiWikiTable extends PukiWikiElement
 			$this->table_around = "";
 		}
 //		echo "TABLE2: $string<br>\n";
-		if (preg_match("/[^F]T(LEFT|CENTER|RIGHT)?:([0-9]+[%]?)/i",$string,$reg)) {
+		if (preg_match("/(TLEFT|TCENTER|TRIGHT|(?:[^F]T))?:([0-9]+[%]?)/i",$string,$reg)) {
 			if (array_key_exists (2,$reg)) {
 				if (!strpos($reg[2],"%")) $reg[2] .= "px";
 				$this->table_sheet .= "width:".$reg[2].";";
@@ -986,7 +986,14 @@ class PukiWikiPre extends PukiWikiElement
 
 	function toString()
 	{
-		return $this->wrap(join("\n", $this->elements), 'pre' ,' class="'.PukiWikiConfig::getParam('style_prefix').'pre"');
+		$maxline = PukiWikiConfig::getParam('pre_maxlines') ? PukiWikiConfig::getParam('pre_maxlines') :20;
+		$count = count($this->elements);
+		if ($count>$maxline) {
+			$count = $maxline+1.5;
+			return $this->wrap(join("\n", $this->elements), 'pre' ,' style="height:'.$count*1.2.'em;" class="'.PukiWikiConfig::getParam('style_prefix').'pre"');
+		} else {
+			return $this->wrap(join("\n", $this->elements), 'pre' ,' class="'.PukiWikiConfig::getParam('style_prefix').'pre"');
+		}
 	}
 }
 
