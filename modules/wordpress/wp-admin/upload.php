@@ -55,8 +55,18 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
                 $image_new_width = $image_width/$image_ratio;
                 //height > width
             }
-            
-            $thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
+            if (function_exists('gd_info')) {
+	            $gdver=gd_info();
+	            if(strstr($gdver["GD Version"],"1.")!=false){
+	            	//For GD
+	                $thumbnail = imagecreate($image_new_width, $image_new_height);
+	            }else{
+	            	//For GD2
+	                $thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
+	            }
+			} else {
+                $thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
+			}
             @imagecopyresized($thumbnail, $image, 0, 0, 0, 0, $image_new_width, $image_new_height, $image_attr[0], $image_attr[1]);
             
             // move the thumbnail to it's final destination
