@@ -12,7 +12,7 @@ if( ! defined( 'WP_XOOPS_SEARCH_INCLUDED' ) ) {
 			require(XOOPS_ROOT_PATH."/modules/wordpress/wp-config.php");
 			$wp_inblock = 0;
 		}
-
+		$time_difference = get_settings('time_difference');
 		$now = date('Y-m-d H:i:s',(time() + ($time_difference * 3600)));
 		$where = "(post_status = 'publish') AND (post_date <= '".$now."')";
 		
