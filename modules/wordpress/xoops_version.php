@@ -3,7 +3,7 @@ $modversion['name'] = _MI_WORDPRESS_NAME;
 $modversion['dirname'] = 'wordpress';
 
 $modversion['description'] = _MI_WORDPRESS_DESC;
-$modversion['version'] = "0.01b";
+$modversion['version'] = "0.01f";
 $modversion['credits'] = "";
 $modversion['author'] = _MI_WORDPRESS_AUTHOR;
 $modversion['help'] = "help.html";
@@ -73,7 +73,6 @@ $modversion['blocks'][7]['file'] = "wp_recent_comments.php";
 $modversion['blocks'][7]['name'] = _MI_WORDPRESS_BNAME7;
 $modversion['blocks'][7]['description'] = _MI_WORDPRESS_BDESC7;
 $modversion['blocks'][7]['show_func'] = "b_wp_recent_comments_show";
-
 
 $modversion['blocks'][8]['file'] = "wp_contents.php";
 $modversion['blocks'][8]['name'] = _MI_WORDPRESS_BNAME8;
