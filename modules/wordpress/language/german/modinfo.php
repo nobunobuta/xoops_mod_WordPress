@@ -35,7 +35,8 @@ define("_MI_WP_USE_XOOPS_SMILE","Nutze XOOPS Default Smilies");
 define("_MI_WP_USE_XOOPS_SMILE_DESC","Wordpress verwendet die XOOPS Smilies anstatt der eigenen.");
 
 define("_MI_WP_USE_THEME_TEMPLATE","Use Template file under theme directory, when display content XOOPS block.");
-define("_MI_WP_USE_THEME_TEMPLATE_DESC","Use Template file(content_block-template.php) under theme directory, when display content XOOPS blo// Block Name
+define("_MI_WP_USE_THEME_TEMPLATE_DESC","Use Template file(content_block-template.php) under theme directory, when display content XOOPS block.");
+// Block Name
 define("_MI_WORDPRESS_BNAME1","WordPress%s Kalender");
 define("_MI_WORDPRESS_BDESC1","WordPress Kalender");
 

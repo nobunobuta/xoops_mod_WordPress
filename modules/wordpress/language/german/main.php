@@ -26,7 +26,7 @@ define("_WP_CAL_DECEMBER", "Dezember");
 
 define("_WP_CAL_SMONTH_LEN", 3);
 
-define("_WP_MONTH_FORMAT","%MONAT %JAHR");
+define("_WP_MONTH_FORMAT","%MONTH %YEAR"); //Don't Translate This String change only layout)
 define("_WP_BY_MONTHLY","Monatlich");
 define("_WP_LIST_CAT_ALL","Alle Kategorie");
 
