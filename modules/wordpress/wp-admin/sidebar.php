@@ -1,19 +1,18 @@
 <?php
 require_once('admin.php');
-
 $mode = 'sidebar';
-
 $standalone = 1;
 require_once('admin-header.php');
 
-get_currentuserinfo();
-
-if ($user_level == 0)
-	die (_LANG_P_CHEATING_ERROR);
+if ($user_level == 0) {
+	redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+	exit();
+}
 
 $time_difference = get_settings('time_difference');
 
-if (isset($_GET['a'])&&('b' == $_GET['a'])) {
+param('action','string','');
+if ($action == 'done') {
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

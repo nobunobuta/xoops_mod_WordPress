@@ -17,7 +17,8 @@ case 'promote':
 		$user_data = get_userdata($id);
 		$usertopromote_level = $user_data->user_level;
 		if (($user_level <= $usertopromote_level) and ( $user_ID != 1)){
-			die('Can&#8217;t change the level of a user whose level is higher than yours.');
+			redirect_header($siteurl.'/wp-admin/user.php',5,'Can&#8217;t change the level of a user whose level is higher than yours.');
+			exit();
 		}
 		
 		if ('up' == $prom) {
@@ -41,8 +42,10 @@ case 'promote':
 		$user_data = get_userdata($id);
 		$usertodelete_level = $user_data->user_level;
 
-		if (0 != $usertodelete_level)
-			die('Can&#8217;t delete a user whose level is higher than yours.');
+		if (0 != $usertodelete_level) {
+			redirect_header($siteurl.'/wp-admin/user.php',5,'Can&#8217;t delete a user whose level is higher than yours.');
+			exit();
+		}
 
 		$post_ids = $wpdb->get_col("SELECT ID FROM {$wpdb->posts[$wp_id]} WHERE post_author = $id");
 		if ($post_ids) {

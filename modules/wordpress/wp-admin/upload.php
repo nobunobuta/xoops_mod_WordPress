@@ -130,12 +130,15 @@ function targetopener(blah, closeme, closeonly) {
 <body>
 <h1 id="wphead"><a href="http://wordpress.xwd.jp/" rel="external" target="_blank"><span>WordPress Japan</span></a></h1>
 <?php
-if ($user_level == 0) //Checks to see if user has logged in
-	die (_LANG_P_CHEATING_ERROR);
+if ($user_level == 0) {
+	die(_LANG_P_CHEATING_ERROR);
+	exit();
+}
 
-if (!get_settings('use_fileupload')) //Checks if file upload is enabled in the config
-	die (_LANG_WAU_UPLOAD_DISABLED."</body></html>");
-
+if (!get_settings('use_fileupload')) {
+//Checks if file upload is enabled in the config
+	die(_LANG_WAU_UPLOAD_DISABLED);
+}
 $allowed_types = explode(' ', trim(get_settings('fileupload_allowedtypes')));
 
 if ($_POST['submit']) {

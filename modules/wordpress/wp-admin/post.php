@@ -75,7 +75,7 @@ switch($action) {
 				$location = 'bookmarklet.php?action=done';
 				break;
 			case 'sidebar':
-				$location = 'sidebar.php?a=b';
+				$location = 'sidebar.php?action=done';
 				break;
 			default:
 				$location = 'post.php';
