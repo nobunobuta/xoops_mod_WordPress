@@ -90,6 +90,7 @@ function wp_insert_post($postarr = array()) {
 	$post_content = $wpdb->escape($post_content);
 	$post_title = $wpdb->escape($post_title);
 	$post_excerpt = $wpdb->escape($post_excerpt);
+	$post_name = sanitize_title($post_title);
 	
 	// Make sure we set a valid category
 	if (0 == count($post_category) || !is_array($post_category)) {
@@ -102,16 +103,25 @@ function wp_insert_post($postarr = array()) {
 		$post_date = current_time('mysql');
 
 	$sql = "INSERT INTO {$wpdb->posts[$wp_id]} 
-		(post_author, post_date, post_content, post_title, post_excerpt, post_category, post_status) 
-		VALUES ('$post_author','$post_date','$post_content','$post_title', '$post_excerpt','$post_cat', '$post_status')";
+		(post_author, post_date, post_content, post_title, post_excerpt, post_category, post_status, post_name) 
+		VALUES ('$post_author','$post_date','$post_content','$post_title', '$post_excerpt','$post_cat', '$post_status', '$post_name')";
 
 	$result = $wpdb->query($sql);
-	$post_ID = $wpdb->insert_id;
-	
-	wp_set_post_cats('',$post_ID,$post_category);
+	if ($result) {
+		$post_ID = $wpdb->insert_id;
+		
+		if ($post_name == "") {
+			$post_name = "post-".$post_ID;
+			$wpdb->query("UPDATE {$wpdb->posts[$wp_id]} SET post_name='$post_name' WHERE ID = $post_ID");
+		}
 
-	// Return insert_id if we got a good result, otherwise return zero.
-	return $result?$post_ID:0;
+		wp_set_post_cats('',$post_ID,$post_category);
+		do_action('publish_post', $post_ID);
+
+		return $post_ID;
+	} else {
+		return 0;
+	}
 }
 
 function wp_get_single_post($postid = 0, $mode = OBJECT) {
@@ -164,6 +174,10 @@ function wp_update_post($postarr = array()) {
 	$post_excerpt = $wpdb->escape($post_excerpt);
 
 	$post_modified = current_time('mysql');
+	$post_name = sanitize_title($post_title);
+	if ($post_name == "") {
+		$post_name = "post-".$ID;
+	}
 	
 	$sql = "UPDATE {$wpdb->posts[$wp_id]} 
 		SET post_content = '$post_content',
@@ -174,19 +188,18 @@ function wp_update_post($postarr = array()) {
 		post_modified = '$post_modified',
 		post_excerpt = '$post_excerpt',
 		ping_status = '$ping_status',
+		post_name = '$post_name',
 		comment_status = '$comment_status'
 		WHERE ID = $ID";
 
-//	logIO("O",$sql);
-//	post_category = $post_category[0],
-//	post_status = '$post_status',
-//	post_date = '$post_date',
-	
 	$result = $wpdb->query($sql);
-
-	wp_set_post_cats('',$ID,$post_category);
-	
-	return $wpdb->rows_affected;
+	if ($result) {
+		wp_set_post_cats('',$ID,$post_category);
+		do_action('publish_post', $ID);
+		return $wpdb->rows_affected;
+	} else {
+		return 0;
+	}
 }
 
 function wp_get_post_cats($blogid = '1', $post_ID = 0) {
