@@ -109,8 +109,11 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 			$output .= '<hr width="100%" />';
 			$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('comments_rss2_url').'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss_comment.gif" /></a></div>';
 		}
-
-		$block['content'] = $output;
+		ob_start();
+		block_style_get($wp_num);
+		echo $output;
+		$block['content'] = ob_get_contents();
+		ob_end_clean();
 		return $block;
 	}
 	function tkzy_get_recent_comments($limit = 10, $cat_date=1, $show_type = 1) { 

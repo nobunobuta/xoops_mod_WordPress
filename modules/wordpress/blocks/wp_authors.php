@@ -63,6 +63,7 @@ if( ! defined( 'WP_AUTHORS_INCLUDED' ) ) {
 		$feed = ($show_rss2_icon == 1) ? 'rss2' : '' ;
 		$feed_image = ($show_rss2_icon == 1) ? $siteurl.'/wp-images/rss-mini.gif' : '';
 		ob_start();
+		block_style_get($wp_num);
 		echo "<ul class='wpBlockList'>\n";
 		list_authors2($optioncount,$exclude_admin,$idmode, $hide_empty,$feed,$feed_image);
 		echo "</ul>\n";

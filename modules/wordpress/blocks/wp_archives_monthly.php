@@ -47,6 +47,7 @@ if( ! defined( 'WP_ARCHIVES_MONTHLY_INCLUDED' ) ) {
 		}
 
 		ob_start();
+		block_style_get($wp_num);
 		if ($block_style == 0) {
 		// Simple Listing
 			echo "<ul class='wpBlockList'>\n";
