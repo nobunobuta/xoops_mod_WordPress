@@ -958,7 +958,11 @@ function trackback($trackback_url, $title, $excerpt, $ID, $charset = "") {
 	$url = urlencode(get_permalink($ID));
 	$query_string = "title=$title1&url=$url&blog_name=$blog_name1&excerpt=$excerpt1&charset=$charset";
 	$trackback_url = parse_url($trackback_url);
-	$http_request  = 'POST '.$trackback_url['path']." HTTP/1.0\r\n";
+	if ($trackback_url['query']=="") {
+		$http_request  = 'POST '.$trackback_url['path']." HTTP/1.0\r\n";
+	} else {
+		$http_request  = 'POST '.$trackback_url['path']."?".$trackback_url['query']." HTTP/1.0\r\n";
+	}
 	$http_request .= 'Host: '.$trackback_url['host']."\r\n";
 	$http_request .= 'Content-Type: application/x-www-form-urlencoded; charset='.$charset."\r\n";
 	$http_request .= 'Content-Length: '.strlen($query_string)."\r\n";
@@ -1780,7 +1784,7 @@ function is_referer_search_engine($engine = 'google') {
     global $siteurl;
 
 	$referer = urldecode($_SERVER[HTTP_REFERER]);
-    //echo "referer is: $referer<br />";
+    // echo "referer is: $referer<br />";
 	if ( ! $engine ) {
 		return 0;
 	}
