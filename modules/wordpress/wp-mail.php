@@ -98,7 +98,6 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				if ($use_phoneemail) {
 					$subject = explode($phoneemail_separator, $subject);
 					$subject = trim($subject[0]);
-					echo $subject."<br/>";
 				}
 				if (!ereg($subjectprefix, $subject)) {
 					continue;
@@ -160,8 +159,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		if ($att_boundary != "") {
 			$contents = explode('--'.$att_boundary, $content);
 			$content = $contents[1];
-			$content = explode("\r\n\r\n",$content);
-			$content = $content[1];
+			$content = preg_replace("/.*?\r\n\r\n/","",$content);
 		}
 		if ($hatt_boundary != "") {
 			$contents = explode('--'.$hatt_boundary, $content);
@@ -402,7 +400,7 @@ function wp_getattach($content,$prefix="",$create_thumbs=0)
 {
 	$contents = explode("\r\n\r\n",$content);
 	$subtype = preg_match("/Content-Type: [^\/]*\/([^\;]*);/",$contents[0],$matches);
-	if ($subtype) $subtype = $matches[1];
+	if ($subtype) $subtype = strtolower($matches[1]);
 	$temp_file = "";
 	if (in_array($subtype, array("gif","jpg","jpeg","png"))) {
 		if (($prefix == 0) && eregi("name=\"?([^\"\n]+)\"?",$contents[0], $filereg)) {
