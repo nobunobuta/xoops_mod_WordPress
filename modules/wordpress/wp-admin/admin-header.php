@@ -62,7 +62,7 @@ if ($standalone == 0) {
 		echo  bloginfo('name');
 		$blog_name =  ob_get_contents();
 		ob_end_clean();
-		$module_title = $blog_name ." &raquo;".$title;
+		$module_title = $blog_name ." : ".$title;
 		$xoopsTpl->assign('xoops_module_header', '<link rel="stylesheet" href="'.$css_file.'" type="text/css" />');
 		$xoopsTpl->assign("xoops_pagetitle",$module_title);
 	}else{
@@ -87,7 +87,6 @@ setTimeout("redirect();", 600);
 }
 } // redirect
 ?>
-<?php if (isset($xfn)) : ?>
 <script language="javascript" type="text/javascript">
 //<![CDATA[
 
@@ -102,6 +101,8 @@ setTimeout("redirect();", 600);
     function helpWindow(url) {
 		window.open(url, "Help", "width=640, height=450, location=0, menubar=0, resizable=0, scrollbars=1, status=1, titlebar=0, toolbar=0, screenX=60, left=60, screenY=60, top=60");
 	}
+
+<?php if (isset($xfn)) : ?>
 	function GetElementsWithClassName(elementName, className) {
 	   var allElements = document.getElementsByTagName(elementName);
 	   var elemColl = new Array();
@@ -150,9 +151,9 @@ setTimeout("redirect();", 600);
 	}
 	
 	window.onload = blurry;
+<?php endif; ?>
 //]]>
 </script>
-<?php endif; ?>
 <?php do_action('admin_head', ''); ?>
 <?php
 if ($profile==0) {

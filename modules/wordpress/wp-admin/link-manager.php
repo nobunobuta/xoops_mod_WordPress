@@ -297,6 +297,7 @@ switch ($action) {
   case 'linkedit':
   {
     $standalone=0;
+	$xfn = true;
     include_once ('admin-header.php');
     if ($user_level < get_settings('links_minadminlevel')) {
       die("You have no right to edit the links for this blog.<br />Ask for a promotion to your <a href='mailto:".get_settings('admin_email')."'>blog admin</a>. :)");
