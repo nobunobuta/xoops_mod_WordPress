@@ -1,5 +1,109 @@
-2004-05-24  0.0.3-CVSSNAP
-    多言語対応中
+2004-05-28  0.1.1
+	* wp-config-extra.php:
+	* wp-includes/vars.php:
+		XOOPS Smilies をXoopsのsmilesテーブルより取得
+
+	* wp-admin/edit-form-advanced.php:
+	* wp-admin/edit-form.php:
+	* wp-admin/quicktags.php:
+	* wp-admin/quicktags_spaw.js:
+	* wp-includes/vars.php:
+	* wp-settings.php:
+		XOOPS Smilies 表示Optionを追加
+
+	* wp-admin/post.php:
+		日本語タイトル記事の省略タイトルの命名に対応
+
+	* wp-includes/functions.php:
+	* wp-mail.php:
+	* wp-moblog.php:
+		メール投稿時のデフォルトカテゴリー設定不具合に対応
+		多言語対応
+
+	* blocks/wp_contents.php:
+	* index.php:
+	* language/english/main.php:
+	* language/english/modinfo.php:
+	* language/japanese/main.php:
+	* language/japanese/modinfo.php:
+	* wp-admin/edit.php:
+	* wp-comments-popup.php:
+		多言語対応
+
+	* xoops_install.php:
+		初期設定項目の最適化
+
+	* wp-admin/categories.php:
+	* wp-includes/links.php:
+		カテゴリの扱いを少し変更
+
+	* xoops_version.php:
+		XOOPS Smilies Option設定、ブロックのオプション設定を追加
+
+	* wp-blog-header.php:
+	* wp-includes/template-functions.php:
+		多言語対応
+		カテゴリーの扱いを少し変更
+
+	* blocks/wp_archives_monthly.php:
+	* blocks/wp_categories.php:
+		ブロックの表示オプションを幾つか追加
+
+	* wp-config-extra.php:
+		XOOPS Smilies 表示Optionを追加
+		多言語対応
+
+	* blocks/wp_calendar.php:
+	* blocks/wp_recent_comments.php:
+	* language/english/admin.php:
+	* language/english/main.php:
+	* language/english/modinfo.php:
+	* language/japanese/main.php:
+	* language/japanese/modinfo.php:
+	* sql/mysql.sql:
+	* wp-admin/auth.php:
+	* wp-admin/edit-form-advanced.php:
+	* wp-admin/edit-form-comment.php:
+	* wp-admin/edit-form.php:
+	* wp-admin/edit.php:
+	* wp-admin/link-manager.php:
+	* wp-admin/post.php:
+	* wp-admin/spaw/dialogs/img_library.php:
+	* wp-admin/spaw/lib/lang/ja/ja_lang_data.inc.php:
+	* wp-blog-header.php:
+	* wp-comments-post.php:
+	* wp-comments.php:
+	* wp-config-extra.php:
+	* wp-config.php:
+	* wp-includes/functions.php:
+	* wp-includes/kses.php:
+	* wp-includes/template-functions.php:
+	* wp-includes/vars.php:
+	* wp-mail.php:
+	* wp-moblog.php:
+	* wp-pass.php:
+	* wp-register.php:
+	* wp-settings.php:
+	* wp-trackback.php:
+	* xmlrpc.php:
+	* xoops_install.php:
+		First try to use in English
+
+	* xoops_version.php:
+		0.1.1 Release
+
+	* wp-admin/install-config.php:
+	* wp-admin/install-config.php.orig:
+	* wp-admin/install-helper.php:
+	* wp-admin/install-helper.php.orig:
+	* wp-admin/install.php:
+	* wp-admin/install.php.orig:
+		Rename WordPress Original Installer(XOOPS Module dosen't use them)
+
+	* phpinfo.php:
+	* phpinfo.php.orig:
+		Rename phpinfo diagnostic PHP sctipt for security purpose.
+
 2004-05-23  0.0.2d
 	* wp-includes/functions.php:
 		PING送信時の接続タイムアウトを30秒に
