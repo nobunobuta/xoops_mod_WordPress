@@ -11,7 +11,7 @@ CREATE TABLE wp_categories (
   PRIMARY KEY  (`cat_ID`),
   UNIQUE KEY `cat_name` (`cat_name`),
   KEY `category_nicename` (`category_nicename`)
-) TYPE=MyISAM CHARSET=latin1;
+) ;
 
 #
 # テーブルのダンプデータ `wp_categories`
@@ -39,7 +39,7 @@ CREATE TABLE wp_comments (
   PRIMARY KEY  (`comment_ID`),
   KEY `comment_approved` (`comment_approved`),
   KEY `comment_post_ID` (`comment_post_ID`)
-) TYPE=MyISAM CHARSET=latin1;
+);
 
 #
 # テーブルのダンプデータ `wp_comments`
@@ -67,7 +67,7 @@ CREATE TABLE wp_linkcategories (
   `text_after_all` varchar(128) NOT NULL default '</li>',
   `list_limit` int(11) NOT NULL default '-1',
   PRIMARY KEY  (`cat_id`)
-) TYPE=MyISAM CHARSET=latin1;
+);
 
 #
 # テーブルのダンプデータ `wp_linkcategories`
@@ -99,7 +99,7 @@ CREATE TABLE wp_links (
   PRIMARY KEY  (`link_id`),
   KEY `link_category` (`link_category`),
   KEY `link_visible` (`link_visible`)
-) TYPE=MyISAM CHARSET=latin1;
+);
 
 #
 # テーブルのダンプデータ wp_links
@@ -122,7 +122,7 @@ CREATE TABLE wp_optiongroup_options (
   `option_id` int(11) NOT NULL default '0',
   `seq` int(11) NOT NULL default '0',
   PRIMARY KEY  (`group_id`,`option_id`)
-) TYPE=MyISAM CHARSET=latin1;
+);
 
 #
 # テーブルのダンプデータ wp_optiongroup_options
@@ -229,7 +229,7 @@ CREATE TABLE wp_optiongroups (
   `group_desc` varchar(255) default NULL,
   `group_longdesc` tinytext,
   PRIMARY KEY  (`group_id`)
-) TYPE=MyISAM CHARSET=latin1;
+);
 
 #
 # テーブルのダンプデータ wp_optiongroups
@@ -263,7 +263,7 @@ CREATE TABLE wp_options (
   `option_description` tinytext NOT NULL,
   `option_admin_level` int(11) NOT NULL default '1',
   PRIMARY KEY  (`option_id`,`blog_id`,`option_name`)
-) TYPE=MyISAM CHARSET=latin1;
+);
 
 #
 # テーブルのダンプデータ wp_options
@@ -368,7 +368,7 @@ CREATE TABLE wp_optiontypes (
   `optiontype_id` int(11) NOT NULL auto_increment,
   `optiontype_name` varchar(64) NOT NULL default '',
   PRIMARY KEY  (`optiontype_id`)
-) TYPE=MyISAM CHARSET=latin1;
+);
 
 #
 # テーブルのダンプデータ wp_optiontypes
@@ -398,7 +398,7 @@ CREATE TABLE wp_optionvalues (
   `optionvalue_seq` int(11) default NULL,
   UNIQUE KEY `option_id` (`option_id`,`optionvalue`(255)),
   KEY `option_id_2` (`option_id`,`optionvalue_seq`)
-) TYPE=MyISAM CHARSET=latin1;
+);
 
 #
 # テーブルのダンプデータ wp_optionvalues
@@ -443,7 +443,7 @@ CREATE TABLE wp_post2cat (
   `category_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`rel_id`),
   KEY `post_id` (`post_id`,`category_id`)
-) TYPE=MyISAM CHARSET=latin1;
+);
 
 #
 # テーブルのダンプデータ wp_post2cat
@@ -479,7 +479,7 @@ CREATE TABLE wp_posts (
   PRIMARY KEY  (`ID`),
   KEY `post_name` (`post_name`),
   KEY `post_status` (`post_status`)
-) TYPE=MyISAM CHARSET=latin1;
+);
 
 #
 # テーブルのダンプデータ wp_posts
@@ -515,4 +515,4 @@ CREATE TABLE wp_users (
   `user_description` text NOT NULL,
   PRIMARY KEY  (`ID`),
   UNIQUE KEY `user_login` (`user_login`)
-) TYPE=MyISAM CHARSET=latin1;
+);
