@@ -1,6 +1,6 @@
 <?php
 function wp_mail_receive() {
-  global $xoopsDB, $wpdb, $wp_id, $siteurl;
+  global $xoopsDB, $wpdb, $wp_id, $siteurl, $blog_charset;
   
 	require_once(ABSPATH . WPINC . '/class-pop3.php');
 	timer_start();
@@ -366,7 +366,7 @@ function wp_mail_receive() {
 
 					pingWeblogs($blog_ID);
 					pingBlogs($blog_ID);
-					pingback($content, $post_ID);
+//					pingback($content, $post_ID);
 					do_action('publish_post', $post_ID);
 					do_action('publish_phone', $post_ID);
 				} 
