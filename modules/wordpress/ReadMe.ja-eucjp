@@ -24,6 +24,33 @@ XOOPS¥â¥¸¥å¡¼¥ëÍÑ¤Î¥¤¥ó¥¹¥È¡¼¥é¤âºî¤Ã¤ÆÍ­¤ê¤Þ¤¹¤Î¤Ç¡¢¥â¥¸¥å¡¼¥ë¥¤¥ó¥¹¥È¡¼¥ë¤À¤±¤
 
 -----
 ½¤ÀµÍúÎò
+0.3.2  [2004-09-05]
+¡¡½¤Àµ¹àÌÜ¡Ë
+¡¡¡¡¡Ý¥â¥Ö¥í¥°¤ÎApple-MailÂÐ±þ¡Ê¥Æ¥¹¥ÈÃæ¡Ë
+¡¡¡¡¡Ý¥â¥Ö¥í¥°¤ÇXOOPS¥æ¡¼¥¶ID¤Î´Á»úÂÐ±þ¡Ê¥Æ¥¹¥ÈÃæ¡Ë
+¡¡¡¡¡Ý¥×¥é¥°¥¤¥ó´ÉÍý²èÌÌ¤ÎÈ½¤ê¤Ë¤¯¤«¤Ã¤¿¥á¥Ã¥»¡¼¥¸¤ò½¤Àµ
+¡¡¡¡¡Ý¥×¥é¥°¥¤¥ó¤ÎÆÉ¹þ¾ò·ï¤ò¾¯¤·½¤Àµ
+¡¡¡¡¡¡¡¡¥³¥á¥ó¥È¤Ø¤Î¥×¥é¥°¥¤¥óÅ¬ÍÑ¤¬Àµ³Î¤Ë¹Ô¤ï¤ì¤ë¤è¤¦¤Ë½¤Àµ¤·¤Þ¤·¤¿
+¡¡¡¡¡ÝPukiWiki¥×¥é¥°¥¤¥óÍÑmodPukiWikiºÇ¿·ÈÇÅ¬ÍÑ
+¡¡¡¡¡ÝPukiWiki¥×¥é¥°¥¤¥óÍÑ¤Îµ­»ö¥Ö¥í¥Ã¥¯¥¹¥¿¥¤¥ë¤òÄÉ²Ã
+¡¡¡¡¡ÝºÇ¶á¤Î¥³¥á¥ó¥È°ìÍ÷¤ÎÆâÍÆ¤Ë¥×¥é¥°¥¤¥ó¤òÅ¬ÍÑ¤¹¤ë¤è¤¦¤Ë½¤Àµ
+¡¡¡¡¡ÝPukiWiki¥×¥é¥°¥¤¥ó»ÈÍÑ¥Ö¥í¥°¤Î¤³¤¦¤µ¤®Åê¹ÆÍÑ¤ËHTML->Wiki´Ê°×ÊÑ´¹¤òÍÑ°Õ
+¡¡¡¡¡¡¡¡PukiWiki¥×¥é¥°¥¤¥ó¤òÍ­¸ú¤Ë¤·¤Æ¤¤¤ë¾ì¹ç¤Ç¡¢¤³¤¦¤µ¤®¤«¤é¤ÎÅê¹Æ¤òÀßÄê¤µ¤ì¤ë¾ì¹ç¤Ï¡¢
+¡¡¡¡¡¡¡¡xmlrpc.php¤Î¥Ñ¥é¥á¡¼¥¿¤Ëtowiki=1¤ò»ØÄê¤·¤Æ²¼¤µ¤¤¡£
+¡¡¡¡¡Ý¥³¥á¥ó¥È¥Ý¥Ã¥×¥¢¥Ã¥×µ¡Ç½¤Î½¤Àµ
+¡¡¡¡¡Ý°ìÉô¤ËPHP¥·¥ç¡¼¥È¥¿¥°¤¬»Ä¤Ã¤Æ¤¤¤¿¤Î¤ò½¤Àµ(Thanks tohokuaiki!)
+¡¡¡¡¡ÝApache¤ÎRewrite¥â¥¸¥å¡¼¥ë¤ò»ÈÍÑ¤·¤Ê¤¤µ¼»÷Åª¤Ê¥Ñ¡¼¥Þ¥Í¥ó¥È¥ê¥ó¥¯µ¡Ç½¤òÄÉ²Ã
+¡¡¡¡¡ÝXOOPS¥â¥¸¥å¡¼¥ë¤ÇÉÔÍ×¤Ê¥Õ¥¡¥¤¥ë¤Î°ìÉôÀ°Íý¡¦ºï½ü
+¡¡¡¡¡¡¡¡ºï½ü¤·¤¿¥Õ¥¡¥¤¥ë)
+¡¡¡¡¡¡¡¡¡¡b2rdf.php, b2rss.php, b2rss2.php, phpinfo.php.orig, wp-admin/change-functions.php, 
+¡¡¡¡¡¡¡¡¡¡wp-admin/change-functions.php.orig, wp-admin/change.php, wp-admin/change.php.orig, 
+¡¡¡¡¡¡¡¡¡¡wp-admin/install-config.php, wp-admin/install-config.php.orig, wp-admin/install-helper.php, 
+¡¡¡¡¡¡¡¡¡¡wp-admin/install-helper.php.orig, wp-admin/install.php, wp-admin/install.php.orig, 
+¡¡¡¡¡¡¡¡¡¡wp-admin/templates.php, wp-admin/templates.php.orig, wp-admin/upgrade-functions.php, 
+¡¡¡¡¡¡¡¡¡¡wp-admin/upgrade-functions.php.orig, wp-admin/upgrade.php, wp-admin/upgrade.php.orig,
+¡¡¡¡¡¡¡¡¡¡wp-config-sample.php, wp-login.php, wp-login.php.orig, wp-moblog.php.orig,
+¡¡¡¡¡¡¡¡¡¡wp-register.php, wp-register.php.orig, 
+
 0.3.1  [2004-08-23]
 ¡¡µ¡Ç½ÄÉ²Ã¡Ë
 ¡¡¡¡¡ÝPukiWiki¥ì¥ó¥À¡¼¥×¥é¥°¥¤¥ó¤òÄÉ²Ã

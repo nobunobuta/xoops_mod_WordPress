@@ -1,3 +1,69 @@
+2004-09-05  0.3.2
+	* wp-admin/edit-form-advanced.php:
+	* wp-admin/edit-form.php:
+		PHPショートタグを正式なPHPタグに変更。(Thanks tohokuaiki!)
+
+	* wp-comments-popup.php:
+		コメントポップアップ機能の修正
+
+	* wp-mail.php:
+		Apple-Mail対応
+		XOOPSユーザIDの漢字対応
+
+	* wp-blog-header.php:
+		ApacheのRewriteモジュール無しに擬似的なパーマネントリンク機能追加
+
+	* wp-lang/lang_ja.php:
+		プラグイン管理画面のメッセージ修正
+
+	* blocks/wp_contents.php:
+	* wp-settings.php:
+		プラグインの読込条件を少し修正
+
+	* wp-content/plugins/modPukiWiki/....
+	* themes/default/wp-layout.css:
+		modPukiWiki最新版適用
+
+	* themes/default/wp-blocks.css.php:
+		PukiWikiレンダリングブログの記事ブロックスタイルを追加
+
+	* blocks/wp_recent_comments.php:
+		コメント一覧の内容にプラグインを適用するように修正
+
+	* xmlrpc.php:
+		こうさぎ投稿用のHTML->Wiki簡易変換
+
+	* b2rdf.php:
+	* b2rss.php:
+	* b2rss2.php:
+	* phpinfo.php.orig:
+	* wp-admin/change-functions.php:
+	* wp-admin/change-functions.php.orig:
+	* wp-admin/change.php:
+	* wp-admin/change.php.orig:
+	* wp-admin/install-config.php:
+	* wp-admin/install-config.php.orig:
+	* wp-admin/install-helper.php:
+	* wp-admin/install-helper.php.orig:
+	* wp-admin/install.php:
+	* wp-admin/install.php.orig:
+	* wp-admin/upgrade-functions.php:
+	* wp-admin/upgrade-functions.php.orig:
+	* wp-admin/upgrade.php:
+	* wp-admin/upgrade.php.orig:
+	* wp-config-sample.php:
+	* wp-login.php:
+	* wp-login.php.orig:
+	* wp-moblog.php.orig:
+	* wp-register.php:
+	* wp-register.php.orig:
+		XOOPSモジュールで不要なファイルの整理
+
+	* wp-admin/menu.txt:
+	* wp-admin/templates.php:
+	* wp-admin/templates.php.orig:
+		テンプレート編集機能の削除
+
 2004-08-23 0.3.1
 	* wp-content/plugins/pukiwiki.php:
 	* themes/default/wp-layout.css:

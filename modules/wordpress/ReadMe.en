@@ -55,6 +55,24 @@ XOOPS_ROOT_PATH
 ------------
 ChangeLog
 ------------
+0.3.2  [2004-09-05]
+Fixed Bugs)
+-Could not post with Apple-Mail
+-Some bugs relate with PukiWiki plugin is fixed
+-Comment popup function option is fixed
+-PHP short tags were in some sources.(Thanks tohokuaiki!)
+-Attempt to simulate permalink function without Apache mod_rewrite
+-Some Japanese specific issues.
+-Delete following deprecated files
+	b2rdf.php, b2rss.php, b2rss2.php, phpinfo.php.orig, wp-admin/change-functions.php, 
+	wp-admin/change-functions.php.orig, wp-admin/change.php, wp-admin/change.php.orig, 
+	wp-admin/install-config.php, wp-admin/install-config.php.orig, wp-admin/install-helper.php, 
+	wp-admin/install-helper.php.orig, wp-admin/install.php, wp-admin/install.php.orig, 
+	wp-admin/templates.php, wp-admin/templates.php.orig, wp-admin/upgrade-functions.php, 
+	wp-admin/upgrade-functions.php.orig, wp-admin/upgrade.php, wp-admin/upgrade.php.orig,
+	wp-config-sample.php, wp-login.php, wp-login.php.orig, wp-moblog.php.orig,
+	wp-register.php, wp-register.php.orig, 
+
 0.3.1  [2004-08-23]
 Added Features)
 -Add PukiWiki rendering plugin (PukiWiki is Japanese major Wiki Engine)
