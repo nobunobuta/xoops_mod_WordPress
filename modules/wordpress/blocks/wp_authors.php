@@ -13,12 +13,28 @@ if( ! defined( 'WP_AUTHORS_INCLUDED' ) ) {
 		$chk = ( $options[0] == 0 ) ? " checked='checked'" : "";
 		$form .= "<input type='radio' name='options[0]' value='0'".$chk." />&nbsp;"._NO."</td></tr>";
 
-		$form .= "<tr><td>Show RSS2 feed icon:</td>";
-		$chk = ( $options[1] == 1 ) ? " checked='checked'" : "";
-		$form .= "<td><input type='radio' name='options[1]' value='1'".$chk." />&nbsp;"._YES."&nbsp;";
-		$chk = ( $options[1] == 0 ) ? " checked='checked'" : "";
-		$form .= "<input type='radio' name='options[1]' value='0'".$chk." />&nbsp;"._NO."</td></tr>";
+		$form .= "<tr><td>Name Option:</td>";
+		$form .= "<td><select name='options[1]'>";
+        $form .= "<option value='nickname'";
+		$form .= (($options[1] == 'nickname') ? " selected" : "") ."> Nick Name </option>";
+        $form .= "<option value='login'";
+		$form .= (($options[1] == 'login') ? " selected" : "") ."> Login Name </option>";
+        $form .= "<option value='firstname'";
+		$form .= (($options[1] == 'firstname') ? " selected" : "") ."> First Name </option>";
+        $form .= "<option value='lastname'";
+		$form .= (($options[1] == 'lastname') ? " selected" : "") ."> Last Name </option>";
+        $form .= "<option value='namefl'";
+		$form .= (($options[1] == 'namefl') ? " selected" : "") ."> Full Name (First Last) </option>";
+        $form .= "<option value='namelf'";
+		$form .= (($options[1] == 'namelf') ? " selected" : "") ."> Full Name (Last First)</option>";
+		$form .= "</select></td></tr>";
 
+		$form .= "<tr><td>Show RSS2 feed icon:</td>";
+		$chk = ( $options[2] == 1 ) ? " checked='checked'" : "";
+		$form .= "<td><input type='radio' name='options[2]' value='1'".$chk." />&nbsp;"._YES."&nbsp;";
+		$chk = ( $options[2] == 0 ) ? " checked='checked'" : "";
+		$form .= "<input type='radio' name='options[2]' value='0'".$chk." />&nbsp;"._NO."</td></tr>";
+		
 		$form .= "</table>";
 		return $form;
 	}
@@ -26,7 +42,8 @@ if( ! defined( 'WP_AUTHORS_INCLUDED' ) ) {
 	function b_wp_authors_show($options, $wp_num="")
 	{
 		$with_count =  (empty($options[0]))? 0 : $options[0];
-		$show_rss2_icon = (empty($options[1]))? 0 : $options[1];
+		$idmode = (empty($options[1]))? '' : $options[1];
+		$show_rss2_icon = (empty($options[2]))? 0 : $options[2];
 
 		global $wpdb, $siteurl,  $wp_id, $wp_inblock ,$user_cache;
 
@@ -46,7 +63,7 @@ if( ! defined( 'WP_AUTHORS_INCLUDED' ) ) {
 		$feed = ($show_rss2_icon == 1) ? 'rss2' : '' ;
 		$feed_image = ($show_rss2_icon == 1) ? $siteurl.'/wp-images/rss-mini.gif' : '';
 		ob_start();
-		list_authors($optioncount,$exclude_admin,$show_fullname,$hide_empty,$feed,$feed_image);
+		list_authors2($optioncount,$exclude_admin,$idmode, $hide_empty,$feed,$feed_image);
 		$block['content'] = ob_get_contents();
 		ob_end_clean();
 		return $block;
