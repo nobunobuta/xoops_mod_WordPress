@@ -36,6 +36,10 @@ CREATE TABLE wp3_comments (
   `comment_content` text NOT NULL,
   `comment_karma` int(11) NOT NULL default '0',
   `comment_approved` enum('0','1') NOT NULL default '1',
+  `comment_agent` varchar(255) NOT NULL default '',
+  `comment_type` varchar(20) NOT NULL default '',
+  `comment_parent` int(11) NOT NULL default '0',
+  `user_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`comment_ID`),
   KEY `comment_approved` (`comment_approved`),
   KEY `comment_post_ID` (`comment_post_ID`)
@@ -505,3 +509,13 @@ CREATE TABLE wp3_users (
   PRIMARY KEY  (`ID`),
   UNIQUE KEY `user_login` (`user_login`)
 );
+
+CREATE TABLE wp3_postmeta (
+  `meta_id` int(11) NOT NULL auto_increment,
+  `post_id` int(11) NOT NULL default '0',
+  `meta_key` varchar(255) default NULL,
+  `meta_value` text,
+   PRIMARY KEY (`meta_id`),
+   KEY `post_id` (`post_id`),
+   KEY `meta_key` (`meta_key`)
+)";
