@@ -14,6 +14,9 @@
 	* wp-trackback.php:
 		Trackback受信が、mbstring extention不在の場合に受けられないようになっていた。
 
+	* wp-mail.php:
+		Windowsサーバで添付ファイルがきちんと保存されない不具合に対応
+
 	* wp-admin/categories.php:
 	* wp-admin/edit-comments.php:
 	* wp-admin/edit.php:
@@ -27,9 +30,6 @@
 	* wp-includes/links.php:
 	* xoops_search.php:
 		ＤＢ操作関連の細かな不具合の修正
-
-	* wp-mail.php:
-		Windowsサーバで添付ファイルがきちんと保存されない不具合に対応
 
 2004-07-04  0.2.1
 	* blocks/wp_recent_comments.php:
