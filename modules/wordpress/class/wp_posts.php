@@ -132,6 +132,7 @@ class WordPressPostHandler  extends XoopsTableObjectHandler
      */
 	function insert(&$record,$force=false,$updateOnlyChanged=false)
 	{
+		$record->setVar('post_modified', current_time('mysql'));
 		if ($result = parent::insert($record, $force, $updateOnlyChanged)) {
 			if (trim($record->getVar('post_name'))=='') {
 				$record->setVar('post_name', "post-".$record->getVar('ID'));
@@ -152,7 +153,7 @@ class WordPressPostHandler  extends XoopsTableObjectHandler
 	 */
 	function delete(&$record,$force=false)
 	{
-		//記事のの削除
+		//記事の削除
 		if (!(parent::delete($record, $force))) {
 			return false;
 		}
