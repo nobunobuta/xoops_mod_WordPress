@@ -22,10 +22,18 @@ $use_cache = 1;
 $output_debugging_info = 0;	# =1 if you want to output debugging info
 $time_difference = get_settings('time_difference');
 
-if ($use_phoneemail) {
-	// if you're using phone email, the email will already be in your timezone
-	$time_difference = 0;
-}
+//if ($use_phoneemail) {
+//	// if you're using phone email, the email will already be in your timezone
+//	$time_difference = 0;
+//}
+
+//Get Server Time Zone
+// If Server Time Zone is not collect, Please comment out following line;
+$server_timezone = date("O")/100;
+// If Server Time Zone is not collect, Please uncomment following line and set collect timezone value;
+// $server_timezone = 9
+
+$weblog_timezone = $server_timezone + $time_difference;
 
 error_reporting(2037);
 $mailserver = "{".$mailserver_url.":".$mailserver_port."/pop3/notls}";
@@ -80,19 +88,21 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 	$ddate_m = $date_arr[1];
 	$ddate_d = $date_arr[0];
 	$ddate_Y = $date_arr[2];
+	
+	$mail_timezone = trim(ereg_replace("\([^)]*\)","",$date_arr[4]))/100;
+	$mail_time_difference = $weblog_timezone - $mail_timezone;
+
 	for ($i=0; $i<12; $i++) {
 		if ($ddate_m == $dmonths[$i]) {
 			$ddate_m = $i+1;
 		}
 	}
 	$ddate_U = mktime($ddate_H, $ddate_i, $ddate_s, $ddate_m, $ddate_d, $ddate_Y);
-	$ddate_U = $ddate_U + ($time_difference * 3600);
+	$ddate_U = $ddate_U + ($mail_time_difference * 3600);
 	$post_date = date('Y-m-d H:i:s', $ddate_U);
-
 
 	$ddate_today = time() + ($time_difference * 3600);
 	$ddate_difference_days = ($ddate_today - $ddate_U) / 86400;
-
 
 	# starts buffering the output
 	ob_start();
@@ -113,6 +123,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		$content = imap_fetchbody($mbox, $iCount, 1);
 		$struct = imap_fetchstructure($mbox, $iCount);
 		$content = trim($content);
+//Please uncomment following line, only if you want to check Raw content.
 //		echo "<p><b>Raw content:</b><br /><pre>".$content.'</pre></p>';
 
 		$btpos = strpos($content, $bodyterminator);
@@ -184,8 +195,11 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 		$attachment = imap_fetchbody($mbox, $iCount, 2);
 		if ($attachment != '') {
 			$attachment = imap_base64($attachment);
-			$temp_file = mb_convert_encoding(mb_decode_mimeheader($struct->parts[1]->dparameters[0]->value),$blog_charset,"auto");
-			if (!($temp_fp = fopen("attach/" . $temp_file, "w"))) die("error");
+			$temp_file = mb_convert_encoding(mb_decode_mimeheader($struct->parts[1]->dparameters[0]->value),$blog_charset,"auto");			echo $temp_file;
+			if (!($temp_fp = fopen("attach/" . $temp_file, "w"))) {
+				echo("error1");
+				continue;
+			}
 			fputs($temp_fp, $attachment);
 			fclose($temp_fp);
 			wp_create_thumbnail("attach/" .$temp_file,160,"");
@@ -200,7 +214,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				echo '<p><b>Wrong login</b></p></div>';
 				continue;
 			} else {
-				$sql = "SELECT * FROM ".$xoopsDB->prefix('users')." WHERE uname='$user_login' AND pass='".md5(trim($user_pass))."' ORDER BY uid DESC LIMIT 1";
+				$sql = "SELECT * FROM ".$xoopsDB->prefix('users')." WHERE uname='".trim($user_login)."' AND pass='".md5(trim($user_pass))."' ORDER BY uid DESC LIMIT 1";
 				$result1 = $wpdb->get_row($sql);
 		
 				if (!$result1) {
@@ -209,7 +223,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				}
 			}
 		} else {
-			$sql = "SELECT ID, user_level FROM $tableusers WHERE user_login='$user_login' AND user_pass='$user_pass' ORDER BY ID DESC LIMIT 1";
+			$sql = "SELECT ID, user_level FROM $tableusers WHERE user_login='".trim($user_login)."' AND user_pass='$user_pass' ORDER BY ID DESC LIMIT 1";
 			$result = $wpdb->get_row($sql);
 
 			if (!$result) {
@@ -232,7 +246,7 @@ for ($iCount=1; $iCount<=$Count; $iCount++) {
 				$post_category = $default_category;
 			}
 			$content = addslashes(mb_convert_encoding(trim($content),$blog_charset,"JIS"));
-			if (!$thisisforfunonly) {
+			if (!$emailtestonly) {
 				$post_title = addslashes(trim($post_title));
 				#If we find an attachment, add it to the post
 				if ($attachment) {
