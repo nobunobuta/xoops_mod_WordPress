@@ -71,6 +71,15 @@ $modversion['config'][3] = array(
 	'default'		=> array(1) ,
 );
 
+$modversion['config'][4] = array(
+	'name'			=> 'wp_use_xoops_smilies' ,
+	'title'			=> '_MI_WP_USE_XOOPS_SMILE' ,
+	'description'	=> '_MI_WP_USE_XOOPS_SMILE_DESC' ,
+	'formtype'		=> 'yesno' ,
+	'valuetype'		=> 'int' ,
+	'default'		=> 0 ,
+);
+
 $modversion['blocks'][1]['file'] = "wp_calendar.php";
 $modversion['blocks'][1]['name'] =  _MI_WORDPRESS_BNAME1;
 $modversion['blocks'][1]['description'] = _MI_WORDPRESS_BDESC1;
@@ -80,11 +89,15 @@ $modversion['blocks'][2]['file'] = "wp_archives_monthly.php";
 $modversion['blocks'][2]['name'] = _MI_WORDPRESS_BNAME2;
 $modversion['blocks'][2]['description'] = _MI_WORDPRESS_BDESC2;
 $modversion['blocks'][2]['show_func'] = "b_wp_archives_monthly_show";
+$modversion['blocks'][2]['edit_func'] = "b_wp_archives_monthly_edit";
+$modversion['blocks'][2]['options'] = "0|0";
 
 $modversion['blocks'][3]['file'] = "wp_categories.php";
 $modversion['blocks'][3]['name'] =_MI_WORDPRESS_BNAME3;
 $modversion['blocks'][3]['description'] = _MI_WORDPRESS_BDESC3;
 $modversion['blocks'][3]['show_func'] = "b_wp_categories_show";
+$modversion['blocks'][3]['edit_func'] = "b_wp_categories_edit";
+$modversion['blocks'][3]['options'] = "0|0";
 
 $modversion['blocks'][4]['file'] = "wp_links.php";
 $modversion['blocks'][4]['name'] =_MI_WORDPRESS_BNAME4;
