@@ -2,6 +2,8 @@
 	* wp-mail.php
 	* wp-moblog.php
 		メールによる投稿時のパスワード確認をXOOPSのユーザ情報を利用するように変更
+	* wp-admin/upload.php
+		画像アップロード時に、ダイアログから「このコードを投稿フォームに挿入」ができなかった
 
 2004-05-14  0.0.2
 	* wp-config.php:
