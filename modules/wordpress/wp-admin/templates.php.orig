@@ -1,4 +1,5 @@
 <?php
+$_my_ext_=pathinfo(__FILE__);if ($_my_ext_['extension']!="php") exit;
 $title = "Template &amp; file editing";
 
 function add_magic_quotes($array) {
@@ -58,12 +59,9 @@ case 'update':
 break;
 
 default:
-// Temporaly Disable
-	include_once '../../../mainfile.php';
-	$loc = XOOPS_URL."/modules/". basename(dirname(dirname(__FILE__)))."/wp-admin/post.php";
-	redirect_header($loc, 1, "This functions is temporaly disabled.");
-//
+
 	require_once('admin-header.php');
+
 	if ($user_level <= 3) {
 		die('<p>You have no right to edit the template for this blog.<br>Ask for a promotion to your <a href="mailto:'.get_settings('admin_email').'">blog admin</a>. :)</p>');
 	}
@@ -140,5 +138,4 @@ default:
 break;
 }
 
-include("admin-footer.php");
-?> 
+include("admin-footer.php") ?> 

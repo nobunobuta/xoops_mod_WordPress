@@ -1,5 +1,6 @@
 <?php
 /* ÈþÆý */
+$_my_ext_=pathinfo(__FILE__);if ($_my_ext_['extension']!="php") exit;
 $_wp_installing = 1;
 require("../wp-lang/lang_ja.php");
 $wpj_head = <<<EOD

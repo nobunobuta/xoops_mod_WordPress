@@ -1,5 +1,5 @@
 <?php
-
+$_my_ext_=pathinfo(__FILE__);if ($_my_ext_['extension']!="php") exit;
 # pop3-2-b2 mail to blog
 # v0.3 20020716
 # with photo attachment email hack

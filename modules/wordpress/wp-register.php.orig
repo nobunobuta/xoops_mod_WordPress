@@ -1,5 +1,6 @@
 <?php
 /* ÈþÆý */
+$_my_ext_=pathinfo(__FILE__);if ($_my_ext_['extension']!="php") exit;
 require(dirname(__FILE__) . '/wp-config.php');
 
 function add_magic_quotes($array) {
