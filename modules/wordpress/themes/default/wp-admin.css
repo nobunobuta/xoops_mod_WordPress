@@ -70,7 +70,6 @@
 }
 
 #wpAdminMain .checkbox {
-	background: #fff;
 	border: none;
 	margin: 0;
 	padding: 0;
@@ -268,7 +267,7 @@
 }
 
 #wpAdminMain #poststuff {
-	margin-right: 11em;
+	margin-right: 0.5em;
 }
 
 #wpAdminMain #poststuff textarea {
