@@ -185,6 +185,75 @@ function list_authors($optioncount = false, $exclude_admin = true, $show_fullnam
     }
 }
 
+function list_authors2($optioncount = false, $exclude_admin = true, $idmode = '', $hide_empty = true, $feed = '', $feed_image = '') {
+    global $wp_id, $wpdb, $blogfilename;
+
+    $query = "SELECT ID, user_idmode, user_nickname, user_firstname, user_lastname, user_login from {$wpdb->users[$wp_id]} " . ($exclude_admin ? "WHERE ID <> 1 " : '') . "ORDER BY user_nickname";
+    $authors = $wpdb->get_results($query);
+
+    foreach($authors as $author) {
+        $posts = get_usernumposts($author->ID);
+        
+        $name = $author->user_nickname;
+
+	    if (empty($idmode)) {
+	        $idmode = $author->user_idmode;
+	    }
+	    if ($idmode == 'nickname')    $name = $author->user_nickname;
+	    if ($idmode == 'login')    $name = $author->user_login;
+	    if ($idmode == 'firstname')    $name = $author->user_firstname;
+	    if ($idmode == 'lastname')    $name = $author->user_lastname;
+	    if ($idmode == 'namefl')    $name = $author->user_firstname.' '.$author->user_lastname;
+	    if ($idmode == 'namelf')    $name = $author->user_lastname.' '.$author->user_firstname;
+	    if (!$idmode) $name = $author->user_nickname;
+
+        if (! ($posts == 0 && $hide_empty)) echo "<li>";
+        if ($posts == 0) {
+            if (! $hide_empty) echo $name;
+        } else {
+            $link = '<a href="' . get_author_link(0, $author->ID, $author->user_login) . '" title="' . sprintf("Posts by %s", htmlspecialchars($author->user_nickname)) . '">' . stripslashes($name) . '</a>';
+
+            if ( (! empty($feed_image)) || (! empty($feed)) ) {
+                
+                $link .= ' ';
+
+                if (empty($feed_image)) {
+                    $link .= '(';
+                }
+
+                $link .= '<a href="' . get_author_rss_link(0, $author->ID, $author->user_login)  . '"';
+
+                if (! empty($feed)) {
+                    $title =  ' title="' . stripslashes($feed) . '"';
+                    $alt = ' alt="' . stripslashes($feed) . '"';
+                    $name = stripslashes($feed);
+                    $link .= $title;
+                }
+
+                $link .= '>';
+
+                if (! empty($feed_image)) {
+                    $link .= "<img src=\"$feed_image\" border=\"0\" align=\"absbottom\"$alt$title" . ' />';
+                } else {
+                    $link .= $name;
+                }
+                
+                $link .= '</a>';
+
+                if (empty($feed_image)) {
+                    $link .= ')';
+                }
+            }
+
+            if ($optioncount) {
+                $link .= ' ('. $posts . ')';
+            }
+        }
+
+        if (! ($posts == 0 && $hide_empty)) echo "$link</li>";
+    }
+}
+
 function the_author_rss()
 {
 	global $blog_charset;
