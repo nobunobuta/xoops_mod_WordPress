@@ -26,9 +26,13 @@ window.close()
 
 } else {
 
-    $popuptitle = stripslashes($popuptitle);
-    $text = stripslashes($text);
-    
+//    $popuptitle = stripslashes($popuptitle);
+//    $text = stripslashes($text);
+
+	$popuptitle = sanitize_text($popuptitle);
+	$text = sanitize_text($text,true);
+	$popupurl = sanitize_text($popupurl,true, true);
+	
     /* big funky fixes for browsers' javascript bugs */
     
     if (($is_macIE) && (!isset($IEMac_bookmarklet_fix))) {
@@ -48,7 +52,8 @@ window.close()
     
     $post_title = $_REQUEST['post_title'];
     if (!empty($post_title)) {
-        $post_title =  stripslashes($post_title);
+//        $post_title =  stripslashes($post_title);
+        $post_title =  sanitize_text($post_title);
     } else {
         $post_title = $popuptitle;
     }

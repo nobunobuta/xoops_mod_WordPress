@@ -74,6 +74,7 @@ if ($standalone == 0) {
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $blog_charset ?>" />
 <?php
 if ($redirect==1) {
+	$redirect_url = sanitize_text($redirect_url);
 ?>
 <script language="javascript" type="text/javascript">
 <!--

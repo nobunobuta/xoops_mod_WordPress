@@ -275,7 +275,7 @@ foreach ($posts as $post) { start_wp();
 				if ($m)
 				echo "&m=$m";
 				echo "'>Edit</a>";
-				echo " - <a href='post.php?action=delete&amp;post=$id' onclick=\"return confirm('You are about to delete this post \'".the_title('','',0)."\'\\n  \'OK\' to delete, \'Cancel\' to stop.')\">Delete</a> ";
+				echo " - <a href='post.php?action=delete&amp;post=$id' onclick=\"return confirm('You are about to delete this post \'".htmlspecialchars(the_title('','',0))."\'\\n  \'OK\' to delete, \'Cancel\' to stop.')\">Delete</a> ";
 				}
 				if ('private' == $post->post_status) echo ' - <strong>Private</strong>';
 				?>

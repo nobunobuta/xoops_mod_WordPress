@@ -98,7 +98,7 @@ case 'edit':
     <h2><?php echo _LANG_C_EDIT_TITLECAT; ?></h2>
     <form name="editcat" action="categories.php" method="post">
         <input type="hidden" name="action" value="editedcat" />
-        <input type="hidden" name="cat_ID" value="<?php echo $_GET['cat_ID'] ?>" />
+        <input type="hidden" name="cat_ID" value="<?php echo $cat_ID; ?>" />
         <p><?php echo _LANG_C_NAME_SUBCAT; ?><br />
         <input type="text" name="cat_name" value="<?php echo $cat_name; ?>" /></p>
         <p><?php echo _LANG_C_NAME_PARENT; ?><br />

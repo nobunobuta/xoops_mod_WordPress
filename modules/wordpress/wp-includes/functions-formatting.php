@@ -98,6 +98,53 @@ function sanitize_title_with_dashes($title) {
     return $title;
 }
 
+function sanitize_text($str, $isArea=false, $isURL=false) {
+	if (get_magic_quotes_gpc()) {
+		$str = stripslashes($str);
+	}
+	$patterns = array();
+	$replacements = array();
+
+	$patterns[] = "/&amp;/i";
+	$replacements[] = '&';
+	$patterns[] = "/&nbsp;/";
+	$replacements[] = '&amp;nbsp;';
+
+	if ($isArea) {
+		$patterns[] = "/&lt;(\/)?\s*script.*?&gt;/si";
+		$replacements[] = "[$1script]";
+		$patterns[] = "/&lt;(\/)?\s*style.*?&gt;/si";
+		$replacements[] = "[$style]";
+		$patterns[] = "/&lt;(\/)?\s*body.*?&gt;/si";
+		$replacements[] = "[$body]";
+		$patterns[] = "/&lt;(\/)?\s*link.*?&gt;/si";
+		$replacements[] = "[$link]";
+		$patterns[] = "/(&lt;.*)(?:onError|onUnload|onBlur|onFocus|onClick|onMouseOver|onSubmit|onReset|onChange|onSelect|onAbort)\s*=\s*(&quot;|&#039;).*\\2(.*?&gt;)/si";
+		$replacements[] = "$1$3";
+		if ($isURL) {
+			$patterns[] = "/(&quot;|&#039;).*/";
+			$replacements[] = "";
+			$patterns[] = "/(?:onError|onUnload|onBlur|onFocus|onClick|onMouseOver|onSubmit|onReset|onChange|onSelect|onAbort)\s*=\s*('|\"|&quot;|&#039;).*(\\1)?/si";
+			$replacements[] = "";
+		}
+	} else {
+		$patterns[] = "/(&#13|&#10).*/";
+		$replacements = "";
+	}
+	if ($isURL) {
+		$patterns[] = "/javascript:/si";
+		$replacements[] = "javascript|";
+		$patterns[] = "/vbscript:/si";
+		$replacements[] = "vbscript|";
+		$patterns[] = "/about:/si";
+		$replacements[] = "about|";
+	}
+	$str = htmlspecialchars($str, ENT_QUOTES);
+	$str = preg_replace($patterns,$replacements, $str);
+	
+	return $str;
+}
+
 function convert_chars($content,$flag='obsolete attribute left there for backwards compatibility') { // html/unicode entities output
 
 	global  $wp_htmltrans, $wp_htmltranswinuni;

@@ -56,8 +56,8 @@ for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 }
 $xfn = true;
 require('admin-header.php');
-@$link_url = stripslashes($_GET['linkurl']);
-@$link_name = htmlentities(stripslashes(urldecode($_GET['name'])));
+@$link_url = sanitize_text($_GET['linkurl']);
+@$link_name = sanitize_text(urldecode($_GET['name']));
 
 ?>
 <ul id="adminmenu2">
