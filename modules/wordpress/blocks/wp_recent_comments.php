@@ -57,6 +57,7 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 					else  $type='[Comment]';
 
 					$comment_author = stripslashes($lcomment->comment_author);
+					$comment_content = apply_filters('comment_text', $lcomment->comment_content);
 					$comment_content = strip_tags($lcomment->comment_content);
 					$comment_content = stripslashes($comment_content);
 					if (function_exists('mb_substr')) {
