@@ -11,6 +11,7 @@
 # [kses strips evil scripts!]
 
 // You could override this in your my-hacks.php file
+global $allowedtags;
 $allowedtags = array(
 				'a' => array(
 					'href' => array(),

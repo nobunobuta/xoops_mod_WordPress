@@ -7,6 +7,7 @@
 		   In every template you do, you got to copy them before the CafeLog 'loop' */
 $blog=1; // enter your blog's ID
 header('Content-type: text/xml');
+include_once (dirname(__FILE__)."/../../mainfile.php");
 require('wp-blog-header.php');
 
 echo '<?xml version="1.0" encoding="'.$blog_charset.'"?'.'>';
