@@ -301,12 +301,14 @@ default:
 	echo " selected"; ?>><?php echo $profiledata->user_lastname." ".$profiledata->user_firstname ?></option>
       </select>        </td>
     </tr>
+<?php if (0) { ?>
     <tr>
       <th scope="row"><?php echo _LANG_WPF_SUBT_NEWPASS; ?></th>
       <td><input type="password" name="pass1" size="16" value="" />
         <input type="password" name="pass2" size="16" value="" /></td>
     </tr>
-  </table>
+<?php } ?>
+	</table>
   <p style=" text-align: center;">
     <input type="submit" value="<?php echo _LANG_WPF_SUBT_UPDATE; ?>" name="submit" /></p>
 	</div>
