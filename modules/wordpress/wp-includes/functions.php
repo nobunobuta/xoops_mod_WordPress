@@ -854,7 +854,6 @@ function pingWeblogs($blog_ID = 1) {
 	global $use_weblogsping, $blogname,$siteurl,$blogfilename,$my_pingserver;
 	if ((!(($blogname=="my weblog") && ($siteurl=="http://example.com") && ($blogfilename=="wp.php"))) && (!preg_match("/localhost\//",$siteurl)) && ($use_weblogsping)) {
 //		$client = new xmlrpc_client("/RPC2", "rpc.weblogs.com", 80);
-//		$client = new xmlrpc_client("/rpc/", "ping.bloggers.jp", 80);
 //		$message = new xmlrpcmsg("weblogUpdates.ping", array(new xmlrpcval($blogname), new xmlrpcval($siteurl."/".$blogfilename)));
 //		$result = $client->send($message);
 
