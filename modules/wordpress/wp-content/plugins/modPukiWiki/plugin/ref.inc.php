@@ -37,17 +37,17 @@ Last-Update:2002-10-29 rev.33
 //   2004/08/10 : PukiWiki添付ファイルは扱えないのでURL参照のみに修正
 
 // GDのバージョンセット(必ず環境に合わせる)
-//if (!defined('_WIKI_GD_VERSION')) define('_WIKI_GD_VERSION',1); // Ver 1
-if (!defined('_WIKI_GD_VERSION')) define('_WIKI_GD_VERSION',2); // Ver 2
+//if (!defined('MOD_PUKI_REF_GD_VERSION')) define('MOD_PUKI_REF_GD_VERSION',1); // Ver 1
+if (!defined('MOD_PUKI_REF_GD_VERSION')) define('MOD_PUKI_REF_GD_VERSION',2); // Ver 2
 
 // file icon image
-if (!defined('REF_FILE_ICON')) define('REF_FILE_ICON','<img src="'.MOD_PUKI_UPLOAD_URL.'file.gif" alt="file" width="20" height="20" />');
+if (!defined('MOD_PUKI_REF_FILE_ICON')) define('MOD_PUKI_REF_FILE_ICON','<img src="'.MOD_PUKI_FILE_ICON.'" alt="file" width="20" height="20" />');
 
 // default alignment
-if (!defined('REF_DEFAULT_ALIGN')) define('REF_DEFAULT_ALIGN','left'); // 'left','center','right'
+if (!defined('MOD_PUKI_REF_DEFAULT_ALIGN')) define('MOD_PUKI_REF_DEFAULT_ALIGN','left'); // 'left','center','right'
 
 // force wrap on default
-if (!defined('REF_WRAP_TABLE')) define('REF_WRAP_TABLE',FALSE); // TRUE,FALSE
+if (!defined('MOD_PUKI_REF_WRAP_TABLE')) define('MOD_PUKI_REF_WRAP_TABLE',FALSE); // TRUE,FALSE
 
 function plugin_ref_inline() {
 
@@ -100,7 +100,7 @@ function plugin_ref_convert() {
 	array_walk($args, 'ref_check_arg', &$params);
 
 	$rets = plugin_ref_body($name,$args,$params);
-	if ($rets['_error']) {
+	if (!empty($rets['_error'])) {
 		$ret = $rets['_error'];
 	} else {
 		$ret = $rets['_body'];
@@ -114,9 +114,9 @@ function plugin_ref_convert() {
 	else if ($params['center'])
 		$align = 'center';
 	else
-		$align = REF_DEFAULT_ALIGN;
+		$align = MOD_PUKI_REF_DEFAULT_ALIGN;
 
-	if ((REF_WRAP_TABLE and !$params['nowrap']) or $params['wrap']) {
+	if ((MOD_PUKI_REF_WRAP_TABLE and !$params['nowrap']) or $params['wrap']) {
 		$ret = wrap_table($ret, $align, $params['around']);
 	}
 	$ret = wrap_div($ret, $align, $params['around']);
@@ -199,8 +199,54 @@ function plugin_ref_body($name,$args,$params){
 		$url = $ext = $info = htmlspecialchars($name);
 		$icon = $size = '';
 		$l_url = $url;
-		$icon = REF_FILE_ICON;
+		$icon = MOD_PUKI_REF_FILE_ICON;
 		if (preg_match('/([^\/]+)$/', $name, $match)) { $ext = $match[1]; }
+	} else {
+		$page = '';
+		if (count($args) > 0) {
+			$_page = $args[0];
+			if (PukiWikiFunc::is_page($_page)) {
+				$page = $_page;
+				array_shift($args);
+			}
+		}
+		//相対パスからフルパスを得る
+		if (preg_match('/^(.+)\/([^\/]+)$/',$name,$matches))
+		{
+			if ($matches[1] == '.' or $matches[1] == '..')
+			{
+				$matches[1] .= '/';
+			}
+			$page = PukiWikiFunc::add_bracket($matches[1]);
+			$name = $matches[2];
+		}
+		$ext = $name;
+		if (MOD_PUKI_WIKI_VER=='1.3') $page=PukiWikiFunc::add_bracket(PukiWikiFunc::strip_bracket($page));
+		$file = MOD_PUKI_WIKI_UPLOAD_DIR.PukiWikiFunc::encode($page).'_'.PukiWikiFunc::encode($name);
+		if (!is_file($file)) {
+			if (!PukiWikiFunc::is_page($page)) { 
+				$rets['_error'] = 'page not found.';
+				return $rets;
+			} else {
+				$rets['_error'] = 'not found.';
+				return $rets;
+			}
+		}
+		$l_url = MOD_PUKI_WIKI_URL.'?plugin=attach&amp;openfile='.rawurlencode($name).'&amp;refer='.rawurlencode($page);
+		$fsize = sprintf('%01.1f',round(filesize($file)/1000,1)).'KB';
+
+		$is_picture = is_picture($file,$page);
+		$is_flash = ($is_picture)? false : plugin_ref_is_flash($file);
+
+		if ($is_picture) {
+			$url = $file;
+			$size = getimagesize($file);
+			$org_w = $size[0];
+			$org_h = $size[1];
+		} else {
+			$lastmod = date('Y/m/d H:i:s',filemtime($file));
+			$info = "$lastmod $fsize";
+		}
 	}
 
 	//タイトルを決定
@@ -450,7 +496,7 @@ function plugin_ref_make_thumb($url,$s_file_base,$width,$height,$org_w,$org_h) {
 	if (!function_exists("ImageCreate")) return $url;//GDをサポートしていない
 
 	$gifread = '';
-	if (_WIKI_GD_VERSION == 2) {
+	if (MOD_PUKI_REF_GD_VERSION == 2) {
 		$imagecreate = "ImageCreateTrueColor";
 		$imageresize = "ImageCopyResampled";
 	}else {

@@ -1,14 +1,14 @@
 <?php
 /*
 Plugin Name: PukiWiki
-Version: 0.1
+Version: 0.3
 Plugin URI: http://www.kowa.org/
 Description:PukiWiki Render
 Author: nobunobu
 Author URI: http://www.kowa.org/
 */
 function pukiwiki($text) {
-	include (dirname(__FILE__).'/modpukiwiki/PukiWiki.php') ;
+	include (dirname(__FILE__).'/modPukiWiki/PukiWiki.php') ;
 
 	$text = stripslashes($text);
 	//<!--more-->への対応
@@ -16,10 +16,7 @@ function pukiwiki($text) {
 	$text = preg_replace("/\s*<a id=\"more-(.*?)\"><\/a>/","\n\n&aname(more-\\1);",$text);
 	
 
-	$render = &new PukiWikiRender;
-	//AutoLinkを有効にしたい場合は次の行をコメントアウトして下さい。
-//	PukiWikiConfig::setParam("autolink",3);
-	
+	$render = &new PukiWikiRender('wordpress');
 	$retstr = $render->transform($text);
 	unset($render);
 	return $retstr;

@@ -60,6 +60,18 @@ class PukiWikiFunc {
 		return file_exists(PukiWikiFunc::get_filename($page));
 	}
 
+	// ローカルページのファイル名を得る
+	function get_local_filename($page)
+	{
+		return MOD_PUKI_DATA_DIR . PukiWikiFunc::encode($page) . '.txt';
+	}
+
+	// ローカルページが存在するか
+	function is_local_page($page,$reload=FALSE)
+	{
+		return file_exists(PukiWikiFunc::get_local_filename($page));
+	}
+
 	// ページ名のエンコード
 	function encode($key)
 	{
@@ -125,11 +137,11 @@ class PukiWikiFunc {
 		
 		// 見出しの固有ID部を削除
 		$id = '';
-		if (preg_match('/^(\*{0,3})(.*?)\[#([A-Za-z][\w-]+)\](.*?)$/m',$str,$matches)) {
+		if (preg_match('/^(\*{0,6})(.*?)\[#([A-Za-z][\w-]+)\](.*?)$/m',$str,$matches)) {
 			$str = $matches[2].$matches[4];
 			$id = $matches[3];
 		} else {
-			$str = preg_replace('/^\*{0,3}/','',$str);
+			$str = preg_replace('/^\*{0,6}/','',$str);
 		}
 		if ($strip) {
 			$str = PukiWikiFunc::strip_htmltag(PukiWikiFunc::make_link(preg_replace($NotePattern,'',$str)));
@@ -375,6 +387,27 @@ class PukiWikiFunc {
 			}
 		}
 		return TRUE;
+	}
+	// 共通リンクディレクトリの処理(該当フルネームを返す:ブラケットなし) by nao-pon
+	function get_real_pagename($page)
+	{
+		static $real_pages = array();
+		
+		$page = PukiWikiFunc::strip_bracket($page);
+		
+		if (isset($real_pages[$page])) return $real_pages[$page];
+		
+		$real_pages[$page] = false;
+		foreach(PukiWikiConfig::getParam('wiki_common_dirs') as $dir)
+		{
+			$check = $dir.$page;
+			if (PukiWikiFunc::is_page($check))
+			{
+				$real_pages[$page] = $check;
+				break;
+			}
+		}
+		return $real_pages[$page];
 	}
 }
 ?>
