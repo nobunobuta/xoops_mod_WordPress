@@ -32,6 +32,7 @@ function permalink_single_rss($file = '') {
 
 function get_permalink($id=false) {
 	global $post, $wpdb, $wp_id;
+	global $permalink_cache;
 	global $siteurl;
 	$id = intval($id);
 	$rewritecode = array(
@@ -49,7 +50,10 @@ function get_permalink($id=false) {
 	);
 
 	if ($id) {
-		$idpost = $wpdb->get_row("SELECT ID, post_date, post_name, post_status, post_author FROM {$wpdb->posts[$wp_id]}  WHERE ID = $id");
+		if (!isset($permalink_cache[$wp_id])||!isset($permalink_cache[$wp_id][$id])) {
+			$permalink_cache[$wp_id][$id] = $wpdb->get_row("SELECT ID, post_date, post_name, post_status, post_author FROM {$wpdb->posts[$wp_id]}  WHERE ID = $id");
+		}
+		$idpost = $permalink_cache[$wp_id][$id];
 	} else {
 		$idpost = $post;
 	}

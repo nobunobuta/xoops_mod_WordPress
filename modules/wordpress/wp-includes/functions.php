@@ -163,6 +163,9 @@ function user_pass_ok($user_login,$user_pass) {
 	global $cache_userdata,$use_cache,$wp_id;
 	if ((empty($cache_userdata[$wp_id][$user_login])) OR (!$use_cache)) {
 		$userdata = get_userdatabylogin($user_login);
+		if($use_cache) {
+			$cache_userdata[$user_login]=$userdata;
+		}
 	} else {
 		$userdata = $cache_userdata[$user_login];
 	}

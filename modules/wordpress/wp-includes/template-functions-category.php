@@ -10,13 +10,13 @@ function get_the_category($id=false) {
     if (isset($category_cache[$wp_id])&&isset($category_cache[$wp_id][$id])) {
         return $category_cache[$wp_id][$id];
 	} else {
-		$categories = $wpdb->get_results("
+		$category_cache[$wp_id][$id] = $wpdb->get_results("
 			SELECT category_id, cat_name, category_nicename, category_description, category_parent
 			FROM  {$wpdb->categories[$wp_id]}, {$wpdb->post2cat[$wp_id]}
 			WHERE {$wpdb->post2cat[$wp_id]}.category_id = cat_ID AND {$wpdb->post2cat[$wp_id]}.post_id = '$id'
 			");
 
-		return $categories;
+		return $category_cache[$wp_id][$id];
 	}
 }
 
