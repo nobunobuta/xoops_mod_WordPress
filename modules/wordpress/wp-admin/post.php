@@ -215,7 +215,7 @@ switch($action) {
         if ($user_level > 0) {
 			$postdata = get_postdata($post);
 			$authordata = get_userdata($postdata['Author_ID']);
-			if ($user_level < $authordata->user_level)
+			if (!user_can_edit($postdata['Author_ID']))
 				die ('You don&#8217;t have the right to edit <strong>'.$authordata[1].'</strong>&#8217;s posts.');
 
 			$content = $postdata['Content'];
@@ -398,7 +398,7 @@ switch($action) {
         $postdata = get_postdata($post_id) or die('Oops, no post with this ID. <a href="post.php">Go back</a>!');
         $authordata = get_userdata($postdata['Author_ID']);
 
-        if ($user_level < $authordata->user_level)
+		if (!user_can_edit($postdata['Author_ID']))
             die ('You don&#8217;t have the right to delete <strong>'.$authordata[1].'</strong>&#8217;s posts.');
 
         // send geoURL ping to "erase" from their DB
@@ -509,7 +509,7 @@ switch($action) {
 	$commentdata = get_commentdata($comment, 1, true) or die('Oops, no comment with this ID. <a href="post.php">Go back</a>!');
 
 	$authordata = get_userdata($postdata['Author_ID']);
-	if ($user_level < $authordata->user_level)
+	if (!user_can_edit($postdata['Author_ID']))
 		die ('You don&#8217;t have the right to delete <strong>'.$authordata->user_nickname.'</strong>&#8217;s post comments. <a href="post.php">Go back</a>!');
 
 	wp_set_comment_status($comment, "delete");

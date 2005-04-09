@@ -133,6 +133,18 @@ function get_usernumposts($userid) {
 	return $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts[$wp_id]} WHERE post_author = $userid");
 }
 
+function user_can_edit($post_author) {
+	if ($GLOBALS['xoopsUser']) {
+		$post_author=intval($post_author);
+		$uid = intval($GLOBALS['xoopsUser']->uid());
+		$userdata = get_userdata($uid);
+		$author_data = get_userdata($post_author);
+		return ( ($uid == $post_author) || ($userdata->user_level == 10) || ($userdata->user_level > $author_data->user_level) );
+	} else {
+		return false;
+	}
+}
+
 // examine a url (supposedly from this blog) and try to
 // determine the post ID it represents.
 function url_to_postid($url = '') {
@@ -1442,10 +1454,10 @@ function rewrite_rules($matches = '', $permalink_structure = '') {
     $authormatch = preg_replace('|^/+|', '', $authormatch);
 
     $authorfeedmatch = $authormatch . '(.*)/' . $feedregex;
-    $authorfeedquery = 'wp-feed.php?author_name=' . rawurlencode(preg_index(1, $matches)) . '&feed=' . preg_index(2, $matches);
+    $authorfeedquery = 'wp-feed.php?author_name=' . preg_index(1, $matches) . '&feed=' . preg_index(2, $matches);
 
     $authormatch = $authormatch . '?(.*)';
-    $authorquery = 'index.php?author_name=' . rawurlencode(preg_index(1, $matches));
+    $authorquery = 'index.php?author_name=' . preg_index(1, $matches);
 
     $rewrite = array(
                      $catfeedmatch => $catfeedquery,

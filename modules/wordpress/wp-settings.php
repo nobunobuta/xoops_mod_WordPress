@@ -63,6 +63,7 @@ if (!strstr($_SERVER['REQUEST_URI'], 'install.php')) {
 $cookiehash = md5($siteurl);
 
 require (ABSPATH . WPINC . '/vars.php');
+require (ABSPATH . WPINC. '/wp-filter-setup.php');
 
 if ($wp_inblock!=1) {
 	if (!defined('XOOPS_PULUGIN'.$wp_id)) {

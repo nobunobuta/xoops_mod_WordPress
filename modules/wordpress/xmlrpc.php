@@ -56,12 +56,13 @@ logIO("I",$HTTP_RAW_POST_DATA);
  */
 function miniHTMLtoWiki($str) {
  global $blog_charset;
-	$wsp = mb_conv("¡¡", $blog_charset, "EUC-JP");
-	$str = preg_replace("/<a href=\"([^\"]*)\">(.*?)<\/a>/", "[[$2:$1]]", $str);
-	$str = preg_replace("/<br \/>/","~\n".$wsp, $str);
-	$str = preg_replace("/<blockquote>/",">\n".$wsp, $str);
-	$str = preg_replace("/<\/blockquote>/", "\n<", $str);
-	$str = preg_replace("/^([^".$wsp."><])/", $wsp."$1", $str);
+	$wsp = mb_conv("¡¡", $GLOBALS['blog_charset'], 'EUC-JP');
+	$str = preg_replace('/(?:<|&lt;)a href\=(?:\"|&quot;)(.*?)(?:\"|&quot;).*?(?:>|&gt;)(.*?)(?:<|&lt;)\/a(?:>|&gt;)/', '[[$2:$1]]', $str);
+	$str = preg_replace('/[\n\r]+/',"~\n".$wsp, $str);
+	$str = preg_replace('/<br \/>/',"~\n".$wsp, $str);
+	$str = preg_replace('/<blockquote>/',">\n".$wsp, $str);
+	$str = preg_replace('/<\/blockquote>/', "\n<", $str);
+	$str = preg_replace('/^([^'.$wsp.'><])/', $wsp.'$1', $str);
 	return $str;
 }
 
@@ -1283,7 +1284,7 @@ function bloggersettemplate($m) {
  **********************/
 #Temporally fix for kousagi
 if ($kousagi) {
-	$mwnewpost_sig =  array(array($xmlrpcString,$xmlrpcInt,$xmlrpcString,$xmlrpcString,$xmlrpcStruct,$xmlrpcInt));
+	$mwnewpost_sig =  array(array($xmlrpcString,$xmlrpcInt,$xmlrpcString,$xmlrpcString,$xmlrpcStruct,$xmlrpcBoolean));
 } else {
 	$mwnewpost_sig =  array(array($xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcStruct,$xmlrpcBoolean));
 }
