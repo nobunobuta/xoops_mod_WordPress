@@ -175,7 +175,7 @@ function comment_text() {
 	global $comment;
 	$comment_text = str_replace('<trackback />', '', $comment->comment_content);
 	$comment_text = str_replace('<pingback />', '', $comment_text);
-	echo apply_filters('comment_text', $comment_text);
+	echo apply_filters('comment_text', stripslashes($comment_text));
 }
 
 function comment_excerpt() {

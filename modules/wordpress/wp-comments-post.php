@@ -36,6 +36,9 @@ $user_ip = $_SERVER['REMOTE_ADDR'];
 $user_domain = gethostbyaddr($user_ip);
 
 	$commentstatus = $wpdb->get_var("SELECT comment_status FROM {$wpdb->posts[$wp_id]} WHERE ID = $comment_post_ID");
+if (null == $commentstatus)
+    die('Oops, no post with this ID.');
+
 if ('closed' == $commentstatus)
 	die('Sorry, comments are closed for this item.');
 

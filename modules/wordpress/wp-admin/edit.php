@@ -270,7 +270,7 @@ foreach ($posts as $post) { start_wp();
 			<p>
 				<strong><?php the_time('Y/m/d @ H:i:s'); ?></strong> [ <a href="edit.php?p=<?php echo $id ?>&c=1"><?php comments_number('no comments', '1 comment', "% comments") ?></a>
 				<?php
-				if (($user_level > $authordata->user_level) or ($user_login == $authordata->user_login)) {
+				if (user_can_edit($post->post_author)) {
 				echo " - <a href='post.php?action=edit&amp;post=$id";
 				if ($m)
 				echo "&m=$m";
@@ -312,7 +312,7 @@ foreach ($posts as $post) { start_wp();
 					    ?>
 							<?php comment_date('Y/m/d') ?> @ <?php comment_time() ?> 
 							<?php 
-							if (($user_level > $authordata->user_level) or ($user_login == $authordata->user_login)) {
+							if (user_can_edit($post->post_author)) {
 								echo "[ <a href=\"post.php?action=editcomment&amp;comment=".$comment->comment_ID."\">Edit</a>";
 								echo " - <a href=\"post.php?action=deletecomment&amp;p=".$post->ID."&amp;comment=".$comment->comment_ID."\" onclick=\"return confirm('You are about to delete this comment by \'".$comment->comment_author."\'\\n  \'OK\' to delete, \'Cancel\' to stop.')\">Delete</a> ";
 								if ( ('none' != $comment_status) && ($user_level >= 3) ) {

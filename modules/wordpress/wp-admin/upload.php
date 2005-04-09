@@ -65,7 +65,12 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
 	                $thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
 	            }
 			} else {
-                $thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
+                if (function_exists('imagecreatetruecolor')) {
+                    $thumbnail = @imagecreatetruecolor($image_new_width, $image_new_height);
+                }
+                if (!$thumbnail) {
+                     $thumbnail =imagecreate($image_new_width, $image_new_width);
+                }
 			}
             @imagecopyresized($thumbnail, $image, 0, 0, 0, 0, $image_new_width, $image_new_height, $image_attr[0], $image_attr[1]);
             
@@ -123,12 +128,15 @@ function targetopener(blah, closeme, closeonly) {
 <body>
 <h1 id="wphead"><a href="http://wordpress.xwd.jp/" rel="external" target="_blank"><span>WordPress Japan</span></a></h1>
 <?php
-if ($user_level == 0) //Checks to see if user has logged in
+if ($user_level == 0) {
 	die (_LANG_P_CHEATING_ERROR);
+	exit();
+}
 
-if (!get_settings('use_fileupload')) //Checks if file upload is enabled in the config
-	die (_LANG_WAU_UPLOAD_DISABLED."</body></html>");
-
+if (!get_settings('use_fileupload')) {
+//Checks if file upload is enabled in the config
+	die(_LANG_WAU_UPLOAD_DISABLED);
+}
 $allowed_types = explode(' ', trim(get_settings('fileupload_allowedtypes')));
 
 if ($_POST['submit']) {
@@ -222,7 +230,7 @@ case 'upload':
     $imgdesc = str_replace('"', '&amp;quot;', $_POST['imgdesc']);
 
     $imgtype = explode(".",$img1_name);
-    $imgtype = $imgtype[count($imgtype)-1];
+    $imgtype = strtolower($imgtype[count($imgtype)-1]);
 
     if (in_array($imgtype, $allowed_types) == false) {
         die("File $img1_name of type $imgtype is not allowed.");
@@ -263,6 +271,7 @@ case 'upload':
         if (!$moved) {
             die("Couldn't Upload Your File to $pathtofile2.");
         } else {
+			chmod($pathtofile2, 0666);
             @unlink($img1);
         }
     
@@ -298,13 +307,14 @@ die();
         @$moved = move_uploaded_file($img1, $pathtofile); //Path to your images directory, chmod the dir to 777
         // move_uploaded_file() can fail if open_basedir in PHP.INI doesn't
         // include your tmp directory. Try copy instead?
-        if(!moved) {
+        if(!$moved) {
             $moved = copy($img1, $pathtofile);
         }
         // Still couldn't get it. Give up.
-        if (!moved) {
+        if (!$moved) {
             die("Couldn't Upload Your File to $pathtofile.");
         } else {
+			chmod($pathtofile, 0666);
             @unlink($img1);
         }
         
@@ -321,7 +331,7 @@ die();
             $max_side = 400;
         }
         elseif($_POST['thumbsize'] == 'custom') {
-            $max_side = $_POST['imgthumbsizecustom'];
+            $max_side = intval($_POST['imgthumbsizecustom']);
         }
         
         $result = wp_create_thumbnail($pathtofile, $max_side, NULL);
