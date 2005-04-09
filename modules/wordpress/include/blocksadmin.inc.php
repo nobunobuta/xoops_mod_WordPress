@@ -311,7 +311,11 @@ if ($op == 'clone_ok') {
 	if( empty($options) ) $options = array();
 	elseif( ! is_array( $options ) ) $options = explode( '|' , $options ) ;
 
-	$clone =& $block->clone();
+	if (method_exists($block, 'xoopsClone')) {
+		$clone =& $block->xoopsClone();
+	} else {
+		$clone =& $block->clone();
+	}
 	if (empty($bmodule)) {
 		xoops_cp_header();
 		xoops_error(sprintf(_AM_NOTSELNG, _AM_VISIBLEIN));

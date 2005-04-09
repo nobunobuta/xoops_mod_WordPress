@@ -93,15 +93,18 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 						$comment_excerpt = substr($comment_content,0,$comment_lenth);
 					}
 					$permalink = get_permalink($lcomment->ID)."#comment-".$lcomment->comment_ID;
-					$output .= '<li><span class="comment-author";">' . $comment_author . ':</span> <a href="' . $permalink;
+					$output .= '<li><span class="comment-author">' . $comment_author . ':</span> <a href="' . $permalink;
 					$output .= '" title="View the entire comment by ' . $comment_author.'">' . $comment_excerpt . '...</a>';
 					if ($show_type) {
-						$output .= '<span style=\"font-size:70%\">- '.$type.'</span>';
+						$output .= '<span style="font-size:70%">- '.$type.'</span>';
 					}
 					$output .= "</li>\n";
 				}
 			}
 			$output .= "</ul>\n";	
+            if ($cat_date) {
+                $output .= "</ul>\n";
+            }
 		} else {
 			$output = tkzy_get_recent_comments($num_of_list, $cat_date, $show_type);
 		}

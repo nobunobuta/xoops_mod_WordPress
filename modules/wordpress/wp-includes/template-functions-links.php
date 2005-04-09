@@ -127,8 +127,7 @@ function edit_post_link($link = _WP_TPL_EDIT_THIS, $before = '', $after = '') {
 	get_currentuserinfo();
 
 	if ($user_level > 0) {
-		$authordata = get_userdata($post->post_author);
-		if ($user_level < $authordata->user_level) {
+		if (!user_can_edit($post->post_author)) {
 			return;
 		}
 	} else {
@@ -145,8 +144,7 @@ function edit_comment_link($link = _WP_TPL_EDIT_THIS, $before = '', $after = '')
 	get_currentuserinfo();
 
 	if ($user_level > 0) {
-		$authordata = get_userdata($post->post_author);
-		if ($user_level < $authordata->user_level) {
+		if (!user_can_edit($post->post_author)) {
 			return;
 		}
 	} else {
