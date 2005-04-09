@@ -1,24 +1,4 @@
 <?php
-
-// Default filters
-add_filter('the_title', 'convert_smilies');
-add_filter('the_title', 'convert_chars');
-add_filter('the_title', 'trim');
-
-add_filter('the_title_rss', 'strip_tags');
-
-add_filter('the_content', 'convert_bbcode');
-add_filter('the_content', 'convert_gmcode');
-add_filter('the_content', 'convert_smilies');
-add_filter('the_content', 'convert_chars');
-add_filter('the_content', 'wpautop');
-
-add_filter('the_excerpt', 'convert_bbcode');
-add_filter('the_excerpt', 'convert_gmcode');
-add_filter('the_excerpt', 'convert_smilies');
-add_filter('the_excerpt', 'convert_chars');
-add_filter('the_excerpt', 'wpautop');
-
 function get_the_password_form() {
 	$output = "<form action='" . get_settings('siteurl') . "/wp-pass.php' method='post'>
 	<p>This post is password protected. To view it please enter your password below:</p>

@@ -16,7 +16,7 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 
 		global $wpdb, $siteurl, $post, $use_cache, $category_cache, $comment_count_cache;
 		global $smilies_directory,  $wp_smiliessearch, $wp_smiliesreplace ,$authordata;
-		global $wp_bbcode,  $wp_gmcode,   $wp_htmltrans, $wp_htmltranswinuni;
+		global $wp_bbcode,  $wp_gmcode,   $wp_htmltrans, $wp_htmltranswinuni,$wp_filter;
 		global $wp_id, $wp_inblock, $xoopsConfig, $previousday, $time_difference ,$day;
 		
 		$id=1;
@@ -149,7 +149,7 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 		function b_wp'.$i.'_contents_show($options) {
 			global $wpdb, $siteurl, $post, $use_cache, $category_cache, $comment_count_cache;
 			global $smilies_directory,  $wp_smiliessearch, $wp_smiliesreplace ,$authordata;
-			global $wp_bbcode,  $wp_gmcode,   $wp_htmltrans, $wp_htmltranswinuni;
+			global $wp_bbcode,  $wp_gmcode,   $wp_htmltrans, $wp_htmltranswinuni, $wp_filter;
 			global $wp_id, $wp_inblock, $xoopsConfig, $previousday, $time_difference ,$day;
 			$wp_id = "'.$i.'";
 			$wp_inblock = 2;

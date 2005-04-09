@@ -1,23 +1,4 @@
 <?php
-
-// Default filters for these functions
-add_filter('comment_author', 'wptexturize');
-add_filter('comment_author', 'convert_chars');
-
-add_filter('comment_email', 'antispambot');
-
-add_filter('comment_url', 'clean_url');
-
-add_filter('comment_text', 'convert_bbcode');
-add_filter('comment_text', 'convert_gmcode');
-add_filter('comment_text', 'convert_chars');
-add_filter('comment_text', 'make_clickable');
-add_filter('comment_text', 'wpautop', 30);
-add_filter('comment_text', 'balanceTags');
-add_filter('comment_text', 'convert_smilies', 20);
-
-add_filter('comment_excerpt', 'convert_chars');
-
 function clean_url($url) {
 	if ('' == $url) return $url;
 	$url = preg_replace('|[^a-z0-9-~+_.?#=&;,/:]|i', '', $url);
