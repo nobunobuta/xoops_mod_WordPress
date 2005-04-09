@@ -76,7 +76,7 @@ function wp_mail_receive() {
 			if ($bodysignal) {
 				$content .= $line;
 			} else {
-				if (preg_match('/^Content-Type:\s+(.*?)\;/i', $line,$match)) {
+				if (preg_match('/^Content-Type:\s*(.*?)\;/i', $line,$match)) {
 					$content_type = $match[1];
 					$content_type = strtolower($match[1]);
 				} 
@@ -239,7 +239,7 @@ function wp_mail_receive() {
 			$flon = 999.0;
 			$secondlineParts = explode(':', strip_tags($secondline));
 			if (strncmp($secondlineParts[0], "POS", 3) == 0) {
-				echo "Found POS:<br>\n"; 
+				echo "Found POS:<br />\n"; 
 				// echo "Second parts is:".$secondlineParts[1];
 				// the second line is the postion listing line
 				$secLineParts = explode(',', $secondlineParts[1]);
@@ -346,9 +346,9 @@ function wp_mail_receive() {
 					// If we find an attachment, add it to the post
 					if ($attachment) {
 						if (file_exists("attach/thumb-" . $attachment)) {
-							$content = "<a href=\"" . $siteurl . "/attach/" . $attachment . "\"><img style=\"float: left;\" hspace=\"6\" src = \"" . $siteurl . "/attach/thumb-" . $attachment . "\"  alt=\"moblog\" ></a>" . $content . "<br clear=left>";
+							$content = "<a href=\"" . $siteurl . "/attach/" . $attachment . "\"><img style=\"float: left;\" hspace=\"6\" src =\"" . $siteurl . "/attach/thumb-" . $attachment . "\" alt=\"moblog\" /></a>" . $content . "<br clear=\"left\" />";
 						} else {
-							$content = "<a href=\"" . $siteurl . "/attach/" . $attachment . "\"><img style=\"float: left;\" hspace=\"6\" src = \"" . $siteurl . "/attach/" . $attachment . "\"  alt=\"moblog\" ></a>" . $content . "<br clear=left>";
+							$content = "<a href=\"" . $siteurl . "/attach/" . $attachment . "\"><img style=\"float: left;\" hspace=\"6\" src =\"" . $siteurl . "/attach/" . $attachment . "\" alt=\"moblog\" /></a>" . $content . "<br clear=\"left\" />";
 						} 
 					} 
 					if ($flat > 500) {
@@ -437,7 +437,7 @@ function wp_getattach($content, $prefix = "", $create_thumbs = 0)
 				$i++;
 			} 
 			if (!($temp_fp = fopen("attach/" . $temp_file, "wb"))) {
-				echo("Error1<br/>\n");
+				echo("Error1<br />\n");
 				continue;
 			} 
 			fputs($temp_fp, $tmp);
@@ -446,7 +446,7 @@ function wp_getattach($content, $prefix = "", $create_thumbs = 0)
 				wp_create_thumbnail("attach/" . $temp_file, 180, "");
 			} 
 		} 
-		echo "$temp_file <br/>\n";
+		echo "$temp_file <br />\n";
 		return $temp_file;
 	} 
 	return false;
