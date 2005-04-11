@@ -4,16 +4,14 @@ if( ! defined( 'WP_XOOPS_SEARCH_INCLUDED' ) ) {
 	define( 'WP_XOOPS_SEARCH_INCLUDED' , 1 ) ;
 
 	function wp_xoops_search($queryarray, $andor, $limit, $offset, $userid, $wp_num=""){
-		global $xoopsDB,$siteurl;
-	    global $month, $wpdb, $wp_id,$wp_inblock;
+		$GLOBALS['use_cache'] = 1;
 		if ($wp_num == "") {
-			$wp_id = $wp_num;
-			$wp_inblock = 1;
+			$GLOBALS['wp_id'] = $wp_num;
+			$GLOBALS['wp_inblock'] = 1;
 			require(XOOPS_ROOT_PATH."/modules/wordpress/wp-config.php");
-			$wp_inblock = 0;
+			$GLOBALS['wp_inblock'] = 0;
 		}
-		$time_difference = get_settings('time_difference');
-		$now = date('Y-m-d H:i:s',(time() + ($time_difference * 3600)));
+		$now = date('Y-m-d H:i:s',(time() + (get_settings('time_difference') * 3600)));
 		$where = "(post_status = 'publish') AND (post_date <= '".$now."')";
 		
 		if ( is_array($queryarray) && $count = count($queryarray) ) {
@@ -28,14 +26,14 @@ if( ! defined( 'WP_XOOPS_SEARCH_INCLUDED' ) ) {
 			$userid = intval($userid);
 			$where  .= " AND (post_author=".$userid.")";
 		}
-		$request = "SELECT * FROM ".$xoopsDB->prefix("wp".$wp_num."_posts")." WHERE ".$where;
+		$request = "SELECT * FROM ".wp_table('posts')." WHERE ".$where;
 		$request .= " ORDER BY post_date DESC";
-		$result = $xoopsDB->query($request,$limit,$offset);
+		$result = $GLOBALS['xoopsDB']->query($request,$limit,$offset);
 
 		$ret = array();
 		$i = 0;
-		while($myrow = $xoopsDB->fetchArray($result)){
-			$ret[$i]['link'] = str_replace($siteurl."/","",get_permalink(($myrow['ID'])));
+		while($myrow = $GLOBALS['xoopsDB']->fetchArray($result)){
+			$ret[$i]['link'] = str_replace(wp_siteurl()."/","",get_permalink(($myrow['ID'])));
 			$ret[$i]['title'] = htmlspecialchars($myrow['post_title'], ENT_QUOTES);
 			$ret[$i]['image'] = "wp-images/search.png";
 			$date_str = $myrow['post_date'];
@@ -59,12 +57,10 @@ if( ! defined( 'WP_XOOPS_SEARCH_INCLUDED' ) ) {
 	for ($i = 0; $i < 10; $i++) {
 		eval ('
 		function wp'.$i.'_xoops_search($queryarray, $andor, $limit, $offset, $userid) {
-			global $xoopsDB,$siteurl;
-		    global $month, $wpdb, $wp_id,$wp_inblock;
-			$wp_id = '.$i.';
-			$wp_inblock = 1;
+			$GLOBALS["wp_id"] = "'.$i.'";
+			$GLOBALS["wp_inblock"] = 1;
 			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
-			$wp_inblock = 0;
+			$GLOBALS["wp_inblock"] = 0;
 			return (wp_xoops_search($queryarray, $andor, $limit, $offset, $userid, '.$i.'));
 		}
 	');

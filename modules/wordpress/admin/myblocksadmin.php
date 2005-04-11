@@ -8,18 +8,22 @@
 include_once( '../../../include/cp_header.php' ) ;
 include_once( 'mygrouppermform.php' ) ;
 include_once( XOOPS_ROOT_PATH.'/class/xoopsblock.php' ) ;
+include_once "../include/gtickets.php" ;// GIJ
 
 
-$xoops_system_url = XOOPS_URL . '/modules/system' ;
 $xoops_system_path = XOOPS_ROOT_PATH . '/modules/system' ;
 
 // language files
 $language = $xoopsConfig['language'] ;
 if( ! file_exists( "$xoops_system_path/language/$language/admin/blocksadmin.php") ) $language = 'english' ;
 
+// to prevent from notice that constants already defined
+$error_reporting_level = error_reporting( 0 ) ;
 include_once( "$xoops_system_path/constants.php" ) ;
 include_once( "$xoops_system_path/language/$language/admin.php" ) ;
 include_once( "$xoops_system_path/language/$language/admin/blocksadmin.php" ) ;
+error_reporting( $error_reporting_level ) ;
+
 $group_defs = file( "$xoops_system_path/language/$language/admin/groups.php" ) ;
 foreach( $group_defs as $def ) {
 	if( strstr( $def , '_AM_ACCESSRIGHTS' ) || strstr( $def , '_AM_ACTIVERIGHTS' ) ) eval( $def ) ;
@@ -29,11 +33,35 @@ foreach( $group_defs as $def ) {
 // check $xoopsModule
 if( ! is_object( $xoopsModule ) ) redirect_header( XOOPS_URL.'/user.php' , 1 , _NOPERM ) ;
 
+// set target_module if specified by $_GET['dirname']
+$module_handler =& xoops_gethandler('module');
+if( ! empty( $_GET['dirname'] ) ) {
+	$target_module =& $module_handler->getByDirname($_GET['dirname']);
+}/* else if( ! empty( $_GET['mid'] ) ) {
+	$target_module =& $module_handler->get( intval( $_GET['mid'] ) );
+}*/
+
+if( ! empty( $target_module ) && is_object( $target_module ) ) {
+	// specified by dirname
+	$target_mid = $target_module->getVar( 'mid' ) ;
+	$target_mname = $target_module->getVar( 'name' ) ;
+	$query4redirect = '?dirname='.urlencode(strip_tags($_GET['dirname'])) ;
+} else if( isset( $_GET['mid'] ) && $_GET['mid'] == 0 || $xoopsModule->getVar('dirname') == 'blocksadmin' ) {
+	$target_mid = 0 ;
+	$target_mname = '' ;
+	$query4redirect = '?mid=0' ;
+} else {
+	$target_mid = $xoopsModule->getVar( 'mid' ) ;
+	$target_mname = $xoopsModule->getVar( 'name' ) ;
+	$query4redirect = '' ;
+}
+
 // check access right (needs system_admin of BLOCK)
 $sysperm_handler =& xoops_gethandler('groupperm');
 if (!$sysperm_handler->checkRight('system_admin', XOOPS_SYSTEM_BLOCK, $xoopsUser->getGroups())) redirect_header( XOOPS_URL.'/user.php' , 1 , _NOPERM ) ;
 
 // get blocks owned by the module
+//$block_arr =& XoopsBlock::getByModule( $xoopsModule->mid() ) ;
 $db =& Database::getInstance();
 $sql = $sql = "SELECT * FROM ".$db->prefix("newblocks")." WHERE mid=". $xoopsModule->mid()." ORDER BY side,weight,bid";
 $result = $db->query($sql);
@@ -44,7 +72,7 @@ while( $myrow = $db->fetchArray($result) ) {
 
 function list_blocks()
 {
-	global $block_arr ;
+	global $query4redirect , $block_arr , $xoopsGTicket ;
 
 	// cachetime options
 	$cachetimes = array('0' => _NOCACHE, '30' => sprintf(_SECONDS, 30), '60' => _MINUTE, '300' => sprintf(_MINUTES, 5), '1800' => sprintf(_MINUTES, 30), '3600' => _HOUR, '18000' => sprintf(_HOURS, 5), '86400' => _DAY, '259200' => sprintf(_DAYS, 3), '604800' => _WEEK, '2592000' => _MONTH);
@@ -52,7 +80,7 @@ function list_blocks()
 	// displaying TH
 	echo "
 	<form action='admin.php' name='blockadmin' method='post'>
-		<table width='95%' class='outer' cellpadding='4' cellspacing='1'>
+		<table width='90%' class='outer' cellpadding='4' cellspacing='1'>
 		<tr valign='middle'>
 			<th>"._AM_TITLE."</th>
 			<th align='center' nowrap='nowrap'>"._AM_SIDE."</th>
@@ -64,6 +92,7 @@ function list_blocks()
 
 	// blocks displaying loop
 	$class = 'even' ;
+	$block_configs = get_block_configs() ;
 	foreach( array_keys( $block_arr ) as $i ) {
 		$sseln = $ssel0 = $ssel1 = $ssel2 = $ssel3 = $ssel4 = "";
 
@@ -72,9 +101,6 @@ function list_blocks()
 		$name = $block_arr[$i]->getVar("name") ;
 		$bcachetime = $block_arr[$i]->getVar("bcachetime") ;
 		$bid = $block_arr[$i]->getVar("bid") ;
-		$appendix_operations = "<a href='admin.php?fct=blocksadmin&amp;op=clone&amp;bid=$bid'>"._CLONE."</a>" ;
-		if( $block_arr[$i]->getVar('block_type') == 'D' ) $appendix_operations .= "&nbsp;<a href='admin.php?fct=blocksadmin&amp;op=delete&amp;bid=$bid'>"._DELETE."</a>" ;
-
 
 		// visible and side
 		if ( $block_arr[$i]->getVar("visible") != 1 ) {
@@ -131,6 +157,31 @@ function list_blocks()
 			}
 		}
 
+		// delete link if it is cloned block
+		if( $block_arr[$i]->getVar("block_type") == 'D' || $block_arr[$i]->getVar("block_type") == 'C' ) {
+			$delete_link = "<br />\n<a href='admin.php?fct=blocksadmin&amp;op=delete&amp;bid=$bid'>"._DELETE."</a>" ;
+		} else {
+			$delete_link = '' ;
+		}
+
+		// clone link if it is marked as cloneable block
+		// $modversion['blocks'][n]['can_clone']
+		if( $block_arr[$i]->getVar("block_type") == 'D' || $block_arr[$i]->getVar("block_type") == 'C' ) {
+			$can_clone = true ;
+		} else {
+			$can_clone = false ;
+			foreach( $block_configs as $bconf ) {
+				if( $block_arr[$i]->getVar("show_func") == $bconf['show_func'] && $block_arr[$i]->getVar("func_file") == $bconf['file'] && $block_arr[$i]->getVar("template") == $bconf['template'] ) {
+					if( ! empty( $bconf['can_clone'] ) ) $can_clone = true ;
+				}
+			}
+		}
+		if( $can_clone ) {
+			$clone_link = "<br />\n<a href='admin.php?fct=blocksadmin&amp;op=clone&amp;bid=$bid'>"._CLONE."</a>" ;
+		} else {
+			$clone_link = '' ;
+		}
+
 		// displaying part
 		echo "
 		<tr valign='middle'>
@@ -142,6 +193,7 @@ function list_blocks()
 			<td class='$class' align='center' nowrap='nowrap'>
 				<input type='radio' name='side[$bid]' value='".XOOPS_SIDEBLOCK_LEFT."'$ssel0 />-<input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_LEFT."'$ssel2 /><input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_CENTER."'$ssel3 /><input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_RIGHT."'$ssel4 />-<input type='radio' name='side[$bid]' value='".XOOPS_SIDEBLOCK_RIGHT."'$ssel1 />
 				<br />
+				<br />
 				<input type='radio' name='side[$bid]' value='-1'$sseln />
 				"._NONE."
 			</td>
@@ -149,7 +201,7 @@ function list_blocks()
 				<input type='text' name=weight[$bid] value='$weight' size='5' maxlength='5' style='text-align:right;' />
 			</td>
 			<td class='$class' align='center'>
-				<select name='bmodule[$bid][]' size='4' multiple='multiple'>
+				<select name='bmodule[$bid][]' size='5' multiple='multiple'>
 					$module_options
 				</select>
 			</td>
@@ -158,9 +210,10 @@ function list_blocks()
 					$cachetime_options
 				</select>
 			</td>
-			<td class='$class' align='leftt'>
+			<td class='$class' align='right'>
 				<a href='admin.php?fct=blocksadmin&amp;op=edit&amp;bid=$bid'>"._EDIT."</a>
-				$appendix_operations
+				$delete_link
+				$clone_link
 				<input type='hidden' name='bid[$bid]' value='$bid' />
 			</td>
 		</tr>\n" ;
@@ -171,8 +224,10 @@ function list_blocks()
 	echo "
 		<tr>
 			<td class='foot' align='center' colspan='6'>
+				<input type='hidden' name='query4redirect' value='$query4redirect' />
 				<input type='hidden' name='fct' value='blocksadmin' />
 				<input type='hidden' name='op' value='order' />
+				".$xoopsGTicket->getTicketHtml( __LINE__ )."
 				<input type='submit' name='submit' value='"._SUBMIT."' />
 			</td>
 		</tr>
@@ -180,18 +235,31 @@ function list_blocks()
 	</form>\n" ;
 }
 
+
+function get_block_configs()
+{
+	$error_reporting_level = error_reporting( 0 ) ;
+	include '../xoops_version.php' ;
+	error_reporting( $error_reporting_level ) ;
+	if( empty( $modversion['blocks'] ) ) return array() ;
+	else return $modversion['blocks'] ;
+}
+
+
 function list_groups()
 {
-	global $xoopsUser , $xoopsConfig , $xoopsDB ;
-	global $xoopsModule , $block_arr , $xoops_system_url ;
+	global $target_mid , $target_mname , $block_arr ;
 
+	$item_list = array() ;
 	foreach( array_keys( $block_arr ) as $i ) {
 		$item_list[ $block_arr[$i]->getVar("bid") ] = $block_arr[$i]->getVar("title") ;
 	}
 
 	$form = new MyXoopsGroupPermForm( _MD_AM_ADGS , 1 , 'block_read' , '' ) ;
-	$form->addAppendix('module_admin',$xoopsModule->mid(),$xoopsModule->name().' '._AM_ACTIVERIGHTS);
-	$form->addAppendix('module_read',$xoopsModule->mid(),$xoopsModule->name().' '._AM_ACCESSRIGHTS);
+	if( $target_mid > 1 ) {
+		$form->addAppendix( 'module_admin' , $target_mid , $target_mname . ' ' . _AM_ACTIVERIGHTS ) ;
+		$form->addAppendix( 'module_read' , $target_mid , $target_mname .' ' . _AM_ACCESSRIGHTS ) ;
+	}
 	foreach( $item_list as $item_id => $item_name) {
 		$form->addItem( $item_id , $item_name ) ;
 	}
@@ -201,17 +269,26 @@ function list_groups()
 
 
 if( ! empty( $_POST['submit'] ) ) {
+	if ( ! $xoopsGTicket->check() ) {
+		redirect_header(XOOPS_URL.'/',3,$xoopsGTicket->getErrors());
+	}
+
 	include( "mygroupperm.php" ) ;
-	redirect_header( XOOPS_URL."/modules/".$xoopsModule->dirname()."/admin/myblocksadmin.php" , 1 , _MD_AM_DBUPDATED );
+	redirect_header( XOOPS_URL."/modules/".$xoopsModule->dirname()."/admin/myblocksadmin.php$query4redirect" , 1 , _MD_AM_DBUPDATED );
 }
 
 xoops_cp_header() ;
 if( file_exists( './mymenu.php' ) ) include( './mymenu.php' ) ;
 
-echo "<h3 style='text-align:left;'>".$xoopsModule->name()."</h3>\n" ;
-echo "<h4 style='text-align:left;'>"._AM_BADMIN."</h4>\n" ;
-list_blocks() ;
+echo "<h3 style='text-align:left;'>$target_mname</h3>\n" ;
+
+if( ! empty( $block_arr ) ) {
+	echo "<h4 style='text-align:left;'>"._AM_BADMIN."</h4>\n" ;
+	list_blocks() ;
+}
+
 list_groups() ;
 xoops_cp_footer() ;
+
 
 ?>

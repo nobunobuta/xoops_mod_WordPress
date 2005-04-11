@@ -108,6 +108,7 @@ define('_LANG_P_NICKNAME_DELETE','¤µ¤ó¤ÎÅê¹Æ¤òºï½ü¤¹¤ë¤³¤È¤Ï½ÐÍè¤Þ¤»¤ó¡£');
 define('_LANG_P_COMHAS_APPR','¥³¥á¥ó¥È¤¬¾µÇ§¤µ¤ì¤Þ¤·¤¿');
 define('_LANG_P_YOUR_DRAFTS','Áð¹Æ:');
 define('_LANG_P_WP_BOOKMARKLET','¡ÖPress it¡× ¤ò¥¯¥ê¥Ã¥¯¤¹¤ë¤È¡¢¸½ºß±ÜÍ÷Ãæ¤Ç¤¢¤ë¥µ¥¤¥È¤Î¥ê¥ó¥¯¾ðÊó¤òÈ÷¤¨¤¿¥Ý¥Ã¥×¥¢¥Ã¥×¥¦¥£¥ó¥É¥¦¤¬³«¤­¤Þ¤¹¡£<br />¤³¤ì¤Ë¤è¤ê¿×Â®¤ÊÅê¹Æ¤¬²ÄÇ½¤Ë¤Ê¤ê¤Þ¤¹¡£');
+define('_LANG_P_CONFIRM_DELETE', 'ËÜÅö¤Ëºï½ü¤·¤Æ¤â¤è¤í¤·¤¤¤Ç¤¹¤«¡©');
 
 /* File Name wp-admin/categories.php */
 define('_LANG_C_DEFAULT_CAT','¥«¥Æ¥´¥ê¡¼¤òºï½ü¤¹¤ë¤³¤È¤Ï½ÐÍè¤Þ¤»¤ó¡¡¤³¤ì¤Ï¥Ç¥Õ¥©¥ë¥È¥»¥Ã¥È¤Ç¤¹¡£');
@@ -271,7 +272,7 @@ define('_LANG_WLC_SUBCATE_SORT','¥½¡¼¥È½ç');
 define('_LANG_WLC_SUBCATE_DESC','¹ß½ç?');
 define('_LANG_WLC_SUBCATE_LIMIT','¥ê¥ß¥Ã¥È');
 define('_LANG_WLC_SUBCATE_IMAGES','¥¤¥á¡¼¥¸?');
-define('_LANG_WLC_SUBCATE_MINIDESC','¹ß½ç?');
+define('_LANG_WLC_SUBCATE_MINIDESC','ÀâÌÀ?');
 define('_LANG_WLC_SUBCATE_RATE','É¾²Á?');
 define('_LANG_WLC_SUBCATE_UPDATE','¹¹¿·?');
 define('_LANG_WLC_SUBCATE_BEFORE','Á°¥¿¥°');
@@ -433,7 +434,7 @@ define('_LANG_WPF_SUBT_UPDATE','¥¢¥Ã¥×¥Ç¡¼¥È');
 
 /* File Name wp-admin/sidebar.php */
 define('_LANG_WAS_SIDE_POSTED','Åê¹Æ´°Î»');
-define('_LANG_WAS_SIDE_AGAIN','Â³¤±¤ÆÅê¹Æ¤¹¤ë¤Ë¤Ï<a href="sidebar.php">¤³¤Á¤é</a>¤ò¥¯¥ê¥Ã¥¯');
+define('_LANG_WAS_SIDE_AGAIN','Â³¤±¤ÆÅê¹Æ¤¹¤ë¤Ë¤Ï<a href="sidebar.php" target="_self">¤³¤Á¤é</a>¤ò¥¯¥ê¥Ã¥¯');
 
 /* File Name wp-admin/templates.php */
 define('_LANG_WAT_LEVEL_ERR','<p>¤¢¤Ê¤¿¤Ë¤Ï¥Æ¥ó¥×¥ì¡¼¥È¤òÊÔ½¸¤¹¤ë¸¢¸Â¤¬¤¢¤ê¤Þ¤»¤ó¡£<br />
@@ -463,10 +464,11 @@ define('_LANG_WUS_WHOSE_DELETE','¤¢¤Ê¤¿¤è¤ê¹â¤¤¥ì¥Ù¥ë¤Î¥æ¡¼¥¶¡¼¤òºï½ü¤¹¤ë¤³¤È¤Ï¤
 define('_LANG_WUS_CANNOT_DELU','¤³¤Î¥æ¡¼¥¶¡¼¤Ïºï½ü¤Ç¤­¤Þ¤»¤ó');
 define('_LANG_WUS_CANNOT_DELUPOST','¤³¤Î¥æ¡¼¥¶¡¼¤ÎÅê¹Æ¤Ïºï½ü¤Ç¤­¤Þ¤»¤ó');
 define('_LANG_WUS_AU_THOR','Authors');
+define('_LANG_WUS_AU_LOGIN','¥í¥°¥¤¥óÌ¾');
 define('_LANG_WUS_AU_NICK','¥Ë¥Ã¥¯¥Í¡¼¥à');
-define('_LANG_WUS_AU_NAME','¥í¥°¥¤¥óÌ¾');
-define('_LANG_WUS_AU_MAIL','E-Mail');
-define('_LANG_WUS_AU_URI','URL');
+define('_LANG_WUS_AU_NAME','»áÌ¾');
+define('_LANG_WUS_AU_MAIL','¥á¡¼¥ë¥¢¥É¥ì¥¹(É¬¿Ü)');
+define('_LANG_WUS_AU_URI','¥Û¡¼¥à¥Ú¡¼¥¸URL');
 define('_LANG_WUS_AU_LEVEL','¥ì¥Ù¥ë');
 define('_LANG_WUS_AU_POSTS','Åê¹Æ¿ô');
 define('_LANG_WUS_AU_USERS','Users');
@@ -485,13 +487,13 @@ define('_LANG_WPCM_COM_RSS','¤³¤Î¥³¥á¥ó¥È¤Î<abbr title="Really Simple Syndicatio
 define('_LANG_WPCM_COM_TRACK','TrackBack URL : ');
 define('_LANG_WPCM_COM_YET','¤³¤ÎÅê¹Æ¤Ë¤Ï¡¢¤Þ¤À¥³¥á¥ó¥È¤¬ÉÕ¤¤¤Æ¤¤¤Þ¤»¤ó');
 define('_LANG_WPCM_COM_LEAVE','¥³¥á¥ó¥È¤ÎÅê¹Æ');
-define('_LANG_WPCM_HTML_ALLOWED','²þ¹Ô¤äÃÊÍî¤Ï¼«Æ°¤Ç¤¹<br />URL¤ÈE-mail¤Ï¼«Æ°Åª¤Ë¥ê¥ó¥¯¤µ¤ì¤Þ¤¹¤Î¤Ç¡¢&lt;a&gt;¥¿¥°¤ÏÉÔÍ×¤Ç¤¹¡£<br /><acronym title="Hypertext Markup Language">HTML</acronym> allowed: ');
+define('_LANG_WPCM_HTML_ALLOWED','²þ¹Ô¤äÃÊÍî¤Ï¼«Æ°¤Ç¤¹<br />URL¤È¥á¡¼¥ë¥¢¥É¥ì¥¹¤Ï¼«Æ°Åª¤Ë¥ê¥ó¥¯¤µ¤ì¤Þ¤¹¤Î¤Ç¡¢&lt;a&gt;¥¿¥°¤ÏÉÔÍ×¤Ç¤¹¡£<br />°Ê²¼¤ÎHTML¥¿¥°¤¬»ÈÍÑ²ÄÇ½¤Ç¤¹¡£<br />');
 define('_LANG_WPCM_COM_YOUR','¥³¥á¥ó¥È¤ò¤É¤¦¤¾');
 define('_LANG_WPCM_PLEASE_NOTE','<strong>¤´Ãí°Õ : </strong>¥»¥Ã¥Æ¥£¥ó¥°¤Ë¤è¤ê¡¢¥³¥á¥ó¥ÈÅê¹Æ¤«¤é¼ÂºÝ¤Ë±ÜÍ÷¤Ç¤­¤ë¤è¤¦¤Ë¤Ê¤ë¤Þ¤Ç»Ã¤¯»þ´Ö¤¬³Ý¤«¤ë¾ì¹ç¤¬¤¢¤ê¤Þ¤¹¡£ ºÆÅê¹Æ¤ÎÉ¬Í×¤Ï¤¢¤ê¤Þ¤»¤ó¤Î¤Ç¡¢É½¼¨¤µ¤ì¤ë¤Þ¤Ç¤ªÂÔ¤Á²¼¤µ¤¤¡£');
-define('_LANG_WPCM_COM_SAYIT','Say it !');
+define('_LANG_WPCM_COM_SAYIT','Åê¹Æ¤¹¤ë');
 define('_LANG_WPCM_THIS_TIME','¤´¤á¤ó¤Ê¤µ¤¤¡¢¸½ºß¥³¥á¥ó¥È¤òÉÕ¤±¤ë¤³¤È¤Ï½ÐÍè¤Þ¤»¤ó');
 // define('_LANG_WPCM_GO_BACK','Go Back');
-define('_LANG_WPCM_COM_NAME','Name');
+define('_LANG_WPCM_COM_NAME','¤ªÌ¾Á°(¥Ë¥Ã¥¯¥Í¡¼¥à)(É¬¿Ü)');
 
 /* File Name wp-comments-post.php */
 define('_LANG_WPCP_SORRY_ITEM','¤´¤á¤ó¤Ê¤µ¤¤  ¤³¤ÎÅê¹Æ¤ËÂÐ¤¹¤ë¥³¥á¥ó¥È¤Ï¼õ¤±ÉÕ¤±¤Æ¤¤¤Þ¤»¤ó');

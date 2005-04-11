@@ -1,0 +1,169 @@
+<div class="wrap">
+  <h2>Editing Post #<{$post_ID}></h2>
+  <form name="post" action="post.php" method="post" id="post">
+    <input type="hidden" name="user_ID" value="<{$user_ID}>" />
+    <input type="hidden" name="action" value='editpost' />
+    <input type="hidden" name="post_ID" value="<{$post_ID}>" >
+    <script type="text/javascript">
+    <!--
+    function focusit() {
+    	// focus on first input field
+    	document.post.title.focus();
+    }
+    window.onload = focusit;
+    //-->
+    </script>
+    <div id="poststuff">
+      <fieldset id="titlediv">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#title" title="Help on titles"><{$smarty.const._LANG_EF_AD_POSTTITLE}></a></legend> 
+        <div><input type="text" name="post_title" size="30" tabindex="1" value="<{$edited_post_title}>" id="title" /></div>
+      </fieldset>
+      <fieldset id="categorydiv">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#category" title="Help on categories"><{$smarty.const._LANG_EF_AD_CATETITLE}></a></legend> 
+	    <div><{$category_select}></div>
+      </fieldset>
+      <fieldset id="commentstatusdiv">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#comments" title="Help on comment status"><{$smarty.const._LANG_EFA_AD_COMMENTS}></a></legend> 
+        <div><label for="comment_status_open" class="selectit"><input id="comment_status_open" name="comment_status" type="radio" value="open" <{$comment_check_open}> />  <{$smarty.const._LANG_EFA_STATUS_OPEN}></label> 
+        <label for="comment_status_closed" class="selectit"><input id="comment_status_closed" name="comment_status" type="radio" value="closed" <{$comment_check_close}> /> <{$smarty.const._LANG_EFA_STATUS_CLOSE}></label></div>
+      </fieldset>
+      <fieldset id="pingstatusdiv">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#pings" title="Help on ping status"><{$smarty.const._LANG_EFA_AD_PINGS}></a></legend> 
+        <div><label for="ping_status_open" class="selectit"><input id="ping_status_open" name="ping_status" type="radio" value="open" <{$ping_check_open}> /> <{$smarty.const._LANG_EFA_STATUS_OPEN}></label> 
+        <label for="ping_status_closed" class="selectit"><input id="ping_status_closed" name="ping_status" type="radio" value="closed" <{$ping_check_close}> /> <{$smarty.const._LANG_EFA_STATUS_CLOSE}></label></div>
+      </fieldset>
+      <fieldset id="postpassworddiv">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#post_password" title="Help on post password"><{$smarty.const._LANG_EFA_POST_PASSWORD}></a></legend> 
+        <div><input name="post_password" type="text" size="18" id="post_password" value="<{$post_password}>" /></div>
+      </fieldset>
+      <br />
+      <fieldset style="clear:both">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#excerpt" title="Help with excerpts"><{$smarty.const._LANG_EFA_POST_EXCERPT}></a></legend>
+        <div><textarea rows="2" cols="40" name="excerpt" tabindex="2" id="excerpt"><{$excerpt}></textarea></div>
+      </fieldset>
+      <br />
+<{if $use_spaw == true}>
+      <fieldset id="postdiv">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#post" title="Help with post field"><{$smarty.const._LANG_EF_AD_POSTAREA}></a></legend>
+        <{$spaw_form}>
+    <{foreach item=smile from=$smilies}>
+        <a href="javascript:bbinsert(document.post,'','<{$smile.id}>')"><img src="<{$smile.path}>" alt="<{$smile.name}>" /></a> 
+    <{/foreach}>
+        <br />
+        <script src="quicktags_spaw.js" language="JavaScript" type="text/javascript"></script>
+      </fieldset>
+<{elseif $use_koivi == true}>
+      <fieldset id="postdiv">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#post" title="Help with post field"><{$smarty.const._LANG_EF_AD_POSTAREA}></a></legend>
+        <{$spaw_form}>
+      </fieldset>
+<{else}>
+      <fieldset id="postdiv">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#post" title="Help with post field"><{$smarty.const._LANG_EF_AD_POSTAREA}></a></legend>
+  <{if $use_quicktags == true}>
+        <div id="quicktags"><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#quicktags" title="Help with quicktags"><{$smarty.const._LANG_EF_AD_POSTQUICK}></a>:
+    <{foreach item=smile from=$smilies}>
+          <a href="javascript:bbinsert(document.post,'','<{$smile.id}>')"><img src="<{$smile.path}>" alt="<{$smile.name}>" /></a> 
+    <{/foreach}>
+          <br />
+          <script src="quicktags.js" language="JavaScript" type="text/javascript"></script>
+          <script language="JavaScript" type="text/javascript">edToolbar();</script>
+        </div>
+  <{/if}>
+        <div><textarea rows="<{$rows}>" cols="40" name="wp_content" tabindex="5" id="wp_content"><{$content}></textarea></div>
+      </fieldset>
+  <{if $use_quicktags == true}>
+      <script type="text/javascript" language="JavaScript">
+      <!--
+         edCanvas = document.getElementById('wp_content');
+      //-->
+      </script>
+  <{/if}>
+<{/if}>
+<{if $use_geo_positions }>
+      <p>
+      <label for="post_latf"><{$smarty.const._LANG_EFA_POST_LATITUDE}></label><input size="8" type="text" value="<{$edited_lat}>" name="post_latf">&nbsp;
+      <label for="post_lonf"><{$smarty.const._LANG_EFA_POST_LONGITUDE}></label><input size="8" type="text" value="<{$edited_lon}>" name="post_lonf">&nbsp; <a href="http://www.geourl.org/resources.html" rel="external" ><{$smarty.const._LANG_EFA_POST_GEOINFO}></a>
+      </p>
+<{/if}>
+<{if $use_pingback }>
+      <input type="checkbox" class="checkbox" name="post_pingback" value="1" <{$ping_checked}> tabindex="7" id="pingback" /> <{$smarty.const._LANG_EF_PING_FORM}>
+<{/if}>
+      <p>
+<{if $can_upload == true }>
+        <input type="button" value="<{$smarty.const._LANG_EFA_STATUS_UPLOAD}>" onclick="launchupload();" tabindex="10" />
+<{/if}>
+        <input name="save" type="submit" id="save" tabindex="4" value="<{$smarty.const._LANG_EFA_SAVE_CONTINUE}>" />
+        <input name="saveasdraft" type="submit" id="saveasdraft" tabindex="9" value="<{$smarty.const._LANG_EF_AD_DRAFT}>" /> 
+        <input name="saveasprivate" type="submit" id="saveasprivate" tabindex="10" value="<{$smarty.const._LANG_EF_AD_PRIVATE}>" /> 
+        <input name="publish" type="submit" id="publish" tabindex="6" value="<{$smarty.const._LANG_EF_AD_PUBLISH}>" /> 
+        <{$ticket}>
+        <input name="prev_status" type="hidden" value="<{$post_status}>" />
+        <input name="referredby" type="hidden" id="referredby" value="<{$referer}>" />
+      </p>
+      <{$smarty.const._LANG_EF_TRACK_FORM}><input type="text" name="trackback_url" style="width: 360px" id="trackback" tabindex="7" value=""/>
+<{if $use_trackback}>
+  <{if $mode != 'bookmarklet'}>
+      &nbsp;&nbsp;&nbsp;Use UTF-8:<input value="1" type="checkbox" name="useutf8" id="useutf8" />
+  <{/if}>
+  <{if $pinged != ''}>
+      <p>Already pinged:</p>
+      <ul>
+    <{foreach item=pinged_url from=$pingedlist}>
+        <li><{$pinged_url}></li>
+    <{/foreach }>
+  <{/if}>
+      </ul>
+<{/if}>
+<{if $user_level > 4}>
+      <{$touchtime}>
+<{/if}>
+    </div>
+    <br />
+	<fieldset id="postcustom">
+	  <legend><{$smarty.const._LANG_EFA_POST_CUSTOM}></legend>
+<{if $postmetaRows}>
+      <table id='meta-list' cellpadding="3">
+		<tr>
+		  <th>Key</th>
+		  <th>Value</th>
+		  <th colspan='2'>Action</th>
+		</tr>
+  <{foreach item=postmeta from=$postmetaRows}>
+		<tr <{$postmeta.style}> >
+		  <td valign='top'><input name='meta[<{$postmeta.meta_id}>][key]' tabindex='6' type='text' size='20' value='<{$postmeta.meta_key}>' /></td>
+		  <td><textarea name='meta[<{$postmeta.meta_id}>][value]' tabindex='6' rows='2' cols='30'><{$postmeta.meta_value}></textarea></td>
+		  <td align='center' width='10%'><input name='updatemeta[<{$postmeta.meta_id}>]' type='submit' class='updatemeta' tabindex='6' value='UPDATE' /></td>
+		  <td align='center' width='10%'><input name='deletemeta[<{$postmeta.meta_id}>]' type='submit' class='deletemeta' tabindex='6' value='Delete' /></td>
+		</tr>
+  <{/foreach}>
+      </table>
+<{/if}>
+      <h3>Add a new custom field to this post:</h3>
+      <table cellspacing="3" cellpadding="3">
+	    <tr>
+          <th colspan="2">Key</th>
+          <th>Value</th>
+        </tr>
+        <tr valign="top">
+		  <td align="right" width="18%">
+<{if $postmetaKeys}>
+            <select id="metakeyselect" name="metakeyselect" tabindex="7">
+              <option value="#NONE#">- Select -</option>
+  <{foreach item=key from=$postmetaKeys}>
+              <option value='<{$key}>'><{$key}></option>
+  <{/foreach}>
+            </select> or 
+<{/if}>
+          </td>
+          <td><input type="text" id="metakeyinput" name="metakeyinput" tabindex="7" /></td>
+          <td><textarea id="metavalue" name="metavalue" rows="3" cols="25" tabindex="7"></textarea></td>
+        </tr>
+
+      </table>
+      <p class="submit"><input type="submit" name="updatemeta" tabindex="7" value="Add Custom Field &raquo;" /></p>
+	</fieldset>
+    <{$form_addon}>
+  </form>
+  <p><a class='delete' href='post.php?action=confirmdelete&amp;post=<{$post_ID}>'><{$smarty.const._LANG_EFA_DEL_THISPOST}></a></p>
+</div>

@@ -108,6 +108,7 @@ define('_LANG_P_NICKNAME_DELETE','Vocôþnôþ tem permissôþ para apagar comentôþios
 define('_LANG_P_COMHAS_APPR','O comentôþio foi aprovado.');
 define('_LANG_P_YOUR_DRAFTS','Seus rascunhos:');
 define('_LANG_P_WP_BOOKMARKLET','Vocôþpode arrastar o link seguinte para sua barra de links ou adicionôþlo ao seus Favoritos. Quando vocôþclicar sobre ele, se abrirôþuma janela popup com informações e um link para a pôþina que vocôþestôþvisualizando agora, permitindo que vocôþfaôþ um post rapidamente.');
+define('_LANG_P_CONFIRM_DELETE', 'Are you sure you want to delete this?');
 
 /* File Name wp-admin/categories.php */
 define('_LANG_C_DEFAULT_CAT','Nôþ ôþpossôþel apagar esta categoria pois ela ôþa padrôþ.');

@@ -190,7 +190,7 @@ class PukiWikiRender {
 	}
 	
 	function _fix_table_br($string) {
-		$string = str_replace("~___td_br___","<br>",$string);
+		$string = str_replace("~___td_br___","<br />",$string);
 		$string = str_replace("___td_br___","",$string);
 		$string = preg_replace("/^<p>([^<>\n]*)<\/p>$/sD","$1",$string);
 		return $string;
@@ -248,6 +248,9 @@ class PukiWikiRender {
 			}
 		}
 		PukiWikiConfig::setParam('autolink_dat',$autolink_dat);
+		// ページ名エイリアス取得
+		PukiWikiConfig::setParam('pagename_aliases', PukiWikiFunc::get_pagename_aliases());
+
 	}
 }
 ?>

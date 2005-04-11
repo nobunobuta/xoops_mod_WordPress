@@ -1,204 +1,142 @@
 <?php
 require_once('admin.php');
 
-$title = "Profile";
-$this_file = 'profile.php';
-$parent_file = 'profile.php';
+$_this_file = 'profile.php';
+$GLOBALS['parent_file'] = 'profile.php';
 
-param('action', 'string', '');
-switch($action) {
+$userHandler =& wp_handler('User');
+
+init_param('', 'action', 'string', '');
+
+switch(get_param('action')) {
 	case 'update':
-		wp_refcheck("/wp-admin/profile.php");
-		param('newuser_firstname', 'string');
-		param('newuser_lastname', 'string');
-		param('newuser_nickname', 'string',true);
-		param('newuser_icq','string');
-		param('newuser_aim','string');
-		param('newuser_msn','string');
-		param('newuser_yim','string');
-		param('newuser_email','string',true);
-		param('newuser_url','string');
-		param('newuser_idmode','string');
-		param('user_description','string');
-
-		/* if the ICQ UIN has been entered, check to see if it has only numbers */
-		if ($newuser_icq) {
-			if ((ereg("^[0-9]+$",$newuser_icq))==false) {
-				redirect_header($siteurl.'/wp-admin/profile.php',5,_LANG_WLC_RIGHT_PROM);
-				exit();
-			}
+		//Check Ticket
+		if (!$GLOBALS['xoopsWPTicket']->check()) {
+			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $GLOBALS['xoopsWPTicket']->getErrors());
 		}
+		//Check Paramaters
+		init_param('POST', 'newuser_firstname', 'string', '', true);
+		init_param('POST', 'newuser_lastname', 'string', '', true);
+		init_param('POST', 'newuser_nickname', 'string', NO_DEFAULT_PARAM, true);
+		init_param('POST', 'newuser_icq', 'string', '', true);
+		init_param('POST', 'newuser_aim', 'string', '', true);
+		init_param('POST', 'newuser_msn', 'string', '', true);
+		init_param('POST', 'newuser_yim', 'string', '', true);
+		init_param('POST', 'newuser_email', 'string', true, true);
+		init_param('POST', 'newuser_url', 'string', '', true);
+		init_param('POST', 'newuser_idmode', 'string', '', true);
+		init_param('POST', 'user_description', 'html', '', true);
 
-		/* checking e-mail address */
-		if (!is_email($newuser_email)) {
-			redirect_header($siteurl.'/wp-admin/profile.php',5,_LANG_WPF_ERR_CORRECT);
-			exit();
-		}
+		$userObject =& $userHandler->create(false);
 
-		$newuser_firstname=$wpdb->escape($newuser_firstname);
-		$newuser_lastname=$wpdb->escape($newuser_lastname);
-		$newuser_nickname=$wpdb->escape($newuser_nickname);
-		$newuser_icq=$wpdb->escape($newuser_icq);
-		$newuser_aim=$wpdb->escape($newuser_aim);
-		$newuser_msn=$wpdb->escape($newuser_msn);
-		$newuser_yim=$wpdb->escape($newuser_yim);
-		$newuser_email=$wpdb->escape($newuser_email);
-		$newuser_url=$wpdb->escape($newuser_url);
-		$newuser_idmode=$wpdb->escape($newuser_idmode);
-		$user_description =$wpdb->escape($user_description);
-
-		$query = "UPDATE {$wpdb->users[$wp_id]} SET user_firstname='$newuser_firstname', user_lastname='$newuser_lastname', user_nickname='$newuser_nickname', user_icq='$newuser_icq', user_email='$newuser_email', user_url='$newuser_url', user_aim='$newuser_aim', user_msn='$newuser_msn', user_yim='$newuser_yim', user_idmode='$newuser_idmode', user_description = '$user_description' WHERE ID = $user_ID";
-		$result = $wpdb->query($query);
-		if (!$result) {
-			redirect_header($siteurl.'/wp-admin/profile.php',5,_LANG_WPF_ERR_PROFILE);
-			exit();
-		}
+		$userObject->setVar('ID', $GLOBALS['user_ID']);
+		$userObject->setVar('user_firstname', get_param('newuser_firstname'));
+		$userObject->setVar('user_lastname', get_param('newuser_lastname'));
+		$userObject->setVar('user_nickname', get_param('newuser_nickname'));
+		$userObject->setVar('user_icq', get_param('newuser_icq'));
+		$userObject->setVar('user_aim', get_param('newuser_aim'));
+		$userObject->setVar('user_msn', get_param('newuser_msn'));
+		$userObject->setVar('user_yim', get_param('newuser_yim'));
+		$userObject->setVar('user_email', get_param('newuser_email'));
+		$userObject->setVar('user_url', get_param('newuser_url'));
+		$userObject->setVar('newuser_idmode', get_param('newuser_idmode'));
+		$userObject->setVar('user_description', get_param('user_description'));
 		
-		header('Location: profile.php?updated=true');
+		if (!$userHandler->insert($userObject, false, true)) {
+			redirect_header($_this_file, 3, $userHandler->getErrors());
+		}
+		header('Location: '.$_this_file.'?updated=true');
 		break;
 
 	case 'viewprofile':
-		param('user','integer');
-		$profiledata = get_userdata($user);
-		if (isset($xoopsUser) && ($xoopsUser->getVar('uname') == $profiledata->user_login)) {
-			header ('Location: profile.php');
+		init_param('GET', 'user', 'integer', NO_DEFAULT_PARAM, true);
+		$userObject =& $userHandler->get(get_param('user'));
+		if (!$userObject) {
+			redirect_header(wp_siteurl(), 0, _LANG_P_CHEATING_ERROR);
 		}
-		include_once('admin-header.php');
+		if (isset($GLOBALS['xoopsUser']) && ($GLOBALS['xoopsUser']->getVar('uname') == $userObject->getVar('user_login'))) {
+			header ('Location: '.$_this_file.'?standalone=1');
+		}
+		$GLOBALS['standalone'] = 1;
+		$GLOBALS['title'] = "View Profile";
+		require_once('admin-header.php');
+		$_userinfo =& $userObject->getVarArray();
+		$_userinfo['uniqname'] = $userObject->get_uniqname();
+		$_userinfo['numposts'] = $userObject->getNumPosts(wp_prefix());
+		$_userinfo['user_email'] = make_clickable($_userinfo['user_email']);
+		$_userinfo['user_url'] =  make_clickable($_userinfo['user_url']);
+		$_userinfo['user_icq'] =  $_userinfo['user_icq'] >0 ? make_clickable($_userinfo['user_icq']) : '';
 
-	switch($profiledata->user_idmode) {
-			case 'nickname':	$r = $profiledata->user_nickname;	break;
-			case 'login':		$r = $profiledata->user_login;		break;
-			case 'firstname':	$r = $profiledata->user_firstname;	break;
-			case 'lastname':	$r = $profiledata->user_lastname;	break;
-			case 'namefl':		$r = $profiledata->user_firstname.' '.$profiledata->user_lastname;	break;
-	 		case 'namelf':		$r = $profiledata->user_lastname.' '.$profiledata->user_firstname;	break;
-	}
-?>
-<h2><?php echo _LANG_WPF_SUBT_VIEW; ?> &#8220;<?echo $r ?>&#8221;</h2>
-  <div id="profile">
-<p> 
-  <strong>Login</strong> <?php echo $profiledata->user_login ?>
-	  | <strong>User #</strong> <?php echo $profiledata->ID ?> 
-	  | <strong>Level</strong> <?php echo $profiledata->user_level ?> 
-	  | <strong>Posts</strong> <?php echo get_usernumposts($user) ?>
-</p>
-<p> <strong><?php echo _LANG_WPF_SUBT_FIRST; ?></strong> <?php echo $profiledata->user_firstname ?> </p>
-<p> <strong><?php echo _LANG_WPF_SUBT_LAST; ?></strong> <?php echo $profiledata->user_lastname ?> </p>
-<p> <strong><?php echo _LANG_WPF_SUBT_NICK; ?></strong> <?php echo $profiledata->user_nickname ?> </p>
-<?php if ($user == $user_ID) { ?>
-	<p> <strong><?php echo _LANG_WPF_SUBT_MAIL; ?></strong> <?php echo make_clickable($profiledata->user_email) ?> </p>
-<?php } ?>
-<p> <strong><?php echo _LANG_WPF_SUBT_URL; ?></strong> <?php echo $profiledata->user_url ?> </p>
-<p> <strong><?php echo _LANG_WPF_SUBT_ICQ; ?></strong> 
-	<?php echo ($profiledata->user_icq > 0) ? make_clickable("icq:".$profiledata->user_icq):'' ?>
-</p>
-<p> <strong><?php echo _LANG_WPF_SUBT_MSN; ?></strong> <?php echo $profiledata->user_msn ?> </p>
-<p> <strong><?php echo _LANG_WPF_SUBT_YAHOO; ?></strong> <?php echo $profiledata->user_yim ?> </p>
-</div>
-	<?php
-break;
+		$_wpTpl =& new WordPresTpl('wp-admin');
+		$_wpTpl->assign('user_ID', $GLOBALS['user_ID']);
+		$_wpTpl->assign('userinfo', $_userinfo);
+		$_wpTpl->display('profile-viewprofile.html');
 
-case 'IErightclick':
-	$bookmarklet_tbpb  = (get_settings('use_trackback')) ? '&trackback=1' : '';
-	$bookmarklet_tbpb .= (get_settings('use_pingback'))  ? '&pingback=1'  : '';
-	$bookmarklet_height= (get_settings('use_trackback')) ? 590 : 550;
-	?>
-	<div class="menutop">&nbsp;<?php echo _LANG_WPF_SUBT_ONE; ?></div>
-	<table width="100%" cellpadding="20">
-	<tr><td>
-	<p><?php echo _LANG_WPF_SUBT_COPY; ?></p>
-	<?php
-	$regedit = "REGEDIT4\r\n[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\MenuExt\Post To &WP : ".get_settings('blogname')."]\r\n@=\"$siteurl/wp-admin/bookmarklet.jp.php\"\r\n\"contexts\"=hex:31\"";
-	?>
-	<pre style="margin: 20px; background-color: #cccccc; border: 1px dashed #333333; padding: 5px; font-size: 12px;"><?php echo $regedit; ?></pre>
-	<p><?php echo _LANG_WPF_SUBT_BOOK; ?></p>
-	</td></tr>
-	</table>
-	<?php
-	exit();
-	break;
+		include('admin-footer.php');
+		break;
+
+	case 'IErightclick':
+		$GLOBALS['standalone'] = 1;
+		$GLOBALS['title'] = 'IE Right Click Register';
+		require_once('admin-header.php');
+		require_once(XOOPS_ROOT_PATH.'/class/template.php');
+		$_regedit = "REGEDIT4\r\n[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\MenuExt\Post To &WP : ".get_settings('blogname')."]\r\n@=\"".wp_siteurl()."/wp-admin/bookmarklet.jp.php\"\r\n\"contexts\"=hex:31\"";
+		
+		$_wpTpl =& new WordPresTpl('wp-admin');
+		$_wpTpl->assign('regedit', $_regedit);
+		$_wpTpl->display('profile-IErightclick.html');
+		include('admin-footer.php');
+		break;
 	default:
-		$standalone = 0;
+		init_param('GET', 'standalone', 'integer', 0);
+		$GLOBALS['standalone'] = get_param('standalone');
+		$GLOBALS['title'] = 'Edit Profile';
 		include_once('admin-header.php');
-
-		param('updated','string','');
-
-	$profiledata=get_userdata($user_ID);
-
-	$bookmarklet_tbpb  = (get_settings('use_trackback')) ? '&trackback=1' : '';
-	$bookmarklet_tbpb .= (get_settings('use_pingback'))  ? '&pingback=1'  : '';
-	$bookmarklet_height= (get_settings('use_trackback')) ? 480 : 440;
-
-	if ($updated) {
-?>
-<div class="wrap">
-	<p><strong><?php echo _LANG_WPF_SUBT_UPDATED; ?></strong></p>
-</div>
-    <?php
-		} 
-		include XOOPS_ROOT_PATH."/class/xoopsformloader.php";
-		$myts =& MyTextSanitizer::getInstance();
+		require_once(XOOPS_ROOT_PATH.'/class/template.php');
 		
-		$user_login = $myts->makeTboxData4Show($profiledata->user_login);
-		$user_firstname = $myts->makeTboxData4Edit($profiledata->user_firstname);
-		$user_lastname = $myts->makeTboxData4Edit($profiledata->user_lastname);
-		$user_description = $myts->makeTareaData4Edit($profiledata->user_description);
-		$user_nickname = $myts->makeTboxData4Edit($profiledata->user_nickname);
-		$user_email = $myts->makeTboxData4Edit($profiledata->user_email);
-		$user_url = $myts->makeTboxData4Edit($profiledata->user_url);
-		$user_icq = ($profiledata->user_icq ==0)? "":$profiledata->user_icq;
-		$user_aim = $myts->makeTboxData4Edit($profiledata->user_aim);
-		$user_msn = $myts->makeTboxData4Edit($profiledata->user_msn);
-		$user_yim = $myts->makeTboxData4Edit($profiledata->user_yim);
-		$user_idmode = $myts->makeTboxData4Edit($profiledata->user_idmode);
-		
-		$form = new XoopsThemeForm(_LANG_WPF_SUBT_EDIT, "profile", "profile.php");
-		$form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_USERID, $profiledata->ID));
-		$form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_LEVEL, $profiledata->user_level));
-		$form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_POSTS, get_usernumposts($user_ID)));
-		$form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_LOGIN, $user_login));
-		$form->addElement(new XoopsFormText(_LANG_WPF_SUBT_FIRST, "newuser_firstname", 50, 150, $user_firstname));
-		$form->addElement(new XoopsFormText(_LANG_WPF_SUBT_LAST, "newuser_lastname", 50, 150, $user_lastname));
-		$form->addElement(new XoopsFormTextArea(_LANG_WPF_SUBT_DESC, "user_description", $user_description, 5,60));
-		$form->addElement(new XoopsFormText(_LANG_WPF_SUBT_NICK, "newuser_nickname", 50, 150, $user_nickname), true);
-		$form->addElement(new XoopsFormText(_LANG_WPF_SUBT_MAIL, "newuser_email", 50, 150, $user_email), true);
-		$form->addElement(new XoopsFormText(_LANG_WPF_SUBT_URL, "newuser_url", 50, 150, $user_url));
-		$form->addElement(new XoopsFormText(_LANG_WPF_SUBT_ICQ, "newuser_icq", 50, 150, $user_icq));
-		$form->addElement(new XoopsFormText(_LANG_WPF_SUBT_AIM, "newuser_aim", 50, 150, $user_aim));
-		$form->addElement(new XoopsFormText(_LANG_WPF_SUBT_AIM, "newuser_msn", 50, 150, $user_msn));
-		$form->addElement(new XoopsFormText(_LANG_WPF_SUBT_YAHOO, "newuser_yim", 50, 150, $user_yim));
-		$form_idmode = new XoopsFormSelect(_LANG_WPF_SUBT_IDENTITY, "newuser_idmode", $user_idmode);
-		$form_idmode->addOption("nickname", $profiledata->user_nickname);
-		$form_idmode->addOption("login", $profiledata->user_login);
-		$form_idmode->addOption("firstname", $profiledata->user_firstname);
-		$form_idmode->addOption("lastname", $profiledata->user_lastname);
-		$form_idmode->addOption("namefl", $profiledata->user_firstname." ".$profiledata->user_lastname);
-		$form_idmode->addOption("namelf", $profiledata->user_lastname." ".$profiledata->user_firstname);
-		$form->addElement($form_idmode);
-		$form->addElement(new XoopsFormButton("", "submit", _LANG_WPF_SUBT_UPDATE, "submit"));
-		$form->addElement(new XoopsFormHidden("checkuser_id", $user_ID));
-		$form->addElement(new XoopsFormHidden("action", "update"));
-		$form->display();
-	?>
-<?php if ($is_gecko) { ?>
-    <script language="JavaScript" type="text/javascript">
-		function addPanel() {
-			if ((typeof window.sidebar == "object") && (typeof window.sidebar.addPanel == "function")) {
-      	      window.sidebar.addPanel("WordPress Post: <?php echo get_settings('blogname') ?>","<?php echo $siteurl ?>/wp-admin/sidebar.php","");
-			} else {
-   	         alert(_LANG_WPF_SUBT_MOZILLA);
- 	       }
-		}
-	</script>
-    <strong><?php echo _LANG_WPF_SUBT_SIDEBAR; ?></strong><br />
-    Add the <a href="#" onclick="addPanel()">WordPress Sidebar</a>! 
-    <?php } elseif (($is_winIE) || ($is_macIE)) { ?>
-<div class="wrap">
-    <h2>SideBar</h2>
-	<?php echo _LANG_WPF_SUBT_FAVORITES; ?> <a href="javascript:Q='';if(top.frames.length==0)Q=document.selection.createRange().text;void(_search=open('<?php echo $siteurl ?>/wp-admin/sidebar.php?text='+escape(Q)+'&popupurl='+escape(location.href)+'&popuptitle='+escape(document.title),'_search'))">WordPress Sidebar</a>. 
-</div>
-<?php } ?>
-	<?php
+		init_param('GET', 'updated','string','');
+
+		$userObject =& $userHandler->get($GLOBALS['user_ID']);
+
+		include XOOPS_ROOT_PATH.'/class/xoopsformloader.php';
+		$_form = new XoopsThemeForm(_LANG_WPF_SUBT_EDIT, 'profile', $_this_file);
+		$_form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_USERID, $userObject->getVar('ID','e')));
+		$_form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_LEVEL, $userObject->getVar('user_level','e')));
+		$_form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_POSTS, $userObject->getNumPosts($wp_prefix[$wp_id])));
+		$_form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_LOGIN, $userObject->getVar('user_login','e')));
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_FIRST, 'newuser_firstname', 50, 150, $userObject->getVar('user_firstname','e')));
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_LAST, 'newuser_lastname', 50, 150, $userObject->getVar('user_lastname','e')));
+		$_form->addElement(new XoopsFormTextArea(_LANG_WPF_SUBT_DESC, 'user_description', $userObject->getVar('user_description','e'), 5,60));
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_NICK, 'newuser_nickname', 50, 150, $userObject->getVar('user_nickname','e')), true);
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_MAIL, 'newuser_email', 50, 150, $userObject->getVar('user_email','e')), true);
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_URL, 'newuser_url', 50, 150, $userObject->getVar('user_url','e')));
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_ICQ, 'newuser_icq', 50, 150, ($userObject->getVar('user_icq','e'))?($userObject->getVar('user_icq','e')):''));
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_AIM, 'newuser_aim', 50, 150, $userObject->getVar('user_aim','e')));
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_MSN, 'newuser_msn', 50, 150, $userObject->getVar('user_msn','e')));
+		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_YAHOO, 'newuser_yim', 50, 150, $userObject->getVar('user_yim','e')));
+		$_form_idmode = new XoopsFormSelect(_LANG_WPF_SUBT_IDENTITY, 'newuser_idmode', $userObject->getVar('user_idmode','e'));
+		$_form_idmode->addOption('nickname', $userObject->getVar('user_nickname'));
+		$_form_idmode->addOption('login', $userObject->getVar('user_login'));
+		$_form_idmode->addOption('firstname', $userObject->getVar('user_firstname'));
+		$_form_idmode->addOption('lastname', $userObject->getVar('user_lastname'));
+		$_form_idmode->addOption('namefl', $userObject->getVar('user_firstname').' '.$userObject->getVar('user_lastname'));
+		$_form_idmode->addOption('namelf', $userObject->getVar('user_lastname').' '.$userObject->getVar('user_firstname'));
+		$_form->addElement($_form_idmode);
+		$_form->addElement(new XoopsFormButton('', 'submit', _LANG_WPF_SUBT_UPDATE, 'submit'));
+		$_form->addElement(new XoopsFormHidden('checkuser_id', $GLOBALS['user_ID']));
+		$_form->addElement(new XoopsFormHidden('action', 'update'));
+		$_form->addElement($GLOBALS['xoopsWPTicket']->getTicketXoopsForm(__LINE__,600));
+		$_formHTML = $_form->render();
+
+		$_wpTpl =& new WordPresTpl('wp-admin');
+		$_wpTpl->assign('updated', get_param('updated'));
+		$_wpTpl->assign('formHTML', $_formHTML);
+		$_wpTpl->assign('blogname', get_settings('blogname'));
+		$_wpTpl->assign('siteurl', wp_siteurl());
+		$_wpTpl->assign('is_gecko', $GLOBALS['is_gecko']);
+		$_wpTpl->assign('is_IE', ($GLOBALS['is_winIE']) || ($GLOBALS['is_macIE']));
+		$_wpTpl->display('profile.html');
+		include('admin-footer.php');
 		break;
 }
-include('admin-footer.php') ?>
+?>

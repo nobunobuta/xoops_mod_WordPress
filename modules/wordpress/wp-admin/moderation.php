@@ -1,153 +1,104 @@
 <?php
 require_once('admin.php');
-
-$title = 'Moderate comments';
 $this_file = 'moderation.php';
 $parent_file = 'edit.php';
 
-param('action','string','');
+$commentHandler =& $wpCommentHandler[$wp_prefix[$wp_id]];
+$postHandler =& $wpPostHandler[$wp_prefix[$wp_id]];
+
+init_param(array('POST','GET'), 'action', 'string', '');
 
 switch($action) {
 	case 'update':
-		wp_refcheck("/wp-admin/moderation.php");
-	    if ($user_level < 3) {
-	    	redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
-	    	exit();
+		//Check Ticket
+		if ( ! $xoopsWPTicket->check() ) {
+			redirect_header($siteurl.'/wp-admin/'.$this_file,3,$xoopsWPTicket->getErrors());
 		}
-		param('comment','array',array());
+		//Check User_Level
+		user_level_check();
+		//Check Paramaters
+		init_param('POST', 'comment','array',array(), true);
 
 		$item_ignored = 0;
 		$item_deleted = 0;
 		$item_approved = 0;
 		
 		foreach($comment as $key => $value) {
-		    switch($value) {
-				case 'later':
-					// do nothing with that comment
-					// wp_set_comment_status($key, "hold");
-					++$item_ignored;
-					break;
-				
-				case 'delete':
-					wp_set_comment_status($key, 'delete');
-					++$item_deleted;
-					break;
-				
-				case 'approve':
-					wp_set_comment_status($key, 'approve');
-					if (get_settings('comments_notify') == true) {
-						wp_notify_postauthor($key);
-					}
-					++$item_approved;
-					break;
-		    }
+			$commentObject =& $commentHandler->get(intval($key));
+			$postObject =& $postHandler->get($commentObject->getVar('comment_post_ID'));
+		    if (user_can_edit($postObject->getVar('post_author'))) {
+			    switch($value) {
+					case 'later':
+						++$item_ignored;
+						break;
+					
+					case 'delete':
+						if (!$commentHandler->delete($commentObject)) {
+							redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $categoryHandler->getErrors());
+						}
+						++$item_deleted;
+						break;
+					
+					case 'approve':
+						if (!$commentObject->approve()) {
+							redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $categoryHandler->getErrors());
+						}
+						if (get_settings('comments_notify') == true) {
+							wp_notify_postauthor($key);
+						}
+						++$item_approved;
+						break;
+				}
+			}
 		}
-
-		$file = basename(__FILE__);
-		header("Location: $file?ignored=$item_ignored&deleted=$item_deleted&approved=$item_approved");
+		header("Location: $this_file?ignored=$item_ignored&deleted=$item_deleted&approved=$item_approved");
 		exit();
-
 		break;
-
 	default:
+		//Check User_Level
+		user_level_check();
+
 	    $standalone = 0;
+		$title = 'Moderate comments';
 		require_once('admin-header.php');
-	    if ($user_level < 3) {
-	    	redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
-	    	exit();
+		//Check Paramaters
+		init_param('GET', 'ignored','integer',0);
+		init_param('GET', 'deleted','integer',0);
+		init_param('GET', 'approved','integer',0);
+		
+		$criteria = new Criteria('comment_approved', '0 '); //数字のみの文字列は少々癖がある。
+		$commentObjects =& $commentHandler->getObjects($criteria);
+		$comment_rows = array();
+		foreach($commentObjects as $commentObject) {
+			$row = $commentObject->getVarArray();
+			$comment = $commentObject->exportWpObject();
+			$postObject =& $postHandler->get($commentObject->getVar('comment_post_ID'));
+			if ($postObject) {
+				$row['post_title'] = $postObject->getVar('post_title');
+			}
+			$row['comment_date'] = mysql2date(get_settings("date_format") . " @ " . get_settings("time_format"), $commentObject->comment_date);
+			$row['post_title']  = ($row['post_title'] == '') ? "# $commentObject->getVar('comment_post_ID')" : $row['post_title'];
+			$row['comment_author'] = comment_author(false);
+			$row['comment_author_email'] = comment_author_email_link('','','',false);
+			$row['comment_author_url'] = comment_author_url_link('','','',false);
+			$row['comment_author_IP'] = comment_author_IP(false);
+			$row['comment_content'] = comment_text(false);
+			if (user_can_edit($postObject->getVar('post_author'))) {
+				$comment_rows[] = $row;
+			}
 		}
-		param('ignored','integer',0);
-		param('deleted','integer',0);
-		param('approved','integer',0);
-		// if we come here after deleting/approving comments we give
-		// a short overview what has been done
-		if (($deleted) || ($approved) || ($ignored)) {
-		    echo "<div class=\"wrap\">\n";
-		    if ($approved) {
-			if ($approved == "1") {
-			    echo "1"._LANG_WPM_COM_APPROV."<br />\n";
-			} else {
-			    echo "$approved"._LANG_WPM_COMS_APPROVS."<br />\n";
-			}
-		    }
-		    if ($deleted) {
-			if ($deleted == "1") {
-			    echo "1"._LANG_WPM_COM_DEL."<br />\n";
-			} else {
-			    echo "$approved"._LANG_WPM_COMS_DELS."<br />\n";
-			}
-		    }
-		    if ($ignored) {
-			if ($deleted == "1") {
-			    echo "1"._LANG_WPM_COM_UNCHANGE."<br />\n";
-			} else {
-			    echo "$approved"._LANG_WPM_COMS_UNCHANGES."<br />\n";
-			}
-		    
-		    }
-		    echo "</div>\n";
-		}
-?>
+		$ticket = $xoopsWPTicket->getTicketHtml(__LINE__);
 
-<div class="wrap">
-<?php
-$comments = $wpdb->get_results("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_approved = '0'");
-if ($comments) {
-    $file = basename(__FILE__);
-?>
-    <p><?php echo _LANG_WPM_WAIT_APPROVAL; ?></p>
-    <form name="approval" action="moderation.php" method="post">
-    <input type="hidden" name="action" value="update" />
-    <ol id="comments">
-<?php
-    foreach($comments as $comment) {
-		$comment_date = mysql2date(get_settings("date_format") . " @ " . get_settings("time_format"), $comment->comment_date);
-		$post_title = $wpdb->get_var("SELECT post_title FROM {$wpdb->posts[$wp_id]} WHERE ID='$comment->comment_post_ID'");
-	
-	?>
-	<li id='comment-$comment->comment_ID'>
-		<p><strong><?php echo _LANG_WPM_COMPOST_NAME; ?></strong> <?php comment_author() ?> <?php if ($comment->comment_author_email) { ?>| <strong><?php echo _LANG_WPM_COMPOST_MAIL; ?></strong> <?php comment_author_email_link() ?> <?php } if ($comment->comment_author_email) { ?> | <strong><?php echo _LANG_WPM_COMPOST_URL; ?></strong> <?php comment_author_url_link() ?> <?php } ?>| <strong>IP:</strong> <a href="http://ws.arin.net/cgi-bin/whois.pl?queryinput=<?php comment_author_IP() ?>"><?php comment_author_IP() ?></a></p>
-<?php comment_text() ?>
-<p>
-		<a href="post.php?action=editcomment&amp;comment=<?php echo $comment->comment_ID ?>"><?php echo _LANG_WPM_JUST_EDIT ?></a>
-		| <a href="post.php?action=confirmdeletecomment&amp;p=<?php echo $comment->comment_post_ID?>&amp;comment=<?php echo $comment->comment_ID ?>&amp;referredby=moderation"><?php echo _LANG_WPM_JUST_THIS ?></a>
-		| <?php echo _LANG_WPM_DO_ACTION; ?>
-			<input type="radio" name="comment[<?php echo $comment->comment_ID; ?>]" id="comment[<?php echo $comment->comment_ID; ?>]-approve" value="approve" /> <label for="comment[<?php echo $comment->comment_ID; ?>]-approve"><?php echo _LANG_WPM_DO_APPROVE; ?></label>
-			<input type="radio" name="comment[<?php echo $comment->comment_ID; ?>]" id="comment[<?php echo $comment->comment_ID; ?>]-delete" value="delete" /> <label for="comment[<?php echo $comment->comment_ID; ?>]-delete"><?php echo _LANG_WPM_DO_DELETE; ?></label>
-			<input type="radio" name="comment[<?php echo $comment->comment_ID; ?>]" id="comment[<?php echo $comment->comment_ID; ?>]-nothing" value="later" checked="checked" /> <label for="comment[<?php echo $comment->comment_ID; ?>]-nothing"><?php echo _LANG_WPM_DO_NOTHING; ?></label>
-	</li>
-<?php
-    	}
-?>
-    </ol>
-    <input type="submit" name="submit" value="<?php echo _LANG_WPM_MODERATE_BUTTON; ?>" />
-    </form>
-<?php
-} else {
-    // nothing to approve
-    echo _LANG_WPM_CURR_COMAPP."\n";
-}
-?>
-
-</div>
-
-<?php if ($comments) { ?>
-<div class="wrap"> 
-	<?php echo _LANG_WPM_DEL_LATER; ?>
-	<?php echo _LANG_WPM_PUBL_VISIBLE; ?>
-	<?php 
-	    if ('1' == get_settings('comments_notify')) {
-		echo ": "._LANG_WPM_AUTHOR_NOTIFIED."</p>\n";
-	    } else {
-		echo ".</p>\n";
-	    }
-	?>	    
-	<?php echo _LANG_WPM_ASKED_AGAIN; ?>
-</div>
-<?php } ?>
-
-<?php
-
+		$wpTpl =& new XoopsTpl;
+		$wpTpl->error_reporting = error_reporting();
+		$wpTpl->assign('ignored', $ignored);
+		$wpTpl->assign('deleted', $deleted);
+		$wpTpl->assign('approved', $approved);
+		$wpTpl->assign('comments_notify', get_settings('comments_notify'));
+		$wpTpl->assign('comment_rows', $comment_rows);
+		$wpTpl->assign('ticket', $ticket);
+		$wpTpl->template_dir = ABSPATH."wp-admin/templates/";
+		$wpTpl->display("moderation.html");
+		include("admin-footer.php");
 		break;
 }
-include("admin-footer.php") ?>

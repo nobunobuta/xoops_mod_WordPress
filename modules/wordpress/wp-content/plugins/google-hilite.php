@@ -3,8 +3,8 @@
 Plugin Name: Search Hilite
 Plugin URI: http://wordpress.org/#
 Description:_LANG_PG_GOOGLE_HILITE
-Version: 1.2
-Author: Ryan Boren
+Version: 1.2.2
+Author: Ryan Boren (Modified by Nobunobu)
 Author URI: http://rboren.nu
 */ 
 if (!defined('WP_PLUGIN_GOOGLE_HILITE')) {
@@ -12,7 +12,11 @@ define('WP_PLUGIN_GOOGLE_HILITE',1);
 /* Highlighting code c/o Ryan Boren */
 function get_search_query_terms($engine = 'google') {
     global $s, $s_array, $blog_charset;
-	$referer = urldecode($_SERVER['HTTP_REFERER']);
+    if (isset($_SERVER['HTTP_REFERER'])) {
+		$referer = urldecode($_SERVER['HTTP_REFERER']);
+	} else {
+		$referer = '';
+	}
 	$query_array = array();
 	switch ($engine) {
 	case 'google':
@@ -41,30 +45,27 @@ function get_search_query_terms($engine = 'google') {
     case 'wordpress':
         // Check the search form vars if the search terms
         // aren't in the referer.
-        if ( ! preg_match('/^.*s=/i', $referer)) {
-            if (isset($s_array)) {
-                $query_array = $s_array;
-            } else if (isset($s)) {
-                $query_array = array($s);
-            }
-
-            break;
-        }
-
-		$query_terms = preg_replace('/^.*s=([^&]+)&?.*$/i','$1', $referer);
-		$query_terms = preg_replace('/\'|"/', '', $query_terms);
-		$query_array = preg_split ("/[\s,\+\.]+/", $query_terms);
+        if (isset($s_array)) {
+            $query_array = $s_array;
+	        break;
+        } else if (isset($s)) {
+            $query_array = array($s);
+	        break;
+        } else if (preg_match('/^.*s=/i', $referer)) {
+			$query_terms = preg_replace('/^.*s=([^&]+)&?.*$/i','$1', $referer);
+			$query_terms = preg_replace('/\'|"/', '', $query_terms);
+			$query_array = preg_split ("/[\s,\+\.]+/", $query_terms);
+		}
         break;
 	}
-
 	return $query_array;
 }
 
 function is_referer_search_engine($engine = 'google') {
-	global $siteurl;
-	
     if (isset($_SERVER['HTTP_REFERER'])) {
-	$referer = urldecode($_SERVER['HTTP_REFERER']);
+		$referer = urldecode($_SERVER['HTTP_REFERER']);
+	} else if ($engine == 'wordpress' && (!empty($GLOBALS['s_array']) || !empty($GLOBALS['s']))) {
+		return 1;
 	} else {
 		return 0;
 	}
@@ -93,7 +94,7 @@ function is_referer_search_engine($engine = 'google') {
         break;
 
     case 'wordpress':
-        if (preg_match("#^$siteurl#i", $referer)) {
+        if (preg_match("#^".wp_siteurl()."#i", $referer)) {
             return 1;
         }
         break;
@@ -136,8 +137,8 @@ function hilite_head() {
 }
 }
 // Highlight text and comments:
-add_filter('the_content', 'hilite');
-add_filter('comment_text', 'hilite');
+add_filter('the_content', 'hilite', 99);
+add_filter('comment_text', 'hilite', 99);
 add_action('wp_head', 'hilite_head');
 
 ?>

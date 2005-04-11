@@ -1,0 +1,55 @@
+<div class="wrap">
+	<table width="100%">
+	  <tr>
+	    <td valign="top" width="200">
+	      <{$smarty.const._LANG_E_SHOW_POSTS}>
+	    </td>
+	    <td>
+	      <table cellpadding="0" cellspacing="0" border="0">
+	        <tr>
+	          <td colspan="2" align="center"><!-- show next/previous X posts -->
+	            <form name="previousXposts" method="get" action="">
+<{if $previousXstart >= 0}>
+	              <input type="hidden" name="showposts" value="<{$showposts}>" />
+	              <input type="hidden" name="poststart" value="<{$previousXstart}>" />
+	              <input type="hidden" name="postend" value="<{$previousXend}>" />
+	              <input type="submit" name="submitprevious" value="&lt; <{$showposts}>" />
+<{/if}>
+	            </form>
+	          </td>
+	          <td>
+	            <form name="nextXposts" method="get" action="">
+	              <input type="hidden" name="showposts" value="<{$showposts}>" />
+	              <input type="hidden" name="poststart" value="<{$nextXstart}>" />
+	              <input type="hidden" name="postend" value="<{$nextXend}>" />
+	              <input type="submit" name="submitnext" value="<{$showposts}> &gt;" />
+	            </form>
+	          </td>
+	        </tr>
+	      </table>
+	    </td>
+	  </tr>
+	  <tr>
+	    <td valign="top" width="200"><!-- show X first/last posts -->
+	      <form name="showXfirstlastposts" method="get" action="">
+	        <input type="text" name="showposts" value="<{$showposts}>" style="width:40px;" /}>
+	        <select name="order">
+	          <option value="DESC" <?php selected($order,"DESC")}>>last posts</option>
+	          <option value="ASC"  <?php selected($order,"ASC")}>>first posts</option>
+	        </select>&nbsp;
+	        <input type="submit" name="submitfirstlast" value="OK" />
+	      </form>
+	    </td>
+	    <td valign="top"><!-- show post X to post X -->
+	      <form name="showXfirstlastposts" method="get" action="">
+	        <input type="text" name="poststart" value="<{$poststart}>" style="width:40px;" /}>&nbsp;to&nbsp;<input type="text" name="postend" value="<{$postend}>" style="width:40px;" /}>&nbsp;
+	        <select name="order">
+	          <option value="DESC" <?php selected($order,"DESC")}>>from the end</option>
+	          <option value="ASC" <?php echo selected($order,"ASC")}>>from the start</option>
+	        </select>&nbsp;
+	        <input type="submit" name="submitXtoX" value="OK" />
+	      </form>
+	    </td>
+	  </tr>
+	</table>
+</div>

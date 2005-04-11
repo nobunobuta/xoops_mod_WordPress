@@ -80,9 +80,9 @@ if (isset($block['bid'])) {
 $form->addElement(new XoopsFormHidden('op', $block['op']));
 $form->addElement(new XoopsFormHidden('fct', 'blocksadmin'));
 $button_tray = new XoopsFormElementTray('', '&nbsp;');
-if ($block['is_custom']) {
+/* if ($block['is_custom']) {
 	$button_tray->addElement(new XoopsFormButton('', 'previewblock', _PREVIEW, "submit"));
-}
-$button_tray->addElement(new XoopsFormButton('', 'submitblock', _SUBMIT, "submit"));
+} */
+$button_tray->addElement(new XoopsFormButton('', 'submitblock', $block['submit_button'], "submit"));
 $form->addElement($button_tray);
 ?>

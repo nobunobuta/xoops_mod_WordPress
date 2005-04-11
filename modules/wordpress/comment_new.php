@@ -28,7 +28,7 @@ include 'wp-config.php';
 $com_itemid = isset($_GET['com_itemid']) ? intval($_GET['com_itemid']) : 0;
 if ($com_itemid > 0) {
 	// Get link title
-	$sql = "SELECT post_title FROM " . $wpdb->posts[$wp_id] . " WHERE ID=" . $com_itemid . "";
+	$sql = "SELECT post_title FROM " . wp_table('posts') . " WHERE ID=" . $com_itemid . "";
 	$result = $xoopsDB->query($sql);
 	$row = $xoopsDB->fetchArray($result);
     $com_replytitle = $row['post_title'];

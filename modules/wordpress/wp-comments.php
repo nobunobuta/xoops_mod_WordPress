@@ -1,7 +1,7 @@
 <?php // Do not delete these lines
 	if ('wp-comments.php' == basename($_SERVER['SCRIPT_FILENAME']))
 		die ('Please do not load this page directly. Thanks!');
-	if (($withcomments) or ($c)) {
+	if (!empty($withcomments) || !empty($c)) {
 		if (get_xoops_option($wp_mod[$wp_id],'wp_use_xoops_comments') == 0) {
 	        $comments = $wpdb->get_results("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = '$wp_post_id' AND comment_approved = '1' ORDER BY comment_date");
         	if (!empty($post->post_password)) { // if there's a password

@@ -1,100 +1,67 @@
 <?php
-function selected($selected, $current) {
-	if ($selected == $current) echo ' selected="selected"';
+function selected($selected, $current, $echo=true) {
+	if ($selected == $current) {
+		if ($echo) echo ' selected="selected"';
+		else return ' selected="selected"';
+	}
 }
 
-function checked($checked, $current) {
-	if ($checked == $current) echo ' checked="checked"';
+function checked($checked, $current, $echo=true) {
+	if ($checked == $current) {
+		if ($echo) echo ' checked="checked"';
+		else return ' checked="checked"';
+	}
 }
 
-function get_nested_categories($default = 0) {
- global $post_ID, $mode, $wpdb, $wp_id;
- if ($post_ID) {
-   $checked_categories = $wpdb->get_col("
-     SELECT category_id
-     FROM  {$wpdb->categories[$wp_id]}, {$wpdb->post2cat[$wp_id]}
-     WHERE {$wpdb->post2cat[$wp_id]}.category_id = cat_ID AND {$wpdb->post2cat[$wp_id]}.post_id = '$post_ID'
-     ");
- } else {
-   $checked_categories[] = $default;
- }
-
- $categories = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]} ORDER BY category_parent DESC, cat_name ASC");
- $result = array();
- foreach($categories as $category) {
-   $array_category = get_object_vars($category);
-   $me = 0 + $category->cat_ID;
-   $parent = 0 + $category->category_parent;
-	if (isset($result[$me]))   $array_category['children'] = $result[$me];
-   $array_category['checked'] = in_array($category->cat_ID, $checked_categories);
-   $array_category['cat_name'] = stripslashes($category->cat_name);
-   $result[$parent][] = $array_category;
- }
- return $result[0];
+function gethelp_link($this_file, $helptag) {
+    $url = 'http://wordpress.org/docs/reference/links/#'.$helptag;
+    $s = ' <a href="'.$url.'" title="Click here for help">?</a>';
+    return $s;
 }
 
-function write_nested_categories($categories) {
-	$myts =& MyTextSanitizer::getInstance();
+function categories_nested_select($sel_categories) {
+    global $wpCategoryHandler;
+	global $wp_id ,$wp_mod, $wp_prefix;
 
-	foreach($categories as $category) {
-		$cat_ID = $category['cat_ID'];
+	$categoryObjects =& $wpCategoryHandler[$wp_prefix[$wp_id]]->getNestedObjects(null,'');
+	$prev_level = 1;
+	$output = "";
+	foreach ($categoryObjects as $categoryObject) {
+		if ($prev_level < $categoryObject->getExtraVar('category_level')) {
+			$output .= "<span class='cat-nest'>";
+		} elseif  ($prev_level > $categoryObject->getExtraVar('category_level')) {
+		    $output .= "</span>";
+		}
+		$prev_level = $categoryObject->getExtraVar('category_level');
+		$cat_ID = $categoryObject->getVar('cat_ID');
 		$id = "category-$cat_ID";
-		$cat_name = $myts->makeTareaData4Show($category['cat_name']);
-		$checked = ($category['checked'] ? ' checked="checked"' : "");
-?> 
-		<label for="<?php echo $id ?>" class="selectit">
-			<input value="<?php echo $cat_ID ?>" type="checkbox" name="post_category[]" id="<?php echo $id ?>"<?php echo $checked ?> /><?php echo $cat_name ?> 
-		</label>
-<?php
-   if(isset($category['children'])) {
-?>
-		<span class='cat-nest'>
-<?php write_nested_categories($category['children']); ?>
-		</span>
-<?php
-   }
- }
+		$cat_name = $categoryObject->getVar('cat_name');
+		$checked = (in_array($cat_ID, $sel_categories)) ? ' checked="checked"' : "";
+		$output .= "<label for='$id' class='selectit'>";
+		$output .= "<input value='$cat_ID' type='checkbox' name='post_category[]' id='$id' $checked/>$cat_name";
+		$output .= "</label>";
+	}
+	return $output;
 }
-
-function dropdown_categories($default = 0) {
- write_nested_categories(get_nested_categories($default));
-} 
 
 function wp_dropdown_cats($currentcat, $currentparent = 0, $parent = 0, $level = 0, $categories = 0) {
-	global $wpdb, $wp_id, $bgcolor;
+	global $xoopsDB, $wp_id, $wp_prefix, $bgcolor;
 	$myts =& MyTextSanitizer::getInstance();
 
 	if (!$categories) {
-		$categories = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]} ORDER BY cat_name");
+		$categoryHandler =& new WordPressCategoryHandler($xoopsDB, $wp_prefix[$wp_id]);
+ 		$categories =& $categoryHandler->getObjects();
 	}
 	if ($categories) {
 		foreach ($categories as $category) {
-			if ($currentcat != $category->cat_ID && $parent == $category->category_parent) {
-				$cat_ID = $category->cat_ID;
-				$cat_name = $myts->makeTareaData4Show($category->cat_name);
+				$cat_ID = $category->getVar('cat_ID');
+			if ($currentcat != $cat_ID && $parent == $category->getVar('category_parent')) {
+				$cat_name = $myts->makeTareaData4Show($category->getVar('cat_name'));
 				$pad = str_repeat('&#8211; ', $level);
 ?>
 				<option value='<?php echo $cat_ID ?>'<?php selected($currentparent, $cat_ID) ?>><?php echo "$pad$cat_name" ?></option>
 <?php
-				wp_dropdown_cats($currentcat, $currentparent, $category->cat_ID, $level + 1, $categories);
-			}
-		}
-	} else {
-		return false;
-	}
-}
-
-function wp_dropdown_cats_xoops(&$formSelect, $currentcat, $currentparent = 0, $parent = 0, $level = 0, $categories = 0) {
-	global $wpdb, $wp_id, $bgcolor;
-	if (!$categories) {
-		$categories = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]} ORDER BY cat_name");
-	}
-	if ($categories) {
-		foreach ($categories as $category) {
-			if ($currentcat != $category->cat_ID && $parent == $category->category_parent) {
-				$pad = str_repeat('&#8211; ', $level);
-				$formSelect->addOption($category->cat_ID, "$pad$category->cat_name");
-				wp_dropdown_cats_xoops($formSelect, $currentcat, $currentparent, $category->cat_ID, $level + 1, $categories);
+				wp_dropdown_cats($currentcat, $currentparent, $cat_ID, $level + 1, $categories);
 			}
 		}
 	} else {
@@ -172,80 +139,13 @@ function wp_dropdown_postbypost($current) {
 	}
 }
 
-function wp_dropdown_usercat($fieldname, $selected = 0, $withall=false) {
-    global $wpdb,  $wp_id;
-	$myts =& MyTextSanitizer::getInstance();
-
-    $results = $wpdb->get_results("SELECT ID, user_login FROM {$wpdb->users[$wp_id]} WHERE user_level > 0 ORDER BY ID");
-?>
-    <select name="<?php echo $fieldname?>" size="1">
-<?php
-	if ($withall) {
-?>
-		<option value="All"<?php selected("All", $selected) ?>>All</option>?>
-<?php
-	}
-	foreach ($results as $row) {
-		$ID = $row->ID;
-		$user_login = $myts->makeTareaData4Show($row->user_login);
-?>
-		<option value="<?php echo $ID ?>"<?php selected($ID, $selected) ?>><?php echo $user_login ?></option>
-<?php
-	}
-?>
-    </select>
-<?php
-}
-
-function wp_dropdown_linkcat($fieldname, $selected = 0, $withall=false) {
-    global $wpdb,  $wp_id;
-	$myts =& MyTextSanitizer::getInstance();
-
-	$results = $wpdb->get_results("SELECT cat_id, cat_name, auto_toggle FROM {$wpdb->linkcategories[$wp_id]} ORDER BY cat_id");
-?>
-    <select name="<?echo $fieldname?>" size="1">
-<?php
-	if ($withall) {
-?>
-		<option value="All"<?php selected("All", $selected) ?>>All</option>?>
-<?php
-	}
-	foreach ($results as $row) {
-		$cat_id = $row->cat_id;
-		$cat_name = $myts->makeTareaData4Show($row->cat_name);
-		$auto_toggle = ($row->auto_toggle == 'Y') ? ' (auto toggle)' : '';
-?>
-		<option value="<?php echo $cat_id ?>"<?php selected($cat_id, $selected) ?>><?php echo "$cat_id :  $cat_name$auto_toggle" ?></option>
-<?php
-	}
-?>
-    </select>
-<?php
-}
-
-function wp_dropdown_linkcat_xoops(&$formSelect) {
-    global $wpdb,  $wp_id;
-	$myts =& MyTextSanitizer::getInstance();
-	$results = $wpdb->get_results("SELECT cat_id, cat_name, auto_toggle FROM {$wpdb->linkcategories[$wp_id]} ORDER BY cat_id");
-	foreach ($results as $row) {
-		$cat_id = $row->cat_id;
-		$cat_name = $myts->makeTareaData4Show($row->cat_name);
-		$auto_toggle = ($row->auto_toggle == 'Y') ? ' (auto toggle)' : '';
-		$formSelect->addOption($cat_id, "$cat_id :  $cat_name$auto_toggle");
+function user_level_check() {
+	global $siteurl;
+	if (!user_can_access_admin_page()) {
+    	redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 	}
 }
 
-function xfn_check($class, $value = '', $type = 'check') {
-	global $link_rel;
-	if ('' != $value && strstr($link_rel, $value)) {
-		echo ' checked="checked"';
-	}
-	if ('' == $value) {
-		if ('family' == $class && !strstr($link_rel, 'child') && !strstr($link_rel, 'parent') && !strstr($link_rel, 'sibling') && !strstr($link_rel, 'spouse') ) echo ' checked="checked"';
-		if ('friendship' == $class && !strstr($link_rel, 'friend') && !strstr($link_rel, 'acquaintance') ) echo ' checked="checked"';
-		if ('geographical' == $class && !strstr($link_rel, 'co-resident') && !strstr($link_rel, 'neighbor') ) echo ' checked="checked"';
-	}
-}
 function user_can_access_admin_page() {
 	global $parent_file;
 	global $pagenow;
@@ -348,130 +248,23 @@ function add_options_page($page_title, $menu_title, $access_level, $file) {
 
 /* checking login & pass in the database */
 function veriflog() {
-	global  $wpdb ,$wp_id ,$wp_mod;
-	global $xoopsUser, $xoopsDB;
+	global $wp_id ,$wp_mod, $wp_prefix;
+	global $xoopsUser;
+	global $wpUserHandler;
 	if($xoopsUser){
-		$sql = "select ID,user_login from {$wpdb->users[$wp_id]} where ID = ".$xoopsUser->uid();
-		$r = $xoopsDB->query($sql);
-		if(list($id,$user_login) = $xoopsDB->fetchRow($r)){
-			if ($xoopsUser->getVar('uname') != $user_login) {
-				$sql = "UPDATE {$wpdb->users[$wp_id]} SET user_login = ".$xoopsDB->quoteString($xoopsUser->getVar('uname'))." WHERE ID = ".$xoopsUser->uid();
-				$xoopsDB->queryF($sql);
-			}
-		}else{
-			$level = 0;
-			$group = is_object($xoopsUser) ? $xoopsUser->getGroups() : array(XOOPS_GROUP_ANONYMOUS);
-			$edit_groups = get_xoops_option($wp_mod[$wp_id],'wp_edit_authgrp');
-			$admin_groups = get_xoops_option($wp_mod[$wp_id],'wp_admin_authgrp');
-			if (count(array_intersect($group,$edit_groups)) > 0) {
-				$level = 1;
-			}
-			if (count(array_intersect($group,$admin_groups)) > 0) {
-				$level = 10;
-			}
-			$uname = $xoopsDB->quoteString($xoopsUser->getVar('uname'));
-			$email = $xoopsDB->quoteString($xoopsUser->getVar('email'));
-			$sql = "INSERT INTO {$wpdb->users[$wp_id]} (ID, user_login,user_nickname,user_email, user_level,user_idmode) values(".$xoopsUser->uid().", $uname , $uname , $email , $level, 'nickname' )";
-			$xoopsDB->queryF($sql);
+		$user =& $wpUserHandler[$wp_prefix[$wp_id]]->get($xoopsUser->uid());
+		if ($user) {
+			$wpUserHandler[$wp_prefix[$wp_id]]->insert($user, true, true);
+		} else {
+			$user =& $wpUserHandler[$wp_prefix[$wp_id]]->create();
+			$user->setVar('ID',$xoopsUser->uid());
+			$wpUserHandler[$wp_prefix[$wp_id]]->insert($user, true, true, $wp_mod[$wp_id]);
 		}
 		return true;
 	}
 	return false;
 }
 // Some postmeta stuff
-function has_meta($postid) {
-	global $wpdb,$wp_id;
-
-	return $wpdb->get_results("
-		SELECT meta_key, meta_value, meta_id, post_id
-		FROM {$wpdb->postmeta[$wp_id]}
-		WHERE post_id = '$postid'
-		ORDER BY meta_key,meta_id",ARRAY_A);
-}
-
-function list_meta($meta) {
-	global $post_ID;	
-	$myts =& MyTextSanitizer::getInstance();
-	// Exit if no meta
-	if (!$meta) return;	
-?>
-<table id='meta-list' cellpadding="3">
-	<tr>
-		<th>Key</th>
-		<th>Value</th>
-		<th colspan='2'>Action</th>
-	</tr>
-<?php
-	$style='';
-	foreach ($meta as $entry) {
-		$style = ('class="alternate"' == $style) ? '' : 'class="alternate"';
-		$meta_id = $entry['meta_id'];
-		$meta_key = $myts->makeTboxData4Edit($entry['meta_key']);
-		$meta_value = $myts->makeTareaData4Edit($entry['meta_value']);
-?>
-	<tr <?php echo $style?> >
-		<td valign='top'><input name='meta[<?php echo $meta_id ?>][key]' tabindex='6' type='text' size='20' value='<?php echo $meta_key ?>' /></td>
-		<td><textarea name='meta[<?php echo $meta_id ?>][value]' tabindex='6' rows='2' cols='30'><?php echo $meta_value ?></textarea></td>
-		<td align='center' width='10%'><input name='updatemeta[<?php echo $meta_id ?>]' type='submit' class='updatemeta' tabindex='6' value='UPDATE' /></td>
-		<td align='center' width='10%'><input name='deletemeta[<?php echo $meta_id ?>]' type='submit' class='deletemeta' tabindex='6' value='Delete' /></td>
-	</tr>
-<?php
-	}
-?>
-</table>
-<?php
-}
-
-// Get a list of previously defined keys
-function get_meta_keys() {
-	global $wpdb,$wp_id;
-	
-	$keys = $wpdb->get_col("
-		SELECT meta_key
-		FROM {$wpdb->postmeta[$wp_id]}
-		GROUP BY meta_key
-		ORDER BY meta_key");
-	
-	return $keys;
-}
-
-function meta_form() {
-	global $wpdb,$wp_id;
-	$keys = $wpdb->get_col("
-		SELECT meta_key
-		FROM {$wpdb->postmeta[$wp_id]}
-		GROUP BY meta_key
-		ORDER BY meta_id DESC
-		LIMIT 10");
-?>
-<h3><?php _e('Add a new custom field to this post:') ?></h3>
-<table cellspacing="3" cellpadding="3">
-	<tr>
-<th colspan="2"><?php _e('Key') ?></th>
-<th><?php _e('Value') ?></th>
-</tr>
-	<tr valign="top">
-		<td align="right" width="18%">
-<?php if ($keys) : ?>
-<select id="metakeyselect" name="metakeyselect" tabindex="7">
-<option value="#NONE#">- Select -</option>
-<?php
-	foreach($keys as $key) {
-		echo "\n\t<option value='$key'>$key</option>";
-	}
-?>
-</select> or 
-<?php endif; ?>
-</td>
-<td><input type="text" id="metakeyinput" name="metakeyinput" tabindex="7" /></td>
-		<td><textarea id="metavalue" name="metavalue" rows="3" cols="25" tabindex="7"></textarea></td>
-	</tr>
-
-</table>
-<p class="submit"><input type="submit" name="updatemeta" tabindex="7" value="<?php _e('Add Custom Field &raquo;') ?>" /></p>
-<?php
-}
-
 function add_meta($post_ID) {
 	global $wpdb,$wp_id;
 	
@@ -536,17 +329,16 @@ function draft_list($user_ID) {
 	}
 }
 
-function do_trackback($post_ID, $post_title, $content, $excerpt, $useutf8, $target_charset="") {
+function do_trackback($postObject, $useutf8, $target_charset="") {
 global $wpdb, $wp_id;
 
-	$to_ping = $wpdb->get_var("SELECT to_ping FROM {$wpdb->posts[$wp_id]} WHERE ID = $post_ID");
-	$pinged = $wpdb->get_var("SELECT pinged FROM {$wpdb->posts[$wp_id]} WHERE ID = $post_ID");
-	$pinged = explode("\n", $pinged);
+	$pinged = explode("\n", $postObject->getVar('pinged'));
+	$to_ping = $postObject->getVar('to_ping');
 	if ('' != $to_ping) {
-		if (strlen($excerpt) > 0) {
-			$the_excerpt = apply_filters('the_excerpt', $excerpt);
+		if (strlen($postObject->getVar('post_excerpt')) > 0) {
+			$the_excerpt = apply_filters('the_excerpt', $postObject->getVar('post_excerpt'));
 		} else {
-			$the_excerpt = apply_filters('the_content', $content);
+			$the_excerpt = apply_filters('the_content', $postObject->getVar('post_content'));
 		}
 		$the_excerpt = (strlen(strip_tags($the_excerpt)) > 255) ? substr(strip_tags($the_excerpt), 0, 252) . '...' : strip_tags($the_excerpt);
 		$excerpt = stripslashes($the_excerpt);
@@ -558,7 +350,7 @@ global $wpdb, $wp_id;
 		foreach ($to_pings as $tb_ping) {
 			$tb_ping = trim($tb_ping);
 			if (!in_array($tb_ping, $pinged)) {
-			 trackback($tb_ping, stripslashes($post_title), $excerpt, $post_ID, $ping_charset);
+			 trackback($tb_ping, $postObject->getVar('post_title'), $excerpt, $postObject->getVar('ID'), $ping_charset);
 			}
 		}
 	}

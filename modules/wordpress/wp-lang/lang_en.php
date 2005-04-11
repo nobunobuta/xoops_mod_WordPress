@@ -104,6 +104,7 @@ define('_LANG_P_NICKNAME_DELETE','You don&#8217;t have the right to delete post 
 define('_LANG_P_COMHAS_APPR','Comment has been approved.');
 define('_LANG_P_YOUR_DRAFTS','Your Drafts:');
 define('_LANG_P_WP_BOOKMARKLET','You can drag the following link to your links bar or add it to your bookmarks and when you "Press it" it will open up a popup window with information and a link to the site you&#8217;re currently browsing so you can make a quick post about it. Try it out:');
+define('_LANG_P_CONFIRM_DELETE', 'Are you sure you want to delete this?');
 
 /* File Name wp-admin/categories.php */
 define('_LANG_C_DEFAULT_CAT','Can\'t delete the <strong>%s</strong> category: this is the default one');
@@ -445,6 +446,7 @@ define('_LANG_WUS_WHOSE_DELETE','Can&#8217;t delete a user whose level is higher
 define('_LANG_WUS_CANNOT_DELU','Couldn&#8217;t delete user');
 define('_LANG_WUS_CANNOT_DELUPOST','Couldn&#8217;t delete user&#8217;s post');
 define('_LANG_WUS_AU_THOR','Authors');
+define('_LANG_WUS_AU_LOGIN','Login');
 define('_LANG_WUS_AU_NICK','Nickname');
 define('_LANG_WUS_AU_NAME','Name');
 define('_LANG_WUS_AU_MAIL','E-mail');

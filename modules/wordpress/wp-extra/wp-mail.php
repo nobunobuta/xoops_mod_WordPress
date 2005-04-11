@@ -1,23 +1,23 @@
 <?php
+//$GLOBALS['wp_mail_debug'] = 0; # =0 if you don't want to output any debugging info.
+$GLOBALS['wp_mail_debug'] = 1; # =1 if you want to output debugging info to screen.
+//$GLOBALS['wp_mail_debug'] = 2; # =2 if you want to output debugging info to log file. TODO.
+
 if (file_exists(dirname(__FILE__) .'/wp-mail-conf.php')) {
 	@include_once(dirname(__FILE__) .'/wp-mail-conf.php');
-	if ($exec_key) {
-		if (!(isset($_GET['execkey'])) || $_GET['execkey']!=$exec_key) {
-			return;
-		}
-	}
 }
 function wp_mail_quit() {
   global $wp_pop3;
   $wp_pop3->quit();
 }
 function wp_mail_receive() {
-  global $xoopsDB, $wpdb, $wp_id, $siteurl, $blog_charset, $wp_pop3;
+  global $wpdb, $wp_pop3, $img_target;
   
 	require_once(ABSPATH . WPINC . '/class-pop3.php');
 	timer_start();
 	$use_cache = 1;
 	$time_difference = get_settings('time_difference');
+	$blog_charset = get_settings('blog_charset');
 
 	// Get Server Time Zone
 	// If Server Time Zone is not collect, Please comment out following line;
@@ -49,6 +49,7 @@ function wp_mail_receive() {
 		}
 		return;
 	}
+	
 	// ONLY USE THIS IF YOUR PHP VERSION SUPPORTS IT!
 	register_shutdown_function('wp_mail_quit');
 	
@@ -262,33 +263,13 @@ function wp_mail_receive() {
 			// Please uncomment following line, only if you want to check user and password.
 			// echo "<p><b>Login:</b> $user_login, <b>Pass:</b> $user_pass</p>";
 			echo "<p><b>Login:</b> $user_login, <b>Pass:</b> *********</p>";
-			if ($xoopsDB) {
-				$sql = "SELECT ID, user_level FROM {$wpdb->users[$wp_id]} WHERE user_login='$user_login' ORDER BY ID DESC LIMIT 1";
-				$result = $wpdb->get_row($sql);
-				if (!$result) {
+			if (!user_pass_ok($user_login, $user_pass)) {
 					echo "<p><b>Wrong Login.</b></p></div>\n";
 					continue;
-				} else {
-					$sql = "SELECT * FROM " . $xoopsDB->prefix('users') . " WHERE uname='$user_login' AND pass='" . md5(trim($user_pass)) . "' ORDER BY uid DESC LIMIT 1";
-					$result1 = $wpdb->get_row($sql);
-
-					if (!$result1) {
-						echo "<p><b>Wrong login or password.</b></p></div>\n";
-						continue;
-					} 
-				} 
-			} else {
-				$sql = "SELECT ID, user_level FROM {$wpdb->users[$wp_id]} WHERE user_login='$user_login' AND user_pass='$user_pass' ORDER BY ID DESC LIMIT 1";
-				$result = $wpdb->get_row($sql);
-
-				if (!$result) {
-					echo "<p><b>Wrong login or password.</b></p></div>\n";
-					continue;
-				} 
 			} 
-
-			$user_level = $result->user_level;
-			$post_author = $result->ID;
+			$userdata = get_userdatabylogin($user_login);
+			$user_level = $userdata->user_level;
+			$post_author = $userdata->ID;
 
 			if ($user_level > 0) {
 				$post_title = xmlrpc_getposttitle($content);
@@ -308,14 +289,14 @@ function wp_mail_receive() {
 				if (!get_settings('emailtestonly')) {
 					// Attaching Image Files Save
 					if ($att_boundary != "") {
-						$attachment = wp_getattach($contents[2], trim($user_login), 1);
+						$attachment = wp_getattach($contents[2], "user-".trim($post_author), 1);
 					} 
 					if (($boundary != "") && ($hatt_boundary != "")) {
 						for ($i = 2; $i < count($contents); $i++) {
-							$hattachment = wp_getattach($contents[$i], trim($user_login), 0);
+							$hattachment = wp_getattach($contents[$i], "user-".trim($post_author), 0);
 							if ($hattachment) {
 								if (preg_match("/Content-Id: \<([^\>]*)>/i", $contents[$i], $matches)) {
-									$content = preg_replace("/(cid:" . preg_quote($matches[1]) . ")/", "$siteurl/attach/" . $hattachment, $content);
+									$content = preg_replace("/(cid:" . preg_quote($matches[1]) . ")/", wp_siteurl()."/attach/" . $hattachment, $content);
 								} 
 							} 
 						} 
@@ -331,19 +312,31 @@ function wp_mail_receive() {
 					$post_title = addslashes(trim(mb_conv($post_title, $blog_charset, $sub_charset)));
 					// If we find an attachment, add it to the post
 					if ($attachment) {
-						if (file_exists("../attach/thumb-" . $attachment)) {
-							$content = "<a href=\"" . $siteurl . "/attach/" . $attachment . "\"><img style=\"float: left;\" hspace=\"6\" src = \"" . $siteurl . "/attach/thumb-" . $attachment . "\"  alt=\"moblog\" ></a>" . $content . "<br clear=left>";
+						if (isset($img_target) && $img_target) {
+							$img_target = ' target="'.$img_target.'"';
 						} else {
-							$content = "<a href=\"" . $siteurl . "/attach/" . $attachment . "\"><img style=\"float: left;\" hspace=\"6\" src = \"" . $siteurl . "/attach/" . $attachment . "\"  alt=\"moblog\" ></a>" . $content . "<br clear=left>";
+							$img_target = '';
+						}
+
+						if (file_exists("../attach/thumb-" . $attachment)) {
+							$content = "<a href=\"" . wp_siteurl() . "/attach/" . $attachment . "\"".$img_target."><img style=\"float: left;\" hspace=\"6\" src = \"" . wp_siteurl() . "/attach/thumb-" . $attachment . "\"  alt=\"moblog\" ></a>" . $content . "<br clear=\"left\" />";
+						} else {
+							$content = "<a href=\"" . wp_siteurl() . "/attach/" . $attachment . "\"".$img_target."><img style=\"float: left;\" hspace=\"6\" src = \"" . wp_siteurl() . "/attach/" . $attachment . "\"  alt=\"moblog\" ></a>" . $content . "<br clear=\"left\" />";
 						} 
 					} 
+					$post_name = sanitize_title($post_title);
 					if ($flat > 500) {
-						$sql = "INSERT INTO {$wpdb->posts[$wp_id]} (post_author, post_date, post_content, post_title, post_category) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category)";
+						$sql = "INSERT INTO ".wp_table('posts')." (post_author, post_date, post_content, post_title, post_category) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category)";
 					} else {
-						$sql = "INSERT INTO {$wpdb->posts[$wp_id]} (post_author, post_date, post_content, post_title, post_category, post_lat, post_lon) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category, $flat, $flon)";
+						$sql = "INSERT INTO ".wp_table('posts')." (post_author, post_date, post_content, post_title, post_category, post_lat, post_lon) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category, $flat, $flon)";
 					} 
 					$result = $wpdb->query($sql);
 					$post_ID = $wpdb->insert_id;
+					// update blank postname
+					if ($post_name == "") {
+						$post_name = "post-".$post_ID;
+						$wpdb->query("UPDATE ".wp_table('posts')." SET post_name='$post_name' WHERE ID = $post_ID");
+					}
 					echo "Post ID = $post_ID<br />\n";
 					if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
 						sleep($sleep_after_edit);
@@ -354,21 +347,21 @@ function wp_mail_receive() {
 						pingGeoUrl($post_ID);
 					} 
 					// Double check it's not there already
-					$exists = $wpdb->get_row("SELECT * FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID AND category_id = $post_category");
+					$exists = $wpdb->get_row("SELECT * FROM ".wp_table('post2cat')." WHERE post_id = $post_ID AND category_id = $post_category");
 					if (!$exists && $result) {
 						$wpdb->query("
-						INSERT INTO {$wpdb->post2cat[$wp_id]}
+						INSERT INTO ".wp_table('post2cat')."
 						(post_id, category_id)
 						VALUES
 						($post_ID, $post_category)
 						");
 					} 
+					do_action('publish_post', $post_ID);
+					do_action('publish_phone', $post_ID);
 
 					pingWeblogs($blog_ID);
 					pingBlogs($blog_ID);
-//					pingback($content, $post_ID);
-					do_action('publish_post', $post_ID);
-					do_action('publish_phone', $post_ID);
+					pingback($content, $post_ID);
 				} 
 				echo "\n<p><b>Posted title:</b> $post_title<br />\n";
 				echo "<b>Posted content:</b><br /><pre>" . $content . "</pre></p>\n";
@@ -402,7 +395,7 @@ function wp_getattach($content, $prefix = "", $create_thumbs = 0)
 		if (($prefix == 0) && eregi("name=\"?([^\"\n]+)\"?", $contents[0], $filereg)) {
 			$filename = ereg_replace("[\t\r\n]", "", $filereg[1]);
 			if (function_exists('mb_convert_encoding')) {
-				$temp_file = mb_conv(mb_decode_mimeheader($filename, $blog_charset, "auto"));
+				$temp_file = mb_conv(mb_decode_mimeheader($filename), get_settings('blog_charset'), "auto");
 			} else {
 				$temp_file = $filename;
 			} 
@@ -424,7 +417,7 @@ function wp_getattach($content, $prefix = "", $create_thumbs = 0)
 			} 
 			if (!($temp_fp = fopen("../attach/" . $temp_file, "wb"))) {
 				echo("Error1<br/>\n");
-				continue;
+				return false;
 			} 
 			fputs($temp_fp, $tmp);
 			fclose($temp_fp);
@@ -525,21 +518,19 @@ function wp_create_thumbnail($file, $max_side, $effect = '')
 
 require_once(dirname(__FILE__) . '/../wp-config.php');
 
-//$output_debugging_info = 0; // =0 if you don't want to output any debugging info.
-$output_debugging_info = 1; // =1 if you want to output debugging info to screen.
-//$output_debugging_info = 2; // =2 if you want to output debugging info to log file. TODO.
-
 if ( function_exists('debug_backtrace') ) {
 	$scriptpath = debug_backtrace();
 	if ( count($scriptpath) ) { // Is this file included from another file ?
-		$output_debugging_info = 0;  // in this case, shouldn't output any messages.
+		$GLOBALS['wp_mail_debug'] = 0;  // in this case, shouldn't output any messages.
+	} else if (!empty($GLOBALS['exec_key'])) {
+		if (!(isset($_GET['execkey'])) || $_GET['execkey']!=$GLOBALS['exec_key']) {
+			$GLOBALS['wp_mail_debug'] = 0;  // in this case, shouldn't output any messages.
+		}
 	}
-} else {
-	$output_debugging_info = 0;  // in this case, shouldn't output any messages.
 }
 
 ob_start();
-if ($output_debugging_info) {
+if ($GLOBALS['wp_mail_debug']) {
 	header("Content-Type: text/html; charset=EUC-JP");
 	echo <<<EOD
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -550,7 +541,7 @@ if ($output_debugging_info) {
 EOD;
 }
 wp_mail_receive();
-if ($output_debugging_info) {
+if ($GLOBALS['wp_mail_debug']) {
 	echo "</body></html>";
 	ob_end_flush();
 } else {

@@ -92,21 +92,21 @@
 EOD;
 /* Don't remove this line */ if (!defined("WP_BLOCK_CSS_READ")) { define("WP_BLOCK_CSS_READ","1");$wp_block_style .= <<<EOD
 
-#wpRecentPost {
+.wpRecentPost {
 	word-break: break-all;
 }
-#wpRecentPost #postDate {
+.wpRecentPost .postDate {
 	font-weight: bold;
 	font-size:110%;
 }
 
-#wpRecentPost .new1 {
+.wpRecentPost .new1 {
 	font-size: 90%;
 	font-weight: bold;
 	color: #EE0000;
 }
 
-#wpRecentPost .new2 {
+.wpRecentPost .new2 {
 	font-size: 90%;
 	font-weight: bold;
 	color: #00BB00;
@@ -121,7 +121,7 @@ ul.wpBlockDateList ,ul.wpBlockDateList li{
 	list-style-type:none;
 	margin-left:1px;
 }
-ul.wpBlockDateList #postDate{
+ul.wpBlockDateList .postDate{
 	font-weight: bold;
 	font-size:110%;
 }

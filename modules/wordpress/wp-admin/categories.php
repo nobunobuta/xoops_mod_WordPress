@@ -1,192 +1,172 @@
 <?php
 require_once('admin.php');
-
-$title = 'Categories';
-$this_file = 'categories.php';
+$_this_file = 'categories.php';
 $parent_file = 'categories.php';
 
-param( 'action', 'string', '');
+$categoryHandler =& wp_handler('Category');
 
-switch($action) {
-case 'addcat':
-	   	wp_refcheck("/wp-admin/categories.php");
-		if ($user_level < 3) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
-			exit();
+init_param('', 'action', 'string', '');
+switch(get_param('action')) {
+	//Insert New Record
+	case 'addcat':
+		//Check Ticket
+		if ( ! $GLOBALS['xoopsWPTicket']->check() ) {
+			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $GLOBALS['xoopsWPTicket']->getErrors());
 		}
-		param('cat_name',             'string',  true);
-		param('category_description', 'string');
-		param('cat',                  'integer');
-
-		$cat_name = $wpdb->escape($cat_name);
-    	$category_nicename = sanitize_title($cat_name);
-		$category_description = $wpdb->escape($category_description);
-		$wpdb->hide_errors();
-		$query ="INSERT INTO {$wpdb->categories[$wp_id]} (cat_ID, cat_name, category_nicename, category_description, category_parent) VALUES ('0', '$cat_name', '$category_nicename', '$category_description', '$cat')";
-		if (!$wpdb->query($query)) {
-	    	redirect_header($siteurl.'/wp-admin/categories.php#addcat',5,mysql_error());
-	    	exit();
+		//Check User_Level
+		user_level_check();
+		//Check Paramaters
+		init_param('POST', 'cat_name', 'string', NO_DEFAULT_PARAM, true);
+		init_param('POST', 'category_description', 'html', '', true);
+		init_param('POST', 'category_parent', 'integer', 0, true);
+		
+		$categoryObject =& $categoryHandler->create();
+		$categoryObject->setVar('cat_name', get_param('cat_name'));
+		$categoryObject->setVar('category_nicename',sanitize_title(get_param('cat_name')));
+		$categoryObject->setVar('category_description',get_param('category_description'));
+		$categoryObject->setVar('category_parent',get_param('category_parent'));
+		if (!$categoryHandler->insert($categoryObject)) {
+			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $categoryHandler->getErrors());
 		}
-		$wpdb->show_errors();
-		if ($category_nicename == "") {
-			$lastID = $wpdb->get_var("SELECT LAST_INSERT_ID()");
-			$category_nicename = "category-".$lastID;
-			$wpdb->query("UPDATE {$wpdb->categories[$wp_id]} SET category_nicename='$category_nicename' WHERE cat_ID = $lastID");
-		}
-
-	    header('Location: categories.php?message=1#addcat');
+		header('Location: '.$_this_file.'?message=1#addcat');
 		break;
+	//Show Delete Cofirmation Screen
+	case 'confirmdelete':
+		//Check User_Level
+		user_level_check();
+		//Check Paramaters
+		init_param('GET', 'cat_ID', 'integer', NO_DEFAULT_PARAM, true);
 
-	case 'Delete':
-		wp_refcheck("/wp-admin/categories.php");
-		if ($user_level < 3) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
-			exit();
-		}
+		$GLOBALS['title'] = 'Delete Category';
+		$GLOBALS['standalone'] = 0;
+		require_once('admin-header.php');
 
-		param('cat_ID', 'integer',  true);
-
-		$cat_name = addslashes(get_catname($cat_ID));
-    	$category = $wpdb->get_row("SELECT * FROM {$wpdb->categories[$wp_id]} WHERE cat_ID = '$cat_ID'");
-    	$cat_parent = $category->category_parent;
-
-		if ($cat_ID == 1) {
-			redirect_header($siteurl.'/wp-admin/categories.php',2,sprintf(_LANG_C_DEFAULT_CAT, $cat_name));
-			exit();
-		}
-
- 	   	$wpdb->query("DELETE FROM {$wpdb->categories[$wp_id]} WHERE cat_ID = '$cat_ID'");
-	   	$wpdb->query("UPDATE {$wpdb->categories[$wp_id]} SET category_parent = '$cat_parent' WHERE category_parent = '$cat_ID'");
-	   	$wpdb->query("UPDATE {$wpdb->post2cat[$wp_id]} SET category_id='1' WHERE category_id='$cat_ID'");
-
-    	header('Location: categories.php?message=2');
+		$_delete_confirm = array(
+						'action' => 'delete',
+						'cat_ID' => get_param('cat_ID'),
+						);
+		$_delete_confirm += $GLOBALS['xoopsWPTicket']->getTicketArray(__LINE__);
+		$_msg = _LANG_P_CONFIRM_DELETE;
+		xoops_confirm($_delete_confirm, $_this_file, $_msg);
+		include('admin-footer.php');
 		break;
+	//Delete one Record
+	case 'delete':  
+		//Check Ticket
+		if ( ! $GLOBALS['xoopsWPTicket']->check() ) {
+			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $GLOBALS['xoopsWPTicket']->getErrors());
+		}
+		//Check User_Level
+		user_level_check();
+		//Check Paramaters
+		init_param('POST', 'cat_ID', 'integer', NO_DEFAULT_PARAM, true);
 
-    case 'edit':
-	    $standalone = 0;
-        require_once ('admin-header.php');
-	    param('cat_ID', 'integer',  true);
-    
-		$myts =& MyTextSanitizer::getInstance();
+		$categoryObject =& $categoryHandler->get(get_param('cat_ID'));
+		if(!$categoryHandler->delete($categoryObject)) {
+			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $categoryHandler->getErrors());
+		}
+		header('Location: '.$_this_file.'?message=2');
+		break;
+	// Show Category Editing Screen
+	case 'edit':
+		//Check User_Level
+		user_level_check();
+		//Check Paramaters
+		init_param('GET', 'cat_ID', 'integer', NO_DEFAULT_PARAM, true);
 
-		$category = $wpdb->get_row("SELECT * FROM {$wpdb->categories[$wp_id]} WHERE cat_ID = '$cat_ID'");
+		$GLOBALS['standalone'] = 0;
+		$GLOBALS['title'] = 'Edit Categories';
+		require_once ('admin-header.php');
+	
+		$categoryObject =& $categoryHandler->get(get_param('cat_ID'));
 
-		$form_id = "editcat";
-		$form_title = _LANG_C_EDIT_TITLECAT;
-		$cat_ID = $category->cat_ID;
-		$cat_name = $myts->makeTboxData4Edit($category->cat_name);
-		$category_parent = $category->category_parent;
-		$category_description = $myts->makeTareaData4Edit($category->category_description);
+		$_form_id = "editcat";
+		$_form_title = _LANG_C_EDIT_TITLECAT;
+		$_form_cat_ID = $categoryObject->getVar('cat_ID','e');
+		$_form_cat_name = $categoryObject->getVar('cat_name','e');
+		$_form_category_parent = $categoryObject->getVar('category_parent','e');
+		$_form_category_description = $categoryObject->getVar('category_description','e');
+		$_form_category_options = Array("0"=>"None") + $categoryHandler->getParentOptionArray(get_param('cat_ID'));
 		include('include/categories-form.php');
-	break;
-
+		$_form->display();
+		include('admin-footer.php');
+		break;
+	// Update Edited Record
 	case 'editedcat':
-		wp_refcheck("/wp-admin/categories.php");
-		if ($user_level < 3) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
-			exit();
+		//Check Ticket
+		if ( ! $GLOBALS['xoopsWPTicket']->check() ) {
+			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $GLOBALS['xoopsWPTicket']->getErrors());
 		}
+		//Check User_Level
+		user_level_check();
+		//Check Paramaters
+		init_param('POST', 'cat_ID', 'integer', NO_DEFAULT_PARAM, true);
+		init_param('POST', 'cat_name', 'string', NO_DEFAULT_PARAM, true);
+		init_param('POST', 'category_description', 'html', '', true);
+		init_param('POST', 'category_parent', 'integer', 0, true);
+	
+		$categoryObject =& $categoryHandler->create(false);
+		
+		$categoryObject->setVar('cat_ID',get_param('cat_ID'));
+		$categoryObject->setVar('cat_name',get_param('cat_name'));
+		$_category_nicename = sanitize_title(get_param('cat_name'));
+		if ($_category_nicename == "")  $_category_nicename = "category-".get_param('cat_ID');
+		$categoryObject->setVar('category_nicename', $_category_nicename);
+		$categoryObject->setVar('category_description', get_param('category_description'));
+		$categoryObject->setVar('category_parent', get_param('category_parent'));
 
-		param('cat_ID',               'integer',  true);
-		param('cat_name',             'string',  true);
-		param('category_description', 'string');
-		param('cat',                  'integer');
-    
-		$cat_name = $wpdb->escape($cat_name);
-    	$category_nicename = sanitize_title($cat_name);
-		if ($category_nicename == "")  $category_nicename = "category-".$cat_ID;
-		$category_description = $wpdb->escape($category_description);
-    
-		$query = "UPDATE {$wpdb->categories[$wp_id]} SET cat_name = '$cat_name', category_nicename = '$category_nicename', category_description = '$category_description', category_parent = '$cat' WHERE cat_ID = '$cat_ID'";
-		$wpdb->hide_errors();
-		if (!$wpdb->query($query)) {
-			redirect_header($siteurl.'/wp-admin/categories.php?action=edit&cat_ID='.$cat_ID,5,mysql_error());
-			exit();
+		if (!$categoryHandler->insert($categoryObject)) {
+			redirect_header("", 3, $categoryHandler->getErrors());
 		}
-		$wpdb->show_errors();
-	    header('Location: categories.php?message=3');
+		header('Location: '.$_this_file.'?message=3');
 		break;
+	// Show Category Administration Main Screen
+	default:
+		//Check User_Level
+		user_level_check();
 
-default:
-    $standalone = 0;
-    require_once ('admin-header.php');
-    if ($user_level < 3) {
-		redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
-		exit();
-	}
+		$GLOBALS['standalone'] = 0;
+		$GLOBALS['title'] = 'Admin Categories';
+		require_once ('admin-header.php');
 
-	param('message', 'integer','');
-	$messages = array('', _LANG_C_MESS_ADD, _LANG_C_MESS_DELE, _LANG_C_MESS_UP);
-	if ($message) {
-?>
-<div class="updated"><p><?php echo $messages[$message]; ?></p></div>
-<?php
-		}
-?>
-<div class="wrap">
-     <h2><?php printf(_LANG_C_NAME_CURRCAT, '#addcat'); ?></h2>
-<table width="100%" cellpadding="3" cellspacing="3">
-	<tr>
-		<th scope="col">ID</th>
-        <th scope="col"><?php echo _LANG_C_NAME_CATNAME; ?></th>
-        <th scope="col"><?php echo _LANG_C_NAME_CATDESC; ?></th>
-        <th scope="col"><?php echo _LANG_C_NAME_CATPOSTS; ?></th>
-        <th colspan="2"><?php echo _LANG_C_NAME_CATACTION; ?></th>
-	</tr>
-<?php
-cat_rows();
-?>
-</table>
-</div>
+		init_param('GET', 'message', 'integer', 0);
+		$_messages = array('', _LANG_C_MESS_ADD, _LANG_C_MESS_DELE, _LANG_C_MESS_UP);
+		$_message = $_messages[get_param('message')];
 
-<div class="wrap">
-    <p><?php printf(_LANG_C_NOTE_CATEGORY, get_catname(1)) ?></p>
-</div>
-
-<?php
-		$form_id = "addcat";
-		$form_title = _LANG_C_ADD_NEWCAT;
-		$cat_ID = 0;
-		$cat_name = "";
-		$category_parent = 0;
-		$category_description = "";
-		include('include/categories-form.php');
-
-break;
-}
-include('admin-footer.php');
-
-function cat_rows($parent = 0, $level = 0, $categories = 0) {
-	global $wpdb, $wp_id;
-	$myts =& MyTextSanitizer::getInstance();
-
-	if (!$categories) {
-		$categories = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]} ORDER BY cat_name");
-	}
-	if ($categories) {
-		$i = 0;
-		foreach ($categories as $category) {
-			if ($category->category_parent == $parent) {
-				$count = $wpdb->get_var("SELECT COUNT(post_id) FROM {$wpdb->post2cat[$wp_id]} WHERE category_id = $category->cat_ID");
-				$pad = str_repeat('&#8212; ', $level);
-	            $i++;
-    	        $style = ($i % 2) ? ' class="alternate"' : '';
-    	        $confirm_msg = sprintf('You are about to delete the category\\\'%s\\\'\nAll of its posts will go to the default category.\n\\\'OK\\\' to delete, \\\'Cancel\\\' to stop.', $myts->htmlSpecialChars(addslashes($category->cat_name)));
-?>
-<tr <?php echo $style?>>
-	<th scope='row'><?php echo $category->cat_ID ?></th>
-	<td><?php echo "$pad $category->cat_name"; ?></td>
-	<td><?php echo $category->category_description ?></td>
-	<td><?php echo $count ?></td>
-	<td><a href='categories.php?action=edit&amp;cat_ID=<?php echo $category->cat_ID ?>' class='edit'><?php echo _LANG_C_NAME_EDIT ?></a></td>
-	<td><a href='categories.php?action=Delete&amp;cat_ID=<?php echo $category->cat_ID ?>' onclick="return confirm('<?php echo $confirm_msg ?>')" class='delete'><?php echo _LANG_C_NAME_DELETE ?></a></td>
-</tr>
-<?php
-				cat_rows($category->cat_ID, $level + 1);
+		$categoryObjects = $categoryHandler->getNestedObjects();
+		$_category_rows = array();
+		$_style = "";
+		foreach($categoryObjects as $categoryObject) {
+			$_style = ('class="odd"' == $_style) ? 'class="even"' : 'class="odd"';
+			$_row = $categoryObject->getVarArray();
+			$_row['style'] = $_style;
+			$_row['category_description'] = apply_filters('category_description', $_row['category_description']);
+			$_row['count'] = $categoryObject->getNumPosts();
+			if ($_row['count'] > 0) {
+				$_row['count'] = "<a href='edit.php?cat={$_row['cat_ID']}' title='View posts'>{$_row['count']}</a>";
 			}
+			$_category_rows[] = $_row;
 		}
-	} else {
-		return false;
-	}
+		$_notice = sprintf(_LANG_C_NOTE_CATEGORY, get_catname(1));
+
+		$_form_id = "addcat";
+		$_form_title = _LANG_C_ADD_NEWCAT;
+		$_form_cat_ID = 0;
+		$_form_cat_name = "";
+		$_form_category_parent = 0;
+		$_form_category_description = "";
+		$_form_category_options = Array("0"=>"None") + $categoryHandler->getParentOptionArray();
+		include('include/categories-form.php');
+		$_formHTML = $_form->render();
+
+		$_wpTpl =& new WordPresTpl('wp-admin');
+		$_wpTpl->assign('message', $_message);
+		$_wpTpl->assign('category_rows', $_category_rows);
+		$_wpTpl->assign('notice', $_notice);
+		$_wpTpl->assign('formHTML', $_formHTML);
+		$_wpTpl->display('categories.html');
+
+		include('admin-footer.php');
+		break;
 }
 ?>

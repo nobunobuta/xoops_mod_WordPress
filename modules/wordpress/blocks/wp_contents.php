@@ -45,6 +45,7 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 		// Get the categories for all the posts
 			foreach ($lposts as $post) {
 				$post_id_list[] = $post->ID;
+				$category_cache[$wp_id][$post->ID] = array();
 			}
 			$post_id_list = implode(',', $post_id_list);
 
@@ -133,7 +134,6 @@ if( ! defined( 'WP_CONTENTS_INCLUDED' ) ) {
 		}
 		$previousday=0;
 		$day=0;
-		$category_cache[$wp_id]=array();
 		$comment_count_cache[$wp_id]=array();
 
 		return $block;

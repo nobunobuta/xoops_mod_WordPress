@@ -8,13 +8,15 @@ $parent_file = 'link-manager.php';
 $xfn = true;
 $standalone = 0;
 require('admin-header.php');
+$myts =& MyTextSanitizer::getInstance();
+
 if ($user_level < get_settings('links_minadminlevel')) {
 	redirect_header($siteurl.'/wp-admin/',5,"You have no right to add the links for this blog.<br />Ask for a promotion to your <a href='mailto:".get_settings('admin_email')."'>blog admin</a>. :)");
 	exit();
 }
-param('action','string');
-$link_url = param('linkurl','string','');
-$link_name = param('name','string','');
+init_param('GET', 'action','string', '');
+$link_url = init_param('GET', 'linkurl', 'string', '');
+$link_name = init_param('GET', 'name', 'string', '');
 $link_name = fix_js_param($link_name);
 ?>
 <?php
@@ -22,7 +24,7 @@ $form_title = _LANG_WLA_LINK_TITLE;
 $form_id = "addlink";
 $link_url = $myts->makeTboxData4Edit($link_url);
 $link_name = $myts->makeTboxData4Edit($link_name);
-$link_rss_uri = "";
+$link_rss = "";
 $link_image = "";
 $link_description = "";
 $link_rel = "";
@@ -37,6 +39,9 @@ $link_rating = 0;
 $link_target = "";
 $link_visible = "Y";
 $link_category = 1;
+
+$category_options = $wpLinkCategoryHandler[$wp_prefix[$wp_id]]->getOptionArray();
+
 include('include/link-manager-form.php');
 ?>
 <div class="wrap">

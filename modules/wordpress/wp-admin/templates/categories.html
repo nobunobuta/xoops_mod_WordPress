@@ -1,0 +1,29 @@
+<{if $message != ""}>
+<div class="updated"><p><{$message}></p></div>
+<{/if}>
+<div class="wrap">
+  <h2><{$smarty.const._LANG_C_NAME_CURRCAT}></h2>
+  <table width='100%' border='0' cellspacing='1' cellpadding='0' class='outer'>
+	<tr>
+		<th align='center' scope="col">ID</th>
+		<th align='center' scope="col"><{$smarty.const._LANG_C_NAME_CATNAME}></th>
+		<th align='center' scope="col"><{$smarty.const._LANG_C_NAME_CATDESC}></th>
+		<th align='center' scope="col"><{$smarty.const._LANG_C_NAME_CATPOSTS}></th>
+		<th align='center' colspan="2"><{$smarty.const._LANG_C_NAME_CATACTION}></th>
+	</tr>
+<{foreach item=category from=$category_rows}>
+	<tr <{$category.style}>>
+		<th align='center' scope='row'><{$category.cat_ID}></th>
+		<td><{$category.cat_name}></td>
+		<td><{$category.category_description}></td>
+		<td align='right'><{$category.count}></td>
+		<td><a href='categories.php?action=edit&amp;cat_ID=<{$category.cat_ID}>' class='edit'><{$smarty.const._LANG_C_NAME_EDIT}></a></td>
+		<td><a href='categories.php?action=confirmdelete&amp;cat_ID=<{$category.cat_ID}>' class='delete'><{$smarty.const._LANG_C_NAME_DELETE}></a></td>
+	</tr>
+<{/foreach}>
+  </table>
+</div>
+<div class="wrap">
+	<p><{$notice}></p>
+</div>
+<{$formHTML}>

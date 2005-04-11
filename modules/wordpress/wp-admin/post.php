@@ -2,74 +2,94 @@
 require_once('admin.php');
 
 $parent_file = 'post.php';
+$this_file = 'post.php';
 
-param('action','string', '');
-switch($action) {
+$postHandler =& $wpPostHandler[$wp_prefix[$wp_id]];
+$commentHandler =& $wpCommentHandler[$wp_prefix[$wp_id]];
+$postmetaHandler =& $wpPostMetaHandler[$wp_prefix[$wp_id]];
+
+init_param('', 'action','string', '');
+switch(get_param('action')) {
+	//Insert New Post Record
 	case 'post':
-		wp_refcheck("/wp-admin/");
-		if ($user_level == 0) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
-			exit();
+		//Check Ticket
+		if ( ! $xoopsWPTicket->check() ) {
+			redirect_header($siteurl.'/wp-admin/edit.php',3,$xoopsWPTicket->getErrors());
 		}
-		param('post_title','string');
-		param('post_category','array-int',array(1));
-		param('excerpt','html');
-		param('wp_content','html');
-		param('post_status','string',get_settings('default_post_status'));
-		param('comment_status','string',get_settings('default_comment_status'));
-		param('ping_status','string',get_settings('default_ping_status'));
-		param('post_password','string');
-		param('post_pingback','integer',0);
-		param('trackback_url','string');
-		param('target_charset','string');
-		param('useutf8','integer');
-		param('mode','string','default');
-		param('saveasdraft','string');
-		param('saveasprivate','string');
-		param('publish','string');
-		param('advanced','string');
+		//Check User_Level
+		user_level_check();
+		//Check Paramaters
+		init_param('POST', 'post_title', 'string','', true);
+		init_param('POST', 'post_category', 'array-int',array(1), true);
+		init_param('POST', 'excerpt', 'html','');
+		init_param('POST', 'wp_content', 'html', '', true);
+		init_param('POST', 'post_status', 'string', get_settings('default_post_status'));
+		init_param('POST', 'comment_status', 'string', get_settings('default_comment_status'));
+		init_param('POST', 'ping_status', 'string', get_settings('default_ping_status'));
+		init_param('POST', 'post_password', 'string', '');
+		init_param('POST', 'post_pingback', 'check-01');
+		init_param('POST', 'trackback_url', 'string');
+		init_param('POST', 'target_charset', 'string', '');
+		init_param('POST', 'useutf8', 'check-01');
+		init_param('POST', 'mode', 'string', 'default');
+		init_param('POST', 'saveasdraft', 'string');
+		init_param('POST', 'saveasprivate', 'string');
+		init_param('POST', 'publish', 'string');
+		init_param('POST', 'advanced', 'string');
+		init_param('POST', 'edit_date','check-01');
 
-		$post_name = sanitize_title($post_title);
-
-		$excerpt = apply_filters('excerpt_save_pre',$excerpt);
-		$excerpt = format_to_post($excerpt);
-
-		$content = apply_filters('content_save_pre', $wp_content);
-		$content = format_to_post($content);
+		//Set PostObject Variable for Insert
+		$postObject =& $postHandler->create();
+		$postObject->setVar('post_author', $user_ID);
+		$postObject->setVar('post_content', apply_filters('content_save_pre', $wp_content));
+		$postObject->setVar('post_title', $post_title);
+		$postObject->setVar('post_excerpt', apply_filters('excerpt_save_pre',$excerpt));
+		$postObject->setVar('comment_status', $comment_status);
+		$postObject->setVar('ping_status', $ping_status);
+		$postObject->setVar('post_password', $post_password);
+		$postObject->setVar('post_name', sanitize_title($post_title));
+		$postObject->setVar('to_ping', preg_replace('|\s+|', '\n', $trackback_url));
 
 		if(get_settings('use_geo_positions')) {
-			param('post_latf','float',get_settings('default_geourl_lat'));
-			param('post_lonf','float',get_settings('default_geourl_lon'));
-
-			if (($post_latf > 90 ) || ($post_lonf < -90)) {
-				$post_latf='NULL';
+			init_param('POST', 'post_latf', 'float', get_settings('default_geourl_lat'));
+			init_param('POST', 'post_lonf', 'float', get_settings('default_geourl_lon'));
+			if (($post_latf <= 90 ) && ($post_lonf >= -90)) {
+				$postObject->setVar('post_lat', $post_latf);
 			}
-			if (($post_lonf > 360 ) || ($post_lonf < -360)) {
-				$post_lonf='NULL';
+			if (($post_lonf <= 360 ) && ($post_lonf >=-360)) {
+				$postObject->setVar('post_lon', $post_lonf);
 			}
-		} else {
-			$post_latf='NULL';
-			$post_lonf='NULL';
 		}
 
-		$trackback = preg_replace('|\s+|', '\n', $trackback_url);
-
-		param('edit_date','integer',0);
 		if (($user_level > 4) && $edit_date) {
-			param('aa','integer');
-			param('mm','integer');
-			param('jj','integer');
-			param('hh','integer');
-			param('mn','integer');
-			param('ss','integer');
+			init_param('POST', 'aa','integer');
+			init_param('POST', 'mm','integer');
+			init_param('POST', 'jj','integer');
+			init_param('POST', 'hh','integer');
+			init_param('POST', 'mn','integer');
+			init_param('POST', 'ss','integer');
 			$jj = ($jj > 31) ? 31 : $jj;
 			$hh = ($hh > 23) ? $hh - 24 : $hh;
 			$mn = ($mn > 59) ? $mn - 60 : $mn;
 			$ss = ($ss > 59) ? $ss - 60 : $ss;
 			$now = "$aa-$mm-$jj $hh:$mn:$ss";
 		} else {
-			$now = date('Y-m-d H:i:s', (time() + ($time_difference * 3600)));
+			$now = date('Y-m-d H:i:s', (time() + (get_settings('time_difference') * 3600)));
 		}
+		$postObject->setVar('post_date', $now);
+
+		// What to do based on which button they pressed
+		if (!empty($saveasdraft)) $post_status = 'draft';
+		if (!empty($saveasprivate)) $post_status = 'private';
+		if (!empty($publish)) $post_status = 'publish';
+		if (!empty($advanced)) $post_status = 'draft';
+		$postObject->setVar('post_status', $post_status);
+
+		if(!$postHandler->insert($postObject)) {
+			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $postHandler->getErrors());
+		}
+
+		$post_ID = $postObject->getVar('ID');
 		switch($mode) {
 			case 'bookmarklet':
 				$location = 'bookmarklet.php?action=done';
@@ -80,390 +100,307 @@ switch($action) {
 			default:
 				$location = 'post.php';
 				break;
-			}
-
-		// What to do based on which button they pressed
-		if ('' != $saveasdraft) $post_status = 'draft';
-		if ('' != $saveasprivate) $post_status = 'private';
-		if ('' != $publish) $post_status = 'publish';
-		if ('' != $advanced) $post_status = 'draft';
-
-		$postquery ="INSERT INTO {$wpdb->posts[$wp_id]}
-				(ID, post_author, post_date, post_content, post_title, post_lat, post_lon, post_excerpt,  post_status, comment_status, ping_status, post_password, post_name, to_ping)
-				VALUES
-				('0', '$user_ID', '$now', '$content', '$post_title', $post_latf, $post_lonf,'$excerpt', '$post_status', '$comment_status', '$ping_status', '$post_password', '$post_name', '$trackback')
-				";
-		$result = $wpdb->query($postquery);
-
-		$post_ID = $wpdb->get_var("SELECT LAST_INSERT_ID()");
-		if ($post_name == "") {
-			$post_name = "post-".$post_ID;
-			$wpdb->query("UPDATE {$wpdb->posts[$wp_id]} SET post_name='$post_name' WHERE ID = $post_ID");
 		}
-
-		if ('' != $advanced) {
+		if (!empty($advanced)) {
 			$location = "post.php?action=edit&post=$post_ID";
 		}
-
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
-
 		header("Location: $location");
-
-	 	add_meta($post_ID);
-
-		$post_categories = $post_category;
-		foreach ($post_categories as $post_category) {
-			// Double check it's not there already
-			$exists = $wpdb->get_row("SELECT * FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID AND category_id = $post_category");
-			 if (!$exists && $result) { 
-				$wpdb->query("
-				INSERT INTO {$wpdb->post2cat[$wp_id]}
-				(post_id, category_id)
-				VALUES
-				($post_ID, $post_category)
-				");
-			}
-		}
-		
+		$postObject->assignCategories($post_category);
+//	 	add_meta($post_ID);
 		do_action('save_post', $post_ID);       
-
 		if ($post_status == 'publish') {
-			if((get_settings('use_geo_positions')) && ($post_latf != null) && ($post_lonf != null)) {
-				pingGeoUrl($post_ID);
+			if((get_settings('use_geo_positions')) && ($postObject->getVar('post_latf') != null) && ($postObject->getVar('post_lonf') != null)) {
+				pingGeoUrl();
 			}
-			pingWeblogs($blog_ID);
-			pingBlogs($blog_ID);
-
+			pingWeblogs();
+			pingBlogs();
 			if ($post_pingback) {
-				pingback($content, $post_ID);
+				pingback($postObject->getVar('post_content','e'), $post_ID);
 			}
-			
 			do_action('publish_post', $post_ID);
-
-			do_trackback($post_ID, $post_title, $content, $excerpt, $useutf8, $target_charset);
-
+			$postdata = $postObject->getVarArray();
+			do_trackback($postObject, $useutf8, $target_charset);
 		} // end if publish
-
 		exit();
 		break;
-
+	//Show Post Editing Screen
 	case 'edit':
+		//Check User_Level
+		user_level_check();
+		//Rendering Admin Screen header
 		$parent_file = 'edit.php';
 		$title = 'Edit Post';
 		$standalone = 0;
 		require_once('admin-header.php');
-		if ($user_level > 0) {
-			param('post','integer');
-			$post_ID = $p = $post;
-
-			$postdata = get_postdata($post);
-			$authordata = get_userdata($postdata['Author_ID']);
-			if ($user_level < $authordata->user_level) {
-				redirect_header($siteurl.'/wp-admin/',5, _LANG_P_DATARIGHT_EDIT.' by <strong>['.$authordata[1].']</strong>');
-				exit();
-			}
-			$content = $postdata['Content'];
-			$content = format_to_edit($content);
-			$content = apply_filters('content_edit_pre', $content);
-
-			$excerpt = $postdata['Excerpt'];
-			$excerpt = format_to_edit($excerpt);
-			$excerpt = apply_filters('excerpt_edit_pre', $excerpt);
-
-			$edited_post_title = format_to_edit($postdata['Title']);
-			$edited_post_title = apply_filters('title_edit_pre', $edited_post_title);
-
-			$edited_lat = $postdata['Lat'];
-			$edited_lon = $postdata['Lon'];
-
-			$post_status = $postdata['post_status'];
-			$comment_status = $postdata['comment_status'];
-			$ping_status = $postdata['ping_status'];
-			$post_password = $postdata['post_password'];
-
-			$to_ping = $postdata['to_ping'];
-			$pinged = $postdata['pinged'];
-			$default_post_cat = get_settings('default_post_category');
-			include('edit-form-advanced.php');
-		} else {
-?>
-			<p><?php echo _LANG_P_NEWCOMER_MESS." : <a href=\"mailto:".get_settings('admin_email')."?subject=Promotion\">E-Mail</a>"; ?></p>
-<?php
+		//Check Paramaters
+		init_param('GET', 'post','integer', NO_DEFAULT_PARAM, true);
+		
+		$post_ID = $p = $post;
+		if (!($postObject =& $postHandler->get($post_ID))) {
+			redirect_header($siteurl.'/wp-admin/'.$this_file, 5, _LANG_P_OOPS_IDPOS);
 		}
+		$authorObject = $wpUserHandler[$wp_prefix[$wp_id]]->get($postObject->getVar('post_author'));
+		if (!user_can_edit($postObject->getVar('post_author'))) {
+			redirect_header($siteurl.'/wp-admin/',5, _LANG_P_DATARIGHT_EDIT.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
+		}
+		$postdata = $postObject->getVarArray('e');
+		$mode = "";
+		$content = stripslashes(apply_filters('content_edit_pre', $postdata['post_content']));
+		$excerpt = stripslashes(apply_filters('excerpt_edit_pre', $postdata['post_excerpt']));
+		$edited_post_title = stripslashes(apply_filters('title_edit_pre', $postdata['post_title']));
+		$edited_lat = $postdata['post_lat'];
+		$edited_lon = $postdata['post_lon'];
+		$post_status = $postdata['post_status'];
+		$comment_status = $postdata['comment_status'];
+		$ping_status = $postdata['ping_status'];
+		$post_password = $postdata['post_password'];
+		$to_ping = $postdata['to_ping'];
+		$pinged = $postdata['pinged'];
+		$cagegoryObjects =& $postObject->getCategories();
+		foreach ($cagegoryObjects as $cagegoryObject) {
+			$post_categories[] = $cagegoryObject->getVar('category_id');
+		}
+		$default_post_cat = get_settings('default_post_category');
+		include('edit-form-advanced.php');
+		include('admin-footer.php');
 		break;
 	case 'editpost':
-		wp_refcheck("/wp-admin");
-		if ($user_level == 0) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
-			exit();
+		//Check Ticket
+		if ( ! $xoopsWPTicket->check() ) {
+			redirect_header($siteurl.'/wp-admin/edit.php',3,$xoopsWPTicket->getErrors());
 		}
+		//Check User_Level
+		user_level_check();
+		//Check Paramaters
+		init_param('POST', 'post_ID','integer',NO_DEFAULT_PARAM, true);
+		init_param('POST', 'post_title', 'string','', true);
+		init_param('POST', 'post_category', 'array-int',array(1), true);
+		init_param('POST', 'excerpt', 'html','');
+		init_param('POST', 'wp_content', 'html', '', true);
+		init_param('POST', 'post_status', 'string', get_settings('default_post_status'));
+		init_param('POST', 'comment_status', 'string', get_settings('default_comment_status'));
+		init_param('POST', 'ping_status', 'string', get_settings('default_ping_status'));
+		init_param('POST', 'post_password', 'string', '');
+		init_param('POST', 'post_pingback', 'check-01');
+		init_param('POST', 'trackback_url', 'string');
+		init_param('POST', 'target_charset', 'string', '');
+		init_param('POST', 'useutf8', 'check-01');
+		init_param('POST', 'saveasdraft', 'string');
+		init_param('POST', 'saveasprivate', 'string');
+		init_param('POST', 'publish', 'string');
+		init_param('POST', 'edit_date','check-01');
+		init_param('POST', 'save','string');
+		init_param('POST', 'referredby', 'string','');
+		init_param('POST', 'updatemeta','string');
+		init_param('POST', 'deletemeta','string');
+		init_param('POST', 'meta','array');
+		init_param('POST', 'deletemeta','array');
 
-		param('blog_ID','integer',1);
-		param('post_ID','integer',true);
-		param('post_autobr','integer');
-		param('post_title','string');
-		param('post_category','array-int',array(1));
-		param('excerpt','html');
-		param('wp_content','html');
-		param('post_status','string',get_settings('default_post_status'));
-		param('comment_status','string',get_settings('default_comment_status'));
-		param('ping_status','string',get_settings('default_ping_status'));
-		param('post_password','string');
-		param('post_pingback','integer',0);
-		param('trackback_url','string');
-		param('target_charset','string');
-		param('useutf8','integer');
-		param('publish','string');
-		param('edit_date','integer',0);
-		param('save','string');
-		param('updatemeta','string');
-		param('deletemeta','string');
-		param('meta','array');
-		param('deletemeta','array');
-
-
+		if (!($postObject =& $postHandler->get($post_ID))) {
+			redirect_header($siteurl.'/wp-admin/'.$this_file, 5, _LANG_P_OOPS_IDPOS);
+		}
+		$authorObject = $wpUserHandler[$wp_prefix[$wp_id]]->get($postObject->getVar('post_author'));
+		if (!user_can_edit($postObject->getVar('post_author'))) {
+			redirect_header($siteurl.'/wp-admin/',5, _LANG_P_DATARIGHT_EDIT.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
+		}
+		$prev_status = $postObject->getVar('post_status');
 		$post_name = sanitize_title($post_title);
 		if ($post_name == "") {
 			$post_name = "post-".$post_ID;
 		}
-
-		$excerpt = apply_filters('excerpt_save_pre',$excerpt);
-		$excerpt = format_to_post($excerpt);
-
-		$content = apply_filters('content_save_pre', $wp_content);
-		$content = format_to_post($content);
+		$postObject->setVar('post_author', $user_ID);
+		$postObject->setVar('post_content', apply_filters('content_save_pre', $wp_content));
+		$postObject->setVar('post_title', $post_title);
+		$postObject->setVar('post_excerpt', apply_filters('excerpt_save_pre',$excerpt));
+		$postObject->setVar('comment_status', $comment_status);
+		$postObject->setVar('ping_status', $ping_status);
+		$postObject->setVar('post_password', $post_password);
+		$postObject->setVar('post_name', $post_name);
+		$postObject->setVar('to_ping', preg_replace('|\s+|', '\n', $trackback_url));
 
 		if(get_settings('use_geo_positions')) {
-			param('post_latf','float',get_settings('default_geourl_lat'));
-			param('post_lonf','float',get_settings('default_geourl_lon'));
-			if (($post_latf > 90 ) || ($post_lonf < -90)) {
-				$post_latf='NULL';
+			init_param('POST', 'post_latf', 'float', get_settings('default_geourl_lat'));
+			init_param('POST', 'post_lonf', 'float', get_settings('default_geourl_lon'));
+			if (($post_latf <= 90 ) && ($post_lonf >= -90)) {
+				$postObject->setVar('post_lat', $post_latf);
 			}
-			if (($post_lonf > 360 ) || ($post_lonf < -360)) {
-				$post_lonf='NULL';
+			if (($post_lonf <= 360 ) && ($post_lonf >=-360)) {
+				$postObject->setVar('post_lon', $post_lonf);
 			}
-		} else {
-			$post_latf='NULL';
-			$post_lonf='NULL';
 		}
-		$trackback = preg_replace('|\s+|', '\n', $trackback_url);
-		if ('' != $publish) $post_status = 'publish';
 
 		if (($user_level > 4) && $edit_date) {
-			param('aa','integer');
-			param('mm','integer');
-			param('jj','integer');
-			param('hh','integer');
-			param('mn','integer');
-			param('ss','integer');
+			init_param('POST', 'aa','integer');
+			init_param('POST', 'mm','integer');
+			init_param('POST', 'jj','integer');
+			init_param('POST', 'hh','integer');
+			init_param('POST', 'mn','integer');
+			init_param('POST', 'ss','integer');
 			$jj = ($jj > 31) ? 31 : $jj;
 			$hh = ($hh > 23) ? $hh - 24 : $hh;
 			$mn = ($mn > 59) ? $mn - 60 : $mn;
 			$ss = ($ss > 59) ? $ss - 60 : $ss;
-			$datemodif = ", post_date=\"$aa-$mm-$jj $hh:$mn:$ss\"";
-		} else {
-			$datemodif = '';
+			$postObject->setVar('post_date', "$aa-$mm-$jj $hh:$mn:$ss");
 		}
 
-		$result = $wpdb->query("
-			UPDATE {$wpdb->posts[$wp_id]} SET
-				post_content = '$content',
-				post_excerpt = '$excerpt',
-				post_title = '$post_title',
-				post_lat = $post_latf,
-				post_lon = $post_lonf"
-				.$datemodif.",
-				post_status = '$post_status',
-				comment_status = '$comment_status',
-				ping_status = '$ping_status',
-				post_password = '$post_password',
-				post_name = '$post_name',
-				to_ping = '$trackback'
-			WHERE ID = $post_ID ");
+		// What to do based on which button they pressed
+		if (!empty($saveasdraft)) $post_status = 'draft';
+		if (!empty($saveasprivate)) $post_status = 'private';
+		if (!empty($publish)) $post_status = 'publish';
+		if (!empty($save)) $post_status = 'draft';
+		$postObject->setVar('post_status', $post_status);
 
-		if (isset($save)) {
+		if(!$postHandler->insert($postObject, false, true)) {
+			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $postHandler->getErrors());
+		}
+
+		$post_ID = $postObject->getVar('ID');
+
+		if (!empty($save)) {
 			$location = $_SERVER['HTTP_REFERER'];
-		} elseif (isset($updatemeta)) {
+		} elseif (!empty($updatemeta)) {
 			$location = $_SERVER['HTTP_REFERER'] . '&message=2#postcustom';
-		} elseif (isset($deletemeta)) {
+		} elseif (!empty($deletemeta)) {
 			$location = $_SERVER['HTTP_REFERER'] . '&message=3#postcustom';
+		} elseif (!empty($referredby)) {
+			$location = $referredby;
 		} else {
 			$location = 'post.php';
 		}
-
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
-
 		header ('Location: ' . $location);
-
-		// Now it's category time!
-		// First the old categories
-		$old_categories = $wpdb->get_col("SELECT category_id FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID");
-		
-		// Delete any?
-		foreach ($old_categories as $old_cat) {
-			if (!in_array($old_cat, $post_category)) // If a category was there before but isn't now
-				$wpdb->query("DELETE FROM {$wpdb->post2cat[$wp_id]} WHERE category_id = $old_cat AND post_id = $post_ID LIMIT 1");
-		}
-		
-		// Add any?
-		foreach ($post_category as $new_cat) {
-			if (!in_array($new_cat, $old_categories))
-				$wpdb->query("INSERT INTO {$wpdb->post2cat[$wp_id]} (post_id, category_id) VALUES ($post_ID, $new_cat)");
-		}
-		
+		$postObject->assignCategories($post_category);
 		// are we going from draft/private to published?
 		if ((($prev_status == 'draft') || ($prev_status == 'private')) && ($post_status == 'publish')) {
 			if((get_settings('use_geo_positions')) && ($post_latf != null) && ($post_lonf != null)) {
-				pingGeoUrl($post_ID);
+				pingGeoUrl();
 			}
-			pingWeblogs($blog_ID);
-			pingBlogs($blog_ID);
+			pingWeblogs();
+			pingBlogs();
 		} // end if moving from draft/private to published
 		
 		if ($post_status == 'publish') {
 			if ($post_pingback) {
-				pingback($content, $post_ID);
+				pingback($postObject->getVar('post_content','e'), $post_ID);
 			}
-			do_action('publish_post', $post_ID);
-			do_trackback($post_ID, $post_title, $content, $excerpt, $useutf8);
-		} // end if publish
-
+			do_action('publish_post',$post_ID);
+			do_trackback($postObject, $useutf8);
+		}
 		// Meta Stuff
 		if ($meta) {
 			foreach ($meta as $key => $value) {
 				update_meta($key, $value['key'], $value['value']);
 			}
 		}
-
 		if ($deletemeta) {
 			foreach ($deletemeta as $key => $value) {
 				delete_meta($key);
 			}
 		}
-
 		add_meta($post_ID);
-
 		do_action('edit_post', $post_ID);
 		exit();
 		break;
-
+	//Show Delete Cofirmation Screen
 	case 'confirmdelete':
+		//Check User_Level
+		user_level_check();
+		//Rendering Admin Screen header
 		$parent_file = 'edit.php';
 		$title = 'Delete Post';
 		$standalone = 0;
 		require_once('admin-header.php');
-
-		param('post','integer');
-
+		//Check Paramaters
+		init_param('GET', 'post','integer', NO_DEFAULT_PARAM, true);
 		$post_id = $post;
-		if (!($postdata = get_postdata($post_id))) {
-			redirect_header($siteurl.'/wp-admin/edit.php',5,_LANG_P_OOPS_IDPOS);
-			exit;
+		if (!($postObject =& $postHandler->get($post_id))) {
+			redirect_header($siteurl.'/wp-admin/'.$this_file, 5, _LANG_P_OOPS_IDPOS);
 		}
+		$authorObject = $wpUserHandler[$wp_prefix[$wp_id]]->get($postObject->getVar('post_author'));
+		if (!user_can_edit($postObject->getVar('post_author'))) {
+			redirect_header($siteurl.'/wp-admin/',5, _LANG_P_DATARIGHT_DELETE.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
+		}
+		//Show Confirmation message
 		$delete_confirm = array(
 						'action' => 'delete',
 						'post' => $post_id,
 						);
 		$delete_confirm += $xoopsWPTicket->getTicketArray(__LINE__);
-		$msg = _LANG_P_SURE_THAT."<br>'".htmlspecialchars($postdata['Title'])."'";
-		xoops_confirm($delete_confirm,'post.php',$msg);
+		$msg = _LANG_P_CONFIRM_DELETE."<br />'".$postObject->getVar('post_title')."'";
+		xoops_confirm($delete_confirm, $this_file, $msg);
+		include('admin-footer.php');
 		break;
+	//Delete one Post Record
 	case 'delete':
+		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {
 			redirect_header($siteurl.'/wp-admin/edit.php',3,$xoopsWPTicket->getErrors());
 		}
-		if ($user_level == 0) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
-			exit();
-		}
-		param('post','integer');
-		
+		//Check User_Level
+		user_level_check();
+		//Check Paramaters
+		init_param('POST', 'post','integer', NO_DEFAULT_PARAM, true);
 		$post_id = $post;
-		if (!($postdata = get_postdata($post_id))) {
-			redirect_header($siteurl.'/wp-admin/edit.php',5,_LANG_P_OOPS_IDPOS);
-			exit;
+		if (!($postObject =& $postHandler->get($post_id))) {
+			redirect_header($siteurl.'/wp-admin/edit.php', 5, _LANG_P_OOPS_IDPOS);
 		}
-		$authordata = get_userdata($postdata['Author_ID']);
-
-		if ($user_level < $authordata->user_level) {
-			redirect_header($siteurl.'/wp-admin/',5, _LANG_P_DATARIGHT_DELETE.' by <strong>['.$authordata[1].']</strong>');
-			exit();
+		$authorObject = $wpUserHandler[$wp_prefix[$wp_id]]->get($postObject->getVar('post_author'));
+		if (!user_can_edit($postObject->getVar('post_author'))) {
+			redirect_header($siteurl.'/wp-admin/',5, _LANG_P_DATARIGHT_DELETE.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
 		}
 
-		// send geoURL ping to "erase" from their DB
-		$query = "SELECT post_lat from {$wpdb->posts[$wp_id]} WHERE ID=$post_id";
-		$rows = $wpdb->query($query); 
-		$myrow = $rows[0];
-		$latf = $myrow->post_lat;
-		if($latf != null ) {
-			pingGeoUrl($post);
+		if(!$postHandler->delete($postObject)) {
+			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $postHandler->getErrors());
 		}
 
-		$result = $wpdb->query("DELETE FROM {$wpdb->posts[$wp_id]} WHERE ID=$post_id");
-		if (!$result) {
-			redirect_header($siteurl.'/wp-admin/edit.php',5,_LANG_P_DATARIGHT_ERROR);
-			exit;
-		}
-
-		$result = $wpdb->query("DELETE FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID=$post_id");
-
-		if (get_xoops_option($wp_mod[$wp_id],'wp_use_xoops_comments')) {
-			$result = $wpdb->query("DELETE FROM ".$xoopsDB->prefix('xoopscomments')." WHERE com_modid=".$xoopsModule->getVar('mid')." AND com_itemid=$post_id");
-		}
-		$categories = $wpdb->query("DELETE FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_id");
-
-		$meta = $wpdb->query("DELETE FROM {$wpdb->postmeta[$wp_id]} WHERE post_id = $post_id");
-
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
-	
 		do_action('delete_post', $post_ID);
-
 		$location = $siteurl .'/wp-admin/edit.php';
 		header ('Location: ' . $location);
 
+		if($postObject->getVar('latf') != null ) {
+			pingGeoUrl($post);
+		}
+		exit();
 		break;
-
    case 'editcomment':
+		if ($user_level == 0) {
+			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+		}
+		//Check Paramaters
+		init_param('GET', 'comment','integer', NO_DEFAULT_PARAM, true);
+
 		$title = 'Edit Comment';
 		$standalone = 0;
 		require_once ('admin-header.php');
-		if ($user_level == 0) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
-			exit();
+		
+		if (!($commentObject =& $commentHandler->get($comment))) {
+			redirect_header($siteurl.'/wp-admin/'.$this_file,5,_LANG_P_OOPS_IDPOS);
 		}
-		param('comment','integer');
-		if (!($commentdata = get_commentdata($comment, 1, true))) {
-			redirect_header($siteurl.'/wp-admin/post.php',5,_LANG_P_OOPS_IDPOS);
-			exit;
-		}
+		$commentdata = $commentObject->getVarArray('e');
+
 		$content = $commentdata['comment_content'];
-		$content = format_to_edit($content);
 		$content = apply_filters('comment_edit_pre', $content);
 
 		include('edit-form-comment.php');
-
+		include('admin-footer.php');
 		break;
-
 	case 'confirmdeletecomment':
+		if ($user_level == 0) {
+			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+		}
 		$parent_file = 'edit.php';
+		
 		$title = 'Delete Comment';
 		$standalone = 0;
 		require_once('admin-header.php');
 
-		param('comment','integer');
-		param('p','integer',0);
-		param('referredby','string','');
+		init_param('GET', 'comment', 'integer', NO_DEFAULT_PARAM, true);
+		init_param('GET', 'p', 'integer', NO_DEFAULT_PARAM, true);
+		init_param('GET', 'referredby', 'string', NO_DEFAULT_PARAM, true);
 
-		if (!($commentdata = get_commentdata($comment, 1, true))) {
-			redirect_header($siteurl.'/wp-admin/post.php',5,_LANG_P_OOPS_IDPOS);
-			exit;
+		if (!($commentObject =& $commentHandler->get($comment))) {
+			redirect_header($siteurl.'/wp-admin/'.$this_file,5,_LANG_P_OOPS_IDPOS);
 		}
+		$commentdata = $commentObject->getVarArray();
 		$delete_confirm = array(
 						'action' => 'deletecomment',
 						'p' => $p,
@@ -472,7 +409,7 @@ switch($action) {
 						);
 		$delete_confirm += $xoopsWPTicket->getTicketArray(__LINE__);
 ?>
-<?php xoops_confirm($delete_confirm,'post.php',_LANG_P_SURE_THAT); ?>
+<?php xoops_confirm($delete_confirm,'post.php',_LANG_P_CONFIRM_DELETE); ?>
 <div class="wrap">
 	<p><strong>Caution:</strong><?php echo _LANG_P_ABOUT_FOLLOW ?></p>
 	<table border="0">
@@ -483,17 +420,15 @@ switch($action) {
 	</table>
 </div>
 <?php
+		include('admin-footer.php');
 		break;
-
 	case 'deletecomment':
 		if ($user_level == 0) {
 			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
-			exit();
 		}
-		param('comment','integer');
-		param('p','integer');
-		param('noredir', 'string');
-		param('referredby','string','');
+		init_param('POST', 'comment', 'integer', NO_DEFAULT_PARAM, true);
+		init_param('POST', 'p', 'integer', NO_DEFAULT_PARAM, true);
+		init_param('POST', 'referredby', 'string', NO_DEFAULT_PARAM, true);
 
 		switch($referredby) {
 			case 'edit':
@@ -513,35 +448,37 @@ switch($action) {
 			redirect_header($location,3,$xoopsWPTicket->getErrors());
 		}
 		
-		if (!($postdata = get_postdata($p))) {
+		if (!($postObject =& $postHandler->get($p))) {
 			redirect_header($location, 5,_LANG_P_OOPS_IDCOM);
 		}
-		if (!($commentdata = get_commentdata($comment, 1, true))) {
+		$authorObject = $wpUserHandler[$wp_prefix[$wp_id]]->get($postObject->getVar('post_author'));
+		if ($user_level < $authorObject->getVar('user_level')) {
+			redirect_header($location,5, _LANG_P_DATARIGHT_DELETE.' by <strong>['.$authorObject->getVar('user_nickname').']</strong>');
+		}
+
+		if (!($commentObject =& $commentHandler->get($comment))) {
 			redirect_header($location, 5,_LANG_P_OOPS_IDPOS);
-			exit;
 		}
-		$authordata = get_userdata($postdata['Author_ID']);
-		if ($user_level < $authordata->user_level) {
-			redirect_header($location,5, _LANG_P_DATARIGHT_DELETE.' by <strong>['.$authordata->user_nickname.']</strong>');
-			exit;
-		}
+		$commentdata = $commentObject->getVarArray();
 		
-		wp_set_comment_status($comment, "delete");
+		if(!$commentHandler->delete($comment)) {
+			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $commentHandler->getErrors());
+		}
 		do_action('delete_comment', $comment);
 
 		header('Location: '.$location);
+		exit();
 		break;
 	case 'unapprovecomment':
 		wp_refcheck("/wp-admin");
 		if ($user_level == 0) {
 			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
-			exit();
 		}
 	
-		param('comment','integer');
-		param('p','integer');
-		param('noredir', 'string');
-		if (isset($noredir)) {
+		init_param('GET', 'comment', 'integer', NO_DEFAULT_PARAM, true);
+		init_param('GET', 'p', 'integer', NO_DEFAULT_PARAM, true);
+		init_param('GET', 'noredir', 'string', '');
+		if (!empty($noredir)) {
 			$noredir = true;
 		} else {
 			$noredir = false;
@@ -551,47 +488,54 @@ switch($action) {
 		} else {
 			$location = $siteurl.'/wp-admin/edit.php?p='.$p.'&c=1#comments';
 		}
-
-		if (!($commentdata = get_commentdata($comment, 1, true))) {
-			redirect_header($location, 5,_LANG_P_OOPS_IDPOS);
-			exit;
+		if ( ! $xoopsWPTicket->check(false) ) {
+			redirect_header($location,3,$xoopsWPTicket->getErrors());
 		}
-	
-		wp_set_comment_status($comment, "hold");
+		if (!($commentObject =& $commentHandler->get($comment))) {
+			redirect_header($location, 5,_LANG_P_OOPS_IDPOS);
+		}
+		if (!$commentObject->unapprove(true)) {
+			redirect_header($location, 3, $commentHandler->getErrors());
+		}
 	
 		header('Location: ' . $location);
-	
+		exit();
 		break;
 	case 'mailapprovecomment':
-		$standalone = 0;
-		require_once('./admin-header.php');
 		if ($user_level == 0) {
 			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
-			exit();
 		}
-	
-		param('comment','integer');
-		param('p','integer');
-	
-		if (!($commentdata = get_commentdata($comment, 1, true))) {
-			redirect_header($siteurl.'/wp-admin/', 5,_LANG_P_OOPS_IDPOS);
-			exit;
-		}
+		$parent_file = 'edit.php';
+		
+		$title = 'Approve Comment';
+		$standalone = 0;
+		require_once('admin-header.php');
 
-		wp_set_comment_status($comment, "approve");
-		if (get_settings("comments_notify") == true) {
-			wp_notify_postauthor($comment);
+		init_param('GET', 'comment', 'integer', NO_DEFAULT_PARAM, true);
+		init_param('GET', 'p', 'integer', NO_DEFAULT_PARAM, true);
+
+		if (!($commentObject =& $commentHandler->get($comment))) {
+			redirect_header($siteurl.'/wp-admin/'.$this_file,5,_LANG_P_OOPS_IDPOS);
 		}
+		$commentdata = $commentObject->getVarArray();
+		$delete_confirm = array(
+						'action' => 'approvecomment',
+						'p' => $p,
+						'comment' => $comment,
+						'noredir' => true,
+						);
 ?>
+<?php xoops_confirm($delete_confirm,"post.php?".$xoopsWPTicket->getTicketParamString(__LINE__,true),_LANG_WPM_MODERATE_BUTTON); ?>
 <div class="wrap">
-	<p><?php echo _LANG_P_COMHAS_APPR ?></p>
-	<form action="<?php echo "$siteurl/wp-admin/edit.php?p=$p&c=1#comments"?>" method="get">
-		<input type="hidden" name="p" value="<?php echo $p ?>" />
-		<input type="hidden" name="c" value="1" />
-		<input type="submit" value="Ok" />
-	</form>
+	<table border="0">
+		<tr><td>Author:</td><td><?php echo $commentdata["comment_author"] ?></td></tr>
+		<tr><td>E-Mail:</td><td><?php echo $commentdata["comment_author_email"] ?></td></tr>
+		<tr><td>URL:</td><td><?php echo $commentdata["comment_author_url"] ?></td></tr>
+		<tr><td>Comment:</td><td><?php echo apply_filters('comment_text',$commentdata["comment_content"]) ?></td></tr>
+	</table>
 </div>
-<?php	
+<?php
+		include('admin-footer.php');
 		break;
 	case 'approvecomment':
 		$standalone = 1;
@@ -601,10 +545,11 @@ switch($action) {
 			exit();
 		}
 			
-		param('comment','integer');
-		param('p','integer');
-		param('noredir', 'string');
-		if (isset($noredir)) {
+		init_param(ARRAY('GET','POST'), 'comment', 'integer', NO_DEFAULT_PARAM, true);
+		init_param(ARRAY('GET','POST'), 'p', 'integer', NO_DEFAULT_PARAM, true);
+		init_param(ARRAY('GET','POST'), 'noredir', 'string', '');
+
+		if (!empty($noredir)) {
 			$noredir = true;
 		} else {
 			$noredir = false;
@@ -615,70 +560,79 @@ switch($action) {
 			$location = $siteurl.'/wp-admin/edit.php?p='.$p.'&c=1#comments';
 		}
 
-		if (!($commentdata = get_commentdata($comment, 1, true))) {
-			redirect_header($location, 5,_LANG_P_OOPS_IDPOS);
-			exit;
+		if ( ! $xoopsWPTicket->check(false) ) {
+			redirect_header($location,3,$xoopsWPTicket->getErrors());
 		}
-		
-		wp_set_comment_status($comment, "approve");
+		if (!($commentObject =& $commentHandler->get($comment))) {
+			redirect_header($location, 3,_LANG_P_OOPS_IDPOS);
+		}
+		if (!$commentObject->approve(true)) {
+			redirect_header($location, 3, $commentHandler->getErrors());
+		}
 
 		if (get_settings("comments_notify") == true) {
 			wp_notify_postauthor($comment);
 		}
 		
 		header('Location: '.$location);
-		
+		exit();
 		break;
 	case 'editedcomment':
-		wp_refcheck("/wp-admin");
+		if ( ! $xoopsWPTicket->check() ) {
+			redirect_header($siteurl.'/wp-admin/',3,$xoopsWPTicket->getErrors());
+		}
 		if ($user_level == 0) {
 			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
-			exit();
 		}
 
-		param('comment_ID','integer');
-		param('newcomment_author','string');
-		param('newcomment_author_email','string');
-		param('newcomment_author_url','string');
-		param('comment_post_ID','integer');
-		param('edit_date','integer',0);
-		param('wp_content','html');
-		param('referredby','string', "edit.php?p=$comment_post_ID&c=1#comments");
-
-		$newcomment_author = addslashes($newcomment_author);
-		$newcomment_author_email = addslashes($newcomment_author_email);
-		$newcomment_author_url = addslashes($newcomment_author_url);
+		init_param('POST', 'comment_ID', 'integer', NO_DEFAULT_PARAM, true);
+		init_param('POST', 'newcomment_author', 'string', '', true);
+		init_param('POST', 'newcomment_author_email', 'string', '', true);
+		init_param('POST', 'newcomment_author_url', 'string', '', true);
+		init_param('POST', 'comment_post_ID', 'integer', NO_DEFAULT_PARAM, true);
+		init_param('POST', 'edit_date','integer', 0);
+		init_param('POST', 'wp_content','html', '', true);
+		init_param('POST', 'referredby', 'string', $this_file."?p=$comment_post_ID&c=1#comments", true);
 
 		if (($user_level > 4) && $edit_date) {
-			param('aa','integer');
-			param('mm','integer');
-			param('jj','integer');
-			param('hh','integer');
-			param('mn','integer');
-			param('ss','integer');
+			init_param('POST', 'aa','integer');
+			init_param('POST', 'mm','integer');
+			init_param('POST', 'jj','integer');
+			init_param('POST', 'hh','integer');
+			init_param('POST', 'mn','integer');
+			init_param('POST', 'ss','integer');
 			$jj = ($jj > 31) ? 31 : $jj;
 			$hh = ($hh > 23) ? $hh - 24 : $hh;
 			$mn = ($mn > 59) ? $mn - 60 : $mn;
 			$ss = ($ss > 59) ? $ss - 60 : $ss;
-			$datemodif = ", comment_date = '$aa-$mm-$jj $hh:$mn:$ss'";
+			$datemodif = "$aa-$mm-$jj $hh:$mn:$ss";
 		} else {
 			$datemodif = '';
 		}
-		$content = apply_filters('comment_save_pre', $wp_content);
-		$content = format_to_post($content);
 
-		$result = $wpdb->query("
-			UPDATE {$wpdb->comments[$wp_id]} SET
-				comment_content = '$content',
-				comment_author = '$newcomment_author',
-				comment_author_email = '$newcomment_author_email',
-				comment_author_url = '$newcomment_author_url'".$datemodif."
-			WHERE comment_ID = $comment_ID"
-			);
+		$commentObject =& $commentHandler->create(false);
 
+		$commentObject->setVar('comment_ID',$comment_ID);
+		$commentObject->setVar('comment_content',apply_filters('comment_save_pre', $wp_content));
+		$commentObject->setVar('comment_author',$newcomment_author);
+		$commentObject->setVar('comment_author_email',$newcomment_author_email);
+		$commentObject->setVar('comment_author_url',$newcomment_author_url);
+		if ($datemodif) {
+			$commentObject->setVar('comment_date',$datemodif);
+		}
+
+		if ($_SERVER['HTTP_REFERER'] != "") {
+			$location = $_SERVER['HTTP_REFERER'];
+		} else {
+			$location = $referredby;
+		}
+
+		if (!$commentHandler->insert($commentObject,false,true)) {
+			redirect_header($location, 3, $commentHandler->getErrors());
+		}
 		header('Location: ' . $referredby);
-
 		do_action('edit_comment', $comment_ID);
+		exit();
 		break;
 
 	default:
@@ -688,10 +642,9 @@ switch($action) {
 
 		if ($user_level > 0) {
 			$action = 'post';
-
-			param('content','html','');
-			param('edited_post_title','string','');
-			param('excerpt','html','');
+			init_param('GET', 'content', 'html','');
+			init_param('GET', 'edited_post_title', 'string','');
+			init_param('GET', 'excerpt', 'html','');
 
 			draft_list($user_ID);
 			//set defaults
@@ -701,14 +654,15 @@ switch($action) {
 			$post_pingback = get_settings('default_pingback_flag');
 			$default_post_cat = get_settings('default_post_category');
 
-			$content = apply_filters('default_content', $content);
-			$edited_post_title = apply_filters('default_title', $edited_post_title);
-			$excerpt = apply_filters('default_excerpt', $excerpt);
+			$content = apply_filters('default_content', get_param('content'));
+			$edited_post_title = apply_filters('default_title', get_param('edited_post_title'));
+			$excerpt = apply_filters('default_excerpt', get_param('excerpt'));
 			
 			$trackback_url = '';
 			$pinged = '';
 			$mode = '';
 			$form_prevstatus = '';
+			$target_charset = '';
 			
 			include('edit-form.php');
 			show_bookmarklet_link();
@@ -719,8 +673,7 @@ switch($action) {
 </div>
 <?php
 		}
+		include('admin-footer.php');
 		break;
 } // end switch
-
-include('admin-footer.php');
 ?>

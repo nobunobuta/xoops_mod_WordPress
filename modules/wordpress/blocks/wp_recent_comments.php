@@ -76,9 +76,9 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 						$date=mysql2date("Y-n-j", $lcomment->comment_date);
 						if ($date <> $pdate) {
 							if ($pdate <> "") {
-								$output .= "</ul>\n";
+								$output .= "</ul></li>\n";
 							}
-							$output .= "<li><span id=\"postDate\">".$date."</span></li>\n<ul class=\"children\">\n";
+							$output .= "<li><span class=\"postDate\">".$date."</span>\n<ul class=\"children\">\n";
 							$pdate = $date;
 						}
 					}
@@ -96,17 +96,17 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 						$comment_excerpt = substr($comment_content,0,$comment_lenth);
 					}
 					$permalink = get_permalink($lcomment->ID)."#comment-".$lcomment->comment_ID;
-					$output .= '<li><span class="comment-author";">' . $comment_author . ':</span> <a href="' . $permalink;
+					$output .= '<li><span class="comment-author">' . $comment_author . ':</span> <a href="' . $permalink;
 					$output .= '" title="View the entire comment by ' . $comment_author.'">' . $comment_excerpt . '...</a>';
 					if ($show_type) {
-						$output .= '<span style=\"font-size:70%\">- '.$type.'</span>';
+						$output .= '<span style="font-size:70%">- '.$type.'</span>';
 					}
 					$output .= "</li>\n";
 				}
 			}
 			$output .= "</ul>\n";
 			if ($cat_date) {
-				$output .= "</ul>\n";
+				$output .= "</li></ul>\n";
 			}
 		} else {
 			$output = tkzy_get_recent_comments($num_of_list, $cat_date, $show_type);
@@ -123,13 +123,17 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 		return $block;
 	}
 	function tkzy_get_recent_comments($limit = 10, $cat_date=1, $show_type = 1) { 
-		global $wpdb,  $wp_id; 
+		global $wpdb,  $wp_id, $wp_mod; 
 		global $siteurl; 
 		$comment_lenth = 30;
-		$lcomments = $wpdb->get_results("SELECT ID, post_title, post_date, 
+		$request = "SELECT ID, post_title, post_date, 
 		comment_ID, comment_author, comment_author_url, comment_author_email, comment_date, comment_content 
-		FROM {$wpdb->posts[$wp_id]}, {$wpdb->comments[$wp_id]} WHERE {$wpdb->posts[$wp_id]}.ID={$wpdb->comments[$wp_id]}.comment_post_ID AND {$wpdb->comments[$wp_id]}.comment_approved='1'
-		ORDER BY {$wpdb->comments[$wp_id]}.comment_date DESC LIMIT $limit"); 
+		FROM {$wpdb->posts[$wp_id]}, {$wpdb->comments[$wp_id]} WHERE {$wpdb->posts[$wp_id]}.ID={$wpdb->comments[$wp_id]}.comment_post_ID AND {$wpdb->comments[$wp_id]}.comment_approved='1'";
+		if (get_xoops_option($wp_mod[$wp_id],'wp_use_xoops_comments') == 1) {
+			$request .= "AND (comment_content like '<trackback />%' OR comment_content like '<pingkback />%') ";
+		}
+		$request .= " ORDER BY {$wpdb->comments[$wp_id]}.comment_date DESC LIMIT $limit";
+		$lcomments = $wpdb->get_results($request);
 		$output = ''; 
 		if($lcomments){ 
 			usort($lcomments, "sort_comment_by_date"); 

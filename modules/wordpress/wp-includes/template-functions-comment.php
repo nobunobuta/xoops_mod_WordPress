@@ -8,9 +8,13 @@ function clean_url($url) {
 	return $url;
 }
 
-function comments_number($zero='No Comments', $one='1 Comment', $more='% Comments', $number='') {
-	global $wp_post_id, $comment,  $wpdb ,$wp_id;
-	if ('' == $number) $number = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $wp_post_id AND comment_approved = '1'");
+function comments_number($zero='No Comments', $one='1 Comment', $more='% Comments', $number='', $echo = true) {
+	if ('' == $number) {
+		$criteria =& new CriteriaCompo(new Criteria('comment_post_ID', $GLOBALS['wp_post_id']));
+		$criteria->add(new Criteria('comment_approved', '1 '));//数字のみの文字列は少々癖がある。
+		$commentHandler =& wp_handler('Comment');
+		$number = $commentHandler->getCount($criteria);
+	}
 	if ($number == 0) {
 		$blah = $zero;
 	} elseif ($number == 1) {
@@ -18,200 +22,188 @@ function comments_number($zero='No Comments', $one='1 Comment', $more='% Comment
 	} elseif ($number  > 1) {
 		$blah = str_replace('%', $number, $more);
 	}
-    echo apply_filters('comments_number', $blah);
+    return _echo(apply_filters('comments_number', $blah), $echo);
 }
 
 function comments_link($file='', $echo=true) {
-	global $wp_post_id, $pagenow;
-	if ($file == '')	$file = $pagenow;
+	if ($file == '')	$file = $GLOBALS['pagenow'];
 	if ($file == '/')	$file = '';
-	if (!$echo) return get_permalink() . '#comments';
-	else echo get_permalink() . '#comments';
+	return _echo(get_permalink() . '#comments', $echo);
 }
 
-function comments_popup_script($width=400, $height=400, $file='wp-comments-popup.php') {
-	global $wpcommentspopupfile, $wptrackbackpopupfile, $wppingbackpopupfile, $wpcommentsjavascript;
-	$wpcommentspopupfile = $file;
-	$wpcommentsjavascript = 1;
+function comments_popup_script($width=400, $height=400, $file='wp-comments-popup.php', $echo=true) {
+	$GLOBALS['wpcommentspopupfile'] = $file;
+	$GLOBALS['wpcommentsjavascript'] = 1;
 	$javascript = "<script type='text/javascript'>\nfunction wpopen (macagna) {\n    window.open(macagna, '_blank', 'width=$width,height=$height,scrollbars=yes,status=yes');\n}\n</script>\n";
-	echo $javascript;
+	return _echo($javascript, $echo);
 }
 
-function comments_popup_link($zero='No Comments', $one='1 Comment', $more='% Comments', $CSSclass='', $none='Comments Off') {
-	global $wp_post_id, $wpcommentspopupfile, $wpcommentsjavascript, $post, $wpdb,  $cookiehash ,$wp_id;
-	global $siteurl,$wp_mod;
-	global $comment_count_cache;
-	if (get_xoops_option($wp_mod[$wp_id],'wp_use_xoops_comments') == 0) {
-		if ('' == $comment_count_cache[$wp_id]["$wp_post_id"]) {
-			$number = $wpdb->get_var("SELECT COUNT(comment_ID) FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $wp_post_id AND comment_approved = '1';");
-	} else {
-			$number = $comment_count_cache[$wp_id]["$wp_post_id"];
+function comments_popup_link($zero='No Comments', $one='1 Comment', $more='% Comments', $CSSclass='', $none='Comments Off', $echo = true) {
+	if (get_xoops_option(wp_mod(),'wp_use_xoops_comments') == 0) {
+		if (empty($GLOBALS['comment_count_cache'][wp_id()]["{$GLOBALS['wp_post_id']}"])) {
+			$criteria =& new CriteriaCompo(new Criteria('comment_post_ID', $GLOBALS['wp_post_id']));
+			$criteria->add(new Criteria('comment_approved', '1 '));//数字のみの文字列は少々癖がある。
+			$commentHandler =& wp_handler('Comment');
+			$number = $commentHandler->getCount($criteria);
+		} else {
+			$number = $GLOBALS['comment_count_cache'][wp_id()]["{$GLOBALS['wp_post_id']}"];
 		}
 	} else {
-		$number = $wpdb->get_var("SELECT COUNT(comment_ID) FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $wp_post_id AND comment_approved = '1' AND (comment_content like '<trackback />%' OR comment_content like '<pingkback />%');");
+		$criteria =& new CriteriaCompo(new Criteria('comment_post_ID', $GLOBALS['wp_post_id']));
+		$criteria->add(new Criteria('comment_approved', '1 '));//数字のみの文字列は少々癖がある。
+		$criteria_c =& new CriteriaCompo(new Criteria('comment_content', "<trackback />%", 'like'));
+		$criteria_c->add(new Criteria('comment_content', "<pingback />%", 'like'), 'OR');
+		$criteria->add($criteria_c);
+		$commentHandler =& wp_handler('Comment');
+		$number = $commentHandler->getCount($criteria);
 	}
-	if (0 == $number && 'closed' == $post->comment_status && 'closed' == $post->ping_status) {
-		echo $none;
-		return;
+	$comments_popup_link = "";
+	if (0 == $number && 'closed' == $GLOBALS['post']->comment_status && 'closed' == $GLOBALS['post']->ping_status) {
+		return _echo($none, $echo);
 	} else {
-        if (!empty($post->post_password)) { // if there's a password
-            if ($_COOKIE['wp-postpass_'.$cookiehash] != $post->post_password) {  // and it doesn't match the cookie
-                echo("Enter your password to view comments");
-                return;
+        if (!empty($GLOBALS['post']->post_password)) { // if there's a password
+            if ($_COOKIE['wp-postpass_'.$GLOBALS['cookiehash']] != $GLOBALS['post']->post_password) {  // and it doesn't match the cookie
+                return _echo("Enter your password to view comments", $echo);
             }
         }
-        echo '<a href="';
-        if ($wpcommentsjavascript) {
-            echo $siteurl.'/'.$wpcommentspopupfile.'?p='.$wp_post_id.'&amp;c=1';
-            //echo get_permalink();
-            echo '" onclick="wpopen(this.href); return false"';
+        $comments_popup_link .= '<a href="';
+        if (!empty($GLOBALS['wpcommentsjavascript'])) {
+            $comments_popup_link .=  wp_siteurl().'/'.$GLOBALS['wpcommentspopupfile'].'?p='.$GLOBALS['wp_post_id'].'&amp;c=1';
+            $comments_popup_link .= '" onclick="wpopen(this.href); return false"';
         } else {
             // if comments_popup_script() is not in the template, display simple comment link
-            comments_link();
-            echo '"';
+            $comments_popup_link .= comments_link('', false);
+            $comments_popup_link .=  '"';
         }
+        $comments_popup_link .= ' title="Comment for \'\''.apply_filters('the_title',$GLOBALS['post']->post_title).'\'\'"';
         if (!empty($CSSclass)) {
-            echo ' class="'.$CSSclass.'"';
+            $comments_popup_link .=  ' class="'.$CSSclass.'"';
         }
-        echo '>';
-        comments_number($zero, $one, $more, $number);
-        echo '</a>';
+        $comments_popup_link .=  '>';
+        $comments_popup_link .= comments_number($zero, $one, $more, $number, false);
+        $comments_popup_link .=  '</a>';
+        return _echo($comments_popup_link, $echo);
     }
 }
 
 function xcomments_link($file='', $echo=true) {
-	global $wp_post_id, $pagenow;
-	if ($file == '')	$file = $pagenow;
+	if ($file == '')	$file = $GLOBALS['pagenow'];
 	if ($file == '/')	$file = '';
-	if (!$echo) return get_permalink() . '#xcomments';
-	else echo get_permalink() . '#xcomments';
+	return _echo(get_permalink() . '#xcomments', $echo);
 }
 
-function xcomments_popup_link($zero='No Comments', $one='1 Comment', $more='% Comments', $CSSclass='', $none='Comments Off') {
-	global $wp_post_id, $wpcommentspopupfile, $wpcommentsjavascript, $post, $wpdb,  $cookiehash ,$wp_id;
-	global $siteurl, $xoopsDB, $xoopsModule, $wp_mod;
-
+function xcomments_popup_link($zero='No Comments', $one='1 Comment', $more='% Comments', $CSSclass='', $none='Comments Off', $echo=true) {
 	$module_handler =& xoops_gethandler('module');
-	$module =& $module_handler->getByDirname($wp_mod[$wp_id]);
+	$module =& $module_handler->getByDirname(wp_mod());
 	$mid = $module->getVar('mid');
 
-	$number = xoops_comment_count($mid, $wp_post_id);
-	if (0 == $number && 'closed' == $post->comment_status) {
-		echo $none;
-		return;
+	$number = xoops_comment_count($mid, $GLOBALS['wp_post_id']);
+	$xcomments_popup_link = "";
+	if (0 == $number && 'closed' == $GLOBALS['post']->comment_status) {
+		return _echo($none, $echo);
 	} else {
-        if (!empty($post->post_password)) { // if there's a password
-            if ($_COOKIE['wp-postpass_'.$cookiehash] != $post->post_password) {  // and it doesn't match the cookie
-                echo("Enter your password to view comments");
-                return;
+        if (!empty($GLOBALS['post']->post_password)) { // if there's a password
+            if ($_COOKIE['wp-postpass_'.$GLOBALS['cookiehash']] != $GLOBALS['post']->post_password) {  // and it doesn't match the cookie
+                return _echo("Enter your password to view comments", $echo);
             }
         }
-        echo '<a href="';
-        if ($wpcommentsjavascript) {
-            echo $siteurl.'/'.$wpcommentspopupfile.'?p='.$wp_post_id.'&amp;c=1';
-            //echo get_permalink();
-            echo '" onclick="wpopen(this.href); return false"';
+        $xcomments_popup_link .= '<a href="';
+        if (!empty($GLOBALS['wpcommentsjavascript'])) {
+            $xcomments_popup_link .= wp_siteurl().'/'.$GLOBALS['wpcommentspopupfile'].'?p='.$GLOBALS['wp_post_id'].'&amp;c=1';
+            $xcomments_popup_link .= '" onclick="wpopen(this.href); return false"';
         } else {
             // if comments_popup_script() is not in the template, display simple comment link
-            xcomments_link();
-            echo '"';
+            $xcomments_popup_link .= xcomments_link('', false);
+            $xcomments_popup_link .= '"';
         }
         if (!empty($CSSclass)) {
-            echo ' class="'.$CSSclass.'"';
+            $xcomments_popup_link .= ' class="'.$CSSclass.'"';
         }
-        echo '>';
-        comments_number($zero, $one, $more, $number);
-        echo '</a>';
+        $xcomments_popup_link .= '>';
+        $xcomments_popup_link .= comments_number($zero, $one, $more, $number, false);
+        $xcomments_popup_link .= '</a>';
+        return _echo($xcomments_popup_link, $echo);
     }
 }
 
-function comment_ID() {
-	global $comment;
-	echo $comment->comment_ID;
+function comment_ID($echo = true) {
+	return _echo($GLOBALS['comment']->comment_ID, $echo);
 }
 
-function comment_author() {
-	global $comment;
-	$author = stripslashes(stripslashes($comment->comment_author));
-	$author = apply_filters('comment_auther', $author);
-	$author = convert_chars($author);
-	if (!empty($author)) {
-		echo $comment->comment_author;
+function comment_author($echo = true) {
+	$author = apply_filters('comment_author', $GLOBALS['comment']->comment_author);
+	if (empty($author)) {
+		$author = "Anonymous";
 	}
-	else {
-		echo "Anonymous";
-	}
+	return _echo($author, $echo);
 }
 
-function comment_author_email() {
-	global $comment;
-	echo apply_filters('author_email', $comment->comment_author_email);
+function comment_author_email($echo = true) {
+	$author_email = apply_filters('author_email', $GLOBALS['comment']->comment_author_email);
+	return _echo($author_email, $echo);
 }
 
-function comment_author_link() {
-	global $comment;
-	$url = apply_filters('comment_url', $comment->comment_author_url);
-	$author = apply_filters('comment_author', $comment->comment_author);
+function comment_author_link($echo = true) {
+	$url = apply_filters('comment_url', $GLOBALS['comment']->comment_author_url);
+	$author = apply_filters('comment_author', $GLOBALS['comment']->comment_author);
 	if (!$author) $author = 'Anonymous';
 
-	if (empty($url)) :
-		echo $author;
-	else:
-		echo "<a href='$url' rel='external'>$author</a>";
-	endif;
+	if (empty($url)) {
+		$url = $author;
+	} else {
+		$url = "<a href='$url' rel='external'>$author</a>";
+	}
+	return _echo($url, $echo);
 }
 
-function comment_type($commenttxt = 'Comment', $trackbacktxt = 'Trackback', $pingbacktxt = 'Pingback') {
-	global $comment;
-	if (preg_match('|<trackback />|', $comment->comment_content))
-		echo $trackbacktxt;
-	elseif (preg_match('|<pingback />|', $comment->comment_content))
-		echo $pingbacktxt;
+function comment_type($commenttxt = 'Comment', $trackbacktxt = 'Trackback', $pingbacktxt = 'Pingback', $echo=true) {
+	if (preg_match('|<trackback />|', $GLOBALS['comment']->comment_content))
+		return _echo($trackbacktxt, $echo);
+	elseif (preg_match('|<pingback />|', $GLOBALS['comment']->comment_content))
+		return _echo($pingbacktxt, $echo);
 	else
-		echo $commenttxt;
+		return _echo($commenttxt, $echo);
 }
 
-function comment_author_url() {
-	global $comment;
-	echo apply_filters('comment_url', $comment->comment_author_url);
+function comment_author_url($echo = true) {
+	$author_url = apply_filters('comment_url', $GLOBALS['comment']->comment_author_url);
+	return _echo($author_url, $echo);
 }
 
-function comment_author_email_link($linktext='', $before='', $after='') {
-	global $comment;
-	$email = apply_filters('comment_email', $comment->comment_author_email);
+function comment_author_email_link($linktext='', $before='', $after='',$echo = true ) {
+	$email = apply_filters('comment_email', $GLOBALS['comment']->comment_author_email);
+	$link = "";
 	if ((!empty($email)) && ($email != '@')) {
 		$display = ($linktext != '') ? $linktext : $email;
-		echo $before;
-		echo "<a href='mailto:$email'>$display</a>";
-		echo $after;
+		$link = $before ."<a href='mailto:$email'>$display</a>". $after;
 	}
+	return _echo($link, $echo);
 }
 
-function comment_author_url_link($linktext='', $before='', $after='') {
-	global $comment;
-	$url = apply_filters('comment_url', $comment->comment_author_url);
-
+function comment_author_url_link($linktext='', $before='', $after='', $echo = true) {
+	$url = apply_filters('comment_url', $GLOBALS['comment']->comment_author_url);
+	$link = "";
 	if ((!empty($url)) && ($url != 'http://') && ($url != 'http://url')) {
 		$display = ($linktext != '') ? $linktext : $url;
-		echo "$before<a href='$url' rel='external'>$display</a>$after";
+		$link = "$before<a href='$url' rel='external'>$display</a>$after";
 	}
+	return _echo($link, $echo);
 }
 
-function comment_author_IP() {
-	global $comment;
-	echo $comment->comment_author_IP;
+function comment_author_IP($echo=true) {
+	$ip = $GLOBALS['comment']->comment_author_IP;
+	return _echo($ip, $echo);
 }
 
-function comment_text() {
-	global $comment;
-	$comment_text = str_replace('<trackback />', '', $comment->comment_content);
+function comment_text($echo=true) {
+	$comment_text = str_replace('<trackback />', '', $GLOBALS['comment']->comment_content);
 	$comment_text = str_replace('<pingback />', '', $comment_text);
-	echo apply_filters('comment_text', stripslashes($comment_text));
+	$comment_text =  apply_filters('comment_text', stripslashes($comment_text));
+	return _echo($comment_text, $echo);
 }
 
-function comment_excerpt() {
-	global $comment;
-	$comment_text = str_replace('<trackback />', '', $comment->comment_content);
+function comment_excerpt($echo=true) {
+	$comment_text = str_replace('<trackback />', '', $GLOBALS['comment']->comment_content);
 	$comment_text = str_replace('<pingback />', '', $comment_text);
 	$comment_text = strip_tags(stripslashes($comment_text));
 	$blah = explode(' ', $comment_text);
@@ -227,106 +219,90 @@ function comment_excerpt() {
 		$excerpt .= $blah[$i] . ' ';
 	}
 	$excerpt .= ($use_dotdotdot) ? '...' : '';
-	echo apply_filters('comment_excerpt', $excerpt);
+	$excerpt = apply_filters('comment_excerpt', $excerpt);
+	return _echo($excerpt, $echo);
 }
 
-function comment_date($d='') {
-	global $comment;
+function comment_date($d='', $echo = true) {
 	if ('' == $d) {
-		echo mysql2date(get_settings('date_format'), $comment->comment_date);
+		$date = mysql2date(get_settings('date_format'), $GLOBALS['comment']->comment_date);
 	} else {
-		echo mysql2date($d, $comment->comment_date);
+		$date = mysql2date($d, $GLOBALS['comment']->comment_date);
 	}
+	return _echo($date, $echo);
 }
 
-function comment_time($d='') {
-	global $comment;
+function comment_time($d='', $echo = true) {
 	if ($d == '') {
-		echo mysql2date(get_settings('time_format'), $comment->comment_date);
+		$time = mysql2date(get_settings('time_format'), $GLOBALS['comment']->comment_date);
 	} else {
-		echo mysql2date($d, $comment->comment_date);
+		$time = mysql2date($d, $GLOBALS['comment']->comment_date);
 	}
+	return _echo($time, $echo);
 }
 
-function comments_rss_link($link_text='Comments RSS', $commentsrssfilename = 'wp-commentsrss2.php') {
+function comments_rss_link($link_text='Comments RSS', $commentsrssfilename = 'wp-commentsrss2.php', $echo = true) {
 	$url = comments_rss($commentsrssfilename);
-	echo "<a href='$url'>$link_text</a>";
+	return _echo("<a href='$url'>$link_text</a>", $echo);
 }
 
 function comments_rss($commentsrssfilename = 'wp-commentsrss2.php') {
-	global $wp_post_id,$siteurl;
-
 	if ('' != get_settings('permalink_structure')) {
 		$url = trailingslashit(get_permalink()) . 'feed/';
 	} else {
-		$url = $siteurl . '/' . $commentsrssfilename.'?p='.$wp_post_id;
+		$url = wp_siteurl() . '/' . $commentsrssfilename.'?p='.$GLOBALS['wp_post_id'];
 	}
 	return $url;
 }
 
-function comment_author_rss() {
-	global $comment;
-
-	if (empty($comment->comment_author)) {
-		echo 'Anonymous';
+function comment_author_rss($echo = true) {
+	if (empty($GLOBALS['comment']->comment_author)) {
+		$author_rss = 'Anonymous';
 	} else {
-		echo wp_convert_rss_charset(htmlspecialchars(apply_filters('comment_author', $comment->comment_author)));
+		$author_rss = wp_convert_rss_charset(htmlspecialchars(apply_filters('comment_author', $GLOBALS['comment']->comment_author)));
 	}
+	return _echo($author_rss, $echo);
 }
 
-function comment_text_rss() {
-	global $comment;
-
-	$comment_text = str_replace('<trackback />', '', $comment->comment_content);
+function comment_text_rss($echo = true) {
+	$comment_text = str_replace('<trackback />', '', $GLOBALS['comment']->comment_content);
 	$comment_text = str_replace('<pingback />', '', $comment_text);
 	$comment_text = apply_filters('comment_text', $comment_text);
 	$comment_text = strip_tags($comment_text);
 	$comment_text = htmlspecialchars($comment_text);
-	echo wp_convert_rss_charset($comment_text);
+	return _echo(wp_convert_rss_charset($comment_text), $echo);
 }
 
-function comment_link_rss() {
-	global $comment;
-	echo get_permalink($comment->comment_post_ID).'#comments';
+function comment_link_rss($echo = true) {
+	return _echo(get_permalink($GLOBALS['comment']->comment_post_ID).'#comments', $echo);
 }
 
-function permalink_comments_rss() {
-	global $comment;
-	echo get_permalink($comment->comment_post_ID);
+function permalink_comments_rss($echo = true) {
+	return _echo(get_permalink($GLOBALS['comment']->comment_post_ID), $echo);
 }
 
-function trackback_url($display = true) {
-	global $wp_post_id,$siteurl;
-	$tb_url = $siteurl . '/wp-trackback.php/' . $wp_post_id;
+function trackback_url($echo = true) {
+	$tb_url = wp_siteurl() . '/wp-trackback.php/' . $GLOBALS['wp_post_id'];
 	
 	if ('' != get_settings('permalink_structure')) {
 		$tb_url = trailingslashit(get_permalink()) . 'trackback/';
 	}
-	
-	if ($display) {
-		echo $tb_url;
-	} else {
-		return $tb_url;
-	}
+	return _echo($tb_url, $echo);
 }
 
 
-function trackback_rdf($timezone = 0) {
-	global $wp_post_id;
+function trackback_rdf($timezone = 0, $echo= true) {
+	$trackback_rdf = '';
 	if (!stristr($_SERVER['HTTP_USER_AGENT'], 'W3C_Validator')) {
-	echo '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
-	    xmlns:dc="http://purl.org/dc/elements/1.1/"
-	    xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
-		<rdf:Description rdf:about="';
-	the_permalink();
-	echo '"'."\n";
-	echo '    dc:identifier="';
-	the_permalink();
-	echo '"'."\n";
-	echo '    dc:title="'.str_replace('--', '&#x2d;&#x2d;', wptexturize(strip_tags(get_the_title()))).'"'."\n";
-	echo '    trackback:ping="'.trackback_url(0).'"'." />\n";
-	echo '</rdf:RDF>';
+		$trackback_rdf .= '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+		    xmlns:dc="http://purl.org/dc/elements/1.1/"
+		    xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+			<rdf:Description rdf:about="'.get_permalink().'"'."\n";
+		$trackback_rdf .=  '    dc:identifier="'.get_permalink().'"'."\n";
+		$trackback_rdf .=  '    dc:title="'.str_replace('--', '&#x2d;&#x2d;', wptexturize(strip_tags(get_the_title()))).'"'."\n";
+		$trackback_rdf .=  '    trackback:ping="'.trackback_url(0).'"'." />\n";
+		$trackback_rdf .=  '</rdf:RDF>';
 	}
+	return _echo($trackback_rdf, $echo);
 }
-
 ?>

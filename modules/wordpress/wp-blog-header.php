@@ -1,422 +1,440 @@
 <?php
-global $xoopsDB,$xoopsUser,$wpdb, $wp_id, $wp_inblock;
-global $wp_once_called,$blog_charset;;
-$use_cache = 1; // No reason not to
+/* ÈþÆý */
+if (!defined('_LANGCODE')) {
+	define("_LANGCODE","en");
+}
+if (file_exists("wp-lang/lang_"._LANGCODE.".php")) {
+	require_once("wp-lang/lang_"._LANGCODE.".php");
+} else {
+	require_once("wp-lang/lang_en.php");
+}
+global $xoopsDB, $xoopsUser, $blog_charset;
+
+$GLOBALS['use_cache'] = 1; // No reason not to
 /* Including config and functions files */
-$wp_inblock = 0;
+$GLOBALS['wp_inblock'] = 0;
 require(dirname(__FILE__).'/wp-config.php');
 
 if ( !empty( $_SERVER['PATH_INFO'] ) ) {
 	permlink_to_param();
 }
 
-param('m','integer',NO_DEFAULT_PARAM, true);  //Month Param   (YYYY[MM[DD[hh[mm[ss]]]]])
-param('year','integer',NO_DEFAULT_PARAM, true);
-param('monthnum','integer',NO_DEFAULT_PARAM, true);
-param('w','integer',NO_DEFAULT_PARAM, true);  //WeekNum Param
-param('day','integer',NO_DEFAULT_PARAM, true);
+init_param('', 'm','integer',NO_DEFAULT_PARAM);  //Month Param   (YYYY[MM[DD[hh[mm[ss]]]]])
+init_param('', 'year','integer',NO_DEFAULT_PARAM);
+init_param('', 'monthnum','integer',NO_DEFAULT_PARAM);
+init_param('', 'w','integer',NO_DEFAULT_PARAM);  //WeekNum Param
+init_param('', 'day','integer',NO_DEFAULT_PARAM);
 
-param('p','string',NO_DEFAULT_PARAM, true);  //PostID Param ("All" for All);
-param('name','string',NO_DEFAULT_PARAM, true);  //PostName Param
+init_param('', 'p','string',NO_DEFAULT_PARAM);  //PostID Param ("All" for All);
+init_param('', 'name','string',NO_DEFAULT_PARAM);  //PostName Param
 
-param('cat','string',NO_DEFAULT_PARAM,true);  // Category ID (Start with "-" means Exclude this.).
-param('category_name','string',NO_DEFAULT_PARAM,true);  // Category Name
+init_param('', 'cat','string',NO_DEFAULT_PARAM);  // Category ID (Start with "-" means Exclude this.).
+init_param('', 'category_name','string',NO_DEFAULT_PARAM);  // Category Name
 
-param('author','string',NO_DEFAULT_PARAM,true);// Author ID (Start with "-" means Exclude this.).
-param('author_name','string',NO_DEFAULT_PARAM,true);// Author Name
+init_param('', 'author','string',NO_DEFAULT_PARAM);// Author ID (Start with "-" means Exclude this.).
+init_param('', 'author_name','string',NO_DEFAULT_PARAM);// Author Name
 
-param('s','html',NO_DEFAULT_PARAM,true);    //Search String
-param('exact','integer',0, true);   //Search Exactly matching flag
-param('sentence','integer',0,true);   //Search Sentence matching flag
+init_param('', 's','html',NO_DEFAULT_PARAM);    //Search String
+init_param('', 'exact','integer',0);   //Search Exactly matching flag
+init_param('', 'sentence','integer',0);   //Search Sentence matching flag
 
-param('poststart','integer',NO_DEFAULT_PARAM,true); // Query Limt Start number
-param('postend','integer',NO_DEFAULT_PARAM,true); // Query Limt End number
+init_param('', 'poststart','integer',0); // Query Limt Start number
+init_param('', 'postend','integer',0); // Query Limt End number
 
-param('order','string','DESC',true);
-param('orderby','string','date',true);
+init_param('', 'order','string','DESC');
+init_param('', 'orderby','string','date');
 
-param('page','integer',NO_DEFAULT_PARAM,true);   // Content Page number;
-param('paged','integer',NO_DEFAULT_PARAM,true); // Index Page number;
+init_param('', 'page','integer',NO_DEFAULT_PARAM);   // Content Page number;
+init_param('', 'paged','integer',NO_DEFAULT_PARAM); // Index Page number;
 
-param('c','integer',NO_DEFAULT_PARAM,true);   //With Comment (=1:yes)
-param('withcomments','integer',NO_DEFAULT_PARAM,true); //With Comment (=1:yes)
-param('preview','integer',NO_DEFAULT_PARAM,true); //Preview Flag
-param('debug','integer',NO_DEFAULT_PARAM,true); //Debug Flag
-param('more','integer',NO_DEFAULT_PARAM,true); // Display More Content;
+init_param('', 'c','integer', 0);   //With Comment (=1:yes)
+init_param('', 'withcomments','integer', 0); //With Comment (=1:yes)
+init_param('', 'preview','integer',NO_DEFAULT_PARAM); //Preview Flag
+init_param('', 'debug','integer',NO_DEFAULT_PARAM); //Debug Flag
+init_param('', 'more','integer',NO_DEFAULT_PARAM); // Display More Content;
 
 /* Getting settings from db */
-if (isset($doing_rss) && $doing_rss == 1) {
-    $posts_per_page=get_settings('posts_per_rss');
+if (!empty($GLOBALS['doing_rss'])) {
+    $GLOBALS['posts_per_page']=get_settings('posts_per_rss');
 }
-if (empty($posts_per_page)) {
-    $posts_per_page = get_settings('posts_per_page');
+if (empty($GLOBALS['posts_per_page'])) {
+    $GLOBALS['posts_per_page'] = get_settings('posts_per_page');
 }
-$what_to_show = get_settings('what_to_show');
-$archive_mode = get_settings('archive_mode');
-global $dateformat,$timeformat;
-$dateformat = stripslashes(get_settings('date_format'));
-$timeformat = stripslashes(get_settings('time_format'));
-$time_difference = get_settings('time_difference');
-$use_gzipcompression = get_settings('gzipcompression');
+$GLOBALS['what_to_show'] = get_settings('what_to_show');
 
 /* First let's clear some variables */
-$whichcat = '';
-$whichauthor = '';
-$result = '';
-$where = '';
-$limits = '';
-$distinct = '';
-$join = '';
-$search = '';
+$_distinct = '';
+$_criteria =& new CriteriaCompo();
+$_joinCriteria = false;
+$_criteria_order = '';
+$_criteria_sort = '';
+$_criteria_limit = '';
+$_criteria_start = '';
 
-if ($pagenow != 'post.php') { timer_start(); }
 
-if (isset($showposts) && $showposts) {
-    $showposts = (int)$showposts;
-	$posts_per_page = $showposts;
+if ($GLOBALS['pagenow'] != 'post.php') { timer_start(); }
+
+if (!empty($GLOBALS['showposts'])) {
+	$GLOBALS['posts_per_page'] = intval($GLOBALS['showposts']);
 }
 
 // if a month is specified in the querystring, load that month
-if (!empty($m)) {
-	$m = "$m";
-	$where .= ' AND YEAR(post_date)='.substr($m,0,4);
-	if (strlen($m)>5)
-		$where .= ' AND MONTH(post_date)='.substr($m,4,2);
-	if (strlen($m)>7)
-		$where .= ' AND DAYOFMONTH(post_date)='.substr($m,6,2);
-	if (strlen($m)>9)
-		$where .= ' AND HOUR(post_date)='.substr($m,8,2);
-	if (strlen($m)>11)
-		$where .= ' AND MINUTE(post_date)='.substr($m,10,2);
-	if (strlen($m)>13)
-		$where .= ' AND SECOND(post_date)='.substr($m,12,2);
-
+if (test_param('m')) {
+	$GLOBALS['m'] = ''.get_param('m');
+	$_criteria->add(new Criteria('YEAR(post_date)', substr($GLOBALS['m'],0,4)));
+	if (strlen($GLOBALS['m'])>5)
+		$_criteria->add(new Criteria('MONTH(post_date)', substr($GLOBALS['m'],4,2)));
+	if (strlen($GLOBALS['m'])>7)
+		$_criteria->add(new Criteria('DAYOFMONTH(post_date)', substr($GLOBALS['m'],6,2)));
+	if (strlen($GLOBALS['m'])>9)
+		$_criteria->add(new Criteria('HOUR(post_date)', substr($GLOBALS['m'],8,2)));
+	if (strlen($GLOBALS['m'])>11)
+		$_criteria->add(new Criteria('MINUTE(post_date)', substr($GLOBALS['m'],10,2)));
+	if (strlen($GLOBALS['m'])>13)
+		$_criteria->add(new Criteria('SECOND(post_date)', substr($GLOBALS['m'],12,2)));
 }
-if (!empty($year)) {
-	$year = "$year";
-	$where .= ' AND YEAR(post_date)=' . $year;
+if (test_param('year')) {
+	$GLOBALS['year'] = ''.get_param('year');
+	$_criteria->add(new Criteria('YEAR(post_date)', $GLOBALS['year']));
 }
-
-if (!empty($monthnum)) {
-	$monthnum = "$monthnum";
-	$where .= ' AND MONTH(post_date)=' . $monthnum;
+if (test_param('monthnum')) {
+	$GLOBALS['monthnum'] = ''.get_param('monthnum');
+	$_criteria->add(new Criteria('MONTH(post_date)', $GLOBALS['monthnum']));
 }
-
-if (!empty($day)) {
-	$day = "$day";
-	$where .= ' AND DAYOFMONTH(post_date)=' . $day;
+if (test_param('day')) {
+	$GLOBALS['day'] = ''.get_param('day');
+	$_criteria->add(new Criteria('DAYOFMONTH(post_date)', $GLOBALS['day']));
 }
-
-if (!empty($w)) {
-	$w = "$w";
-	$where .= ' AND WEEK(post_date)=' . $w;
+if (test_param('w')) {
+	$GLOBALS['w'] = ''.get_param('w');
+	$_criteria->add(new Criteria('WEEK(post_date)', $GLOBALS['w']));
 }
-
-if (!empty($name)) {
-	$name = preg_replace('/[^a-z0-9-]/', '', $name);
-	$where .= " AND post_name = '$name'";
+if (test_param('name')) {
+	$GLOBALS['name'] = get_param('name');
+	$_criteria->add(new Criteria('post_name', $GLOBALS['name']));
 }
-
-// if a post number is specified, load that post
-if (!empty($p) && ($p != 'all')) {
-	$p = "".intval($p)."";
-	$where = ' AND ID = '.$p;
+if (test_param('p') && (get_param('p') != 'all')) {
+	$GLOBALS['p'] = intval(get_param('p'));
+	unset($_criteria);
+	$_criteria =& new CriteriaCompo(new Criteria('ID', $GLOBALS['p']));
 }
-
 // if a search pattern is specified, load the posts that match
-if (!empty($s)) {
-	$s = addslashes_gpc($s);
-	$search = ' AND (';
+if (test_param('s')) {
+	$GLOBALS['s'] = addslashes_gpc(get_param('s'));
+
 	// puts spaces instead of commas
-	$s = preg_replace('/, +/', '', $s);
-	$s = str_replace(',', ' ', $s);
-	$s = str_replace('"', ' ', $s);
-	$s = trim($s);
-	$s = htmlspecialchars($s);
-	if ($exact) {
-		$n = '';
+	$GLOBALS['s'] = preg_replace('/, +/', ' ', $GLOBALS['s']);
+	$GLOBALS['s'] = str_replace(array(',', '"'), array(' ', ' '), $GLOBALS['s']);
+	$GLOBALS['s'] = htmlspecialchars(trim($GLOBALS['s']));
+	if (get_param('exact')) {
+		$_n = '';
 	} else {
-		$n = '%';
+		$_n = '%';
 	}
-	if (!$sentence) {
-		$s_array = explode(' ',$s);
-		$search .= '((post_title LIKE \''.$n.$s_array[0].$n.'\') OR (post_content LIKE \''.$n.$s_array[0].$n.'\'))';
-		for ( $i = 1; $i < count($s_array); $i = $i + 1) {
-			$search .= ' AND ((post_title LIKE \''.$n.$s_array[$i].$n.'\') OR (post_content LIKE \''.$n.$s_array[$i].$n.'\'))';
+	$_searchCriteria =& new CriteriaCompo();
+	if (!get_param('sentence')) {
+		$GLOBALS['s_array'] = explode(' ',$GLOBALS['s']);
+		for ( $_i = 0; $_i < count($GLOBALS['s_array']); $_i++) {
+			$_wCriteria =& new CriteriaCompo(new Criteria('post_title', $_n.$GLOBALS['s_array'][$_i].$_n, 'like'));
+			$_wCriteria->add(new Criteria('post_content', $_n.$GLOBALS['s_array'][$_i].$_n, 'like'),'OR');
+			$_searchCriteria->add($_wCriteria, 'AND');
+			unset($_wCriteria);
 		}
-		$search .= ' OR (post_title LIKE \''.$n.$s.$n.'\') OR (post_content LIKE \''.$n.$s.$n.'\')';
-		$search .= ')';
+		if (count($GLOBALS['s_array']) > 1) {
+			$_wCriteria =& new CriteriaCompo(new Criteria('post_title', $_n.$GLOBALS['s'].$_n, 'like'));
+			$_wCriteria->add(new Criteria('post_content', $_n.$GLOBALS['s'].$_n, 'like'),'OR');
+			$_searchCriteria->add($_wCriteria, 'OR');
+			unset($_wCriteria);
+		}
 	} else {
-		$search = ' AND ((post_title LIKE \''.$n.$s.$n.'\') OR (post_content LIKE \''.$n.$s.$n.'\'))';
+		$_wCriteria =& new CriteriaCompo(new Criteria('post_title', $_n.$GLOBALS['s'].$_n, 'like'));
+		$_wCriteria->add(new Criteria('post_content', $_n.$GLOBALS['s'].$_n, 'like'),'OR');
+		$_searchCriteria->add($_wCriteria);
+		unset($_wCriteria);
 	}
+	$_criteria->add($_searchCriteria);
+	unset($_searchCriteria);
 }
-
 // category stuff
-if (!empty($cat) && ($cat != 'all')) {
-	$cat = urldecode($cat);
-	$cat = addslashes_gpc($cat);
-	if (stristr($cat,'-')) {
-		$eq = '!=';
-		$andor = 'AND';
-		$cat = explode('-',$cat);
-		$cat = $cat[1];
+if (test_param('cat') && (get_param('cat') != 'all')) {
+	$GLOBALS['cat'] = addslashes_gpc(urldecode(get_param('cat')));
+	if (stristr($GLOBALS['cat'], '-')) {
+		$_eq = '!=';
+		$_andor = 'AND';
+		$GLOBALS['cat'] = explode('-', $GLOBALS['cat']);
+		$GLOBALS['cat'] = $GLOBALS['cat'][1];
 	} else {
-		$eq = '=';
-		$andor = 'OR';
+		$_eq = '=';
+		$_andor = 'OR';
 	}
-	$join = " LEFT JOIN {$wpdb->post2cat[$wp_id]} ON ({$wpdb->posts[$wp_id]}.ID = {$wpdb->post2cat[$wp_id]}.post_id) ";
-	$cat_array = explode(' ',$cat);
-    $whichcat .= ' AND (category_id '.$eq.' '.intval($cat_array[0]);
-    $whichcat .= get_category_children($cat_array[0], ' '.$andor.' category_id '.$eq.' ');
-    for ($i = 1; $i < (count($cat_array)); $i = $i + 1) {
-        $whichcat .= ' '.$andor.' category_id '.$eq.' '.intval($cat_array[$i]);
-        $whichcat .= get_category_children($cat_array[$i], ' '.$andor.' category_id '.$eq.' ');
-   }
-	$whichcat .= ')';
-    if ($eq == '!=') {
-	    $cat = '-'.$cat; //put back the knowledge that we are excluding a category.
-    }
+	$_joinCriteria =& new XoopsJoinCriteria(wp_table('post2cat'), 'ID', 'post_id');
+	$_wCriteria =& new CriteriaCompo();
+	$_cat_array = explode(' ', $GLOBALS['cat']);
+    for ($_i = 0; $_i < (count($_cat_array)); $_i++) {
+		$_wCriteria->add(new Criteria('category_id', intval($_cat_array[$_i]), $_eq), $_andor);
+		$_catc = trim(get_category_children($_cat_array[$_i], '', ' '));
+		$_catc_array = explode(' ',$_catc);
+	    for ($_j = 0; $_j < (count($_catc_array)); $_j++) {
+			$_wCriteria->add(new Criteria('category_id', intval($_catc_array[$_j]), $_eq), $_andor);
+	    }
+	}
+	$_criteria->add($_wCriteria);
+	unset($_wCriteria);
 }
-// Category stuff for nice URIs
 
-if (!empty($category_name)) {
-    if (stristr($category_name,'/')) {
-        $category_name = explode('/',$category_name);
-        if ($category_name[count($category_name)-1]) {
-        $category_name = $category_name[count($category_name)-1]; // no trailing slash
+// Category stuff for nice URIs
+if (test_param('category_name')) {
+    if (stristr(get_param('category_name'),'/')) {
+        $GLOBALS['category_name'] = explode('/',get_param('category_name'));
+        if ($GLOBALS['category_name'][count($GLOBALS['category_name'])-1]) {
+        	$GLOBALS['category_name'] = $GLOBALS['category_name'][count($GLOBALS['category_name'])-1]; // no trailing slash
         } else {
-        $category_name = $category_name[count($category_name)-2]; // there was a trailling slash
+        	$GLOBALS['category_name'] = $GLOBALS['category_name'][count($GLOBALS['category_name'])-2]; // there was a trailling slash
         }
     }
-	$category_name = preg_replace('|[^a-z0-9-]|', '', $category_name);
-	$tables = ", {$wpdb->post2cat[$wp_id]}, {$wpdb->categories[$wp_id]}";
-	$join = " LEFT JOIN {$wpdb->post2cat[$wp_id]} ON ({$wpdb->posts[$wp_id]}.ID = {$wpdb->post2cat[$wp_id]}.post_id) LEFT JOIN {$wpdb->categories[$wp_id]} ON ({$wpdb->post2cat[$wp_id]}.category_id = {$wpdb->categories[$wp_id]}.cat_ID) ";
-	$whichcat = " AND (category_nicename = '$category_name'";
-	$cat = $wpdb->get_var("SELECT cat_ID FROM {$wpdb->categories[$wp_id]} WHERE category_nicename = '$category_name'");
-    $whichcat .= get_category_children($cat, " OR category_id = ");
-	$whichcat .= " )";
+	$GLOBALS['category_name'] = preg_replace('|[^a-z0-9-]|', '', $GLOBALS['category_name']);
+	$_joinCriteria =& new XoopsJoinCriteria(wp_table('post2cat'), 'ID', 'post_id');
+	$_joinCriteria->cascade(new XoopsJoinCriteria(wp_table('categories'), 'category_id', 'cat_ID'));
+	$_wCriteria =& new CriteriaCompo(new Criteria('category_nicename', $GLOBALS['category_name']));
+	$categoryHandler =& wp_handler('Category');
+	$categoryObject =& $categoryHandler->getByNiceName($GLOBALS['category_name']);
+	$GLOBALS['cat'] = $categoryObject->getVar('cat_ID');
+	$_catc = trim(get_category_children($GLOBALS['cat'], '', ' '));
+	$_catc_array = explode(' ',$_catc);
+    for ($_i = 0; $_i < (count($_catc_array)); $_i++) {
+		$_wCriteria->add(new Criteria('category_id', intval($_catc_array[$_i])),'OR');
+    }
+	$_criteria->add($_wCriteria);
+	unset($_wCriteria);
 }
 
 // author stuff
-if (!empty($author) && ($author != 'all')) {
-	$author = ''.urldecode($author).'';
-	$author = addslashes_gpc($author);
-	if (stristr($author, '-')) {
-		$eq = '!=';
-		$andor = 'AND';
-		$author = explode('-', $author);
-		$author = ''.$author[1];
+if (test_param('author') && (get_param('author') != 'all')) {
+	$GLOBALS['author'] = ''.urldecode(get_param('author')).'';
+	$GLOBALS['author'] = addslashes_gpc($GLOBALS['author']);
+	if (stristr($GLOBALS['author'], '-')) {
+		$_eq = '!=';
+		$_andor = 'AND';
+		$GLOBALS['author'] = explode('-', $GLOBALS['author']);
+		$GLOBALS['author'] = ''.$GLOBALS['author'][1];
 	} else {
-		$eq = '=';
-		$andor = 'OR';
+		$_eq = '=';
+		$_andor = 'OR';
 	}
-	$author_array = explode(' ', $author);
-	$whichauthor .= ' AND (post_author '.$eq.' '.intval($author_array[0]);
-	for ($i = 1; $i < (count($author_array)); $i = $i + 1) {
-		$whichauthor .= ' '.$andor.' post_author '.$eq.' '.intval($author_array[$i]);
+	$_wCriteria =& new CriteriaCompo();
+	$_author_array = explode(' ', $GLOBALS['author']);
+	for ($_i = 0; $_i < (count($_author_array)); $_i++) {
+		$_wCriteria->add(new Criteria('post_author', intval($_author_array[$_i]), $_eq), $_andor);
 	}
-	$whichauthor .= ')';
+	$_criteria->add($_wCriteria);
+	unset($_wCriteria);
 }
-
 // Author stuff for nice URIs
-if (!empty($author_name)) {
-    if (stristr($author_name,'/')) {
-        $author_name = explode('/',$author_name);
-        if ($author_name[count($author_name)-1]) {
-        $author_name = $author_name[count($author_name)-1];#no trailing slash
+if (test_param('author_name')) {
+	$GLOBALS['author_name'] = rawurldecode(get_param('author_name'));
+    if (stristr($GLOBALS['author_name'],'/')) {
+        $GLOBALS['author_name'] = explode('/',$GLOBALS['author_name']);
+        if ($GLOBALS['author_name'][count($GLOBALS['author_name'])-1]) {
+	        $GLOBALS['author_name'] = $GLOBALS['author_name'][count($GLOBALS['author_name'])-1];#no trailing slash
         } else {
-        $author_name = $author_name[count($author_name)-2];#there was a trailling slash
+    	    $GLOBALS['author_name'] = $GLOBALS['author_name'][count($GLOBALS['author_name'])-2];#there was a trailling slash
         }
     }
-    $author_name = rawurldecode($author_name); // For Japanese Author Name;
-    $author = $wpdb->get_var("SELECT ID FROM {$wpdb->users[$wp_id]} WHERE user_login='".$author_name."'");
-    $whichauthor .= ' AND (post_author = '.intval($author).')';
+	$_criteria->add(new Criteria('post_author', get_userid($GLOBALS['author_name'])));
 }
 
-$where .= $search.$whichcat.$whichauthor;
-
-if ((empty($order)) || ((strtoupper($order) != 'ASC') && (strtoupper($order) != 'DESC'))) {
-	$order='DESC';
+if (test_param('order')) {
+	$_order = get_param('order');
+ 	if ((strtoupper($_order) != 'ASC') && (strtoupper($_order) != 'DESC')) {
+		$_criteria_order = 'DESC';
+	} else {
+		$_criteria_order = $_order;
+	}
 }
 
 // order by stuff
-if (empty($orderby)) {
-	$orderby='date '.$order;
+if (test_param('orderby')) {
+	$_criteria_sort = 'post_date';
 } else {
 	// used to filter values
-	$allowed_keys = array('author','date','category','title');
-	$orderby = urldecode($orderby);
-	$orderby = addslashes_gpc($orderby);
-	$orderby_array = explode(' ',$orderby);
-	if (!in_array($orderby_array[0],$allowed_keys)) {
-		$orderby_array[0] = 'date';
+	$_allowed_keys = array('author','date','category','title');
+	$_orderby_list = explode(' ', addslashes_gpc(urldecode(get_param('orderby'))));
+	if (!in_array($_orderby_list[0], $_allowed_keys)) {
+		$_orderby_array[] = 'post_date';
 	}
-	$orderby = $orderby_array[0].' '.$order;
-	if (count($orderby_array)>1) {
-		for ($i = 1; $i < (count($orderby_array)); $i = $i + 1) {
-			// Only allow certain values for safety
-			if (in_array($orderby_array[$i],$allowed_keys)) {
-				$orderby .= ',post_'.$orderby_array[$i].' '.$order;
-			}
+	for ($_i = 0; $_i < (count($_orderby_list)); $_i++) {
+		// Only allow certain values for safety
+		if (in_array($_orderby_list[$_i], $_allowed_keys)) {
+			$_orderby_array[] = 'post'.$_orderby_list[$_i];
 		}
 	}
+	$_criteria_sort = $_orderby_array;
 }
 
-if ((!$whichcat) && empty($m) && empty($p) && empty($w) && empty($s) && empty($poststart) && empty($postend)) {
-	if ($what_to_show == 'posts') {
-		$limits = ' LIMIT '.$posts_per_page;
-	} elseif (($what_to_show == 'days') && empty($monthnum) && empty($year) && empty($day)) {
-		$lastpostdate = get_lastpostdate();
-		$lastpostdate = mysql2date('Y-m-d 00:00:00',$lastpostdate);
-		$lastpostdate = mysql2date('U',$lastpostdate);
-		$otherdate = date('Y-m-d H:i:s', ($lastpostdate - (($posts_per_page-1) * 86400)));
-		$where .= ' AND post_date > \''.$otherdate.'\'';
+if (!test_param('cat') && !test_param('category_name') && !test_param('m') && !test_param('p') && !test_param('w') && !test_param('s') && !test_param('poststart') && !test_param('postend')) {
+	if ($GLOBALS['what_to_show'] == 'posts') {
+		$_criteria_limit = $GLOBALS['posts_per_page'];
+	} elseif ($GLOBALS['what_to_show'] == 'days' && !test_param('monthnum') && !test_param('year') && !test_param('day')) {
+		$_lastpostdate = mysql2date('Y-m-d 00:00:00', get_lastpostdate());
+		$_lastpostdate = mysql2date('U',$_lastpostdate);
+		$_otherdate = date('Y-m-d H:i:s', ($_lastpostdate - (($GLOBALS['posts_per_page']-1) * 86400)));
+		$_criteria->add(new Criteria('post_date', $_otherdate, '>'));
 	}
 }
 
-if ( !empty($postend) && ($postend > $poststart) && empty($m) && empty($monthnum) && empty($year) && empty($day) && empty($w) && (!$whichcat) && empty($s) && empty($p)) {
-	if ($what_to_show == 'posts' || (($what_to_show == 'paged') && empty($paged))) {
-		$poststart = intval($poststart);
-		$postend = intval($postend);
-		$limposts = $postend - $poststart;
-		$limits = ' LIMIT '.$poststart.','.$limposts;
-	} elseif ($what_to_show == 'days') {
-		$poststart = intval($poststart);
-		$postend = intval($postend);
-		$limposts = $postend - $poststart;
-		$lastpostdate = get_lastpostdate();
-		$lastpostdate = mysql2date('Y-m-d 00:00:00',$lastpostdate);
-		$lastpostdate = mysql2date('U',$lastpostdate);
-		$startdate = date('Y-m-d H:i:s', ($lastpostdate - (($poststart -1) * 86400)));
-		$otherdate = date('Y-m-d H:i:s', ($lastpostdate - (($postend -1) * 86400)));
-		$where .= ' AND post_date > \''.$otherdate.'\' AND post_date < \''.$startdate.'\'';
+if (test_param('postend') && (get_param('postend') > get_param('poststart')) && !test_param('m') && !test_param('monthnum') && !test_param('year') && !test_param('day') && !test_param('w') && !test_param('cat') && !test_param('category_name') && !test_param('s') && !test_param('p')) {
+	if ($GLOBALS['what_to_show'] == 'posts' || ($GLOBALS['what_to_show'] == 'paged' && !test_param('paged'))) {
+		$_poststart = intval(get_param('poststart'));
+		$_postend = intval(get_param('postend'));
+		$_criteria_limit = $_postend - $_poststart;
+		$_criteria_start = $_poststart;
+	} elseif ($GLOBALS['what_to_show'] == 'days') {
+		$_poststart = intval(get_param('poststart'));
+		$_postend = intval(get_param('postend'));
+		$_limposts = $_postend - $_poststart;
+		$_lastpostdate = mysql2date('Y-m-d 00:00:00', get_lastpostdate());
+		$_lastpostdate = mysql2date('U',$_lastpostdate);
+		$_startdate = date('Y-m-d H:i:s', ($_lastpostdate - (($_poststart -1) * 86400)));
+		$_otherdate = date('Y-m-d H:i:s', ($_lastpostdate - (($_postend -1) * 86400)));
+		$_criteria->add(new Criteria('post_date', $_startdate, '<'));
+		$_criteria->add(new Criteria('post_date', $_otherdate, '>'));
 	}
 } else {
-	if (($what_to_show == 'paged') && empty($p) && empty($more)) {
-		if ($pagenow != 'post.php') {
-			$pgstrt = '';
-			if (isset($paged) && $paged ) {
-				$pgstrt = (intval($paged) -1) * $posts_per_page . ', ';
+	if (($GLOBALS['what_to_show'] == 'paged') && !test_param('p') && !test_param('more')) {
+		if ($GLOBALS['pagenow'] != 'post.php') {
+			if (test_param('paged')) {
+				$_criteria_start = (intval(get_param('paged')) -1) * $GLOBALS['posts_per_page'];
 			}
-			$limits = 'LIMIT '.$pgstrt.$posts_per_page;
+			$_criteria_limit = $GLOBALS['posts_per_page'];
 		} else {
-			if ((!empty($m)) || (!empty($p)) || (!empty($w)) || (!empty($s)) || ($whichcat)) {
-				$limits = '';
+			if (test_param('m') || test_param('p') || test_param('w') || test_param('s') || test_param('cat') || test_param('category_name')) {
 			} else {
-				$pgstrt = '';
-				if ($paged) {
-					$pgstrt = (intval($paged) -1) * $posts_per_page . ', ';
+				if (test_param('paged')) {
+					$_criteria_start = (intval(get_param('paged')) -1) * $GLOBALS['posts_per_page'];
 				}
-				$limits = 'LIMIT '.$pgstrt.$posts_per_page;
+				$_criteria_limit = $GLOBALS['posts_per_page'];
 			}
 		}
 	}
-	elseif ((!empty($m)) || (!empty($p)) || (!empty($w)) || (!empty($s)) || ($whichcat) || (!empty($author)) || (!empty($monthnum)) || (!empty($year)) || (!empty($day))) {
-		$limits = '';
-	}
 }
-if (isset($p) && ($p=='all')) {
-	$where = '';
+if (isset($GLOBALS['p']) && ($GLOBALS['p']=='all')) {
+	unset($_criteria);
+	$_criteria =& new CriteriaCompo();
 }
 
-$now = date('Y-m-d H:i:s',(time() + ($time_difference * 3600)));
-
-if ($pagenow != 'post.php' && $pagenow != 'edit.php') {
-	if ((empty($poststart)) || (empty($postend)) || !($postend > $poststart)) {
-		$where .= ' AND post_date <= \''.$now.'\'';
+if ($GLOBALS['pagenow'] != 'post.php' && $GLOBALS['pagenow'] != 'edit.php') {
+	if (!test_param('poststart') || !test_param('postend') || !(get_param('postend') > get_param('poststart'))) {
+		$_criteria->add(new Criteria('post_date', current_time('mysql'), '<='));
 	}
-
-	$distinct = 'DISTINCT';
-
-	if ($use_gzipcompression) {
-		// gzipping the output of the script
-		gzip_compression();
-	}
+	$_distinct = 'DISTINCT';
 }
-$where .= ' AND (post_status = "publish"';
-
+$_wCriteria = new CriteriaCompo(new Criteria('post_status', 'publish'));
 // Get private posts
-if (isset($user_ID) && ('' != intval($user_ID))) {
-	$user_ID = intval($user_ID);
-    $where .= " OR post_author = $user_ID AND post_status != 'draft')";
-} else {
-    $where .= ')';
+if (!empty($GLOBALS['user_ID'])) {
+	$_wCriteria->add(new Criteria('post_author', intval($GLOBALS['user_ID'])), 'OR');
+	$_wCriteria->add(new Criteria('post_status', 'draft', '!='), 'AND');
 }
-$where .= " GROUP BY {$wpdb->posts[$wp_id]}.ID";
-$request = " SELECT $distinct * FROM {$wpdb->posts[$wp_id]} $join WHERE 1=1".$where." ORDER BY post_$orderby $limits";
+$_criteria->add($_wCriteria);
+unset($_wCriteria);
 
+$_criteria->setGroupBy(wp_table('posts').'.ID');
+
+if ($_criteria_sort) $_criteria->setSort($_criteria_sort);
+if ($_criteria_order) $_criteria->setOrder($_criteria_order);
+
+$GLOBALS['current_posts_criteria'] = $_criteria;
+$GLOBALS['current_posts_join'] =& $_joinCriteria;
+$GLOBALS['current_posts_distinct'] = $_distinct;
+
+if ($_criteria_limit) $_criteria->setLimit($_criteria_limit);
+if ($_criteria_start) $_criteria->setStart($_criteria_start);
+
+$postHandler =& wp_handler('Post');
+$postObjects =& $postHandler->getObjects($_criteria, false, '', $_distinct, $_joinCriteria);
+
+$GLOBALS['request'] = $postHandler->getLastSQL();
+//echo $GLOBALS['request']."<br>";
 
 if (!empty($preview)) {
-	$request = 'SELECT 1-1'; // dummy mysql query for the preview
+	$GLOBALS['request'] = 'SELECT 1-1'; // dummy mysql query for the preview
 	// little funky fix for IEwin, rawk on that code
 	$is_winIE = ((preg_match('/MSIE/',$HTTP_USER_AGENT)) && (preg_match('/Win/',$HTTP_USER_AGENT)));
 	if (($is_winIE) && (!isset($IEWin_bookmarklet_fix))) {
 		$preview_content =  preg_replace('/\%u([0-9A-F]{4,4})/e',  "'&#'.base_convert('\\1',16,10).';'", $preview_content);
 	}
 }
-//error_log("$request");
-global $posts;
-//echo $request."<br>";
-$posts = $wpdb->get_results($request);
+$GLOBALS['posts'] = array();
+foreach ($postObjects as $postObject) {
+	$GLOBALS['posts'][] =& $postObject->exportWpObject();
+}
 // No point in doing all this work if we didn't match any posts.
-if ($posts) {
+if ($GLOBALS['posts']) {
+	if (count($GLOBALS['posts']) == 1) {
+		if (!empty($GLOBALS['p']) || !empty($GLOBALS['name'])) {
+			$GLOBALS['more'] = 1;
+			$GLOBALS['c'] = 1;
+			$GLOBALS['single'] = 1;
+		}
+//		if (!empty($s) && empty($paged) && !strstr($_SERVER['PHP_SELF'], 'wp-admin/')) { // If they were doing a search and got one result
+		if (empty($GLOBALS['p']) && empty($paged) && !strstr($_SERVER['PHP_SELF'], 'wp-admin/')) { // If they were doing a search and got one result
+			header('Location: ' . get_permalink($GLOBALS['posts'][0]->ID));
+		}
+	}
     // Get the categories for all the posts
-	$post_id_list = array();
-    foreach ($posts as $post) {
-    	$post_id_list[] = $post->ID;
+	$_post_id_list = array();
+    foreach ($GLOBALS['posts'] as $post) {
+    	$_post_id_list[] = $GLOBALS['post']->ID;
+		$GLOBALS['category_cache'][wp_id()][$GLOBALS['post']->ID] = array();
     }
-    $post_id_list = implode(',', $post_id_list);
-
-    $dogs = $wpdb->get_results("SELECT DISTINCT
-        ID, category_id, cat_name, category_nicename, category_description, category_parent
-    	FROM {$wpdb->categories[$wp_id]}, {$wpdb->post2cat[$wp_id]}, {$wpdb->posts[$wp_id]}
-    	WHERE category_id = cat_ID AND post_id = ID AND post_id IN ($post_id_list)");
-
-    foreach ($dogs as $catt) {
-    	$category_cache[$wp_id][$catt->ID][] = $catt;
+    $_post_id_list = implode(',', $_post_id_list);
+	$_post_id_criteria =& new Criteria('post_id', "($_post_id_list)", "IN");
+	$_joinCriteria =& new XoopsJoinCriteria(wp_table('post2cat'), 'ID', 'post_id');
+	$_joinCriteria->cascade(new XoopsJoinCriteria(wp_table('categories'), 'category_id', 'cat_ID'));
+	$postObjects =& $postHandler->getObjects($_post_id_criteria, false,
+							"ID, category_id, cat_name, category_nicename, category_description, category_parent",
+							true, $_joinCriteria);
+    foreach ($postObjects as $postObject) {
+    	$_cat->ID = $postObject->getVar('ID');
+    	$_cat->category_id = $postObject->getExtraVar('category_id');
+    	$_cat->cat_name = $postObject->getExtraVar('cat_name');
+    	$_cat->category_nicename = $postObject->getExtraVar('category_nicename');
+    	$_cat->category_description = $postObject->getExtraVar('category_description');
+    	$_cat->category_parent = $postObject->getExtraVar('category_parent');
+    	$GLOBALS['category_cache'][wp_id()][$postObject->getVar('ID')][] =& $_cat;
+    	unset($_cat);
     }
-
     // Do the same for comment numbers
-	$comment_counts = $wpdb->get_results("SELECT ID, COUNT( comment_ID ) AS ccount
-		FROM {$wpdb->posts[$wp_id]}
-		LEFT JOIN {$wpdb->comments[$wp_id]} ON ( comment_post_ID = ID  AND comment_approved =  '1')
-		WHERE post_status =  'publish' AND ID IN ($post_id_list)
-		GROUP BY ID");
-
-	foreach ($comment_counts as $comment_count) {
-		$comment_count_cache[$wp_id]["$comment_count->ID"] = $comment_count->ccount;
+    $_criteria =&new CriteriaCompo(new Criteria('post_status', 'publish'));
+    $_criteria->add(new Criteria('comment_approved', '1 '));
+    $_criteria->add($_post_id_criteria);
+    $_criteria->setGroupBy('ID');
+	$_joinCriteria =& new XoopsJoinCriteria(wp_table('comments'), 'ID', 'comment_post_ID');
+    $postObjects =&$postHandler->getObjects($_criteria, false, 'ID, COUNT( comment_ID ) AS ccount', false, $_joinCriteria);
+	foreach ($postObjects as $postObject) {
+		$GLOBALS['comment_count_cache'][wp_id()]["".$postObject->getVar('ID')] = $postObject->getExtraVar('ccount');
 	}
 
 	// Get post-meta info
-	if ( $meta_list = $wpdb->get_results("SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta[$wp_id]}  WHERE post_id IN($post_id_list) ORDER BY post_id, meta_key", ARRAY_A) ) {
+	if ( $meta_list = $GLOBALS['wpdb']->get_results("SELECT post_id, meta_key, meta_value FROM ".wp_table('postmeta')." WHERE post_id IN($_post_id_list) ORDER BY post_id, meta_key", ARRAY_A) ) {
 		
 		// Change from flat structure to hierarchical:
-		$post_meta_cache[$wp_id] = array();
+		$GLOBALS['post_meta_cache'][wp_id()] = array();
 		foreach ($meta_list as $metarow) {
 			$mpid = $metarow['post_id'];
 			$mkey = $metarow['meta_key'];
 			$mval = $metarow['meta_value'];
 			
 			// Force subkeys to be array type:
-			if (!isset($post_meta_cache[$wp_id][$mpid]) || !is_array($post_meta_cache[$wp_id][$mpid]))
-				$post_meta_cache[$wp_id][$mpid] = array();
-			if (!isset($post_meta_cache[$wp_id][$mpid]["$mkey"]) || !is_array($post_meta_cache[$wp_id][$mpid]["$mkey"]))
-				$post_meta_cache[$wp_id][$mpid]["$mkey"] = array();
-			
+			if (!isset($GLOBALS['post_meta_cache'][wp_id()][$mpid]) || !is_array($GLOBALS['post_meta_cache'][wp_id()][$mpid])) {
+				$GLOBALS['post_meta_cache'][wp_id()][$mpid] = array();
+			}
+			if (!isset($GLOBALS['post_meta_cache'][wp_id()][$mpid]["$mkey"]) || !is_array($GLOBALS['post_meta_cache'][wp_id()][$mpid]["$mkey"])) {
+				$GLOBALS['post_meta_cache'][wp_id()][$mpid]["$mkey"] = array();
+			}
 			// Add a value to the current pid/key:
-			$post_meta_cache[$wp_id][$mpid][$mkey][] = $mval;
+			$GLOBALS['post_meta_cache'][wp_id()][$mpid][$mkey][] = $mval;
 		}
 	}
 
-    if (count($posts) == 1) {
-		if ((!empty($p)) || (!empty($name))) {
-    		$more = 1;
-    		$c = 1;
-    		$single = 1;
-    	}
-		if ((!empty($s)) && empty($paged) && !strstr($_SERVER['PHP_SELF'], 'wp-admin/')) { // If they were doing a search and got one result
-    		header('Location: ' . get_permalink($posts[0]->ID));
-    	}
-	}
 }
 ?>

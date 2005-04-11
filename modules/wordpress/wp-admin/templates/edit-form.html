@@ -1,0 +1,101 @@
+<div class="wrap">
+  <h2>New Post</h2>
+  <form name="post" action="post.php" method="post" id="post">
+    <input type="hidden" name="user_ID" value="<{$user_ID}>" />
+    <input type="hidden" name="action" value='post' />
+    <script type="text/javascript">
+    <!--
+    function focusit() {
+    	// focus on first input field
+    	document.post.title.focus();
+    }
+    window.onload = focusit;
+    //-->
+    </script>
+    <div id="poststuff">
+      <fieldset id="titlediv">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#title" title="Help on titles"><{$smarty.const._LANG_EF_AD_POSTTITLE}></a></legend> 
+        <div><input type="text" name="post_title" size="30" tabindex="1" value="<{$edited_post_title}>" id="title" /></div>
+      </fieldset>
+      <fieldset id="categorydiv">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#category" title="Help on categories"><{$smarty.const._LANG_EF_AD_CATETITLE}></a></legend> 
+	    <div><{$category_select}></div>
+      </fieldset>
+      <br />
+<{if $use_spaw == true}>
+      <fieldset id="postdiv">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#post" title="Help with post field"><{$smarty.const._LANG_EF_AD_POSTAREA}></a></legend>
+        <{$spaw_form}>
+    <{foreach item=smile from=$smilies}>
+        <a href="javascript:bbinsert(document.post,'','<{$smile.id}>')"><img src="<{$smile.path}>" alt="<{$smile.name}>" /></a> 
+    <{/foreach}>
+        <br />
+        <script src="quicktags_spaw.js" language="JavaScript" type="text/javascript"></script>
+      </fieldset>
+<{elseif $use_koivi == true}>
+      <fieldset id="postdiv">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#post" title="Help with post field"><{$smarty.const._LANG_EF_AD_POSTAREA}></a></legend>
+        <{$spaw_form}>
+      </fieldset>
+<{else}>
+      <fieldset id="postdiv">
+        <legend><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#post" title="Help with post field"><{$smarty.const._LANG_EF_AD_POSTAREA}></a></legend>
+  <{if $use_quicktags == true}>
+        <div id="quicktags"><a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#quicktags" title="Help with quicktags"><{$smarty.const._LANG_EF_AD_POSTQUICK}></a>:
+    <{foreach item=smile from=$smilies}>
+          <a href="javascript:bbinsert(document.post,'','<{$smile.id}>')"><img src="<{$smile.path}>" alt="<{$smile.name}>" /></a> 
+    <{/foreach}>
+          <br />
+          <script src="quicktags.js" language="JavaScript" type="text/javascript"></script>
+          <script language="JavaScript" type="text/javascript">edToolbar();</script>
+        </div>
+  <{/if}>
+        <div><textarea rows="<{$rows}>" cols="40" name="wp_content" tabindex="5" id="wp_content"><{$content}></textarea></div>
+      </fieldset>
+  <{if $use_quicktags == true}>
+      <script type="text/javascript" language="JavaScript">
+      <!--
+         edCanvas = document.getElementById('wp_content');
+      //-->
+      </script>
+  <{/if}>
+<{/if}>
+<{if $use_pingback }>
+      <input type="checkbox" class="checkbox" name="post_pingback" value="1" <{$ping_checked}> tabindex="7" id="pingback" /> <{$smarty.const._LANG_EF_PING_FORM}>
+<{/if}>
+      <p>
+<{if $can_upload == true }>
+        <input type="button" value="<{$smarty.const._LANG_EFA_STATUS_UPLOAD}>" onclick="launchupload();" tabindex="10" />
+<{/if}>
+        <input name="saveasdraft" type="submit" id="saveasdraft" tabindex="9" value="<{$smarty.const._LANG_EF_AD_DRAFT}>" /> 
+        <input name="saveasprivate" type="submit" id="saveasprivate" tabindex="10" value="<{$smarty.const._LANG_EF_AD_PRIVATE}>" /> 
+        <input name="publish" type="submit" id="publish" tabindex="6" value="<{$smarty.const._LANG_EF_AD_PUBLISH}>" /> 
+        <{$ticket}>
+<{if $mode != 'bookmarklet'}>
+        <input name="advanced" type="submit" id="advancededit" tabindex="7" value="<{$smarty.const._LANG_EF_AD_EDITING}>" />
+        <input name="referredby" type="hidden" id="referredby" value="<{$referer}>" />
+<{else}>
+        <input type="hidden" name="mode" value="bookmarklet" />
+  <{if $target_charset != '' }>
+        <input type="hidden" name="target_charset" value="<{$target_charset}>" />
+  <{/if}>
+<{/if}>
+      </p>
+      <{$smarty.const._LANG_EF_TRACK_FORM}><input type="text" name="trackback_url" style="width: 360px" id="trackback" tabindex="7" value="<{$trackback_url}>"/>
+<{if $use_trackback}>
+  <{if $mode != 'bookmarklet'}>
+      &nbsp;&nbsp;&nbsp;Use UTF-8:<input value="1" type="checkbox" name="useutf8" id="useutf8" />
+  <{/if}>
+  <{if $pinged != ''}>
+      <p>Already pinged:</p>
+      <ul>
+    <{foreach item=pinged_url from=$pingedlist}>
+        <li>$pinged_url</li>
+    <{/foreach }>
+  <{/if}>
+      </ul>
+<{/if}>
+      <{$form_addon}>
+    </div>
+  </form>
+</div>

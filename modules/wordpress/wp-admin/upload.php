@@ -5,109 +5,6 @@ $standalone="1";
 $title = 'Upload Image or File';
 require_once('admin-header.php');
 
-// add thumbnail function
-function wp_create_thumbnail($file, $max_side, $effect = '') {
-
-    // 1 = GIF, 2 = JPEG, 3 = PNG
-
-    if(file_exists($file)) {
-        $type = getimagesize($file);
-        
-        // if the associated function doesn't exist - then it's not
-        // handle. duh. i hope.
-        
-        if(!function_exists('imagegif') && $type[2] == 1) {
-            $error = 'Filetype not supported. Thumbnail not created.';
-        }elseif(!function_exists('imagejpeg') && $type[2] == 2) {
-            $error = 'Filetype not supported. Thumbnail not created.';
-        }elseif(!function_exists('imagepng') && $type[2] == 3) {
-            $error = 'Filetype not supported. Thumbnail not created.';
-        } else {
-        
-            // create the initial copy from the original file
-            if($type[2] == 1) {
-                $image = imagecreatefromgif($file);
-            } elseif($type[2] == 2) {
-                $image = imagecreatefromjpeg($file);
-            } elseif($type[2] == 3) {
-                $image = imagecreatefrompng($file);
-            }
-            
-			if (function_exists('imageantialias'))
-	            imageantialias($image, TRUE);
-            
-            $image_attr = getimagesize($file);
-            
-            // figure out the longest side
-            
-            if($image_attr[0] > $image_attr[1]) {
-                $image_width = $image_attr[0];
-                $image_height = $image_attr[1];
-                $image_new_width = $max_side;
-                
-                $image_ratio = $image_width/$image_new_width;
-                $image_new_height = $image_height/$image_ratio;
-                //width is > height
-            } else {
-                $image_width = $image_attr[0];
-                $image_height = $image_attr[1];
-                $image_new_height = $max_side;
-                
-                $image_ratio = $image_height/$image_new_height;
-                $image_new_width = $image_width/$image_ratio;
-                //height > width
-            }
-            if (function_exists('gd_info')) {
-	            $gdver=gd_info();
-	            if(strstr($gdver["GD Version"],"1.")!=false){
-	            	//For GD
-	                $thumbnail = imagecreate($image_new_width, $image_new_height);
-	            }else{
-	            	//For GD2
-	                $thumbnail = imagecreatetruecolor($image_new_width, $image_new_height);
-	            }
-			} else {
-                if (function_exists('imagecreatetruecolor')) {
-                    $thumbnail = @imagecreatetruecolor($image_new_width, $image_new_height);
-                }
-                if (!$thumbnail) {
-                     $thumbnail =imagecreate($image_new_width, $image_new_width);
-                }
-			}
-            @imagecopyresized($thumbnail, $image, 0, 0, 0, 0, $image_new_width, $image_new_height, $image_attr[0], $image_attr[1]);
-            
-            // move the thumbnail to it's final destination
-            
-            $path = explode('/', $file);
-            $thumbpath = substr($file, 0, strrpos($file, '/')) . '/thumb-' . $path[count($path)-1];
-            
-            if($type[2] == 1) {
-                if(!imagegif($thumbnail, $thumbpath)) {
-                    $error = "Thumbnail path invalid";
-                }
-            } elseif($type[2] == 2) {
-                if(!imagejpeg($thumbnail, $thumbpath)) {
-                    $error = "Thumbnail path invalid";
-                }
-            } elseif($type[2] == 3) {
-                if(!imagepng($thumbnail, $thumbpath)) {
-                    $error = "Thumbnail path invalid";
-                }
-            }
-            
-        }
-    }
-    
-    if(!empty($error))
-    {
-        return $error;
-    }
-    else
-    {
-        return 1;
-    }
-}
-
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -141,33 +38,32 @@ if (!get_settings('use_fileupload')) {
 }
 $allowed_types = explode(' ', trim(get_settings('fileupload_allowedtypes')));
 
-if ($_POST['submit']) {
+init_param(array('POST'), 'submit','string', '');
+
+if (get_param('submit')) {
 	$action = 'upload';
 } else {
 	$action = '';
 }
-
 if (!is_writable(get_settings('fileupload_realpath')))
 	$action = 'not-writable';
-?>
-
-<div class="wrap">
-
-<?php
 switch ($action) {
-case 'not-writable':
+	case 'not-writable':
 ?>
+<div class="wrap">
 <p>(<code><?php echo get_settings('fileupload_realpath'); ?></code>)</p>
 <p><?php echo _LANG_WAU_UPLOAD_DIRECTORY; ?></p>
+</div>
 <?php
-break;
-case '':
-	foreach ($allowed_types as $type) {
-		$type_tags[] = "<code>$type</code>";
-	}
-	$i = implode(', ', $type_tags);
+		break;
+	case '':
+		foreach ($allowed_types as $type) {
+			$type_tags[] = "<code>$type</code>";
+		}
+		$i = implode(', ', $type_tags);
 ?>
-    <p>
+<div class="wrap">
+<p>
 <?php echo _LANG_WAU_UPLOAD_EXTENSION; ?><?php echo $i ?><br />
 <?php echo _LANG_WAU_UPLOAD_BYTES; ?><?php echo get_settings('fileupload_maxk'); ?> KB<br />
 <?php echo _LANG_WAU_UPLOAD_OPTIONS; ?>
@@ -214,70 +110,65 @@ case '':
     </p>
 	<p><input type="submit" name="submit" value="<?php echo _LANG_WAU_UPLOAD_BTN; ?>" /></p>
     </form>
-</div><?php 
-break;
-case 'upload':
-?>
+</div>
+<?php 
+		break;
+	case 'upload':
+	    $imgalt = (isset($_POST['imgalt'])) ? $_POST['imgalt'] : $imgalt;
 
-<?php //Makes sure they choose a file
+	    $img1_name = (strlen($imgalt)) ? $_POST['imgalt'] : $_FILES['img1']['name'];
+	    $img1_type = (strlen($imgalt)) ? $_POST['img1_type'] : $_FILES['img1']['type'];
+	    $imgdesc = str_replace('"', '&amp;quot;', $_POST['imgdesc']);
 
-//print_r($_FILES);
-//die();
+	    $imgtype = explode(".",$img1_name);
+	    $imgtype = strtolower($imgtype[count($imgtype)-1]);
 
+	    if (in_array($imgtype, $allowed_types) == false) {
+	        die("File $img1_name of type $imgtype is not allowed.");
+	    }
 
-    $imgalt = (isset($_POST['imgalt'])) ? $_POST['imgalt'] : $imgalt;
+	    if (strlen($imgalt)) {
+	        $pathtofile = get_settings('fileupload_realpath')."/".$imgalt;
+	        $img1 = $_POST['img1'];
+	    } else {
+	        $pathtofile = get_settings('fileupload_realpath')."/".$img1_name;
+	        $img1 = $_FILES['img1']['tmp_name'];
+	    }
 
-    $img1_name = (strlen($imgalt)) ? $_POST['imgalt'] : $_FILES['img1']['name'];
-    $img1_type = (strlen($imgalt)) ? $_POST['img1_type'] : $_FILES['img1']['type'];
-    $imgdesc = str_replace('"', '&amp;quot;', $_POST['imgdesc']);
+		$fsize = sprintf("%5.1f",$_FILES['img1']['size'] / 1024);
 
-    $imgtype = explode(".",$img1_name);
-    $imgtype = $imgtype[count($imgtype)-1];
+	    // makes sure not to upload duplicates, rename duplicates
+	    $i = 1;
+	    $pathtofile2 = $pathtofile;
+	    $tmppathtofile = $pathtofile2;
+	    $img2_name = $img1_name;
 
-    if (in_array($imgtype, $allowed_types) == false) {
-        die("File $img1_name of type $imgtype is not allowed.");
-    }
+	    while (file_exists($pathtofile2)) {
+	        $pos = strpos($tmppathtofile, '.'.trim($imgtype));
+	        $pathtofile_start = substr($tmppathtofile, 0, $pos);
+	        $pathtofile2 = $pathtofile_start.'_'.zeroise($i++, 2).'.'.trim($imgtype);
+	        $img2_name = explode('/', $pathtofile2);
+	        $img2_name = $img2_name[count($img2_name)-1];
+	    }
 
-    if (strlen($imgalt)) {
-        $pathtofile = get_settings('fileupload_realpath')."/".$imgalt;
-        $img1 = $_POST['img1'];
-    } else {
-        $pathtofile = get_settings('fileupload_realpath')."/".$img1_name;
-        $img1 = $_FILES['img1']['tmp_name'];
-    }
-
-	$fsize = sprintf("%5.1f",$_FILES['img1']['size'] / 1024);
-
-    // makes sure not to upload duplicates, rename duplicates
-    $i = 1;
-    $pathtofile2 = $pathtofile;
-    $tmppathtofile = $pathtofile2;
-    $img2_name = $img1_name;
-
-    while (file_exists($pathtofile2)) {
-        $pos = strpos($tmppathtofile, '.'.trim($imgtype));
-        $pathtofile_start = substr($tmppathtofile, 0, $pos);
-        $pathtofile2 = $pathtofile_start.'_'.zeroise($i++, 2).'.'.trim($imgtype);
-        $img2_name = explode('/', $pathtofile2);
-        $img2_name = $img2_name[count($img2_name)-1];
-    }
-
-    if (file_exists($pathtofile) && !strlen($imgalt)) {
-        $i = explode(' ', get_settings('fileupload_allowedtypes'));
-        $i = implode(', ',array_slice($i, 1, count($i)-2));
-        $moved = move_uploaded_file($img1, $pathtofile2);
-        // if move_uploaded_file() fails, try copy()
-        if (!$moved) {
-            $moved = copy($img1, $pathtofile2);
-        }
-        if (!$moved) {
-            die("Couldn't Upload Your File to $pathtofile2.");
-        } else {
-            @unlink($img1);
-        }
-    
-    // duplicate-renaming function contributed by Gary Lawrence Murphy
+	    if (file_exists($pathtofile) && !strlen($imgalt)) {
+	        $i = explode(' ', get_settings('fileupload_allowedtypes'));
+	        $i = implode(', ',array_slice($i, 1, count($i)-2));
+	        $moved = move_uploaded_file($img1, $pathtofile2);
+	        // if move_uploaded_file() fails, try copy()
+	        if (!$moved) {
+	            $moved = copy($img1, $pathtofile2);
+	        }
+	        if (!$moved) {
+	            die("Couldn't Upload Your File to $pathtofile2.");
+	        } else {
+				chmod($pathtofile2, 0666);
+	            @unlink($img1);
+	        }
+	    
+	// duplicate-renaming function contributed by Gary Lawrence Murphy
     ?>
+<div class="wrap">
     <p><strong><?php echo _LANG_WAU_UPLOAD_DUPLICATE; ?></strong></p>
     <p><?php echo _LANG_WAU_UPLOAD_EXISTS; ?><em><?php echo $img1_name; ?></em></p>
     <p> filename '<?php echo $img1; ?>' moved to '<?php echo "$pathtofile2 - $img2_name"; ?>'</p>
@@ -299,83 +190,78 @@ case 'upload':
     </form>
 </div>
 <?php 
-echo "</body></html>";
-die();
+			break;
+    	}
+	    if (!strlen($imgalt)) {
+	        @$moved = move_uploaded_file($img1, $pathtofile); //Path to your images directory, chmod the dir to 777
+	        // move_uploaded_file() can fail if open_basedir in PHP.INI doesn't
+	        // include your tmp directory. Try copy instead?
+	        if(!$moved) {
+	            $moved = copy($img1, $pathtofile);
+	        }
+	        // Still couldn't get it. Give up.
+	        if (!$moved) {
+	            die("Couldn't Upload Your File to $pathtofile.");
+	        } else {
+				chmod($pathtofile, 0666);
+	            @unlink($img1);
+	        }
+	        
+	    } else {
+	        rename($img1, $pathtofile)
+	        or die("Couldn't Upload Your File to $pathtofile.");
+	    }
+	    
+	    if(($_POST['thumbsize'] != 'none')&&($_POST['thumbsize'] != 'icon')) {
+	        if($_POST['thumbsize'] == 'small') {
+	            $max_side = 200;
+	        }
+	        elseif($_POST['thumbsize'] == 'large') {
+	            $max_side = 400;
+	        }
+	        elseif($_POST['thumbsize'] == 'custom') {
+	            $max_side = intval($_POST['imgthumbsizecustom']);
+	        }
+	        
+	        $result = wp_create_thumbnail($pathtofile, $max_side, NULL);
+	        if($result != 1) {
+	            print $result;
+	        }
+	    }
 
-    }
-
-    if (!strlen($imgalt)) {
-        @$moved = move_uploaded_file($img1, $pathtofile); //Path to your images directory, chmod the dir to 777
-        // move_uploaded_file() can fail if open_basedir in PHP.INI doesn't
-        // include your tmp directory. Try copy instead?
-        if(!moved) {
-            $moved = copy($img1, $pathtofile);
-        }
-        // Still couldn't get it. Give up.
-        if (!moved) {
-            die("Couldn't Upload Your File to $pathtofile.");
-        } else {
-            @unlink($img1);
-        }
-        
-    } else {
-        rename($img1, $pathtofile)
-        or die("Couldn't Upload Your File to $pathtofile.");
-    }
-    
-    if(($_POST['thumbsize'] != 'none')&&($_POST['thumbsize'] != 'icon')) {
-        if($_POST['thumbsize'] == 'small') {
-            $max_side = 200;
-        }
-        elseif($_POST['thumbsize'] == 'large') {
-            $max_side = 400;
-        }
-        elseif($_POST['thumbsize'] == 'custom') {
-            $max_side = $_POST['imgthumbsizecustom'];
-        }
-        
-        $result = wp_create_thumbnail($pathtofile, $max_side, NULL);
-        if($result != 1) {
-            print $result;
-        }
-    }
-
-$img_prefix = 'thumb-';
-	if ($_POST['associate'] == 'amazon') {
-	$asin = explode(".", $img1_name);
-	$piece_of_code = "&lt;a href=&quot;http://www.amazon.co.jp/exec/obidos/ASIN/$asin[0]/$amazon_id&quot; target=&quot;_blank&quot;&gt;&lt;img style=&quot;float: left; margin: 0 10px 0 0;&quot; src=&quot;". get_settings('fileupload_url') ."/$img1_name&quot; border=&quot;0&quot; alt=&quot;$imgdesc&quot; /&gt;&lt;/a&gt;";
-	}
-	elseif ($_POST['thumbsize'] == 'icon') {
-	$piece_of_code = "&lt;a style=&quot;float: left; margin: 0 10px 0 0;&quot; href=&quot;". get_settings('fileupload_url') . "/$img1_name&quot;&gt;" . "&lt;img src=&quot;". $siteurl ."/wp-images/file.gif&quot; alt=&quot;$imgdesc&quot; /&gt;" .$img1_name. "(".$fsize."KB)&lt;/a&gt;";
-	}
-	elseif ( ereg('image/',$img1_type) && $_POST['thumbsize'] != 'none') {
-	$piece_of_code = "&lt;a style=&quot;float: left; margin: 0 10px 0 0;&quot; href=&quot;". get_settings('fileupload_url') . "/$img1_name&quot;&gt;" . "&lt;img src=&quot;". get_settings('fileupload_url') ."/$img_prefix$img1_name&quot; alt=&quot;$imgdesc&quot; /&gt;" . "&lt;/a&gt;";
-	} else {
-	$piece_of_code = "&lt;img src=&quot;". get_settings('fileupload_url') . "/$img1_name&quot; alt=&quot;$imgdesc&quot; /&gt;";
-	}
-
+		$img_prefix = 'thumb-';
+		if ($_POST['associate'] == 'amazon') {
+			$asin = explode(".", $img1_name);
+			$piece_of_code = "&lt;a href=&quot;http://www.amazon.co.jp/exec/obidos/ASIN/$asin[0]/$amazon_id&quot; target=&quot;_blank&quot;&gt;&lt;img style=&quot;float: left; margin: 0 10px 0 0;&quot; src=&quot;". get_settings('fileupload_url') ."/$img1_name&quot; border=&quot;0&quot; alt=&quot;$imgdesc&quot; /&gt;&lt;/a&gt;";
+		} elseif ($_POST['thumbsize'] == 'icon') {
+			$piece_of_code = "&lt;a style=&quot;float: left; margin: 0 10px 0 0;&quot; href=&quot;". get_settings('fileupload_url') . "/$img1_name&quot;&gt;" . "&lt;img src=&quot;". $siteurl ."/wp-images/file.gif&quot; alt=&quot;$imgdesc&quot; /&gt;" .$img1_name. "(".$fsize."KB)&lt;/a&gt;";
+		} elseif ( ereg('image/',$img1_type) && $_POST['thumbsize'] != 'none') {
+			$piece_of_code = "&lt;a style=&quot;float: left; margin: 0 10px 0 0;&quot; href=&quot;". get_settings('fileupload_url') . "/$img1_name&quot;&gt;" . "&lt;img src=&quot;". get_settings('fileupload_url') ."/$img_prefix$img1_name&quot; alt=&quot;$imgdesc&quot; /&gt;" . "&lt;/a&gt;";
+		} else {
+			$piece_of_code = "&lt;img src=&quot;". get_settings('fileupload_url') . "/$img1_name&quot; alt=&quot;$imgdesc&quot; /&gt;";
+		}
 ?>
-
-<h3>File uploaded!</h3>
-<p><?php echo _LANG_WAU_UPLOAD_SUCCESS; ?><code><?php echo $img1_name; ?></code></p>
-<p><?php echo _LANG_WAU_UPLOAD_CODE; ?></p>
-<form>
-<input type="text" name="imgpath" value="<?php echo $piece_of_code; ?>" size="45" style="margin: 2px;" /><br />
-<input type="button" name="close" value="<?php echo _LANG_WAU_UPLOAD_CODEIN; ?>" class="search" onClick="targetopener('<?php echo $piece_of_code; ?>')" style="margin: 2px;" />
-</form>
-<p><strong>Image Details</strong>: <br />
-Name:
-<?php echo $img1_name; ?>
-<br />
-Size:
-<?php echo round($img1_size / 1024, 2); ?> <abbr title="Kilobyte">KB</abbr><br />
-Type:
-<?php echo $img1_type; ?>
-</p>
-<p><a href="upload.php"><?php echo _LANG_WAU_UPLOAD_START; ?></a>.</p>
+<div class="wrap">
+	<h3>File uploaded!</h3>
+	<p><?php echo _LANG_WAU_UPLOAD_SUCCESS; ?><code><?php echo $img1_name; ?></code></p>
+	<p><?php echo _LANG_WAU_UPLOAD_CODE; ?></p>
+	<form>
+	<input type="text" name="imgpath" value="<?php echo $piece_of_code; ?>" size="45" style="margin: 2px;" /><br />
+	<input type="button" name="close" value="<?php echo _LANG_WAU_UPLOAD_CODEIN; ?>" class="search" onClick="targetopener('<?php echo $piece_of_code; ?>')" style="margin: 2px;" />
+	</form>
+	<p><strong>Image Details</strong>: <br />
+	Name:
+	<?php echo $img1_name; ?>
+	<br />
+	Size:
+	<?php echo round($img1_size / 1024, 2); ?> <abbr title="Kilobyte">KB</abbr><br />
+	Type:
+	<?php echo $img1_type; ?>
+	</p>
+	<p><a href="upload.php"><?php echo _LANG_WAU_UPLOAD_START; ?></a>.</p>
 </div>
 <?php
-break;
+		break;
 }
-echo "</body></html>";
 ?>
+</body></html>

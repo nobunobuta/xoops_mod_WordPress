@@ -9,8 +9,8 @@ function get_Lon() {
     return $post->post_lon;
 }
 
-function print_Lat() {
-    if(get_settings('use_geo_positions')) {
+function print_Lat($force=false) {
+    if($force || get_settings('use_geo_positions')) {
         if(get_Lat() > 0) {
             echo "".get_Lat()."N";
         } else {
@@ -19,9 +19,9 @@ function print_Lat() {
     }
 }
 
-function print_Lon() {
+function print_Lon($force=false) {
     global $postdata;
-    if(get_settings('use_geo_positions')) {
+    if($force || get_settings('use_geo_positions')) {
         if(get_Lon() < 0) {
             $temp = get_Lon() * -1;
             echo "".$temp."W";

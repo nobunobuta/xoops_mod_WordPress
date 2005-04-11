@@ -1,23 +1,15 @@
 <?php
-$blog = 1; // enter your blog's ID
-$doing_rss = 1;
+$GLOBALS['blog'] = 1;
+$GLOBALS['doing_rss'] = 1;
 require(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
-param('num','integer');
-if (isset($num)) $showposts = $num;
+init_param('GET', 'num','integer');
+if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
 require('wp-blog-header.php');
-
-if (isset($showposts) && $showposts) {
-    $showposts = (int)$showposts;
-	$posts_per_page = $showposts;
-} else {
-	$posts_per_page = get_settings('posts_per_rss');
-}
-$rss_charset = wp_get_rss_charset();
 header("Content-type: application/xml");
 ?>
-<?php echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>'; ?>
-<!-- generator="wordpress/<?php echo $wp_version ?>" -->
+<?php echo '<?xml version="1.0" encoding="'.wp_get_rss_charset().'"?'.'>'; ?>
+<!-- generator="wordpress/<?php echo $GLOBALS['wp_version'] ?>" -->
 <rss version="0.92">
     <channel>
         <title><?php bloginfo_rss("name") ?></title>
@@ -29,15 +21,10 @@ header("Content-type: application/xml");
         <webMaster><?php echo antispambot(get_settings('admin_email')) ?></webMaster>
         <language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></language>
 
-<?php $items_count = 0; if ($posts) { foreach ($posts as $post) { start_wp(); ?>
+<?php if ($GLOBALS['posts']) { foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp(); ?>
         <item>
             <title><?php the_title_rss() ?></title>
-<?php
-// we might use this in the future, but not now, that's why it's commented in PHP
-// so that it doesn't appear at all in the RSS
-//          echo "<category>"; the_category_unicode(); echo "</category>";
-$more = 1; 
-if (get_settings('rss_use_excerpt')) {
+<?php 	if (get_settings('rss_use_excerpt')) {
 ?>
             <description><?php the_excerpt_rss(get_settings('rss_excerpt_length'), get_settings('rss_encoded_html')) ?></description>
 <?php
@@ -49,6 +36,6 @@ if (get_settings('rss_use_excerpt')) {
 ?>
             <link><?php permalink_single_rss() ?></link>
         </item>
-<?php $items_count++; if (($items_count ==$posts_per_page) && empty($m)) { break; } } } ?>
+<?php } } ?>
     </channel>
 </rss>

@@ -11,7 +11,7 @@ echo " - <b><a href='". XOOPS_URL ."/modules/".$wp_dir."/wp-admin/options.php'>"
 echo "</td><td class=\"odd\">";
 echo " - <b><a href='" . XOOPS_URL . "/modules/".$wp_dir."/admin/myblocksadmin.php'>" . _AM_BADMIN . "</a></b><br /><br />\n";
 echo "</td><td class=\"odd\">";
-echo " - <b><a href='" . XOOPS_URL . '/modules/system/admin.php?fct=preferences&amp;op=showmod&amp;mod=' . $xoopsModule -> getVar( 'mid' ) . "'>" . _AM_GENERALCONF . "</a></b><br /><br />\n";
+echo " - <b><a href='" . XOOPS_URL . "/modules/".$wp_dir."/admin/admin.php?fct=preferences&amp;op=showmod&amp;mod=" . $xoopsModule -> getVar( 'mid' ) . "'>" . _AM_GENERALCONF . "</a></b><br /><br />\n";
 echo "</td></tr></table>";
 xoops_cp_footer();
 ?>

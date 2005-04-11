@@ -1,23 +1,15 @@
 <?php 
-$blog = 1; // enter your blog's ID
-$doing_rss = 1;
+$GLOBALS['blog'] = 1;
+$GLOBALS['doing_rss'] = 1;
 require(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
-param('num','integer');
-if (isset($num)) $showposts = $num;
+init_param('GET', 'num','integer');
+if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
 require('wp-blog-header.php');
-
-if (isset($showposts) && $showposts) {
-    $showposts = (int)$showposts;
-	$posts_per_page = $showposts;
-} else {
-	$posts_per_page = get_settings('posts_per_rss');
-}
-$rss_charset = wp_get_rss_charset();
 header("Content-type: application/xml");
 ?>
-<?php echo '<?xml version="1.0" encoding="'.$rss_charset.'"?'.'>'; ?>
-<!-- generator="wordpress/<?php echo $wp_version ?>" -->
+<?php echo '<?xml version="1.0" encoding="'.wp_get_rss_charset().'"?'.'>'; ?>
+<!-- generator="wordpress/<?php echo $GLOBALS['wp_version'] ?>" -->
 <rss version="2.0" 
 	xmlns:content="http://purl.org/rss/1.0/modules/content/">
 
@@ -28,9 +20,9 @@ header("Content-type: application/xml");
 	<language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></language>
 	<copyright>Copyright <?php echo mysql2date('Y', get_lastpostdate()); ?></copyright>
 	<pubDate><?php echo gmdate('r'); ?></pubDate>
-	<generator>http://wordpress.xwd.jp/?v=<?php echo $wp_version ?></generator>
+	<generator>http://wordpress.xwd.jp/?v=<?php echo $GLOBALS['wp_version'] ?></generator>
 
-	<?php $items_count = 0; if ($posts) { foreach ($posts as $post) { start_wp(); ?>
+	<?php if ($GLOBALS['posts']) { foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp(); ?>
 	<item>
 		<title><?php the_title_rss() ?></title>
 		<link><?php permalink_single_rss() ?></link>
@@ -39,7 +31,7 @@ header("Content-type: application/xml");
 		<author><?php the_author_rss() ?> &lt;<?php the_author_email() ?>&gt;</author>
 		<?php the_category_rss() ?>
 		<guid isPermaLink="true"><?php permalink_single_rss() ?></guid>
-<?php $more = 1; if (get_settings('rss_use_excerpt')) {
+<?php $GLOBALS['more'] = 1; if (get_settings('rss_use_excerpt')) {
 ?>
 		<description><?php the_excerpt_rss(get_settings('rss_excerpt_length'), 2) ?></description>
 <?php
@@ -51,6 +43,6 @@ header("Content-type: application/xml");
 ?>
 		<content:encoded><![CDATA[<?php the_content_rss('', 0, '',0, 3) ?>]]></content:encoded>
 	</item>
-	<?php $items_count++; if (($items_count ==$posts_per_page) && empty($m)) { break; } } } ?>
+	<?php } } ?>
 </channel>
 </rss>

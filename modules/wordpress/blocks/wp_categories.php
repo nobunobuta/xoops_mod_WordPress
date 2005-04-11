@@ -65,30 +65,29 @@ if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
 		$sorting_key = ($options[2])?$options[2]:'name';
 		$sorting_order = ($options[3])?$options[3]:'asc';
 		
-		global $wpdb, $siteurl,  $wp_id, $wp_inblock ,$user_cache, $cache_categories, $category_name, $cat, $wp_mod, $wp_base;
-
 		$id=1;
-		$use_cache=1;
-
+		$GLOBALS['use_cache'] = 1;
 		if ($wp_num == "") {
-			$wp_id = $wp_num;
-			$wp_inblock = 1;
+			$GLOBALS['wp_id'] = $wp_num;
+			$GLOBALS['wp_inblock'] = 1;
 			require(dirname(__FILE__).'/../wp-config.php');
-			$wp_inblock = 0;
+			$GLOBALS['wp_inblock'] = 0;
 		}
 		if (current_wp()) {
-			param('cat','string','');
-			param('category_name','string','');
-			if ($category_name && !$cat) {
-			    if (stristr($category_name,'/')) {
-			        $category_name = explode('/',$category_name);
-			        if ($category_name[count($category_name)-1]) {
-			        $category_name = $category_name[count($category_name)-1]; // no trailing slash
+			init_param('GET', 'cat','string','');
+			init_param('GET', 'category_name','string','');
+			if (!empty($GLOBALS['category_name']) && empty($GLOBALS['cat'])) {
+			    if (stristr($GLOBALS['category_name'],'/')) {
+			        $GLOBALS['category_name'] = explode('/',$GLOBALS['category_name']);
+			        if ($GLOBALS['category_name'][count($GLOBALS['category_name'])-1]) {
+				        $GLOBALS['category_name'] = $GLOBALS['category_name'][count($GLOBALS['category_name'])-1]; // no trailing slash
 			        } else {
-			        $category_name = $category_name[count($category_name)-2]; // there was a trailling slash
+				        $GLOBALS['category_name'] = $GLOBALS['category_name'][count($GLOBALS['category_name'])-2]; // there was a trailling slash
 			        }
 			    }
-				$cat =$wpdb->get_var("SELECT cat_ID  FROM {$wpdb->categories[$wp_id]} WHERE category_nicename='$category_name'");
+			    $categoryHandler =& wp_handler('Category');
+			    $categoryObject =& $categoryHandler->getByNiceName($GLOBALS['category_name']);
+			    $GLOBALS['cat'] = $categoryObject->getVar('cat_ID');
 			}
 		}
 
@@ -103,11 +102,11 @@ if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
 			ob_end_clean();
 		} else {
 			// Dropdown Listing
-			$file = "$siteurl/index.php";
+			$file = wp_siteurl()."/index.php";
 			$link = $file.'?cat=';
 			ob_start();
 			block_style_get($wp_num);
-			echo '<form name="listcatform'.$wp_num.'" action="">';
+			echo '<form name="listcatform'.$wp_num.'" id="listcatform'.$wp_num.'" action="#">';
 			$select_str = '<select name="cat" onchange="window.location = (document.forms.listcatform'.$wp_num.'.cat[document.forms.listcatform'.$wp_num.'.cat.selectedIndex].value);"> ';
 			dropdown_cats(1,_WP_LIST_CAT_ALL,$sorting_key,$sorting_order,0,$with_count,0,false,0,0,true,0,true,0);
 			echo '</form>';
@@ -125,11 +124,10 @@ if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
 		}
 
 		function b_wp'.$i.'_categories_show($options) {
-		global $wpdb, $siteurl,  $wp_id, $wp_inblock ,$user_cache, $cache_categories, $category_name, $cat, $wp_mod, $wp_base;
-			$wp_id = "'.$i.'";
-			$wp_inblock = 1;
+			$GLOBALS["wp_id"] = "'.$i.'";
+			$GLOBALS["wp_inblock"] = 1;
 			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
-			$wp_inblock = 0;
+			$GLOBALS["wp_inblock"] = 0;
 			return (b_wp_categories_show($options,"'.$i.'"));
 		}
 	');

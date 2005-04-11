@@ -1,0 +1,22 @@
+<div style='margin-left:10px;width:450px;' id='wpAdminMain'>
+<h2><{$smarty.const.LANG_WPF_SUBT_VIEW}> &#8220;<{$userinfo.uniqname}>&#8221;</h2>
+<div class="wrap">
+	<p> 
+	  <strong>Login</strong> <{$userinfo.user_login}>
+		  | <strong>User #</strong> <{$userinfo.ID}> 
+		  | <strong>Level</strong> <{$userinfo.user_level}> 
+		  | <strong>Posts</strong> <{$userinfo.numposts}>
+	</p>
+	<p> <strong><{$smarty.const._LANG_WPF_SUBT_FIRST}></strong> <{$userinfo.user_firstname}> </p>
+	<p> <strong><{$smarty.const._LANG_WPF_SUBT_LAST}></strong> <{$userinfo.user_lastname}> </p>
+	<p> <strong><{$smarty.const._LANG_WPF_SUBT_NICK}></strong> <{$userinfo.user_nickname}> </p>
+	<{if $user_ID == $userinfo.ID}>
+		<p> <strong><{$smarty.const._LANG_WPF_SUBT_MAIL}></strong> <{$userinfo.user_email}> </p>
+	<{/if}>
+	<p> <strong><{$smarty.const._LANG_WPF_SUBT_URL}></strong> <{$userinfo.user_url}> </p>
+	<p> <strong><{$smarty.const._LANG_WPF_SUBT_ICQ}></strong> <{$userinfo.user_icq}> </p>
+	<p> <strong><{$smarty.const._LANG_WPF_SUBT_MSN}></strong> <{$userinfo.user_msn}> </p>
+	<p> <strong><{$smarty.const._LANG_WPF_SUBT_YAHOO}></strong> <{$userinfo.user_yim}> </p>
+	<p> <strong><{$smarty.const._LANG_WPF_SUBT_DESC}></strong> <{$userinfo.user_description}> </p>
+</div>
+</div>

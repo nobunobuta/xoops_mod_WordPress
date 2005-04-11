@@ -1,95 +1,98 @@
 <?php
 require_once('admin.php');
 
-$title = 'Edit Comments';
 $parent_file = 'edit.php';
+$this_file = 'edit-comments.php';
+
+$commentHandler =& $wpCommentHandler[$wp_prefix[$wp_id]];
+
+user_level_check();
+
 $standalone = 0;
+$title = 'Edit Comments';
 require_once('admin-header.php');
 
-param('showcomments',      'integer', '');
-param('comments_per_page',      'integer', '');
-param('commentstart',      'integer', '');
-param('commentend',      'integer', '');
-param('commentorder',      'string', 'DESC');
+init_param('GET', 'showcomments', 'integer', 10);
+init_param('GET', 'commentstart', 'integer', 0);
+init_param('GET', 'commentend', 'integer', 0);
+init_param('GET', 'commentorder', 'string', 'DESC');
 
-if (!$showcomments) {
-	if ($comments_per_page) {
-		$showcomments=$comments_per_page;
-	} else {
-		$showcomments=10;
-		$comments_per_page=$showcomments;
+if ($commentstart && $commentend) {
+	$showcomments = $commentend - $commentstart+ 1;
+} else {
+	if (!$commentstart) {
+		$commentstart = 1;
+	}
+	if (!$commentend) {
+		$commentend = $commentstart + $showcomments -1;
+	}
+}
+
+$nextXstart = $commentend + 1;
+$nextXend = $nextXstart + $showcomments -1;
+
+$previousXstart = $commentstart-$showcomments;
+$previousXend = $commentend -$showcomments;
+if ($previousXstart < 1) {
+	$previousXstart = 0;
+	$previousXend = 0 ;
+}
+
+$selorder_desc = selected($commentorder,"DESC", false);
+$selorder_asc = selected($commentorder,"ASC", false);
+
+$criteria = new Criteria(1,1);
+$criteria->setSort('comment_date');
+$criteria->setOrder($commentorder);
+$criteria->setStart($commentstart-1);
+$criteria->setLimit($commentend-$commentstart+1);
+$commentObjects =& $commentHandler->getObjects($criteria);
+$comment_rows = array();
+if ($commentObjects) {
+	$comments_found = true;
+	foreach($commentObjects as $commentObject) {
+		$row = $commentObject->getVarArray();
+		$comment = $commentObject->exportWpObject(); //$comment global is used in template_functions.
+		$postObject =& $wpPostHandler[$wp_prefix[$wp_id]]->get($commentObject->getVar('comment_post_ID'));
+		if ($commentObject->getVar('comment_approved') == 0) {
+			$row['class'] = 'class="unapproved" ';
+		} else {
+			$row['class'] = '';
+		}
+		if ($postObject) {
+			$row['post_title'] = $postObject->getVar('post_title');
+		}
+		$row['canEdit'] = user_can_edit($postObject->getVar('post_author'));
+//		($author->getVar('user_level') < $user_level) || ($author->getVar('user_login') == $user_login);
+		$row['post_title']  = ($row['post_title'] == '') ? "# $commentObject->getVar('comment_post_ID')" : $row['post_title'];
+		$row['comment_author'] = comment_author(false);
+		$row['comment_author_email'] = comment_author_email_link('','','',false);
+		$row['comment_author_url'] = comment_author_url_link('','','',false);
+		$row['comment_author_IP'] = comment_author_IP(false);
+		$row['comment_content'] = comment_text(false);
+		$row['comment_date'] = comment_date('Y/m/d H:i:s',false);
+		$row['post_permalink'] = get_permalink($row['comment_post_ID']);
+		$comment_rows[] = $row;
 	}
 } else {
-	$comments_per_page = $showcomments;
+	$comments_found = false;
 }
 
-if ((!empty($commentstart)) && (!empty($commentend)) && ($commentstart == $commentend)) {
-	$p=$commentstart;
-	$commentstart=0;
-	$commentend=0;
-}
+$wpTpl =& new XoopsTpl;
 
-if (!$commentstart) {
-	$commentstart=0;
-	$commentend=$showcomments;
-}
+$wpTpl->assign('showcomments', $showcomments);
+$wpTpl->assign('previousXstart', $previousXstart);
+$wpTpl->assign('previousXend', $previousXend);
+$wpTpl->assign('nextXstart', $nextXstart);
+$wpTpl->assign('nextXend', $nextXend);
+$wpTpl->assign('commentstart', $commentstart);
+$wpTpl->assign('commentend', $commentend);
+$wpTpl->assign('selorder_desc', $selorder_desc);
+$wpTpl->assign('selorder_asc', $selorder_asc);
+$wpTpl->assign('comments_found', $comments_found);
+$wpTpl->assign('comment_rows', $comment_rows);
+$wpTpl->template_dir = ABSPATH."wp-admin/templates/";
+$wpTpl->display("edit-comments.html");
 
-$nextXstart=$commentend;
-$nextXend=$commentend+$showcomments;
-
-$previousXstart=($commentstart-$showcomments);
-$previousXend=$commentstart;
-if ($previousXstart < 0) {
-	$previousXstart=0;
-	$previousXend=$showcomments;
-}
-?>
-<?php include('include/edit-comments-navibar.php'); ?>
-<div class="wrap">
-	<?php
-	$comments = $wpdb->get_results("SELECT * FROM {$wpdb->comments[$wp_id]}
-									ORDER BY comment_date $commentorder 
-									LIMIT $commentstart, $commentend"
-	                              );
-?>
-<?php if ($comments) { ?>
-	<ol>
-<?php
-	foreach ($comments as $comment) {
-		$comment_status = wp_get_comment_status($comment->comment_ID);
-		$authordata = get_userdata($wpdb->get_var("SELECT post_author FROM {$wpdb->posts[$wp_id]} WHERE ID = $comment->comment_post_ID"));
-		// Get post title
-		$post_title = $wpdb->get_var("SELECT post_title FROM {$wpdb->posts[$wp_id]} WHERE ID = $comment->comment_post_ID");
-		$post_title = ('' == $post_title) ? "# $comment->comment_post_ID" : $post_title;
-		if ('unapproved' == $comment_status) {
-			$class = 'class="unapproved" ';
-		}
-?>		
-		<li <?php echo $class?> style="border-bottom: 1px solid #ccc;">
-			<p><strong>Name:</strong> <?php comment_author() ?> 
-<?php if ($comment->comment_author_email) { ?>
-			| <strong>Email:</strong> <?php comment_author_email_link() ?> 
-<?php } ?>
-<?php if ($comment->comment_author_url) { ?>
-			| <strong>URI:</strong> <?php comment_author_url_link() ?>
-<?php } ?>
-			| <strong>IP:</strong> <a href="http://ws.arin.net/cgi-bin/whois.pl?queryinput=<?php comment_author_IP() ?>"><?php comment_author_IP() ?></a></p>
-		<?php comment_text() ?>
-			<p>Posted <?php comment_date('Y/m/d H:i:s') ?> | 
-<?php if (($user_level > $authordata->user_level) or ($user_login == $authordata->user_login)) { ?>
-			<a href="post.php?action=editcomment&amp;comment=<?php echo $comment->comment_ID ?>"><?php echo _LANG_EC_EDIT_COM; ?></a>
-			- <a href="post.php?action=confirmdeletecomment&amp;p=<?php echo $comment->comment_post_ID?>&amp;comment=<?php echo $comment->comment_ID ?>&amp;referredby=edit-comment"><?php echo _LANG_EC_DELETE_COM; ?></a>
-			- <a href="post.php?action=edit&amp;post=<?php echo $comment->comment_post_ID; ?>"><?php echo _LANG_EC_EDIT_POST; ?><?php echo stripslashes($post_title); ?>&#8221;</a>
-			- <a href="<?php echo get_permalink($comment->comment_post_ID); ?>"><?php echo _LANG_EC_VIEW_POST; ?></a></p>
-<?php } ?>
-		</li>
-<?php } // end foreach ?>
-</ol>
-<?php } else { ?>
-	<p><strong><?php echo _LANG_E_RESULTS_FOUND; ?></strong></p>
-<?php } // end if ($comments) ?>
-</div>
-<?php 
-include('include/edit-comments-navibar.php');
 include('admin-footer.php');
 ?>

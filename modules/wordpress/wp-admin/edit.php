@@ -1,61 +1,60 @@
 <?php
 require_once('admin.php');
 
-$title = 'Edit Posts';
-$parent_file = 'edit.php';
-$standalone = 0;
+$GLOBALS['title'] = 'Edit Posts';
+$GLOBALS['parent_file'] = 'edit.php';
+$GLOBALS['standalone'] = 0;
 require_once('admin-header.php');
 
-param('showposts',      'integer', '');
-param('posts_per_page', 'integer', '');
-param('poststart',      'integer', '');
-param('postend',        'integer', '');
-param('order',          'string',  'DESC');
-param('mode',           'string',  '');
-param('c',              'integer');
+init_param('GET', 'showposts',      'integer', 10);
+init_param('GET', 'posts_per_page', 'integer', get_param('showposts'));
+init_param('GET', 'mode',           'string',  '');
 
-param('m','integer',NO_DEFAULT_PARAM, true);  //Month Param   (YYYY[MM[DD[hh[mm[ss]]]]])
-param('w','integer',NO_DEFAULT_PARAM, true);  //WeekNum Param
-param('p','string',NO_DEFAULT_PARAM, true);  //PostID Param ("All" for All);
-param('cat','string',NO_DEFAULT_PARAM,true);  // Category ID (Start with "-" means Exclude this.).
-param('s','html',NO_DEFAULT_PARAM,true);    //Search String
-$exact = 0;
-$sentence = 0;
+//init_param('GET', 'poststart',      'integer', 0);
+//init_param('GET', 'postend',        'integer', 0);
+//init_param('GET', 'order',          'string',  'DESC');
+//init_param('GET', 'm','integer',NO_DEFAULT_PARAM);  //Month Param   (YYYY[MM[DD[hh[mm[ss]]]]])
+//init_param('GET', 'w','integer',NO_DEFAULT_PARAM);  //WeekNum Param
+//init_param('GET', 'p','string',NO_DEFAULT_PARAM);  //PostID Param ("All" for All);
+//init_param('GET', 'cat','string', '');  // Category ID (Start with "-" means Exclude this.).
+//init_param('GET', 's','html',NO_DEFAULT_PARAM);    //Search String
+//init_param('GET', 'c',              'integer', 0);
+//init_param('GET', 'withcomments',   'integer', 0);
+//$exact = 0;
+//$sentence = 0;
 
-if (!$showposts) {
-	if ($posts_per_page) {
-		$showposts=$posts_per_page;
-	} else {
-		$showposts=10;
-		$posts_per_page=$showposts;
-	}
+$ticket=$GLOBALS['xoopsWPTicket']->getTicketParamString('plugins');
+include(dirname(__FILE__)."/../wp-blog-header.php");
+
+if (test_param('poststart') && test_param('postend')) {
+	$poststart = get_param('poststart');
+	$postend = get_param('postend');
+	$showposts = get_param('postend') - get_param('poststart') + 1;
 } else {
-	$posts_per_page = $showposts;
+	$showposts = get_param('showposts');
+	if (!test_param('poststart')) {
+		$poststart = 0;
+	} else {
+		$poststart = get_param('poststart');
+	}
+	if (!test_param('postend')) {
+		$postend = $poststart + $showposts -1;
+	} else {
+		$postend = get_param('postend');
+	}
 }
 
-if ((!empty($poststart)) && (!empty($postend)) && ($poststart == $postend)) {
-	$p=$poststart;
-	$poststart=0;
-	$postend=0;
+$nextXstart = $poststart + 1;
+$nextXend = $nextXstart + $showposts -1;
+
+$previousXstart = $poststart - $showposts;
+$previousXend = $postend - $showposts;
+if ($previousXstart < 1) {
+	$previousXstart = 0;
+	$previousXend = 0;
 }
-
-if (!$poststart) {
-	$poststart=0;
-	$postend=$showposts;
-}
-
-$nextXstart=$postend;
-$nextXend=$postend+$showposts;
-
-$previousXstart=($poststart-$showposts);
-$previousXend=$poststart;
-if ($previousXstart < 0) {
-	$previousXstart=0;
-	$previousXend=$showposts;
-}
-
 ?>
-<?php draft_list($user_ID) ?>
+<?php draft_list($GLOBALS['user_ID']) ?>
 <?php include('include/edit-navibar.php') ?>
 <div class="wrap">
 <table width="100%">
@@ -63,7 +62,7 @@ if ($previousXstart < 0) {
 	<td valign="top" width="33%">
 		<form name="searchform" action="" method="get">
 			<input type="hidden" name="a" value="s" />
-			<input onfocus="if (this.value=='search...') {this.value='';}" onblur="if (this.value=='') {this.value='search...';}" type="text" name="s" value="<?php echo (isset($s)&&$s)?$s:"search..."?>" size="7" style="width: 100px;" />
+			<input onfocus="if (this.value=='search...') {this.value='';}" onblur="if (this.value=='') {this.value='search...';}" type="text" name="s" value="<?php echo (test_param('s'))?get_param('s'):"search..."?>" size="7" style="width: 100px;" />
 			<input type="submit" name="submit" value="search" />
 		</form>
 	</td>
@@ -71,30 +70,30 @@ if ($previousXstart < 0) {
 	  <form name="viewcat" action="" method="get">
 		<select name="cat" style="width:140px;">
 		<option value="all">All Categories</option>
-		<?php wp_dropdown_cats(0,$cat) ?>
+		<?php wp_dropdown_cats(0,get_param('cat')) ?>
 		</select>
 		<input type="submit" name="submit" value="View" />
 	  </form>
     </td>
     <td valign="top" width="33%" align="right">
     <form name="viewarc" action="" method="get">
-<?php if ($archive_mode == "monthly") { ?>
+<?php if ($GLOBALS['archive_mode'] == "monthly") { ?>
 		<select name="m" style="width:120px;">
 			<option value="">All Months</option>
-			<?php wp_dropdown_month(isset($m)?$m:"") ?>
-<?php } elseif ($archive_mode == "daily") { ?>
+			<?php wp_dropdown_month(test_param('m')?get_param('m'):'') ?>
+<?php } elseif ($GLOBALS['archive_mode'] == "daily") { ?>
 		<select name="m" style="width:120px;">
 			<option value="">All Days</option>
-			<?php wp_dropdown_daily(isset($m)?$m:"") ?>
-<?php } elseif ($archive_mode == "weekly") { ?>
+			<?php wp_dropdown_daily(test_param('m')?get_param('m'):'') ?>
+<?php } elseif ($GLOBALS['archive_mode'] == "weekly") { ?>
 		<select name="w" style="width:120px;">
 			<option value="">All Weeks</option>
-			<?php wp_dropdown_weekly(isset($w)?$w:"") ?>
-<?php } elseif ($archive_mode == "postbypost") { ?>
+			<?php wp_dropdown_weekly(test_param('w')?get_param('w'):'') ?>
+<?php } elseif ($GLOBALS['archive_mode'] == "postbypost") { ?>
 		<input type="hidden" name="more" value="1" />
 		<select name="p" style="width:120px;">
 			<option value="">All Posts</option>
-			<?php wp_dropdown_postbypost(isset($p)?$p:"") ?>
+			<?php wp_dropdown_postbypost(test_param('p')?get_param('p'):'') ?>
 <?php } ?>
 		</select>
 	    <input type="submit" name="submit" value="View" />
@@ -104,13 +103,12 @@ if ($previousXstart < 0) {
 </table>
 
 <?php
-include(dirname(__FILE__)."/../wp-blog-header.php");
 
-if ($posts) {
-	foreach ($posts as $post) { start_wp();
+if ($GLOBALS['posts']) {
+	foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp();
 ?>
 <p>
-	<strong><?php the_time('Y/m/d H:i:s'); ?></strong> [ <a href="edit.php?p=<?php echo $wp_post_id ?>&c=1"><?php comments_number(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS) ?></a>
+	<strong><?php the_time('Y/m/d H:i:s'); ?></strong> [ <a href="edit.php?p=<?php echo $GLOBALS['wp_post_id'] ?>&c=1"><?php comments_number(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS) ?></a>
 <?php if (($user_level > $authordata->user_level) or ($user_level == 10) or ($user_login == $authordata->user_login)) { ?>
 	- <a href='post.php?action=edit&amp;post=<?php echo $wp_post_id?><?php echo (isset($m) && $m)? "&m=$m":""?>'><?php echo _LANG_C_NAME_EDIT ?></a>
 	- <a href='post.php?action=confirmdelete&amp;post=<?php echo $wp_post_id?>'><?php echo _LANG_C_NAME_DELETE ?></a>
@@ -125,7 +123,7 @@ if ($posts) {
 </p>
 <?php
 // comments
-	if (($withcomments) or ($c)) {
+	if ((test_param('withcomments')) or (test_param('c'))) {
 		$comments = $wpdb->get_results("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $wp_post_id ORDER BY comment_date");
 		if ($comments) {
 ?> 
@@ -146,9 +144,9 @@ if ($posts) {
 	 - <a href="post.php?action=confirmdeletecomment&amp;p=<?php echo $post->ID ?>&amp;comment=<?php echo $comment->comment_ID ?>&amp;referredby=edit"><?php echo _LANG_C_NAME_DELETE ?></a>
 <?php if ( ('none' != $comment_status) && ($user_level >= 3) ) { ?>
 <?php if ('approved' == wp_get_comment_status($comment->comment_ID)) { ?>
-	- <a href="post.php?action=unapprovecomment&amp;p=<?php echo $post->ID ?>&amp;comment=<?php echo $comment->comment_ID ?>"><?php echo _LANG_WPM_DO_NOTHING?></a>
+	- <a href="post.php?action=unapprovecomment&amp;p=<?php echo $post->ID ?>&amp;comment=<?php echo $comment->comment_ID ?><?php echo $ticket?>"><?php echo _LANG_WPM_DO_NOTHING?></a>
 <?php } else { ?>
-    - <a href="post.php?action=approvecomment&amp;p=<?php echo $post->ID ?>&amp;comment=<? echo $comment->comment_ID ?>"><?php echo _LANG_WPM_DO_APPROVE?></a>
+    - <a href="post.php?action=approvecomment&amp;p=<?php echo $post->ID ?>&amp;comment=<? echo $comment->comment_ID ?><?php echo $ticket?>"><?php echo _LANG_WPM_DO_APPROVE?></a>
 <?php } ?>
 <?php } ?>
 	]

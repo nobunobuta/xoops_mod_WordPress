@@ -66,7 +66,7 @@
 		$form_button->addElement(new XoopsFormButton("", "submit", _LANG_WLC_CANCELBUTTON_TEXT, "submit"));
 
 		$form->addElement(new XoopsFormHidden("action", 'editedcat'));
-		$form->addElement(new XoopsFormHidden("cat_id", $row->cat_id));
+		$form->addElement(new XoopsFormHidden("cat_id", $cat_id));
 	}
-	$form->display();
+	$form->addElement($xoopsWPTicket->getTicketXoopsForm(__LINE__,3600));
 ?>

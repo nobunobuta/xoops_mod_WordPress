@@ -10,34 +10,32 @@ if ($user_level < 9) {
 	exit();
 }
 
-param('action','string','');
+init_param('', 'action','string', '');
 
-switch($action) {
+switch(get_param('action')) {
 	case 'activate':
-		param('plugin','string',true);
 		if ( ! $xoopsWPTicket->check(false) ) {
 			redirect_header($siteurl.'/wp-admin/plugins.php',3,$xoopsWPTicket->getErrors());
 		}
-		wp_refcheck("/wp-admin/plugins.php");
+		init_param('GET', 'plugin','string',NO_DEFAULT_PARAM, true);
 		$current = "\n" . get_settings('active_plugins') . "\n";
 		$current = preg_replace("|(\n)+\s*|", "\n", $current);
-		$current = trim($current) . "\n " . trim($plugin);
+		$current = trim($current) . "\n " . trim(get_param('plugin'));
 		$current = trim($current);
 		$current = preg_replace("|\n\s*|", "\n", $current); // I don't know where this is coming from
-		update_option('active_plugins', $current);
+		update_option('active_plugins', $current, true);
 		header('Location: plugins.php?activate=true');
 		break;
 	
 	case 'deactivate':
-		param('plugin','string',true);
 		if ( ! $xoopsWPTicket->check(false) ) {
 			redirect_header($siteurl.'/wp-admin/plugins.php',3,$xoopsWPTicket->getErrors());
 		}
-		wp_refcheck("/wp-admin/plugins.php");
+		init_param('GET', 'plugin','string',NO_DEFAULT_PARAM, true);
 		$current = "\n" . get_settings('active_plugins') . "\n";
-		$current = str_replace("\n" . $plugin, '', $current);
+		$current = str_replace("\n" . get_param('plugin'), '', $current);
 		$current = preg_replace("|(\n)+\s*|", "\n", $current);
-		update_option('active_plugins', trim($current));
+		update_option('active_plugins', trim($current), true);
 		header('Location: plugins.php?deactivate=true');
 		break;
 		
@@ -45,13 +43,13 @@ switch($action) {
 		$standalone = 0;
 		require_once('admin-header.php');
 
-		param('activate','string','');
-		param('deactivate','string','');
+		init_param('GET', 'activate', 'string', '');
+		init_param('GET', 'deactivate', 'string', '');
 
 		// Clean up options
 		// if any files are in the option that don't exist, axe 'em
 		if(!get_settings('active_plugins')) {
-			add_option('active_plugins','');
+			add_option('active_plugins',"\n");
 		}
 
 		$check_plugins = explode("\n", (get_settings('active_plugins')));
@@ -64,11 +62,11 @@ switch($action) {
 			}
 		}
 ?>
-<?php if ($activate) { ?>
+<?php if (get_param('activate')) { ?>
 <div class="updated"><p><?php echo _LANG_PG_ACTIVATED_OK; ?></p>
 </div>
 <?php } ?>
-<?php if ($deactivate) { ?>
+<?php if (get_param('deactivate')) { ?>
 <div class="updated"><p><?php echo _LANG_PG_DEACTIVATED_OK; ?></p>
 </div>
 <?php } ?>

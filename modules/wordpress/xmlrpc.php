@@ -1,45 +1,35 @@
 <?php
-
 # fix for mozBlog and other cases where '<?xml' isn't on the very first line
 $HTTP_RAW_POST_DATA = $GLOBALS['HTTP_RAW_POST_DATA'];
 $HTTP_RAW_POST_DATA = trim($HTTP_RAW_POST_DATA);
 
-#Temporally fix for kousagi
-$kousagi = false;
-$to_wiki = false;
-if (!empty($_GET['kousagi'])) {
-	$kousagi = true;
-	if (intval($_GET['kousagi'])==2) {
-		$to_wiki = true;
-	}
-}
-
 include('wp-config.php');
 
-require_once(ABSPATH.WPINC."/class-xmlrpc.php");
-require_once(ABSPATH.WPINC."/class-xmlrpcs.php");
-require_once(ABSPATH.WPINC."/template-functions.php");
-require_once(ABSPATH.WPINC."/functions.php");
-require_once(ABSPATH.WPINC."/vars.php");
+require_once(ABSPATH.WPINC.'/class-xmlrpc.php');
+require_once(ABSPATH.WPINC.'/class-xmlrpcs.php');
+require_once(ABSPATH.WPINC.'/template-functions.php');
+require_once(ABSPATH.WPINC.'/functions.php');
+require_once(ABSPATH.WPINC.'/vars.php');
+error_reporting(E_ERROR);
+
+#Temporally fix for kousagi
+init_param('GET', 'kousagi', 'integer', '');
 
 $use_cache = 1;
 $post_autobr = 0;
 $post_default_title = ""; // posts submitted via the xmlrpc interface get that title
-$post_default_category = 1; // posts submitted via the xmlrpc interface go into that category
-
-$xmlrpc_logging = $wp_debug;
+$GLOBALS['post_default_category'] = 1; // posts submitted via the xmlrpc interface go into that category
 
 function logIO($io,$msg) {
-	global $xmlrpc_logging;
-	if ($xmlrpc_logging) {
-		$fp = fopen("./log/xmlrpc.log","a+");
-		$date = date("Y-m-d H:i:s ");
-		$iot = ($io == "I") ? " Input: " : " Output: ";
+	if ($GLOBALS['wp_debug']) {
+		$fp = fopen('./log/xmlrpc.log','a+');
+		$date = date('Y-m-d H:i:s ');
+		$iot = ($io == 'I') ? ' Input: ' : ' Output: ';
 		fwrite($fp, "\n\n".$date.$iot.$msg);
 		fclose($fp);
 	}
 	return true;
-	}
+}
 
 function starify($string) {
 	$i = strlen($string);
@@ -55,13 +45,12 @@ logIO("I",$HTTP_RAW_POST_DATA);
  * and re-used throughout the code, where possible. -- emc3
  */
 function miniHTMLtoWiki($str) {
- global $blog_charset;
-	$wsp = mb_conv("¡¡", $blog_charset, "EUC-JP");
-	$str = preg_replace("/<a href=\"([^\"]*)\">(.*?)<\/a>/", "[[$2:$1]]", $str);
-	$str = preg_replace("/<br \/>/","~\n".$wsp, $str);
-	$str = preg_replace("/<blockquote>/",">\n".$wsp, $str);
-	$str = preg_replace("/<\/blockquote>/", "\n<", $str);
-	$str = preg_replace("/^([^".$wsp."><])/", $wsp."$1", $str);
+	$wsp = mb_conv("¡¡", $GLOBALS['blog_charset'], 'EUC-JP');
+	$str = preg_replace('/<a href\=\"([^\"]*)\"[^>]*>(.*?)<\/a>/', '[[$2:$1]]', $str);
+	$str = preg_replace('/<br \/>/',"~\n".$wsp, $str);
+	$str = preg_replace('/<blockquote>/',">\n".$wsp, $str);
+	$str = preg_replace('/<\/blockquote>/', "\n<", $str);
+	$str = preg_replace('/^([^'.$wsp.'><])/', $wsp.'$1', $str);
 	return $str;
 }
 
@@ -69,154 +58,184 @@ function miniHTMLtoWiki($str) {
  * generic function for inserting data into the posts table.
  */
 function wp_insert_post($postarr = array()) {
-	global $wpdb, $wp_id, $blog_charset, $to_wiki;
-
-	// export array as variables
-	extract($postarr);
-
-	// Charset Encoding
-	$post_content = mb_conv($post_content, $blog_charset, "auto");
-	$post_title = mb_conv($post_title, $blog_charset, "auto");
-	$post_excerpt = mb_conv($post_excerpt, $blog_charset, "auto");
-
-	//Simple HTML to PukiWiki Format(for kousagi only)
-	if ($to_wiki) {
-		$post_content = miniHTMLtoWiki($post_content);
-		$post_excerpt = miniHTMLtoWiki($post_excerpt);
-	}
-	// Do some escapes for safety
-	$post_content = $wpdb->escape($post_content);
-	$post_title = $wpdb->escape($post_title);
-	$post_excerpt = $wpdb->escape($post_excerpt);
-	$post_name = sanitize_title($post_title);
-	
-	// Make sure we set a valid category
-	if (0 == count($post_category) || !is_array($post_category)) {
-		$post_category = array($post_default_category);
-	}
-
-	$post_cat = $post_category[0];
-	
-	if (empty($post_date))
-		$post_date = current_time('mysql');
-
-	$sql = "INSERT INTO {$wpdb->posts[$wp_id]} 
-		(post_author, post_date, post_content, post_title, post_excerpt, post_category, post_status, post_name) 
-		VALUES ('$post_author','$post_date','$post_content','$post_title', '$post_excerpt','$post_cat', '$post_status', '$post_name')";
-
-	$result = $wpdb->query($sql);
-	if ($result) {
-		$post_ID = $wpdb->insert_id;
-		
-		if ($post_name == "") {
-			$post_name = "post-".$post_ID;
-			$wpdb->query("UPDATE {$wpdb->posts[$wp_id]} SET post_name='$post_name' WHERE ID = $post_ID");
+	$postHandler =& wp_handler('Post');
+	$postObject =& $postHandler->create();
+	if (!empty($postarr['post_content'])) {
+		// Charset Encoding
+		$post_content = mb_conv($postarr['post_content'], $GLOBALS['blog_charset'], 'auto');
+		//Simple HTML to PukiWiki Format(for kousagi only)
+		if (get_param('kousagi') == 2) {
+			$post_content = miniHTMLtoWiki($post_content);
 		}
+		$postObject->setVar('post_content', $post_content);
+	}
+	if (!empty($postarr['post_excerpt'])) {
+		$post_excerpt = mb_conv($postarr['post_excerpt'], $GLOBALS['blog_charset'], 'auto');
+		//Simple HTML to PukiWiki Format(for kousagi only)
+		if (get_param('kousagi') == 2) {
+			$post_excerpt = miniHTMLtoWiki($post_excerpt);
+		}
+		$postObject->setVar('post_excerpt', $post_excerpt);
+	}
+	if (!empty($postarr['post_title'])) {
+		$post_title = mb_conv($postarr['post_title'], $GLOBALS['blog_charset'], 'auto');
+		$postObject->setVar('post_title', $post_title);
 
-		wp_set_post_cats('',$post_ID,$post_category);
+		$post_name = sanitize_title($post_title);
+		$postObject->setVar('post_name', $post_name);
+	}
+	if (!empty($postarr['post_category'])) {
+		// Make sure we set a valid category
+		$post_category = $postarr['post_category'];
+		if (count($post_category) == 0  || !is_array($post_category)) {
+			$post_category = array($GLOBALS['post_default_category']);
+		}
+		$postObject->setVar('post_category', $post_category[0]);
+	} else {
+		$post_category = array($GLOBALS['post_default_category']);
+	}
+	if (!empty($postarr['post_date'])) {
+		$postObject->setVar('post_date', $postarr['post_date']);
+	} else {
+		$postObject->setVar('post_date', current_time('mysql'));
+	}
+	if (!empty($postarr['post_author'])) {
+		$postObject->setVar('post_author', $postarr['post_author']);
+	}
+	if (!empty($postarr['post_status'])) {
+		$postObject->setVar('post_status', $postarr['post_status']);
+	} else {
+		$postObject->setVar('post_status', get_settings('default_post_status'));
+	}
+	if (!empty($postarr['ping_status'])) {
+		$postObject->setVar('ping_status', $postarr['ping_status']);
+	} else {
+		$postObject->setVar('ping_status', get_settings('default_ping_status'));
+	}
+	if (!empty($postarr['comment_status'])) {
+		$postObject->setVar('comment_status', $postarr['comment_status']);
+	} else {
+		$postObject->setVar('comment_status', get_settings('default_comment_status'));
+	}
+	if ($postHandler->insert($postObject, true)) {
+		$post_ID = $postObject->getVar('ID');
+		$postObject->assignCategories($post_category);
 		do_action('publish_post', $post_ID);
-
 		return $post_ID;
 	} else {
 		return 0;
 	}
 }
 
-function wp_get_single_post($postid = 0, $mode = OBJECT) {
-	global $wpdb, $wp_id;
-
-	$sql = "SELECT * FROM {$wpdb->posts[$wp_id]} WHERE ID=$postid";
-	$result = $wpdb->get_row($sql, $mode);
-
+function wp_get_single_post($post_ID = 0, $mode = OBJECT) {
+	$postHandler =& wp_handler('Post');
+	$postObject =& $postHandler->get($post_ID);
+	if ($mode == OBJECT) {
+		$result =& $postObject->exportWpObject();
+	} else {
+		$result =& $postObject->getVarArray();
+	}
 	// Set categories
-	$result['post_category'] = wp_get_post_cats('',$postid);
-
+	$result['post_category'] = wp_get_post_cats('',$post_ID);
 	return $result;
 }
 
 function wp_get_recent_posts($num = 10) {
-	global $wpdb, $wp_id;
-
-	// Set the limit clause, if we got a limit
+	$postHandler =& wp_handler('Post');
+	$criteria =& new Criteria(1,1);
+	$criteria->setSort('post_date');
+	$criteria->setOrder('DESC');
 	if ($num) {
-		$limit = "LIMIT $num";
+		$criteria->setLimit($num);
 	}
-
-	$sql = "SELECT * FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC $limit";
-	$result = $wpdb->get_results($sql,ARRAY_A);
-
+	$postObjects =& $postHandler->getObjects($criteria);
+	$result = array();
+	foreach($postObjects as $postObject) {
+		$result[] = $postObject->getVarArray();
+	}
 	return $result?$result:array();
 }
 
 function wp_update_post($postarr = array()) {
-	global $wpdb, $wp_id, $blog_charset;
-
-	// First get all of the original fields
-	extract(wp_get_single_post($postarr['ID'],ARRAY_A));	
-
-	// Now overwrite any changed values being passed in
-	extract($postarr);
-	
-	// Make sure we set a valid category
-	if (0 == count($post_category) || !is_array($post_category)) {
-		$post_category = array($post_default_category);
+	$postHandler =& wp_handler('Post');
+	$postObject =& $postHandler->get($postarr['ID']);
+	if (!empty($postarr['post_content'])) {
+		// Charset Encoding
+		$post_content = mb_conv($postarr['post_content'], $GLOBALS['blog_charset'], 'auto');
+		//Simple HTML to PukiWiki Format(for kousagi only)
+		if (get_param('kousagi') == 2) {
+			$post_content = miniHTMLtoWiki($post_content);
+		}
+		$postObject->setVar('post_content', $post_content);
 	}
-
-	// Charset Encoding
-	$post_content = mb_conv($post_content, $blog_charset, "auto");
-	$post_title = mb_conv($post_title, $blog_charset, "auto");
-	$post_excerpt = mb_conv($post_excerpt, $blog_charset, "auto");
-	// Do some escapes for safety
-	$post_content = $wpdb->escape($post_content);
-	$post_title = $wpdb->escape($post_title);
-	$post_excerpt = $wpdb->escape($post_excerpt);
-
-	$post_modified = current_time('mysql');
-	$post_name = sanitize_title($post_title);
-	if ($post_name == "") {
-		$post_name = "post-".$ID;
+	if (!empty($postarr['post_excerpt'])) {
+		$post_excerpt = mb_conv($postarr['post_excerpt'], $GLOBALS['blog_charset'], 'auto');
+		//Simple HTML to PukiWiki Format(for kousagi only)
+		if (get_param('kousagi') == 2) {
+			$post_excerpt = miniHTMLtoWiki($post_excerpt);
+		}
+		$postObject->setVar('post_excerpt', $post_excerpt);
 	}
-	
-	$sql = "UPDATE {$wpdb->posts[$wp_id]} 
-		SET post_content = '$post_content',
-		post_title = '$post_title',
-		post_category = $post_category[0],
-		post_status = '$post_status',
-		post_date = '$post_date',
-		post_modified = '$post_modified',
-		post_excerpt = '$post_excerpt',
-		ping_status = '$ping_status',
-		post_name = '$post_name',
-		comment_status = '$comment_status'
-		WHERE ID = $ID";
+	if (!empty($postarr['post_title'])) {
+		$post_title = mb_conv($postarr['post_title'], $GLOBALS['blog_charset'], 'auto');
+		$postObject->setVar('post_title', $post_title);
 
-	$result = $wpdb->query($sql);
-	if ($result) {
-		wp_set_post_cats('',$ID,$post_category);
-		do_action('publish_post', $ID);
-		return $wpdb->rows_affected;
+		$post_name = sanitize_title($post_title);
+		if ($post_name == "") {
+			$post_name = "post-".$ID;
+		}
+		$postObject->setVar('post_name', $post_name);
+	}
+	if (!empty($postarr['post_category'])) {
+		// Make sure we set a valid category
+		$post_category = $postarr['post_category'];
+		if (count($post_category) == 0  || !is_array($post_category)) {
+			$post_category = array($GLOBALS['post_default_category']);
+		}
+		$postObject->setVar('post_category', $post_category[0]);
+	} else {
+		$post_category = array($GLOBALS['post_default_category']);
+	}
+	if (!empty($postarr['post_status'])) {
+		$postObject->setVar('post_status', $postarr['post_status']);
+	} else {
+		$postObject->setVar('post_status', get_settings('default_post_status'));
+	}
+	if (!empty($postarr['ping_status'])) {
+		$postObject->setVar('ping_status', $postarr['ping_status']);
+	} else {
+		$postObject->setVar('ping_status', get_settings('default_ping_status'));
+	} 
+	if (!empty($postarr['comment_status'])) {
+		$postObject->setVar('comment_status', $postarr['comment_status']);
+	} else {
+		$postObject->setVar('comment_status', get_settings('default_comment_status'));
+	}
+	if (!empty($postarr['comment_status'])) {
+		$postObject->setVar('comment_status', $postarr['comment_status']);
+	}
+	if ($postHandler->insert($postObject, true, true)) {
+		$post_ID = $postObject->getVar('ID');
+		$postObject->assignCategories($post_category);
+		do_action('publish_post', $post_ID);
+		return $post_ID;
 	} else {
 		return 0;
 	}
 }
 
 function wp_get_post_cats($blogid = '1', $post_ID = 0) {
-	global $wpdb, $wp_id;
-	
-	$sql = "SELECT category_id 
-		FROM {$wpdb->post2cat[$wp_id]} 
-		WHERE post_id = $post_ID 
-		ORDER BY category_id";
-
-//	logIO("O",$sql);
-
-	$result = $wpdb->get_col($sql);
-
+	$postHandler =& wp_handler('Post');
+	$postObject =& $postHandler->get($post_ID);
+	$categoryObjects =& $postObject->getCategories();
+	$result = array();
+	foreach($categoryObjects as $categoryObject) {
+		$result[] = $categoryObject->getVar('category_id');
+	}
 	return array_unique($result);
 }
 
 function wp_set_post_cats($blogid = '1', $post_ID = 0, $post_categories = array()) {
-	global $wpdb, $wp_id;
 	// If $post_categories isn't already an array, make it one:
 	if (!is_array($post_categories)) {
 		if (!$post_categories) {
@@ -224,48 +243,16 @@ function wp_set_post_cats($blogid = '1', $post_ID = 0, $post_categories = array(
 		}
 		$post_categories = array($post_categories);
 	}
-
 	$post_categories = array_unique($post_categories);
-
-	// First the old categories
-	$old_categories = $wpdb->get_col("
-		SELECT category_id 
-		FROM {$wpdb->post2cat[$wp_id]} 
-		WHERE post_id = $post_ID");
-
-	// Delete any?
-	foreach ($old_categories as $old_cat) {
-		if (!in_array($old_cat, $post_categories)) { // If a category was there before but isn't now
-			$wpdb->query("DELETE FROM {$wpdb->post2cat[$wp_id]} 
-				WHERE category_id = $old_cat 
-					AND post_id = $post_ID LIMIT 1
-				");
-			logio("O","deleting post/cat: $post_ID, $old_cat");
-		}
-	}
-
-	// Add any?
-	foreach ($post_categories as $new_cat) {
-		if (!in_array($new_cat, $old_categories)) {
-			$wpdb->query("INSERT INTO {$wpdb->post2cat[$wp_id]} (post_id, category_id) 
-				VALUES ($post_ID, $new_cat)");
-			logio("O","adding post/cat: $post_ID, $new_cat");
-		}
-	}
+	$postHandler =& wp_handler('Post');
+	$postObject =& $postHandler->get($post_ID);
+	$postObject->assignCategories($post_categories, true);
 }
 
-function wp_delete_post($postid = 0) {
-	global $wpdb, $wp_id;
-	
-	$sql = "DELETE FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $postid";
-	$wpdb->query($sql);
-		
-	$sql = "DELETE FROM {$wpdb->posts[$wp_id]} WHERE ID = $postid";
-	
-	$wpdb->query($sql);
-
-	$result = $wpdb->rows_affected;
-	
+function wp_delete_post($post_ID = 0) {
+	$postHandler =& wp_handler('Post');
+	$postObject =& $postHandler->get($post_ID);
+	$result = $postHandler->delete($postObject, true);
 	return $result;
 }
 
@@ -275,65 +262,12 @@ function wp_delete_post($postid = 0) {
 
 // get permalink from post ID
 function post_permalink($post_ID=0, $mode = 'id') {
-    global $wpdb, $wp_id;
-	global $siteurl;
-
-	$blog_URL = $siteurl.'/index.php';
-
-	$postdata = get_postdata($post_ID);
-
-	// this will probably change to $blog_ID = $postdata['Blog_ID'] one day.
-	$blog_ID = 1;
-
-	if (!($postdata===false)) {
-	
-		switch(strtolower($mode)) {
-			case 'title':
-				$title = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $postdata['Title']);
-				if (preg_match('/^_*$/',$title)) {
-					$title = "post-$post_ID";
-				}
-				break;
-			case 'id':
-			default:
-				$title = "post-$post_ID";
-				break;
-		}
-
-		// this code is blatantly derived from permalink_link()
-		$archive_mode = get_settings('archive_mode');
-		switch($archive_mode) {
-			case 'daily':
-				$post_URL = $blog_URL.'?m='.substr($postdata['Date'],0,4).substr($postdata['Date'],5,2).substr($postdata['Date'],8,2).'#'.$title;
-				break;
-			case 'monthly':
-				$post_URL = $blog_URL.'?m='.substr($postdata['Date'],0,4).substr($postdata['Date'],5,2).'#'.$title;
-				break;
-			case 'weekly':
-				if((!isset($cacheweekly)) || (empty($cacheweekly[$postdata['Date']]))) {
-					$sql = "SELECT WEEK('".$postdata['Date']."') as wk";
-	                    $row = $wpdb->get_row($sql);
-					$cacheweekly[$postdata['Date']] = $row->wk;
-				}
-				$post_URL = $blog_URL.'?m='.substr($postdata['Date'],0,4).'&amp;w='.$cacheweekly[$postdata['Date']].'#'.$title;
-				break;
-			case 'postbypost':
-				$post_URL = $blog_URL.'?p='.$post_ID;
-				break;
-		}
-	} 
-
-	return $post_URL;
+	return get_permalink($post_ID);
 }
 
 // Get the name of a category from its ID
 function get_cat_name($cat_id) {
-	global $wpdb, $wp_id;
-	
-	$cat_id -= 0; 	// force numeric
-	$name = $wpdb->get_var("SELECT cat_name FROM {$wpdb->categories[$wp_id]} WHERE cat_ID=$cat_id");
-	
-	return $name;
+	return get_the_category_by_ID($cat_id);
 }
 
 // Get the ID of a category from its name
@@ -421,8 +355,6 @@ function trackback_url_list($tb_list, $post_id) {
 /**** /Misc ****/
 
 /**** B2 API ****/
-
-
 # note: the b2 API currently consists of the Blogger API,
 #       plus the following methods:
 #
@@ -430,22 +362,15 @@ function trackback_url_list($tb_list, $post_id) {
 
 # Note: the b2 API will be replaced by the standard Weblogs.API once the specs are defined.
 
-
 ### b2.newPost ###
-
 $wpnewpost_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcString, $xmlrpcString, $xmlrpcString, $xmlrpcString, $xmlrpcBoolean, $xmlrpcString, $xmlrpcString, $xmlrpcString));
-
 $wpnewpost_doc='Adds a post, blogger-api like, +title +category +postdate';
 
 function b2newpost($m) {
-    global $wpdb, $wp_id;
-
 	global $xmlrpcerruser; // import user errcode value
-	global $blog_ID,$cache_userdata,$use_rss,$post_autobr;
-	global $post_default_title,$post_default_category;
-	global $cafelogID, $sleep_after_edit;
+	global $blog_ID;
+	global $cafelogID;
 	$err="";
-
 
 	$username=$m->getParam(2);
 	$password=$m->getParam(3);
@@ -461,9 +386,7 @@ function b2newpost($m) {
 	$post_category = $category->scalarval();
 	$postdate = $postdate->scalarval();
 
-
 	if (user_pass_ok($username,$password)) {
-
 		$userdata = get_userdatabylogin($username);
 		$post_author = $userdata->ID;
 		$user_level = $userdata->user_level;
@@ -472,10 +395,8 @@ function b2newpost($m) {
 	   "Sorry, level 0 users can not post");
 		}
 
-
 		$post_content = format_to_post($content);
 		$post_title = addslashes($title);
-
 
 		$time_difference = get_settings("time_difference");
 		if ($postdate != "") {
@@ -492,22 +413,13 @@ function b2newpost($m) {
 			return new xmlrpcresp(0, $xmlrpcerruser+2, // user error 2
 	   "For some strange yet very annoying reason, your entry couldn't be posted.");
 
-
 		$post_ID = $result;
 
 		if (!isset($blog_ID)) { $blog_ID = 1; }
 		
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
-
-
-
 		pingWeblogs($blog_ID);
-		pingCafelog($cafelogID, $post_title, $post_ID);
 		pingBlogs($blog_ID);
 		pingback($content, $post_ID);
-
 
 		return new xmlrpcresp(new xmlrpcval("$post_ID"));
 
@@ -554,7 +466,7 @@ function b2getcategories($m) {
 
 			$struct[$i] = new xmlrpcval(array(
 											"categoryID" => new xmlrpcval($cat_ID),
-											"categoryName" => new xmlrpcval(mb_conv($cat_name,"UTF-8","auto"))),
+											"categoryName" => new xmlrpcval(mb_conv($cat_name,"UTF-8",$GLOBALS['blog_charset']))),
 										"struct");
 			$i = $i + 1;
 		}
@@ -584,7 +496,6 @@ $wp_getPostURL_doc = 'Given a blog ID, username, password, and a post ID, return
 function b2_getPostURL($m) {
     global $wpdb, $wp_id;
 	global $xmlrpcerruser;
-	global $siteurl;
 
 
 	// ideally, this would be used:
@@ -610,7 +521,7 @@ function b2_getPostURL($m) {
 	}
 
 	if (user_pass_ok($username,$password)) {
-		$blog_URL = $siteurl.'/index.php';
+		$blog_URL = wp_siteurl().'/index.php';
 		$postdata = get_postdata($post_ID);
 		if (!($postdata===false)) {
 			$title = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $postdata['Title']);
@@ -669,12 +580,10 @@ $bloggernewpost_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcString, $xm
 $bloggernewpost_doc='Adds a post, blogger-api like';
 
 function bloggernewpost($m) {
-    global $wpdb, $wp_id;
-
 	global $xmlrpcerruser; // import user errcode value
 	global $blog_ID,$cache_userdata,$use_rss,$post_autobr;
 	global $post_default_title,$post_default_category;
-	global $cafelogID, $sleep_after_edit;
+	global $cafelogID;
 	$err="";
 
 
@@ -718,12 +627,7 @@ function bloggernewpost($m) {
 
 		if (!isset($blog_ID)) { $blog_ID = 1; }
 		
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
-
 		pingWeblogs($blog_ID);
-		pingCafelog($cafelogID, $post_title, $post_ID);
 		pingBlogs($blog_ID);
 		pingback($content, $post_ID);
 
@@ -743,11 +647,9 @@ $bloggereditpost_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcString, $x
 $bloggereditpost_doc='Edits a post, blogger-api like';
 
 function bloggereditpost($m) {
-    global $wpdb, $wp_id;
-
 	global $xmlrpcerruser; // import user errcode value
 	global $blog_ID,$cache_userdata,$use_rss,$post_autobr;
-	global $post_default_title,$post_default_category, $sleep_after_edit;
+	global $post_default_title,$post_default_category;
 	$err="";
 
 
@@ -808,11 +710,8 @@ function bloggereditpost($m) {
 	   "For some strange yet very annoying reason, the entry couldn't be edited.");
 
 		if (!isset($blog_ID)) { $blog_ID = 1; }
-		
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
-//		pingWeblogs($blog_ID);
+
+		pingWeblogs($blog_ID);
 		return new xmlrpcresp(new xmlrpcval("1", "boolean"));
 	} else {
 		return new xmlrpcresp(0, $xmlrpcerruser+3, // user error 3
@@ -831,7 +730,7 @@ function bloggerdeletepost($m) {
 
 	global $xmlrpcerruser; // import user errcode value
 	global $blog_ID,$cache_userdata,$use_rss,$post_autobr;
-	global $post_default_title,$post_default_category, $sleep_after_edit;
+	global $post_default_title,$post_default_category;
 	$err="";
 
 
@@ -879,9 +778,6 @@ function bloggerdeletepost($m) {
 
 		if (!isset($blog_ID)) { $blog_ID = 1; }
 		
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
 //		pingWeblogs($blog_ID);
 		return new xmlrpcresp(new xmlrpcval(1,'boolean'));
 	} else {
@@ -900,7 +796,7 @@ function bloggergetusersblogs($m) {
     global $wpdb, $wp_id;
 	// this function will have a real purpose with CafeLog's multiple blogs capability
 
-	global $xmlrpcerruser,$siteurl;
+	global $xmlrpcerruser;
 
 	$user_login = $m->getParam(1);
 	$user_login = $user_login->scalarval();
@@ -911,9 +807,9 @@ function bloggergetusersblogs($m) {
 	$is_admin = $wpdb->num_rows;
 
 	$struct = new xmlrpcval(array("isAdmin" => new xmlrpcval($is_admin,"boolean"),
-									"url" => new xmlrpcval($siteurl."/index.php"),
+									"url" => new xmlrpcval(wp_siteurl().'/index.php'),
 									"blogid" => new xmlrpcval("1"),
-									"blogName" => new xmlrpcval(mb_conv(get_settings('blogname'),"UTF-8","auto"))
+									"blogName" => new xmlrpcval(mb_conv(get_settings('blogname'),"UTF-8",$GLOBALS['blog_charset']))
 									),"struct");
     $resp = new xmlrpcval(array($struct), "array");
 
@@ -941,12 +837,12 @@ function bloggergetuserinfo($m) {
 	$userdata = get_userdatabylogin($username);
 
 	if (user_pass_ok($username,$password)) {
-		$struct = new xmlrpcval(array("nickname" => new xmlrpcval($userdata->user_nickname),
+		$struct = new xmlrpcval(array("nickname" => mb_conv(new xmlrpcval($userdata->user_nickname),"UTF-8",$GLOBALS['blog_charset']),
 									  "userid" => new xmlrpcval($userdata->ID),
 									  "url" => new xmlrpcval($userdata->user_url),
 									  "email" => new xmlrpcval($userdata->user_email),
-									  "lastname" => new xmlrpcval($userdata->user_lastname),
-									  "firstname" => new xmlrpcval($userdata->user_firstname)
+									  "lastname" => mb_conv(new xmlrpcval($userdata->user_lastname),"UTF-8",$GLOBALS['blog_charset']),
+									  "firstname" => mb_conv(new xmlrpcval($userdata->user_firstname),"UTF-8",$GLOBALS['blog_charset'])
 									  ),"struct");
 		$resp = $struct;
 		return new xmlrpcresp($resp);
@@ -987,9 +883,9 @@ function bloggergetpost($m) {
 			$post_date = strtotime($postdata['Date']);
 			$post_date = date("Ymd", $post_date)."T".date("H:i:s", $post_date);
 
-			$content  = "<title>".mb_conv(stripslashes($postdata["Title"]),"UTF-8","auto")."</title>";
+			$content  = "<title>".mb_conv(stripslashes($postdata["Title"]),"UTF-8",$GLOBALS['blog_charset'])."</title>";
 			$content .= "<category>".$postdata["Category"]."</category>";
-			$content .= mb_conv(stripslashes($postdata["Content"]),"UTF-8","auto");
+			$content .= mb_conv(stripslashes($postdata["Content"]),"UTF-8",$GLOBALS['blog_charset']);
 
 			$struct = new xmlrpcval(array("userid" => new xmlrpcval($postdata["Author_ID"]),
 										  "dateCreated" => new xmlrpcval($post_date,"dateTime.iso8601"),
@@ -1067,9 +963,9 @@ function bloggergetrecentposts($m) {
 			$post_date = strtotime($postdata['Date']);
 			$post_date = date("Ymd", $post_date)."T".date("H:i:s", $post_date);
 
-			$content  = "<title>".mb_conv(stripslashes($postdata["Title"]),"UTF-8","auto")."</title>";
-			$content .= "<category>".mb_conv(get_cat_name($postdata["Category"]),"UTF-8","auto")."</category>";
-			$content .= mb_conv(stripslashes($postdata["Content"]),"UTF-8","auto");
+			$content  = "<title>".mb_conv(stripslashes($postdata["Title"]),"UTF-8",$GLOBALS['blog_charset'])."</title>";
+			$content .= "<category>".mb_conv(get_cat_name($postdata["Category"]),"UTF-8",$GLOBALS['blog_charset'])."</category>";
+			$content .= mb_conv(stripslashes($postdata["Content"]),"UTF-8",$GLOBALS['blog_charset']);
 
 //			$content = convert_chars($content,"html");
 //			$content = $postdata["Title"];
@@ -1099,7 +995,7 @@ function bloggergetrecentposts($m) {
 					$authorname = $authordata["user_nickname"];
 					break;
 			}
-			$struct[$i] = new xmlrpcval(array("authorName" => new xmlrpcval(mb_conv($authorname,"UTF-8","auto")),
+			$struct[$i] = new xmlrpcval(array("authorName" => new xmlrpcval(mb_conv($authorname,"UTF-8",$GLOBALS['blog_charset'])),
 										"userid" => new xmlrpcval($postdata["Author_ID"]),
 										"dateCreated" => new xmlrpcval($post_date,"dateTime.iso8601"),
 										"content" => new xmlrpcval($content),
@@ -1250,8 +1146,8 @@ function bloggersettemplate($m) {
  *
  **********************/
 #Temporally fix for kousagi
-if ($kousagi) {
-	$mwnewpost_sig =  array(array($xmlrpcString,$xmlrpcInt,$xmlrpcString,$xmlrpcString,$xmlrpcStruct,$xmlrpcInt));
+if (test_param(kousagi)) {
+	$mwnewpost_sig =  array(array($xmlrpcString,$xmlrpcInt,$xmlrpcString,$xmlrpcString,$xmlrpcStruct,$xmlrpcBoolean));
 } else {
 	$mwnewpost_sig =  array(array($xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcStruct,$xmlrpcBoolean));
 }
@@ -1262,7 +1158,7 @@ function mwnewpost($params) {
 	global $xmlrpcerruser;
 	global $blog_ID, $cache_userdata;
 	global $use_rss,$post_autobr,$post_default_title;
-	global $post_default_category,$cafelogID,$sleep_after_edit;
+	global $post_default_category,$cafelogID;
 
 	$xblogid = $params->getParam(0);
 	$xuser = $params->getParam(1);
@@ -1327,12 +1223,7 @@ function mwnewpost($params) {
 
 		if (!isset($blog_ID)) { $blog_ID = 1; }
 
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
-
 		pingWeblogs($blog_ID);
-		pingCafelog($cafelogID, $post_title, $post_ID);
 		pingBlogs($blog_ID);
 		pingback($content, $post_ID);
 		trackback_url_list($content_struct['mt_tb_ping_urls'],$post_ID);
@@ -1426,18 +1317,12 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 
 		if (!isset($blog_ID)) { $blog_ID = 1; }
 
-		if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-			sleep($sleep_after_edit);
-		}
-
 		pingWeblogs($blog_ID);
-		pingCafelog($cafelogID, $post_title, $post_ID);
 		pingBlogs($blog_ID);
 		pingback($content, $post_ID);
 		trackback_url_list($content_struct['mt_tb_ping_urls'],$post_ID);
 
 		logIO("O","(MW) Edited ! ID: $post_ID");
-//		$myResp = new xmlrpcval($ID,"string");
 		$myResp = new xmlrpcval(true,"boolean");
 
 		return new xmlrpcresp($myResp);
@@ -1480,27 +1365,27 @@ function mwgetpost ($params) {	// ($postid, $user, $pass)
 			foreach($catids as $catid) {
 				$catname = get_cat_name($catid);
 				logIO("O","CateGory:".$catname);
-				$catnameenc = new xmlrpcval(mb_conv($catname,"UTF-8","auto"));
+				$catnameenc = new xmlrpcval(mb_conv($catname,"UTF-8",$GLOBALS['blog_charset']));
 				$catlist[] = $catnameenc;
 			}			
-			$post = get_extended($postdata['Content']);
+			$post = get_extended(stripslashes($postdata['Content']));
 			$allow_comments = ('open' == $postdata['comment_status'])?1:0;
 			$allow_pings = ('open' == $postdata['ping_status'])?1:0;
 
 			$resp = array(
 				'link' => new xmlrpcval(post_permalink($post_ID)),
-				'title' => new xmlrpcval(mb_conv($postdata["Title"],"UTF-8","auto")),
-				'description' => new xmlrpcval(mb_conv($post['main'],"UTF-8","auto")),
+				'title' => new xmlrpcval(mb_conv($postdata["Title"],"UTF-8",$GLOBALS['blog_charset'])),
+				'description' => new xmlrpcval(mb_conv($post['main'],"UTF-8",$GLOBALS['blog_charset'])),
 				'dateCreated' => new xmlrpcval($post_date,'dateTime.iso8601'),
 				'userid' => new xmlrpcval($postdata["Author_ID"]),
 				'postid' => new xmlrpcval($postdata["ID"]),
-				'content' => new xmlrpcval(mb_conv($postdata["Content"],"UTF-8","auto")),
+				'content' => new xmlrpcval(mb_conv($postdata["Content"],"UTF-8",$GLOBALS['blog_charset'])),
 				'permalink' => new xmlrpcval(post_permalink($post_ID)),
 				'categories' => new xmlrpcval($catlist,'array'),
-				'mt_excerpt' => new xmlrpcval(mb_conv($postdata['Excerpt'],"UTF-8","auto")),
+				'mt_excerpt' => new xmlrpcval(mb_conv($postdata['Excerpt'],"UTF-8",$GLOBALS['blog_charset'])),
 				'mt_allow_comments' => new xmlrpcval($allow_comments,'int'),
 				'mt_allow_pings' => new xmlrpcval($allow_pings,'int'),
-				'mt_text_more' => new xmlrpcval(mb_conv($post['extended'],"UTF-8","auto")),
+				'mt_text_more' => new xmlrpcval(mb_conv($post['extended'],"UTF-8",$GLOBALS['blog_charset'])),
 			);
 			
 			$resp = new xmlrpcval($resp,'struct');
@@ -1547,8 +1432,8 @@ function mwrecentposts ($params) {	// ($blogid, $user, $pass, $num)
 			$isoString = date('Ymd',$mdate).'T'.date('H:i:s',$mdate);
 			$date = new xmlrpcval($isoString,"dateTime.iso8601");
 			$userid = new xmlrpcval($entry['post_author']);
-			$content = new xmlrpcval($entry['post_content']);
-			$excerpt = new xmlrpcval($entry['post_excerpt']);
+			$content = new xmlrpcval(stripslashes($entry['post_content']));
+			$excerpt = new xmlrpcval(mb_conv(stripslashes($entry['post_excerpt']),"UTF-8",$GLOBALS['blog_charset']));
 			
 			$pcat = stripslashes(get_cat_name($entry['post_category']));
 			
@@ -1563,15 +1448,15 @@ function mwrecentposts ($params) {	// ($blogid, $user, $pass, $num)
 			
 			$categories = new xmlrpcval(array(new xmlrpcval($pcat)),'array');
 
-			$post = get_extended(mb_conv($entry['post_content'],"UTF-8","auto"));
+			$post = get_extended(mb_conv(stripslashes($entry['post_content']),"UTF-8",$GLOBALS['blog_charset']));
+			logIO("O","blog_charset=".$GLOBALS['blog_charset']);
 
 			$postid = new xmlrpcval($entry['ID']);
-			$title = new xmlrpcval(stripslashes(mb_conv($entry['post_title'],"UTF-8","auto")));
-			$description = new xmlrpcval(stripslashes(mb_conv($post['main'],"UTF-8","auto")));
+			$title = new xmlrpcval(mb_conv($entry['post_title'],"UTF-8",$GLOBALS['blog_charset']));
+			$description = new xmlrpcval($post['main']);
 			$link = new xmlrpcval(post_permalink($entry['ID']));
 			$permalink = $link;
-
-			$extended = new xmlrpcval(stripslashes(mb_conv($post['extended'],"UTF-8","auto")));
+			$extended = new xmlrpcval($post['extended']);
 
 			$allow_comments = new xmlrpcval((('open' == $entry['comment_status'])?1:0),'int');
 			$allow_pings = new xmlrpcval((('open' == $entry['ping_status'])?1:0),'int');
@@ -1609,15 +1494,14 @@ $mwgetcats_doc = 'Get a post, MetaWeblog API-style';
 
 function mwgetcats ($params) {	// ($blogid, $user, $pass) 
 	global $xmlrpcerruser,$wpdb, $wp_id;
-	global $siteurl;
 	
-	$blog_URL = $siteurl . '/index.php';
+	$blog_URL = wp_siteurl() . '/index.php';
 //	logIO("O",$blog_URL);
 	if ($cats = $wpdb->get_results("SELECT cat_ID,cat_name FROM {$wpdb->categories[$wp_id]}",ARRAY_A)) {
 		foreach ($cats as $cat) {
 			$struct['categoryId'] = $cat['cat_ID'];
-			$struct['description'] = mb_conv($cat['cat_name'],"UTF-8","EUC-JP");
-			$struct['categoryName'] = mb_conv($cat['cat_name'],"UTF-8","EUC-JP");
+			$struct['description'] = mb_conv($cat['cat_name'],"UTF-8",$GLOBALS['blog_charset']);
+			$struct['categoryName'] = mb_conv($cat['cat_name'],"UTF-8",$GLOBALS['blog_charset']);
 			$struct['htmlUrl'] = htmlspecialchars($blog_URL . '?cat='. $cat['cat_ID']);
 			$struct['rssUrl'] = ''; // will probably hack alexking's stuff in here
 			
@@ -1634,13 +1518,79 @@ function mwgetcats ($params) {	// ($blogid, $user, $pass)
 $mwnewmedia_sig =  array(array($xmlrpcStruct,$xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcStruct));
 $mwnewmedia_doc = 'Upload image or other binary data, MetaWeblog API-style (unimplemented)';
 
-function mwnewmedia($params) {	// ($blogid, $user, $pass, $struct) 
-	global $xmlrpcerruser;
-	
-	return new xmlrpcresp(0, $xmlrpcerruser+10, // user error 10
-	  'metaWeblog.newMediaObject not implemented (yet)');
-}
+/* metaweblog.newMediaObject uploads a file, following your settings */
+function mwnewmedia($params) {
 
+	$xblogid = $params->getParam(0);
+	$xuser = $params->getParam(1);
+	$xpass = $params->getParam(2);
+	$xdata = $params->getParam(3);
+	
+	$blogid = $xblogid->scalarval();
+	$username = $xuser->scalarval();
+	$password = $xpass->scalarval();
+	$data = xmlrpc_decode1($xdata);
+
+	$name = $data['name'];
+	$type = $data['type'];
+	$bits = $data['bits'];
+
+	$file_realpath = get_settings('fileupload_realpath'); 
+	$file_url = get_settings('fileupload_url');
+
+	logIO('O', '(MW) Received '.strlen($bits).' bytes');
+
+// Check login
+	if (user_pass_ok($username,$password)) {
+		$user_data = get_userdatabylogin($username);
+		if(!get_settings('use_fileupload')) {
+	    	// Uploads not allowed
+			logIO('O', '(MW) Uploads not allowed');
+			return new xmlrpcresp(0, $xmlrpcerruser+2, 'No uploads allowed for this site.');
+		} 
+		if(get_settings('fileupload_minlevel') > $user_data->user_level) {
+			// User has not enough privileges
+			logIO('O', '(MW) Not enough privilege: user level too low');
+			return new xmlrpcresp(0, $xmlrpcerruser+2, 'You are not allowed to upload files to this site.');
+		}
+		if(trim($file_realpath) == '' || trim($file_url) == '' ) {
+			// WordPress is not correctly configured
+			logIO('O', '(MW) Bad configuration. Real/URL path not defined');
+			return new xmlrpcresp(0, $xmlrpcerruser+2, 'Please configure WordPress with valid paths for file upload.');
+		}
+		$prefix = '/';
+		if ($name[0] = '/') {
+			$prefix = '';
+		}
+		if(!empty($name)) {
+			// Create the path
+			$localpath = $file_realpath.$prefix.$name;
+			$url = $file_url.$prefix.$name;
+			if (mkdir_p(dirname($localpath))) {
+				/* encode & write data (binary) */
+				$ifp = fopen($localpath, 'wb');
+				$success = fwrite($ifp, $bits);
+				fclose($ifp);
+				@chmod($localpath, 0666);
+				logIO('O', 'URL='.$url);
+				if($success) {
+					$resp = array('url'=>new xmlrpcval($url));
+					$resp = new xmlrpcval($resp, 'struct');
+					return new xmlrpcresp($resp);
+				} else {
+					logIO('O', '(MW) Could not write file '.$name.' to '.$localpath);
+					return new xmlrpcresp(0, $xmlrpcerruser+2, 'Could not write file '.$name);
+				}
+			} else {
+				return new xmlrpcresp(0, $xmlrpcerruser+2, 'Could not create directories for '.$name);
+			}
+		}
+	} else {
+		return new xmlrpcresp(0, $xmlrpcerruser+3, // user error 3
+	   'Wrong username/password combination '.$username.' / '.starify($password));
+	}
+
+}
 
 /**** /MetaWeblog API ****/
 
@@ -1714,7 +1664,7 @@ function mt_getPostCategories($params) {
 		$struct['isPrimary'] = true;
 		foreach($catids as $catid) {	
 			$struct['categoryId'] = $catid;
-			$struct['categoryName'] = get_cat_name($catid);
+			$struct['categoryName'] = mb_conv(get_cat_name($catid),'UTF-8',$GLOBALS['blog_charset']);
 
 			$resp_struct[] = xmlrpc_encode1($struct);
 			$struct['isPrimary'] = false;
@@ -1818,9 +1768,9 @@ function mt_getRecentPostTitles($params) {
 			$post_date = strtotime($post['post_date']);
 			$post_date = date("Ymd", $post_date)."T".date("H:i:s", $post_date);
 			$struct['dateCreated'] = new xmlrpcval($post_date, 'dateTime.iso8601');
-			$struct['userid'] = new xmlrpcval(mb_conv($post['post_author'],"UTF-8","auto"), 'string');
+			$struct['userid'] = new xmlrpcval(mb_conv($post['post_author'],"UTF-8",$GLOBALS['blog_charset']), 'string');
 			$struct['postid'] = new xmlrpcval($post['ID'], 'string');
-			$struct['title'] = new xmlrpcval(mb_conv($post['post_title'],"UTF-8","auto"), 'string');
+			$struct['title'] = new xmlrpcval(mb_conv($post['post_title'],"UTF-8",$GLOBALS['blog_charset']), 'string');
 			$result[] = new xmlrpcval($struct,'struct');
 		}
 		return new xmlrpcresp(new xmlrpcval($result,'array'));
@@ -1885,7 +1835,7 @@ function mt_getpost ($params) {	// ($postid, $user, $pass)
 			foreach($catids as $catid) {
 				$catname = get_cat_name($catid);
 				logIO("O","CateGory:".$catname);
-				$catnameenc = new xmlrpcval(mb_conv($catname,"UTF-8","auto"));
+				$catnameenc = new xmlrpcval(mb_conv($catname,"UTF-8",$GLOBALS['blog_charset']));
 				$catlist[] = $catnameenc;
 			}			
 			$post = get_extended($postdata['Content']);
@@ -1894,20 +1844,20 @@ function mt_getpost ($params) {	// ($postid, $user, $pass)
 
 			$resp = array(
 				'link' => new xmlrpcval(post_permalink($post_ID)),
-				'title' => new xmlrpcval(mb_conv($postdata["Title"],"UTF-8","auto")),
-				'description' => new xmlrpcval(mb_conv($post['main'],"UTF-8","auto")),
+				'title' => new xmlrpcval(mb_conv($postdata["Title"],"UTF-8",$GLOBALS['blog_charset'])),
+				'description' => new xmlrpcval(mb_conv($post['main'],"UTF-8",$GLOBALS['blog_charset'])),
 				'dateCreated' => new xmlrpcval($post_date,'dateTime.iso8601'),
 				'userid' => new xmlrpcval($postdata["Author_ID"]),
 				'postid' => new xmlrpcval($postdata["ID"]),
-				'content' => new xmlrpcval(mb_conv($postdata["Content"],"UTF-8","auto")),
+				'content' => new xmlrpcval(mb_conv($postdata["Content"],"UTF-8",$GLOBALS['blog_charset'])),
 				'permalink' => new xmlrpcval(post_permalink($post_ID)),
 				'categories' => new xmlrpcval($catlist,'array'),
 				'mt_keywords' => new xmlrpcval("{$catids[0]}"),
-				'mt_excerpt' => new xmlrpcval(mb_conv($postdata['Excerpt'],"UTF-8","auto")),
+				'mt_excerpt' => new xmlrpcval(mb_conv($postdata['Excerpt'],"UTF-8",$GLOBALS['blog_charset'])),
 				'mt_allow_comments' => new xmlrpcval($allow_comments,'int'),
 				'mt_allow_pings' => new xmlrpcval($allow_pings,'int'),
 				'mt_convert_breaks' => new xmlrpcval('true'),
-				'mt_text_more' => new xmlrpcval(mb_conv($post['extended'],"UTF-8","auto")),
+				'mt_text_more' => new xmlrpcval(mb_conv($post['extended'],"UTF-8",$GLOBALS['blog_charset'])),
 			);
 			
 			$resp = new xmlrpcval($resp,'struct');
@@ -1936,7 +1886,7 @@ $pingback_ping_doc = 'Gets a pingback and registers it as a comment prefixed by 
 function pingback_ping($m) { // original code by Mort
 	// (http://mort.mine.nu:8080)
 	global   $wpdb, $wp_id, $blog_charset; 
-	global $siteurl,$wp_version; 
+	global $wp_version; 
 
 	if (!get_settings('use_pingback')) {
 		return new xmlrpcresp(new xmlrpcval('Sorry, this weblog does not allow you to pingback its posts.'));
@@ -1964,7 +1914,7 @@ function pingback_ping($m) { // original code by Mort
 	$message = $messages[0];
 
 	// Check if the page linked to is in our site
-	$pos1 = strpos($pagelinkedto, str_replace('http://', '', str_replace('www.', '', $siteurl)));
+	$pos1 = strpos($pagelinkedto, str_replace('http://', '', str_replace('www.', '', wp_siteurl())));
 	if($pos1) {
 		// let's find which post is linked to
 		$urltest = parse_url($pagelinkedto);
@@ -2020,10 +1970,12 @@ function pingback_ping($m) { // original code by Mort
 				// very stupid, but gives time to the 'from' server to publish !
 				sleep(1);
 				// Let's check the remote site
-				$fp = @fopen($pagelinkedfrom, 'r');
-				$puntero = 4096;
-				while($remote_read = fread($fp, $puntero)) {
-					$linea .= $remote_read;
+				require_once(XOOPS_ROOT_PATH.'/class/snoopy.php');
+				$snoopy = New Snoopy;
+				if ($snoopy->fetch($pagelinkedfrom)) {
+					$linea = $snoopy->results;
+				} else {
+					$linea = "";
 				}
 				logIO("O","(PB) CHARSET='$blog_charset");
 				$linea = mb_conv($linea, $blog_charset, 'auto');
@@ -2066,7 +2018,7 @@ function pingback_ping($m) { // original code by Mort
 					logIO("O","(PB) CONTEXT=The page doesn't link to us, here's an excerpt");
 					exit();
 				}
-				fclose($fp);
+//				fclose($fp);
 				if (!empty($context)) {
 					// Check if pings are on, inelegant exit
 					$pingstatus = $wpdb->get_var("SELECT ping_status FROM {$wpdb->posts[$wp_id]} WHERE ID = $post_ID");
@@ -2929,6 +2881,26 @@ $dispatch_map =  array( "blogger.newPost" =>
 
 $s=new xmlrpc_server($dispatch_map);
 						
-						
+function mkdir_p($target) {
+	// from php.net/mkdir user contributed notes 
+	if (file_exists($target)) {
+	  if (!is_dir($target)) {
+	    return false;
+	  } else {
+	    return true;
+	  }
+	}
 
+	// Attempting to create the directory may clutter up our display.
+	if (@mkdir($target)) {
+	  return true;
+	}
+
+	// If the above failed, attempt to create the parent node, then try again.
+	if (mkdir_p(dirname($target))) {
+	  return mkdir_p($target);
+	}
+
+	return false;
+}
 ?>

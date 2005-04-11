@@ -5,10 +5,10 @@ $title = 'Permalink Options';
 $this_file = 'options-permalink.php';
 $parent_file = 'options.php';
 
-param('submit','string');
-if (isset($submit)) {
+init_param('POST', 'submit','string', '');
+if ($submit) {
 	wp_refcheck("/wp-admin");
-	param('permalink_structure','string');
+	init_param('POST', 'permalink_structure','string');
 	update_option('permalink_structure', $permalink_structure);
 } else {
 	$permalink_structure = get_settings('permalink_structure');
@@ -20,9 +20,9 @@ if (isset($submit)) {
 	$standalone = 0;
 	include_once('admin-header.php');
 ?>
-<?php if (isset($_POST['submit'])) : ?>
+<?php if($submit) { ?>
 <div class="updated"><p><?php echo _LANG_WPL_EDIT_UPDATED; ?></p></div>
-<?php endif; ?>
+<?php } ?>
 <div class="wrap"> 
   <h2><?php echo _LANG_WPL_EDIT_STRUCT; ?></h2> 
   <p><?php echo _LANG_WPL_CREATE_CUSTOM; ?></p>

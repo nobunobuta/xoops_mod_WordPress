@@ -22,8 +22,11 @@ define("_MI_WORDPRESS_INST_OPTIONS_22","'pt_BR'");
 define("_MI_WORDPRESS_INST_OPTIONS_52","'l, j \\\\\\\de F \\\\\\\de Y'");
 define("_MI_WORDPRESS_INST_OPTIONS_53","'H:i.s'");
 // Config titles
-define("_MI_WPUSESPAW_CFG_MSG","Usar editor SPAW nos formulários de envio?");
-define("_MI_WPUSESPAW_CFG_DESC","Para ativar o editor SPAW, selecione \"Sim\".");
+define("_MI_WPUSESPAW_CFG_MSG","Select WYSIWYG Editor");
+define("_MI_WPUSESPAW_CFG_DESC","Select WYSIWYG Editor");
+define("_MI_OPT_WYSIWYG_NONE","None");
+define("_MI_OPT_WYSIWYG_SPAW","SPAW Editor");
+define("_MI_OPT_WYSIWYG_KOIVI","KOIVI Editor");
 
 define("_MI_WPEDITAUTHGRP_CFG_MSG","Grupo de editores:");
 define("_MI_WPEDITAUTHGRP_CFG_DESC","O(s) grupo(s) que têm autorização para editar e fazer posts (Nível 1 de usuário do WordPress).");
@@ -36,6 +39,9 @@ define("_MI_WP_USE_XOOPS_SMILE_DESC","Se ativado, os smilies serão trocados pelo
 
 define("_MI_WP_USE_THEME_TEMPLATE","Usar o template no diretório de temas quando exibir um bloco do blog?");
 define("_MI_WP_USE_THEME_TEMPLATE_DESC","Se ativado, o template (content_block-template.php) existente no diretório \"themes\" será usado.");
+
+define("_MI_WP_USE_BLOCKCSSHEADER","Use CSS link Tag for Wordpress Style");
+define("_MI_WP_USE_BLOCKCSSHEADER_DESC","Use CSS link Tag for Wordpress Style in the HTML &lt;HEAD&gt; section.<br/>You must insert <b>&lt;{&amp;xoops_block_header}&gt;</b> line at next line <b>&lt;{&amp;xoops_module_header}&gt;</b> in theme.html of your XOOPS Theme.");
 
 define("_MI_WP_USE_XOOPS_COMM","Using XOOPS Comment System");
 define("_MI_WP_USE_XOOPS_COMM_DESC","Using XOOPS Comment System");

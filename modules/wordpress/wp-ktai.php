@@ -267,6 +267,7 @@ switch ($_REQUEST["view"]) {
 		$title_lists = get_post_titles($_REQUEST["start"],$ListPerPage);
 		$line_count = 0;
 		foreach ($title_lists as $title) {
+			if (trim($title->post_title)=="") $title->post_title = _WP_POST_NOTITLE;
 			$ackey = $line_count + 1;
 			$num = $_REQUEST["start"] + $line_count;
 			$tmp = substr($title->post_date,5,2).'/'.substr($title->post_date,8,2).substr($title->post_date,10,6);
@@ -298,6 +299,8 @@ switch ($_REQUEST["view"]) {
 		$prevstart = $_REQUEST["start"] - $CharCountPerPage;
 		$tmp = substr($post['Date'],5,2).'/'.substr($post['Date'],8,2).substr($post['Date'],10,6);
 		$echostring .= $post['Title'].'('.$tmp.') Page:'.$nextpage.'<hr />';
+		$authordata = get_userdata($post['Author_ID']);
+		$echostring .= "Author : ".the_author('',false).'<hr />';
 		$pages[0] =$post['Content'];$page=1;$more=1;
 		$post['Content']=get_the_content('');
 		//PukiWikiプラグインなどでレンダリングしている場合の為にフィルタを通す

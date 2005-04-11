@@ -22,8 +22,12 @@ define("_MI_WORDPRESS_INST_OPTIONS_22","'it'");
 define("_MI_WORDPRESS_INST_OPTIONS_52","'n/j/Y'");
 define("_MI_WORDPRESS_INST_OPTIONS_53","'g:i a'");
 // Config titles
-define("_MI_WPUSESPAW_CFG_MSG","Usa Editor");
-define("_MI_WPUSESPAW_CFG_DESC","Usa Editor HTML");
+define("_MI_WPUSESPAW_CFG_MSG","Select WYSIWYG Editor");
+define("_MI_WPUSESPAW_CFG_DESC","Select WYSIWYG Editor");
+define("_MI_OPT_WYSIWYG_NONE","None");
+define("_MI_OPT_WYSIWYG_SPAW","SPAW Editor");
+define("_MI_OPT_WYSIWYG_KOIVI","KOIVI Editor");
+
 
 define("_MI_WPEDITAUTHGRP_CFG_MSG","Edita gruppi");
 define("_MI_WPEDITAUTHGRP_CFG_DESC","Seleziona i gruppi che possono postare ed editare.<br/>(Utenti Livello 1)");
@@ -36,6 +40,9 @@ define("_MI_WP_USE_XOOPS_SMILE_DESC","Faccine");
 
 define("_MI_WP_USE_THEME_TEMPLATE","Scegli il Template per visualizzare i blocchi.");
 define("_MI_WP_USE_THEME_TEMPLATE_DESC","Scegli il Template per visualizzare i contenuti.");
+
+define("_MI_WP_USE_BLOCKCSSHEADER","Use CSS link Tag for Wordpress Style");
+define("_MI_WP_USE_BLOCKCSSHEADER_DESC","Use CSS link Tag for Wordpress Style in the HTML &lt;HEAD&gt; section.<br/>You must insert <b>&lt;{&amp;xoops_block_header}&gt;</b> line at next line <b>&lt;{&amp;xoops_module_header}&gt;</b> in theme.html of your XOOPS Theme.");
 
 define("_MI_WP_USE_XOOPS_COMM","Using XOOPS Comment System");
 define("_MI_WP_USE_XOOPS_COMM_DESC","Using XOOPS Comment System");

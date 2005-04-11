@@ -36,14 +36,13 @@
 		var $optionvalues;
 		var $optiongroups;
 		var $optiongroup_options;
-		
+		var $fp;
 		// ==================================================================
 		//	DB Constructor - connects to the server and selects a database
 
 		function wpdb($dbuser, $dbpassword, $dbname, $dbhost) {
-			global $xoopsDB;
-			if (isset($xoopsDB)) {
-				$this->dbh =& $xoopsDB->conn;
+			if (isset($GLOBALS['xoopsDB'])) {
+				$this->dbh =& $GLOBALS['xoopsDB']->conn;
 				$this->querycount = 0;
 			} else {
 				$this->dbh = @mysql_connect($dbhost,$dbuser,$dbpassword);
@@ -58,8 +57,7 @@
 					<p><a href='http://wordpress.xwd.jp/'>WordPress Japan</a></p>
 					</div></body></html>");
 				}
-	
-	
+
 				$this->select($dbname);
 				$this->querycount = 0;
 			}
@@ -152,6 +150,11 @@
 
 			// Keep track of the last query for debug..
 			$this->last_query = $query;
+			if (0 && $GLOBALS['wp_debug']) {
+				$this->fp = fopen($GLOBALS['wp_base']['-'].'/log/wp-db.log', 'a');
+				fwrite($this->fp, "$query\n");
+				fclose($this->fp);
+			}
 
 			// Perform the query via std mysql_query function..
 			$this->result = mysql_query($query, $this->dbh);

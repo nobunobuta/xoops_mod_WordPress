@@ -104,6 +104,7 @@ define('_LANG_P_NICKNAME_DELETE','Keine Berechtigung zum L&ouml;schen von Kommen
 define('_LANG_P_COMHAS_APPR','Kommentar wurde freigegeben.');
 define('_LANG_P_YOUR_DRAFTS','Deine Entw&uuml;rfe:');
 define('_LANG_P_WP_BOOKMARKLET','Der folgende Link kann zur Linkleiste oder zu den Bookmarks hinzugef&uuml;gt werden. "Press it" &ouml;ffnet ein Popup mit den Informationen und einem Link zu der Seite. Du kannst also ein Quickpost machen. Versuchs:');
+define('_LANG_P_CONFIRM_DELETE', 'Are you sure you want to delete this?');
 
 /* File Name wp-admin/categories.php */
 define('_LANG_C_DEFAULT_CAT','Kategorie kann nicht gel&ouml;scht werden (Default-Kategorie).');

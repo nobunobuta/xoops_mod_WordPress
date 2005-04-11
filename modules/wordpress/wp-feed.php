@@ -1,18 +1,20 @@
 <?php
 error_reporting(E_ERROR);
-$blog = 1;
-$doing_rss = 1;
-$wp_inblock = 0;
-require("wp-config.php");
-param('feed','string','rss2');
-param('p','string','');
-param('name','string','');
-param('withcomments','integer',0);
+$GLOBALS['blog'] = 1;
+$GLOBALS['doing_rss'] = 1;
+$GLOBALS['wp_inblock'] = 0;
 
-if ( (($p != '') && ($p != 'all')) || ($name != '') || ($withcomments == 1) ) {
+require("wp-config.php");
+
+init_param('GET', 'feed','string','rss2');
+init_param('GET', 'p','string','');
+init_param('GET', 'name','string','');
+init_param('GET', 'withcomments','integer',0);
+
+if ( (test_param('p') && ($p != 'all')) || test_param('name') || (get_param('withcomments') == 1) ) {
     require('wp-commentsrss2.php');
 } else {
-    switch ($feed) {
+    switch (get_param('feed')) {
     case 'atom':
         require('wp-atom.php');
         break;

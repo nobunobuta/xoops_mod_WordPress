@@ -1,12 +1,8 @@
 <?php
 require_once(ABSPATH . 'wp-admin/admin-functions.php');
+
 if (!(veriflog())) {
 	redirect_header($siteurl.'/',2,_NOPERM);
-	exit();
-}
-$dogs = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]}");
-foreach ($dogs as $catt) {
-	$cache_categories[$catt->cat_ID] = $catt;
 }
 
 get_currentuserinfo();
