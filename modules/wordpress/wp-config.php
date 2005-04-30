@@ -18,7 +18,8 @@ if (empty($GLOBALS['wp_inblock'])) {
 	if (!preg_match('/\D+(\d*)/', $_wp_my_dirname, $regs )) {
 		echo ('Invalid dirname of WordPress: '. htmlspecialchars($_wp_my_dirname));
 	}
-	$GLOBALS['wp_id'] = "$regs[1]";
+//	$GLOBALS['wp_id'] = "$regs[1]";
+	$GLOBALS['wp_id'] = "".(($regs[1]!=='') ? $regs[1] : '-');
 	$GLOBALS['wp_mod'][$GLOBALS['wp_id']] = $_wp_my_dirname;
 }
 if (($GLOBALS['wp_id']==="")||($GLOBALS['wp_id']==="-")) {
