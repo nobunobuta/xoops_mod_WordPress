@@ -68,6 +68,10 @@ $spaw_toolbar_data = array(
               'type' => SPAW_TBI_BUTTON
             ),
             array(
+              'name' => 'image_popup',
+              'type' => SPAW_TBI_BUTTON
+            ),
+            array(
               'name' => 'hr',
               'type' => SPAW_TBI_BUTTON
             ),
@@ -127,12 +131,14 @@ $spaw_toolbar_data = array(
           'valign' => 'top'
         ),
         'data' => array (
-/*
             array(
               'name' => 'style',
               'type' => SPAW_TBI_DROPDOWN
             ),
-*/
+            array(
+              'name' => 'vertical_separator',
+              'type' => SPAW_TBI_IMAGE
+            ),
             array(
               'name' => 'bold',
               'type' => SPAW_TBI_BUTTON
@@ -186,6 +192,10 @@ $spaw_toolbar_data = array(
               'type' => SPAW_TBI_BUTTON
             ),
             array(
+              'name' => 'justify',
+              'type' => SPAW_TBI_BUTTON
+            ),
+            array(
               'name' => 'vertical_separator',
               'type' => SPAW_TBI_IMAGE
             ),
@@ -195,6 +205,18 @@ $spaw_toolbar_data = array(
             ),
             array(
               'name' => 'bg_color',
+              'type' => SPAW_TBI_BUTTON
+            ),
+            array(
+              'name' => 'vertical_separator',
+              'type' => SPAW_TBI_IMAGE
+            ),
+            array(
+              'name' => 'superscript',
+              'type' => SPAW_TBI_BUTTON
+            ),
+            array(
+              'name' => 'subscript',
               'type' => SPAW_TBI_BUTTON
             ),
             array(

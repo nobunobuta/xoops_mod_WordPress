@@ -5,7 +5,7 @@
   function SPAW_editor_registered(editor)
   {
     var found = false;
-    for(i=0;i<spaw_editors.lenght;i++)
+    for(var i=0;i<spaw_editors.length;i++)
     {
       if (spaw_editors[i] == editor)
       {
@@ -19,7 +19,7 @@
   // onsubmit
   function SPAW_UpdateFields()
   {
-    for (i=0; i<spaw_editors.length; i++)
+    for (var i=0; i<spaw_editors.length; i++)
     {
       SPAW_updateField(spaw_editors[i], null);
     }
@@ -46,42 +46,44 @@
   // editor initialization
   function SPAW_editorInit(editor, css_stylesheet, direction)
   {
-    // prevent from executing twice on the same editor
-    if (!SPAW_editor_registered(editor))
-    {
-      // check if the editor completely loaded and schedule to try again if not
-      if (document.readyState != 'complete')
-      {
-        setTimeout(function(){SPAW_editorInit(editor, css_stylesheet, direction);},20);
-        return;
-      }
-      
+     
+     if (this[editor+'_rEdit'].document.designMode != 'on')
+     {
       this[editor+'_rEdit'].document.designMode = 'On';
-  
+     }
+ 
+     // check if the editor completely loaded and schedule to try again if not
+     if (this[editor+'_rEdit'].document.readyState != 'complete')
+     {
+       setTimeout(function(){SPAW_editorInit(editor, css_stylesheet, direction);},20);
+       return;
+     }
 
-      // register the editor 
-      spaw_editors[spaw_editors.length] = editor;
-      
-      // add on submit handler
-      SPAW_addOnSubmitHandler(editor);
+     // register the editor 
+  // prevent from executing twice on the same editor
+     if (!SPAW_editor_registered(editor))
+     {
+       spaw_editors[spaw_editors.length] = editor;
+     }
   
-      
-      if (this[editor+'_rEdit'].document.readyState == 'complete')
-      {
-        this[editor+'_rEdit'].document.createStyleSheet(css_stylesheet);
-        this[editor+'_rEdit'].document.body.dir = direction;
-        this[editor+'_rEdit'].document.body.innerHTML = document.all[editor].value;
-	SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
-  
-        // hookup active toolbar related events
-        this[editor+'_rEdit'].document.onkeyup = function() { SPAW_onkeyup(editor); }
-        this[editor+'_rEdit'].document.onmouseup = function() { SPAW_update_toolbar(editor, true); }
-        
-        // initialize toolbar
-        spaw_context_html = "";
-        SPAW_update_toolbar(editor, true);
-      }
-    }
+     // add on submit handler
+     SPAW_addOnSubmitHandler(editor);
+ 
+     if (this[editor+'_rEdit'].document.readyState == 'complete')
+     {
+       this[editor+'_rEdit'].document.createStyleSheet(css_stylesheet);
+       this[editor+'_rEdit'].document.body.dir = direction;
+       this[editor+'_rEdit'].document.body.innerHTML = document.all[editor].value;
+SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
+ 
+       // hookup active toolbar related events
+       this[editor+'_rEdit'].document.onkeyup = function() { SPAW_onkeyup(editor); }
+       this[editor+'_rEdit'].document.onmouseup = function() { SPAW_update_toolbar(editor, true); }
+       
+       // initialize toolbar
+       spaw_context_html = "";
+       SPAW_update_toolbar(editor, true);
+     }
   }  
   
   
@@ -132,6 +134,13 @@
     SPAW_update_toolbar(editor, true);    
   }
 
+  function SPAW_justify_click(editor, sender)
+  {
+    window.frames[editor+'_rEdit'].focus();     
+  	this[editor+'_rEdit'].document.execCommand('justifyfull', false, null);
+    SPAW_update_toolbar(editor, true);    
+  }
+  
   function SPAW_ordered_list_click(editor, sender)
   {
     window.frames[editor+'_rEdit'].focus();     
@@ -170,10 +179,233 @@
     SPAW_update_toolbar(editor, true);    
   }
 
+  /*
+  // using standard IE link dialog
   function SPAW_hyperlink_click(editor, sender)
   {
     window.frames[editor+'_rEdit'].focus();     
   	var l = this[editor+'_rEdit'].document.execCommand('createlink');
+    SPAW_update_toolbar(editor, true);    
+  }
+  */
+  
+  function SPAW_getA(editor)
+  {
+  	var aControl = window.frames[editor+'_rEdit'].document.selection.createRange();
+    if (window.frames[editor+'_rEdit'].document.selection.type != "Control")
+    {
+    	aControl = aControl.parentElement();
+    }
+    else
+    {
+    	aControl = aControl(0);
+    }
+    
+	while ((aControl.tagName != 'A') && (aControl.tagName != 'BODY'))
+    {
+      aControl = aControl.parentElement;
+    }
+    if (aControl.tagName == 'A')
+      return(aControl);
+    else
+      return(null);
+  }
+
+  function SPAW_hyperlink_click(editor, sender)
+  {
+    window.frames[editor+'_rEdit'].focus();     
+
+  	var a = SPAW_getA(editor);
+	
+    var aProps = {};
+	// get anchors on the page
+	aProps.anchors = new Array();
+	var links = this[editor+'_rEdit'].document.getElementsByTagName('A');
+	var aln = 0;
+	if (links != null) aln = links.length;
+	for (var i=0;i<aln;i++)
+	{
+		if (links[i].name != null && links[i].name != '')
+			aProps.anchors[aProps.anchors.length] = links[i].name;
+	}
+
+	if (a)
+	{
+	  // edit hyperlink
+      aProps.href = SPAW_stripAbsoluteUrl(editor, a.href);
+      aProps.name = a.name;
+      aProps.target = a.target;
+      aProps.title = a.title;
+  
+      var naProps = showModalDialog('<?php echo $spaw_dir?>dialogs/a.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value, aProps, 
+        'dialogHeight:220px; dialogWidth:366px; resizable:no; status:no');  
+      
+      if (naProps)  
+      {
+	  	if (!naProps.href && !naProps.name)
+		{
+			// remove hyperlink
+			a.outerHTML = a.innerHTML;
+		}
+		else
+		{
+			// set link properties
+		  	if (naProps.href)
+		        a.href = naProps.href;
+			else
+				a.removeAttribute('href',0);
+			if (naProps.name)
+		        a.name = naProps.name;
+			else
+				a.removeAttribute('name',0);
+			if (naProps.target && naProps.target!='_self')
+		        a.target = naProps.target;
+			else
+				a.removeAttribute('target',0);
+			if (naProps.title)
+		        a.title = naProps.title;
+			else
+				a.removeAttribute('title',0);
+	
+		  	a.removeAttribute('onclick',0);
+		}
+      }      
+	}
+	else
+	{
+	  // new hyperlink
+      var naProps = showModalDialog('<?php echo $spaw_dir?>dialogs/a.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value, aProps, 
+        'dialogHeight:220px; dialogWidth:366px; resizable:no; status:no');  
+      
+      if (naProps)  
+      {
+		var a;
+		if (naProps.name)
+		{
+		  a = document.createElement('<A NAME="'+naProps.name+'"></A>');
+		}
+		else
+		{
+		  a = document.createElement('A');
+		}
+	  	if (naProps.href)
+	        a.href = naProps.href;
+		if (naProps.target && naProps.target!='_self')
+	        a.target = naProps.target;
+		if (naProps.title)
+	        a.title = naProps.title;
+		if (window.frames[editor+'_rEdit'].document.selection.type == "Control")
+		{
+	        var selection = window.frames[editor+'_rEdit'].document.selection.createRange();
+			a.innerHTML = selection(0).outerHTML;
+			selection(0).outerHTML = a.outerHTML;
+		}
+		else
+		{
+	        var selection = window.frames[editor+'_rEdit'].document.selection.createRange();
+		    if (selection.htmlText == '')
+			  a.innerHTML = (a.href && a.href!='')?a.href:a.name;
+		    else
+			  a.innerHTML = selection.htmlText;
+		
+		    selection.pasteHTML(a.outerHTML);      
+		}
+      }      
+	}
+
+    SPAW_update_toolbar(editor, true);    
+  }
+
+  function SPAW_internal_link_click(editor, sender)
+  {
+    window.frames[editor+'_rEdit'].focus();     
+
+  	var a = SPAW_getA(editor);
+	
+	if (a)
+	{
+	  // edit hyperlink
+      var aProps = {};
+      aProps.href = SPAW_stripAbsoluteUrl(editor, a.href);
+      aProps.name = a.name;
+      aProps.target = a.target;
+      aProps.title = a.title;
+	  aProps.description = a.innerHTML;
+  
+      var naProps = showModalDialog('<?php echo $spaw_internal_link_script?>?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value, aProps, 
+        'dialogHeight:220px; dialogWidth:366px; resizable:yes; status:no');  
+      
+      if (naProps)  
+      {
+	  	if (naProps.href)
+	        a.href = naProps.href;
+		else
+			a.removeAttribute('href',0);
+		if (naProps.name)
+	        a.name = naProps.name;
+		else
+			a.removeAttribute('name',0);
+		if (naProps.target && naProps.target!='_self')
+	        a.target = naProps.target;
+		else
+			a.removeAttribute('target',0);
+		if (naProps.title)
+	        a.title = naProps.title;
+		else
+			a.removeAttribute('title',0);
+		if (naProps.description)
+			a.innerHTML = naProps.description;
+      }      
+	}
+	else
+	{
+	  // new hyperlink
+      var naProps = showModalDialog('<?php echo $spaw_internal_link_script?>?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value, null, 
+        'dialogHeight:220px; dialogWidth:366px; resizable:no; status:no');  
+      
+      if (naProps)  
+      {
+		var a;
+		if (naProps.name)
+		{
+		  a = document.createElement('<A NAME="'+naProps.name+'"></A>');
+		}
+		else
+		{
+		  a = document.createElement('A');
+		}
+	  	if (naProps.href)
+	        a.href = naProps.href;
+		if (naProps.target && naProps.target!='_self')
+	        a.target = naProps.target;
+		if (naProps.title)
+	        a.title = naProps.title;
+
+		if (window.frames[editor+'_rEdit'].document.selection.type == "Control")
+		{
+	        var selection = window.frames[editor+'_rEdit'].document.selection.createRange();
+			a.innerHTML = selection(0).outerHTML;
+			selection(0).outerHTML = a.outerHTML;
+		}
+		else
+		{
+	        var selection = window.frames[editor+'_rEdit'].document.selection.createRange();
+			if (naProps.description)
+			{
+				a.innerHTML = naProps.description;
+			}
+			else
+			{
+			    if (selection.htmlText == '')
+					a.innerHTML = (a.href)?a.href:a.name;
+			    else
+				    a.innerHTML = selection.htmlText;
+			}	
+		    selection.pasteHTML(a.outerHTML);      
+		}
+      }      
+	}
+
     SPAW_update_toolbar(editor, true);    
   }
   
@@ -181,7 +413,7 @@
   {
     window.frames[editor+'_rEdit'].focus();     
 
-    var retval = showModalDialog('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value, '', 
+    var retval = showModalDialog('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value+'&request_uri='+escape(window.location.href), '', 
       'dialogHeight:420px; dialogWidth:420px; resizable:no; status:no');
     if (retval) {
 	    var imgSrc = retval.imgurl;
@@ -191,9 +423,9 @@
 	  		if (match) {
 	  			this[editor+'_rEdit'].document.execCommand('createlink',false,match[1]+'/'+match[2]);
 	  		} else {
-		  		match = imgSrc.match(/(.*)\/thumbs\/(.*)/);
+		  		match = imgSrc.match(/(.*)\/thumbs(\d*)\/(.*)/);
 		  		if (match) {
-	  				this[editor+'_rEdit'].document.execCommand('createlink',false,match[1]+'/photos/'+match[2]);
+	  				this[editor+'_rEdit'].document.execCommand('createlink',false,match[1]+'/photos'+match[2]+'/'+match[3]);
 	  			} else {
 	  				if (retval.zoomrate != 1) {
 		  				this[editor+'_rEdit'].document.execCommand('createlink',false,imgSrc);
@@ -206,7 +438,7 @@
 	    SPAW_update_toolbar(editor, true);
 	 }
   }
-    
+  
   function SPAW_image_prop_click(editor, sender)
   {
     var im = SPAW_getImg(editor); // current cell
@@ -214,7 +446,7 @@
     if (im)
     {
       var iProps = {};
-      iProps.src = im.src;
+      iProps.src = SPAW_stripAbsoluteUrlFromImg(editor, im.src);
       iProps.alt = im.alt;
       iProps.width = (im.style.width)?im.style.width:im.width;
       iProps.height = (im.style.height)?im.style.height:im.height;
@@ -234,7 +466,7 @@
         }
         else
         {
-          im.removeAttribute("alt");
+          im.removeAttribute("alt",0);
         }
         im.align = (niProps.align)?niProps.align:'';
         im.width = (niProps.width)?niProps.width:'';
@@ -246,21 +478,21 @@
         }
         else
         {
-          im.removeAttribute("border");
+          im.removeAttribute("border",0);
         }
         if (niProps.hspace) {
           im.hspace = niProps.hspace;
         }
         else
         {
-          im.removeAttribute("hspace");
+          im.removeAttribute("hspace",0);
         }
         if (niProps.vspace) {
           im.vspace = niProps.vspace;
         }
         else
         {
-          im.removeAttribute("vspace");
+          im.removeAttribute("vspace",0);
         }
       }      
       //SPAW_updateField(editor,"");
@@ -268,6 +500,54 @@
     SPAW_update_toolbar(editor, true);    
   }
 
+  function SPAW_image_popup_click(editor, sender)
+  {
+    window.frames[editor+'_rEdit'].focus();     
+	
+  	var a = SPAW_getA(editor);
+
+    var imgSrc = showModalDialog('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value+'&request_uri='+escape(window.location.href), '', 
+      'dialogHeight:420px; dialogWidth:420px; resizable:no; status:no');
+    
+    if(imgSrc != null)    
+	{
+		if (a)
+		{
+			// edit hyperlink
+			a.href="#";
+			a.onclick="window.open('<?php echo $spaw_img_popup_url?>?img_url="+SPAW_stripAbsoluteUrlFromImg(editor, imgSrc)+"','Image','width=500,height=300,scrollbars=no,toolbar=no,location=no,status=no,resizable=yes,screenX=120,screenY=100');return false;";
+		}
+		else
+		{
+			var a;
+			a = document.createElement('A');
+			a.href="#";
+			a.onclick="window.open('<?php echo $spaw_img_popup_url?>?img_url="+SPAW_stripAbsoluteUrlFromImg(editor, imgSrc)+"','Image','width=500,height=300,scrollbars=no,toolbar=no,location=no,status=no,resizable=yes,screenX=120,screenY=100');return false;";
+
+
+			if (window.frames[editor+'_rEdit'].document.selection.type == "Control")
+			{
+		        var selection = window.frames[editor+'_rEdit'].document.selection.createRange();
+				a.innerHTML = selection(0).outerHTML;
+				selection(0).outerHTML = a.outerHTML;
+			}
+			else
+			{
+				var selection = window.frames[editor+'_rEdit'].document.selection.createRange();
+				if (selection.htmlText == '')
+					a.innerHTML = (a.href)?a.href:a.name;
+				else
+					a.innerHTML = selection.htmlText;
+		
+				selection.pasteHTML(a.outerHTML);      
+			}
+		}	
+	}	
+	
+
+    SPAW_update_toolbar(editor, true);    
+  }
+  
   function SPAW_hr_click(editor, sender)
   {
     window.frames[editor+'_rEdit'].focus();     
@@ -395,7 +675,7 @@
       if (classname != 'default')
         el.className = classname;
       else
-        el.removeAttribute('className');
+        el.removeAttribute('className',0);
     }
     else if (el.tagName.toLowerCase() == 'body')
     {
@@ -413,9 +693,16 @@
   {
     fontname = sender.options[sender.selectedIndex].value;
     
-    window.frames[editor+'_rEdit'].focus();     
-
-    this[editor+'_rEdit'].document.execCommand('fontname', false, fontname);
+    window.frames[editor+'_rEdit'].focus();
+    
+    if (fontname == null || fontname == '')
+    {
+      this[editor+'_rEdit'].document.execCommand('RemoveFormat', false, null);
+    }
+    else   
+    {
+      this[editor+'_rEdit'].document.execCommand('fontname', false, fontname);
+    }
 
     sender.selectedIndex = 0;
 
@@ -453,7 +740,7 @@
     if (window.frames[editor+'_rEdit'].document.selection.type != "Control")
     {
       // selection is not a control => insert table 
-      var nt = showModalDialog('<?php echo $spaw_dir?>dialogs/table.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value, null, 
+      var nt = showModalDialog('<?php echo $spaw_dir?>dialogs/table.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value+'&request_uri='+escape(window.location.href), null, 
         'dialogHeight:250px; dialogWidth:366px; resizable:no; status:no');  
        
       if (nt)
@@ -462,18 +749,28 @@
     
         var newtable = document.createElement('TABLE');
         try {
-          newtable.width = (nt.width)?nt.width:'';
-          newtable.height = (nt.height)?nt.height:'';
-          newtable.border = (nt.border)?nt.border:'';
-          if (nt.cellPadding) newtable.cellPadding = nt.cellPadding;
-          if (nt.cellSpacing) newtable.cellSpacing = nt.cellSpacing;
-          newtable.bgColor = (nt.bgColor)?nt.bgColor:'';
+		  if (nt.width)
+          	newtable.width = nt.width;
+		  if (nt.height)
+          	newtable.height = nt.height;
+		  if (nt.border)
+          	newtable.border = nt.border;
+          if (nt.cellPadding) 
+		  	newtable.cellPadding = nt.cellPadding;
+          if (nt.cellSpacing) 
+		  	newtable.cellSpacing = nt.cellSpacing;
+		  if (nt.bgColor)
+          	newtable.bgColor = nt.bgColor;
+		  if (nt.background)
+		  	newtable.background = nt.background;
+		  if (nt.className)
+		  	newtable.className = nt.className;
           
           // create rows
-          for (i=0;i<parseInt(nt.rows);i++)
+          for (var i=0;i<parseInt(nt.rows);i++)
           {
             var newrow = document.createElement('TR');
-            for (j=0; j<parseInt(nt.cols); j++)
+            for (var j=0; j<parseInt(nt.cols); j++)
             {
               var newcell = document.createElement('TD');
               newrow.appendChild(newcell);
@@ -528,21 +825,49 @@
     tProps.cellPadding = tTable.cellPadding;
     tProps.cellSpacing = tTable.cellSpacing;
     tProps.bgColor = tTable.bgColor;
+	tProps.className = tTable.className;
+	tProps.background = tTable.background;
 
-    var ntProps = showModalDialog('<?php echo $spaw_dir?>dialogs/table.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value, tProps, 
+    var ntProps = showModalDialog('<?php echo $spaw_dir?>dialogs/table.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value+'&request_uri='+escape(window.location.href), tProps, 
       'dialogHeight:250px; dialogWidth:366px; resizable:no; status:no');  
     
     if (ntProps)
     {
       // set new settings
-      tTable.width = (ntProps.width)?ntProps.width:'';
-      tTable.style.width = (ntProps.width)?ntProps.width:'';
-      tTable.height = (ntProps.height)?ntProps.height:'';
+	  if (ntProps.width)
+	    tTable.width = ntProps.width;
+	  else
+	  	tTable.removeAttribute('width',0);
+   	  tTable.style.width = (ntProps.width)?ntProps.width:'';
+      if (ntProps.height)
+	  	tTable.height = ntProps.height
+	  else
+	  	tTable.removeAttribute('height',0);
       tTable.style.height = (ntProps.height)?ntProps.height:'';
-      tTable.border = (ntProps.border)?ntProps.border:'';
-      if (ntProps.cellPadding) tTable.cellPadding = ntProps.cellPadding;
-      if (ntProps.cellSpacing) tTable.cellSpacing = ntProps.cellSpacing;
-      tTable.bgColor = (ntProps.bgColor)?ntProps.bgColor:'';
+	  if (ntProps.border)
+	  	tTable.border = ntProps.border;
+	  else
+	  	tTable.removeAttribute('border',0);
+      if (ntProps.cellPadding) 
+	  	tTable.cellPadding = ntProps.cellPadding;
+	  else
+	  	tTable.removeAttribute('cellpadding',0);
+      if (ntProps.cellSpacing) 
+	  	tTable.cellSpacing = ntProps.cellSpacing;
+	  else
+	  	tTable.removeAttribute('cellspacing',0);
+	  if (ntProps.bgColor)
+      	tTable.bgColor = ntProps.bgColor;
+	  else
+	  	tTable.removeAttribute('bgcolor',0);
+	  if (ntProps.background)
+	  	tTable.background = ntProps.background;
+	  else
+	  	tTable.removeAttribute('background',0);
+	  if (ntProps.className)
+	  	tTable.className = ntProps.className;
+	  else
+	  	tTable.removeAttribute('className',0);
 
       SPAW_toggle_borders(editor, tTable, null);
     }
@@ -562,6 +887,7 @@
       cProps.width = (cd.style.width)?cd.style.width:cd.width;
       cProps.height = (cd.style.height)?cd.style.height:cd.height;
       cProps.bgColor = cd.bgColor;
+	  cProps.background = cd.background;
       cProps.align = cd.align;
       cProps.vAlign = cd.vAlign;
       cProps.className = cd.className;
@@ -572,20 +898,45 @@
         cProps.styleOptions = document.all['SPAW_'+editor+'_tb_style'].options;
       }
   
-      var ncProps = showModalDialog('<?php echo $spaw_dir?>dialogs/td.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value, cProps, 
+      var ncProps = showModalDialog('<?php echo $spaw_dir?>dialogs/td.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value+'&request_uri='+escape(window.location.href), cProps, 
         'dialogHeight:220px; dialogWidth:366px; resizable:no; status:no');  
       
       if (ncProps)  
       {
-        cd.align = (ncProps.align)?ncProps.align:'';
-        cd.vAlign = (ncProps.vAlign)?ncProps.vAlign:'';
-        cd.width = (ncProps.width)?ncProps.width:'';
+	  	if (ncProps.align)
+			cd.align = ncProps.align;
+		else
+			cd.removeAttribute('align',0);
+		if (ncProps.vAlign)
+        	cd.vAlign = ncProps.vAlign;
+		else
+			cd.removeAttribute('valign',0);
+		if (ncProps.width)
+        	cd.width = ncProps.width;
+		else
+			cd.removeAttribute('width',0);
         cd.style.width = (ncProps.width)?ncProps.width:'';
-        cd.height = (ncProps.height)?ncProps.height:'';
+		if (ncProps.height)
+        	cd.height = ncProps.height;
+		else
+			cd.removeAttribute('height',0);
         cd.style.height = (ncProps.height)?ncProps.height:'';
-        cd.bgColor = (ncProps.bgColor)?ncProps.bgColor:'';
-        cd.className = (ncProps.className)?ncProps.className:'';
-        cd.noWrap = ncProps.noWrap;
+		if (ncProps.bgColor)
+        	cd.bgColor = ncProps.bgColor;
+		else
+			cd.removeAttribute('bgcolor',0);
+	    if (ncProps.background)
+		  	cd.background = ncProps.background;
+		else
+		  	cd.removeAttribute('background',0);
+		if (ncProps.className)
+        	cd.className = ncProps.className;
+		else
+			cd.removeAttribute('className',0);
+		if (ncProps.noWrap)
+        	cd.noWrap = ncProps.noWrap;
+		else
+			cd.removeAttribute('nowrap',0);
       }      
     }
     SPAW_update_toolbar(editor, true);    
@@ -686,7 +1037,7 @@
     if (ct && cr)
     {
       var newr = ct.insertRow(cr.rowIndex+1);
-      for (i=0; i<cr.cells.length; i++)
+      for (var i=0; i<cr.cells.length; i++)
       {
         if (cr.cells(i).rowSpan > 1)
         {
@@ -700,10 +1051,10 @@
         }
       }
       // increase rowspan for cells that were spanning through current row
-      for (i=0; i<cr.rowIndex; i++)
+      for (var i=0; i<cr.rowIndex; i++)
       {
         var tempr = ct.rows(i);
-        for (j=0; j<tempr.cells.length; j++)
+        for (var j=0; j<tempr.cells.length; j++)
         {
           if (tempr.cells(j).rowSpan > (cr.rowIndex - i))
             tempr.cells(j).rowSpan++;
@@ -716,20 +1067,20 @@
   function SPAW_formCellMatrix(ct)
   {
     var tm = new Array();
-    for (i=0; i<ct.rows.length; i++)
+    for (var i=0; i<ct.rows.length; i++)
       tm[i]=new Array();
 
-    for (i=0; i<ct.rows.length; i++)
+    for (var i=0; i<ct.rows.length; i++)
     {
       jr=0;
-      for (j=0; j<ct.rows(i).cells.length;j++)
+      for (var j=0; j<ct.rows(i).cells.length;j++)
       {
         while (tm[i][jr] != undefined) 
           jr++;
 
-        for (jh=jr; jh<jr+(ct.rows(i).cells(j).colSpan?ct.rows(i).cells(j).colSpan:1);jh++)
+        for (var jh=jr; jh<jr+(ct.rows(i).cells(j).colSpan?ct.rows(i).cells(j).colSpan:1);jh++)
         {
-          for (jv=i; jv<i+(ct.rows(i).cells(j).rowSpan?ct.rows(i).cells(j).rowSpan:1);jv++)
+          for (var jv=i; jv<i+(ct.rows(i).cells(j).rowSpan?ct.rows(i).cells(j).rowSpan:1);jv++)
           {
             if (jv==i)
             {
@@ -757,7 +1108,7 @@
       // get "real" cell position and form cell matrix
       var tm = SPAW_formCellMatrix(ct);
       
-      for (j=0; j<tm[cr.rowIndex].length; j++)
+      for (var j=0; j<tm[cr.rowIndex].length; j++)
       {
         if (tm[cr.rowIndex][j] == cd.cellIndex)
         {
@@ -767,7 +1118,7 @@
       }
       
       // insert column based on real cell matrix
-      for (i=0; i<ct.rows.length; i++)
+      for (var i=0; i<ct.rows.length; i++)
       {
         if (tm[i][realIndex] != -1)
         {
@@ -798,7 +1149,7 @@
       // get "real" cell position and form cell matrix
       var tm = SPAW_formCellMatrix(ct);
       
-      for (j=0; j<tm[cr.rowIndex].length; j++)
+      for (var j=0; j<tm[cr.rowIndex].length; j++)
       {
         if (tm[cr.rowIndex][j] == cd.cellIndex)
         {
@@ -844,7 +1195,7 @@
       // get "real" cell position and form cell matrix
       var tm = SPAW_formCellMatrix(ct);
       
-      for (j=0; j<tm[cr.rowIndex].length; j++)
+      for (var j=0; j<tm[cr.rowIndex].length; j++)
       {
         if (tm[cr.rowIndex][j] == cd.cellIndex)
         {
@@ -897,10 +1248,10 @@
         
         
         // decrease rowspan for cells that were spanning through current row
-        for (i=0; i<cr.rowIndex; i++)
+        for (var i=0; i<cr.rowIndex; i++)
         {
           var tempr = ct.rows(i);
-          for (j=0; j<tempr.cells.length; j++)
+          for (var j=0; j<tempr.cells.length; j++)
           {
             if (tempr.cells(j).rowSpan > (cr.rowIndex - i))
               tempr.cells(j).rowSpan--;
@@ -910,7 +1261,7 @@
         
         curCI = -1;
         // check for current row cells spanning more than 1 row
-        for (i=0; i<tm[cr.rowIndex].length; i++)
+        for (var i=0; i<tm[cr.rowIndex].length; i++)
         {
           prevCI = curCI;
           curCI = tm[cr.rowIndex][i];
@@ -933,12 +1284,12 @@
             newc.replaceNode(nc);
             // fix the matrix
             cs = (cr.cells(curCI).colSpan>1)?cr.cells(curCI).colSpan:1;
-            for (j=i; j<(i+cs);j++)
+            for (var j=i; j<(i+cs);j++)
             {
               tm[cr.rowIndex+1][j] = nrCI;
               nj = j;
             }
-            for (j=nj; j<tm[cr.rowIndex+1].length; j++)
+            for (var j=nj; j<tm[cr.rowIndex+1].length; j++)
             {
               if (tm[cr.rowIndex+1][j] != -1)
                 tm[cr.rowIndex+1][j]++;
@@ -970,7 +1321,7 @@
       }
       else
       {
-        for (j=0; j<tm[cr.rowIndex].length; j++)
+        for (var j=0; j<tm[cr.rowIndex].length; j++)
         {
           if (tm[cr.rowIndex][j] == cd.cellIndex)
           {
@@ -979,7 +1330,7 @@
           }
         }
         
-        for (i=0; i<ct.rows.length; i++)
+        for (var i=0; i<ct.rows.length; i++)
         {
           if (tm[i][realIndex] != -1)
           {
@@ -1006,7 +1357,7 @@
       // get "real" cell position and form cell matrix
       var tm = SPAW_formCellMatrix(ct);
   
-      for (j=0; j<tm[cr.rowIndex].length; j++)
+      for (var j=0; j<tm[cr.rowIndex].length; j++)
       {
         if (tm[cr.rowIndex][j] == cd.cellIndex)
         {
@@ -1037,7 +1388,7 @@
       {
         // add new row and make all other cells to span one row more
         ct.insertRow(cr.rowIndex+1);
-        for (i=0; i<cr.cells.length; i++)
+        for (var i=0; i<cr.cells.length; i++)
         {
           if (i != cd.cellIndex)
           {
@@ -1046,10 +1397,10 @@
           }
         }
   
-        for (i=0; i<cr.rowIndex; i++)
+        for (var i=0; i<cr.rowIndex; i++)
         {
           var tempr = ct.rows(i);
-          for (j=0; j<tempr.cells.length; j++)
+          for (var j=0; j<tempr.cells.length; j++)
           {
             if (tempr.cells(j).rowSpan > (cr.rowIndex - i))
               tempr.cells(j).rowSpan++;
@@ -1076,7 +1427,7 @@
       // get "real" cell position and form cell matrix
       var tm = SPAW_formCellMatrix(ct);
   
-      for (j=0; j<tm[cr.rowIndex].length; j++)
+      for (var j=0; j<tm[cr.rowIndex].length; j++)
       {
         if (tm[cr.rowIndex][j] == cd.cellIndex)
         {
@@ -1101,7 +1452,7 @@
         var nc = cd.cloneNode();
         newc.replaceNode(nc);
         
-        for (i=0; i<tm.length; i++)
+        for (var i=0; i<tm.length; i++)
         {
           if (i!=cr.rowIndex && tm[i][realIndex] != -1)
           {
@@ -1151,7 +1502,9 @@
   // switch to html mode
   function SPAW_html_tab_click(editor, sender)
   {
-    iHTML = this[editor+'_rEdit'].document.body.innerHTML;
+    var iHTML = SPAW_getHtmlValue(editor, null);
+
+    //iHTML = this[editor+'_rEdit'].document.body.innerHTML;
     //this[editor+'_rEdit'].document.body.innerText = iHTML;
     document.all[editor].value = iHTML;
     
@@ -1180,18 +1533,62 @@
   
   function SPAW_getFieldByEditor(editor, field)
   {
+    // NOTE: this function doesn't make much sense in the current situation
+    // but is left so nothing gets broken
     var thefield;
-    // get field by editor name if no field passed
+    // get by id
+    //// OLD: get field by editor name if no field passed
     if (field == null || field == "")
     {
-      var flds = document.getElementsByName(editor);
-      thefield = flds[0].id;
+      // var flds = document.getElementsByName(editor);
+      // thefield = flds[0].id;
+      thefield = document.getElementById(editor).id;
     }
     else
     {
       thefield=field;
     }
     return thefield;
+  }
+  
+  function SPAW_stripAbsoluteUrl(editor, url)
+  {
+	var curl = window.frames[editor+'_rEdit'].location.href;
+	var di = curl.lastIndexOf('/', curl.lastIndexOf('?')!=-1?curl.lastIndexOf('?'):curl.length);
+	var cdir = curl;
+	if (di != -1)
+		cdir = curl.substr(0,di+1);
+	var chost = curl;
+	var hi = curl.indexOf('/',curl.indexOf('://')!=-1?(curl.indexOf('://')+3):curl.length);
+	if (hi != -1)
+		chost = curl.substr(0,hi);
+  	if (url.toLowerCase().indexOf(curl.toLowerCase())==0)
+	{
+		url = url.substr(curl.length);
+	}
+	else if (url.toLowerCase().indexOf(cdir.toLowerCase())==0)
+	{
+		url = url.substr(cdir.length);
+	}
+	else if (url.toLowerCase().indexOf(chost.toLowerCase())==0)
+	{
+		url = url.substr(chost.length);
+	}
+	return(url);
+  }
+
+  function SPAW_stripAbsoluteUrlFromImg(editor, url)
+  {
+	var curl = window.frames[editor+'_rEdit'].location.href;
+	var chost = curl;
+	var hi = curl.indexOf('/',curl.indexOf('://')!=-1?(curl.indexOf('://')+3):curl.length);
+	if (hi != -1)
+		chost = curl.substr(0,hi);
+	if (url.toLowerCase().indexOf(chost.toLowerCase())==0)
+	{
+		url = url.substr(chost.length);
+	}
+	return(url);
   }
   
   function SPAW_getHtmlValue(editor, thefield)
@@ -1201,6 +1598,27 @@
     if(document.all['SPAW_'+editor+'_editor_mode'].value == 'design')
     {
       // wysiwyg
+	  // replace automatic absolute urls
+	  var links = this[editor+'_rEdit'].document.getElementsByTagName('A');
+	  var aln = 0;
+	  if (links != null) aln = links.length;
+	  for (var i=0;i<aln;i++)
+	  {
+	  	links[i].href = SPAW_stripAbsoluteUrl(editor, links[i].href);
+		if (!links[i].href)
+		{
+			links[i].removeAttribute('href',0);
+		}
+	  }
+
+	  var imgs = this[editor+'_rEdit'].document.getElementsByTagName('IMG');
+	  var aln = 0;
+	  if (imgs != null) aln = imgs.length;
+	  for (var i=0;i<aln;i++)
+	  {
+	  	imgs[i].src = SPAW_stripAbsoluteUrlFromImg(editor, imgs[i].src);
+	  }
+	  
       htmlvalue = this[editor+'_rEdit'].document.body.innerHTML;
     }
     else
@@ -1240,7 +1658,7 @@
       {
         found = false;
         var els = window.frames[editor+'_rEdit'].document.body.all;
-        for (i=0; i<els.length; i++)
+        for (var i=0; i<els.length; i++)
         {
           // remove tags with urns set
           if (els[i].tagUrn != null && els[i].tagUrn != '')
@@ -1260,7 +1678,7 @@
       
       // remove styles
       var els = window.frames[editor+'_rEdit'].document.body.all;
-      for (i=0; i<els.length; i++)
+      for (var i=0; i<els.length; i++)
       {
         // remove style and class attributes from all tags
         els[i].removeAttribute("className",0);
@@ -1302,7 +1720,7 @@
     
     var tbln = 0;
     if (tbls != null) tbln = tbls.length;
-    for (ti = 0; ti<tbln; ti++)
+    for (var ti = 0; ti<tbln; ti++)
     {
       if ((tbls[ti].style.borderWidth == 0 || tbls[ti].style.borderWidth == "0px") &&
           (tbls[ti].border == 0 || tbls[ti].border == "0px") &&
@@ -1321,7 +1739,7 @@
         
       var cls = tbls[ti].cells;
       // loop through cells
-      for (ci = 0; ci<cls.length; ci++)
+      for (var ci = 0; ci<cls.length; ci++)
       {
         if ((tbls[ti].style.borderWidth == 0 || tbls[ti].style.borderWidth == "0px") &&
             (tbls[ti].border == 0 || tbls[ti].border == "0px") && 
@@ -1391,7 +1809,7 @@
   // update active toolbar state
   function SPAW_update_toolbar(editor, force)
   {
-    window.frames[editor+'_rEdit'].focus();     
+    //window.frames[editor+'_rEdit'].focus();     
     var pt = SPAW_getParentTag(editor);
     if (pt)
     {
@@ -1438,6 +1856,7 @@
                             ["justifyleft",         "left"],
                             ["justifycenter",       "center"],
                             ["justifyright",        "right"],
+                            ["justifyfull",         "justify"],
                             ["indent",              "indent"],
                             ["outdent",             "unindent"],
                             ["forecolor",           "fore_color"],
@@ -1445,7 +1864,11 @@
                             ["insertorderedlist",   "ordered_list"],
                             ["insertunorderedlist", "bulleted_list"],
                             ["createlink",          "hyperlink"],
-                            ["inserthorizontalrule","hr"]
+                            ["createlink",          "internal_link"],
+                            ["createlink",          "image_popup"],
+                            ["inserthorizontalrule","hr"],
+							["subscript",			"subscript"],
+							["superscript",			"superscript"]
                           ];                          
 
     togglable_items     = [ // command,             control id
@@ -1455,10 +1878,9 @@
                             ["justifyleft",         "left"],
                             ["justifycenter",       "center"],
                             ["justifyright",        "right"],
-                            ["insertorderedlist",   "ordered_list"],
-                            ["insertunorderedlist", "bulleted_list"],
-                            ["createlink",          "hyperlink"],
-                            ["inserthorizontalrule","hr"]
+                            ["justifyfull",         "justify"],
+							["subscript",			"subscript"],
+							["superscript",			"superscript"]
                           ];        
     standard_dropdowns  = [ // command,             control id
                             ["fontname",            "font"],
@@ -1469,7 +1891,7 @@
     // proceed only if active toolbar is enabled
     if (!spaw_active_toolbar) return;
     
-    window.frames[editor+'_rEdit'].focus();     
+    //window.frames[editor+'_rEdit'].focus();     
 
     // get object references
     var eobj = window.frames[editor+'_rEdit']; // editor iframe
@@ -1547,11 +1969,11 @@
     // end image buttons
     
     // set state and enable/disable standard command buttons
-    for (i=0; i<togglable_items.length; i++)
+    for (var i=0; i<togglable_items.length; i++)
     {
-      SPAW_toggle_tbi_state(editor, standard_cmd_items[i][1], edoc.queryCommandState(standard_cmd_items[i][0]));
+      SPAW_toggle_tbi_state(editor, togglable_items[i][1], edoc.queryCommandState(togglable_items[i][0]));
     }
-    for (i=0; i<standard_cmd_items.length; i++)
+    for (var i=0; i<standard_cmd_items.length; i++)
     {
       SPAW_toggle_tbi(editor, standard_cmd_items[i][1], edoc.queryCommandEnabled(standard_cmd_items[i][0]));
     }
@@ -1567,7 +1989,7 @@
     }
     
     // dropdowns
-    for (i=0; i<standard_dropdowns.length; i++)
+    for (var i=0; i<standard_dropdowns.length; i++)
     {
       SPAW_toggle_tbi_dropdown(editor, standard_dropdowns[i][1], edoc.queryCommandValue(standard_dropdowns[i][0]));
     }
@@ -1579,7 +2001,7 @@
   // enable/disable toolbar item
   function SPAW_toggle_tb_items(editor, items, enable)
   {
-    for (i=0; i<items.length; i++)
+    for (var i=0; i<items.length; i++)
     {
       SPAW_toggle_tbi(editor, items[i], enable);
     }
@@ -1595,6 +2017,7 @@
       {
         if (ctrl)
         {
+          ctrl.disabled = false;
           eval("SPAW_"+document.all["SPAW_"+editor+"_theme"].value+"_bt_out(ctrl);");
         }
       }
@@ -1602,6 +2025,7 @@
       {
         if (ctrl)
         {
+          ctrl.disabled = true;
           eval("SPAW_"+document.all["SPAW_"+editor+"_theme"].value+"_bt_off(ctrl);");
         }
       }
@@ -1626,7 +2050,7 @@
     {
       var ctrl = document.all["SPAW_"+editor+"_tb_"+item];
       ctrl.options[0].selected = true;
-      for (ii=0; ii<ctrl.options.length; ii++)
+      for (var ii=0; ii<ctrl.options.length; ii++)
       {
         if (ctrl.options[ii].value == value)
         {
@@ -1638,5 +2062,19 @@
         }
       }
     }
+  }
+  
+  function SPAW_superscript_click(editor, sender)
+  {
+    window.frames[editor+'_rEdit'].focus();     
+    this[editor+'_rEdit'].document.execCommand('superscript', false, null);
+    SPAW_update_toolbar(editor, true);    
+  }
+
+  function SPAW_subscript_click(editor, sender)
+  {
+    window.frames[editor+'_rEdit'].focus();     
+    this[editor+'_rEdit'].document.execCommand('subscript', false, null);
+    SPAW_update_toolbar(editor, true);    
   }
   

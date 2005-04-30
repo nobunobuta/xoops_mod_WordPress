@@ -6,6 +6,7 @@
 // ================================================
 // Developed: Alan Mendelevich, alan@solmetra.lt
 // Translated: Morten Skyt Eriksen xgd_bitnissen@hotmail.com
+// Updated by: Tommy Ipsen tipsen@imada.sdu.dk
 // Copyright: Solmetra (c)2003 All rights reserved.
 // ------------------------------------------------
 //                                www.solmetra.com
@@ -36,12 +37,10 @@ $spaw_lang_data = array(
   'redo' => array(
     'title' => 'Gentag'
   ),
-  'hyperlink' => array(
-    'title' => 'Hyperlink'
-  ),
   'image_insert' => array(
     'title' => 'Indsæt billede',
     'select' => 'Vælg',
+    'delete' => 'Slet',
     'cancel' => 'Annuller',
     'library' => 'Bibliotek',
     'preview' => 'Eksempel',
@@ -49,13 +48,14 @@ $spaw_lang_data = array(
     'upload' => 'Upload billede',
     'upload_button' => 'Upload',
     'error' => 'Fejl',
-    'error_no_image' => 'Vælg venligst et billede',
-    'error_uploading' => 'En fejl skete under upload. Prøv venligst igen senere',
-    'error_wrong_type' => 'Forkert billede type.',
-    'error_no_dir' => 'Bibliotek eksisterer ikke fysisk',
+    'error_no_image' => 'Vælg et billede',
+    'error_uploading' => 'En fejl skete under upload af billede. Prøv igen senere',
+    'error_wrong_type' => 'Forkert billedeformat',
+    'error_no_dir' => 'Biblioteket findes ikke',
+    'error_cant_delete' => 'Kunne ikke slette',
   ),
   'image_prop' => array(
-    'title' => 'Billede indstillinger',
+    'title' => 'Billede egenskaber',
     'ok' => '   OK   ',
     'cancel' => 'Annuller',
     'source' => 'Kilde',
@@ -72,27 +72,28 @@ $spaw_lang_data = array(
     'width' => 'Bredde',
     'height' => 'Højde',
     'border' => 'Kant',
-    'hspace' => 'Hor. mellemrum',
-    'vspace' => 'Vert. mellemrum',
+    'hspace' => 'Horisontalt mellemrum',
+    'vspace' => 'Vertikalt mellemrum',
     'error' => 'Fejl',
-    'error_width_nan' => 'Bredden er ikke et nummer',
-    'error_height_nan' => 'Højden er ikke et nummer',
-    'error_border_nan' => 'Kanten er ikke et nummer',
-    'error_hspace_nan' => 'Horisontalt mellemrum er ikke et nummer',
-    'error_vspace_nan' => 'Vertikalt mellemrum er ikke et nummer',
+    'error_width_nan' => 'Bredde er ikke et tal',
+    'error_height_nan' => 'Højden er ikke et tal',
+    'error_border_nan' => 'Kanten er ikke et tal',
+    'error_hspace_nan' => 'Horisontalt mellemrum er ikke et tal',
+    'error_vspace_nan' => 'Vertikalt mellemrum er ikke et tal',
   ),
   'hr' => array(
-    'title' => 'Horisontal bar'
+    'title' => 'Horisontal linie'
   ),
   'table_create' => array(
     'title' => 'Opret tabel'
   ),
   'table_prop' => array(
-    'title' => 'Tabel indstillinger',
+    'title' => 'Tabel egenskaber',
     'ok' => '   OK   ',
     'cancel' => 'Annuller',
     'rows' => 'Rækker',
-    'columns' => 'Kollonner',
+    'columns' => 'Kolonner',
+    'css_class' => 'CSS klasse',
     'width' => 'Bredde',
     'height' => 'Højde',
     'border' => 'Kant',
@@ -100,14 +101,15 @@ $spaw_lang_data = array(
     'cellpadding' => 'Celle forskydning',
     'cellspacing' => 'Celle mellemrum',
     'bg_color' => 'Baggrundsfarve',
+    'background' => 'Baggrundsbillede',
     'error' => 'Fejl',
-    'error_rows_nan' => 'Rækken er ikke et nummer',
-    'error_columns_nan' => 'Kollonnen er ikke et nummer',
-    'error_width_nan' => 'Bredden er ikke et nummer',
-    'error_height_nan' => 'Højden er ikke et nummer',
-    'error_border_nan' => 'Kanten er ikke et nummer',
-    'error_cellpadding_nan' => 'Celle forskydning er ikke et nummer',
-    'error_cellspacing_nan' => 'Celle mellemrum er ikke et nummer',
+    'error_rows_nan' => 'Rækken er ikke et tal',
+    'error_columns_nan' => 'Kollonnen er ikke et tal',
+    'error_width_nan' => 'Bredden er ikke et tal',
+    'error_height_nan' => 'Højden er ikke et tal',
+    'error_border_nan' => 'Kanten er ikke et tal',
+    'error_cellpadding_nan' => 'Celle forskydning er ikke et tal',
+    'error_cellspacing_nan' => 'Celle mellemrum er ikke et tal',
   ),
   'table_cell_prop' => array(
     'title' => 'Celle indstillinger',
@@ -115,9 +117,10 @@ $spaw_lang_data = array(
     'vertical_align' => 'Vertikal placering',
     'width' => 'Bredde',
     'height' => 'Højde',
-    'css_class' => 'CSS class',
+    'css_class' => 'CSS klasse',
     'no_wrap' => 'Ingen tekstombrydning',
     'bg_color' => 'Baggrundsfarve',
+    'background' => 'Baggrundsbillede',
     'ok' => '   OK   ',
     'cancel' => 'Annuller',
     'left' => 'Venstre',
@@ -128,8 +131,8 @@ $spaw_lang_data = array(
     'bottom' => 'Bunden',
     'baseline' => 'Bundlinie',
     'error' => 'Fejl',
-    'error_width_nan' => 'Bredden er ikke et nummer',
-    'error_height_nan' => 'Højden er ikke et nummer',
+    'error_width_nan' => 'Bredden er ikke et tal',
+    'error_height_nan' => 'Højden er ikke et tal',
   ),
   'table_row_insert' => array(
     'title' => 'Indsæt række'
@@ -144,10 +147,10 @@ $spaw_lang_data = array(
     'title' => 'Slet kolonne'
   ),
   'table_cell_merge_right' => array(
-    'title' => 'Flet til højre'
+    'title' => 'Flet celler mod højre'
   ),
   'table_cell_merge_down' => array(
-    'title' => 'Flet ned'
+    'title' => 'Flet celler nedad'
   ),
   'table_cell_split_horizontal' => array(
     'title' => 'Split celle horisontalt'
@@ -159,13 +162,13 @@ $spaw_lang_data = array(
     'title' => 'Stil'
   ),
   'font' => array(
-    'title' => 'Skrift'
+    'title' => 'Skrifttype'
   ),
   'fontsize' => array(
     'title' => 'Størrelse'
   ),
   'paragraph' => array(
-    'title' => 'Paragraf'
+    'title' => 'Afsnit'
   ),
   'bold' => array(
     'title' => 'Fed'
@@ -177,16 +180,16 @@ $spaw_lang_data = array(
     'title' => 'Understreget'
   ),
   'ordered_list' => array(
-    'title' => 'Organiseret liste'
+    'title' => 'Nummereret liste'
   ),
   'bulleted_list' => array(
-    'title' => 'Prik liste'
+    'title' => 'Punktopstilling'
   ),
   'indent' => array(
-    'title' => 'Indent'
+    'title' => 'Forøg indrykning'
   ),
   'unindent' => array(
-    'title' => 'Unindent'
+    'title' => 'Formindsk indrykning'
   ),
   'left' => array(
     'title' => 'Venstre'
@@ -197,6 +200,9 @@ $spaw_lang_data = array(
   'right' => array(
     'title' => 'Højre'
   ),
+  'justify' => array(
+    'title' => 'Lige højre margin',
+  ),
   'fore_color' => array(
     'title' => 'Forgrundsfarve'
   ),
@@ -204,24 +210,24 @@ $spaw_lang_data = array(
     'title' => 'Baggrundsfarve'
   ),
   'design_tab' => array(
-    'title' => 'Skift til WYSIWYG (design) mode'
+    'title' => 'Skift til WYSIWYG (design) visning'
   ),
   'html_tab' => array(
-    'title' => 'Skift til HTML (kodnings) mode'
+    'title' => 'Skift til HTML (kodnings) visning'
   ),
   'colorpicker' => array(
-    'title' => 'Farve vælger',
+    'title' => 'Farvevælger',
     'ok' => '   OK   ',
     'cancel' => 'Annuller',
   ),
   'cleanup' => array(
     'title' => 'HTML renser (fjerner stilen)',
-    'confirm' => 'Dette vil fjerne alle stile, skrifte og ubruelige koder fra indholdet. Nogle af dine formateringer går måske tabt.',
+    'confirm' => 'Dette vil fjerne alle stile, skrifte og ubrugelige koder fra indholdet. Dele af eller hele din formatering går måske tabt.',
     'ok' => '   OK   ',
     'cancel' => 'Annuller',
   ),
   'toggle_borders' => array(
-    'title' => 'Kanter fra/til',
+    'title' => 'Kanter til/fra',
   ),
   'hyperlink' => array(
     'title' => 'Hyperlink',
@@ -229,14 +235,28 @@ $spaw_lang_data = array(
     'name' => 'Navn',
     'target' => 'Destination',
     'title_attr' => 'Titel',
+    'a_type' => 'Type',
+    'type_link' => 'Link',
+    'type_anchor' => 'Anker',
+    'type_link2anchor' => 'Link til anker',
+    'anchors' => 'Ankre',
     'ok' => '   OK   ',
     'cancel' => 'Annuller',
   ),
+  'hyperlink_targets' => array( // <=== new 1.0.5
+  	'_self' => 'Samme ramme (_self)',
+	'_blank' => 'Nyt vindue (_blank)',
+	'_top' => 'Top ramme (_top)',
+	'_parent' => 'Forældre ramme (_parent)'
+  ),
+  'internal_link' => array(
+    'title' => 'Internt link',
+  ),
   'table_row_prop' => array(
-    'title' => 'Række indstillinger',
+    'title' => 'Række egenskaber',
     'horizontal_align' => 'Horisontal placering',
     'vertical_align' => 'Vertikal placering',
-    'css_class' => 'CSS class',
+    'css_class' => 'CSS klasse',
     'no_wrap' => 'Ingen tekstombrydning',
     'bg_color' => 'Baggrundsfarve',
     'ok' => '   OK   ',
@@ -250,26 +270,26 @@ $spaw_lang_data = array(
     'baseline' => 'Bundlinie',
   ),
   'symbols' => array(
-    'title' => 'Speciale tegn',
+    'title' => 'Specialtegn',
     'ok' => '   OK   ',
     'cancel' => 'Annuller',
   ),
   'templates' => array(
-    'title' => 'Templates',
+    'title' => 'Skabeloner',
   ),
   'page_prop' => array(
-    'title' => 'Side indstillinger',
-    'title_tag' => 'Tittel',
+    'title' => 'Side egenskaber',
+    'title_tag' => 'Titel',
     'charset' => 'Tegnsæt',
     'background' => 'Baggrundsbillede',
     'bgcolor' => 'Baggrundsfarve',
-    'text' => 'Tekst farve',
+    'text' => 'Tekstfarve',
     'link' => 'Link farve',
     'vlink' => 'Besøgt link farve',
     'alink' => 'Aktivt link farve',
     'leftmargin' => 'Venstre margen',
     'topmargin' => 'Top margen',
-    'css_class' => 'CSS class',
+    'css_class' => 'CSS klasse',
     'ok' => '   OK   ',
     'cancel' => 'Annuller',
   ),
@@ -284,4 +304,3 @@ $spaw_lang_data = array(
   ),
 );
 ?>
-

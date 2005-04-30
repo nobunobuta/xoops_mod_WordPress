@@ -50,7 +50,6 @@ class SPAW_TB_Item
     $this->lang = $lang;
     $this->editor = $editor;
     $this->theme = $theme;
-    $this->attributes = $attributes;
     if (!is_array($data))
     {
       $this->data = array();
@@ -72,7 +71,7 @@ class SPAW_TB_Image extends SPAW_TB_Item
     
     if (!empty($this->name))
     {
-      $buf = '<img id="SPAW_'.$this->editor.'_tb_'.$this->name.'" alt="'.$this->lang->m('title',$this->name).'" src="'.$spaw_dir.'lib/themes/'.$this->theme.'/img/tb_'.$this->name.'.gif" '.$this->attributes.' unselectable="on">';
+      $buf = '<img id="SPAW_'.$this->editor.'_tb_'.$this->name.'" alt="'.$this->lang->m('title',$this->name).'" src="'.$spaw_dir.'lib/themes/'.$this->theme.'/img/tb_'.$this->name.'.gif" '.(isset($this->attributes)?$this->attributes:'').' unselectable="on">';
       return $buf;
     }
   }
@@ -88,7 +87,7 @@ class SPAW_TB_Button extends SPAW_TB_Item
     
     if (!empty($this->name))
     {
-      $buf = '<img id="SPAW_'.$this->editor.'_tb_'.$this->name.'" alt="'.$this->lang->m('title',$this->name).'" src="'.$spaw_dir.'lib/themes/'.$this->theme.'/img/tb_'.$this->name.'.gif" onClick="SPAW_'.$this->name.'_click(\''.$this->editor.'\',this)" class="SPAW_'.$this->theme.'_tb_out" onMouseOver="SPAW_'.$this->theme.'_bt_over(this)" onMouseOut="SPAW_'.$this->theme.'_bt_out(this)" onMouseDown="SPAW_'.$this->theme.'_bt_down(this)" onMouseUp="SPAW_'.$this->theme.'_bt_up(this)"  '.$this->attributes.' unselectable="on">';
+      $buf = '<img id="SPAW_'.$this->editor.'_tb_'.$this->name.'" alt="'.$this->lang->m('title',$this->name).'" src="'.$spaw_dir.'lib/themes/'.$this->theme.'/img/tb_'.$this->name.'.gif" onClick="SPAW_'.$this->name.'_click(\''.$this->editor.'\',this)" class="SPAW_'.$this->theme.'_tb_out" onMouseOver="SPAW_'.$this->theme.'_bt_over(this)" onMouseOut="SPAW_'.$this->theme.'_bt_out(this)" onMouseDown="SPAW_'.$this->theme.'_bt_down(this)" onMouseUp="SPAW_'.$this->theme.'_bt_up(this)"  '.(isset($this->attributes)?$this->attributes:'').' unselectable="on">';
       return $buf;
     }
   }
@@ -105,7 +104,7 @@ class SPAW_TB_Dropdown extends SPAW_TB_Item
     
     if (!empty($this->name))
     {
-      $buf = '<select size="1" id="SPAW_'.$this->editor.'_tb_'.$this->name.'" name="SPAW_'.$this->editor.'_tb_'.$this->name.'" align="absmiddle" class="SPAW_'.$this->theme.'_tb_input" onchange="SPAW_'.$this->name.'_change(\''.$this->editor.'\',this)" '.$this->attributes.'>';
+      $buf = '<select size="1" id="SPAW_'.$this->editor.'_tb_'.$this->name.'" name="SPAW_'.$this->editor.'_tb_'.$this->name.'" align="absmiddle" class="SPAW_'.$this->theme.'_tb_input" onchange="SPAW_'.$this->name.'_change(\''.$this->editor.'\',this)" '.(isset($this->attributes)?$this->attributes:'').'>';
       $buf.='<option>'.$this->lang->m('title',$this->name).'</option>';
       while(list($value,$text) = each($this->data))
       {
@@ -145,10 +144,14 @@ class SPAW_Toolbars
       $this->mode = $value;
     }
     
-    if (!@include($spaw_root.'lib/toolbars/'.$this->mode.'/'.$this->mode.'_toolbar_data.inc.php'))
+    // try loading specific tollbar for this mode and browser type
+    if (!@include($spaw_root.'lib/toolbars/'.$this->mode.'/'.$this->mode.'_toolbar_data.'.strtolower(SPAW_Util::getBrowser()).'.inc.php'))
     {
-      // load default toolbar data
-      @include($spaw_root.'lib/toolbars/'.$spaw_default_toolbars.'/'.$spaw_default_toolbars.'_toolbar_data.inc.php');
+      if (!@include($spaw_root.'lib/toolbars/'.$this->mode.'/'.$this->mode.'_toolbar_data.inc.php'))
+      {
+        // load default toolbar data
+        @include($spaw_root.'lib/toolbars/'.$spaw_default_toolbars.'/'.$spaw_default_toolbars.'_toolbar_data.inc.php');
+      }
     }
     $this->toolbars = $spaw_toolbar_data;
   }
@@ -184,7 +187,7 @@ class SPAW_Toolbars
   // get toolbar html for the specified position (top, left, right, bottom)
   function get($pos, $mode='design')
   {
-    $buf = '' ;
+  	$buf = '';
     if (!empty($this->toolbars[$pos.'_'.$mode]))
     {
       if ($pos == 'top' || $pos == 'bottom')
@@ -207,7 +210,7 @@ class SPAW_Toolbars
         if ($pos == 'top' || $pos == 'bottom')
         {
           // horizontal toolbar
-          $tb_start = '<tr><td align="'.$tb['settings']['align'].'" valign="'.$tb['settings']['valign'].'" class="SPAW_'.$this->theme.'_toolbar_'.$pos.'">';
+          $tb_start = '<tr><td align="'.$tb['settings']['align'].'" valign="'.$tb['settings']['valign'].'" class="SPAW_'.$this->theme.'_toolbar_'.$pos.'" nowrap="yes">';
           $tb_end = '</td></tr>';
         }
         else
@@ -218,10 +221,9 @@ class SPAW_Toolbars
         }
       
         $buf .= $tb_start;
-        foreach( $tb['data'] as $tbitem ) {
-          $attributes = empty( $tbitem['attributes'] ) ? '' : $tbitem['attributes'] ;
-          $data = empty( $tbitem['data'] ) ? '' : $tbitem['data'] ;
-          $buf .= $this->getTbItem($tbitem['name'],$tbitem['type'],$attributes, $data ) . $tb_item_sep;
+        while (list(,$tbitem) = each($tb['data']))
+        {
+          $buf .= $this->getTbItem($tbitem['name'],$tbitem['type'],isset($tbitem['attributes'])?$tbitem['attributes']:'', isset($tbitem['data'])?$tbitem['data']:'') . $tb_item_sep;
         }
         $buf .= $tb_end;
       }
@@ -240,8 +242,8 @@ class SPAW_Toolbars
         $buf = $tbi->get();
         break;
       case SPAW_TBI_BUTTON:
-		$tbi = new SPAW_TB_Button($name, $this->lang, $this->editor, $this->theme, $attributes);
-		$buf = $tbi->get();
+        $tbi = new SPAW_TB_Button($name, $this->lang, $this->editor, $this->theme, $attributes);
+        $buf = $tbi->get();
         break;
       case SPAW_TBI_DROPDOWN:
         if (!empty($this->dropdown_data[$name]))

@@ -13,10 +13,10 @@
 // ================================================
 
 $spaw_root = dirname( __FILE__ ) . '/' ;	// GIJ Security Patched
-
 include $spaw_root.'config/spaw_control.config.php';
-include $spaw_root.'/class/toolbars.class.php';
-include $spaw_root.'/class/lang.class.php';
+include $spaw_root.'class/util.class.php';
+include $spaw_root.'class/toolbars.class.php';
+include $spaw_root.'class/lang.class.php';
 
 // instance counter (static)
 $spaw_wysiwyg_instCount = 0;
@@ -24,6 +24,8 @@ $spaw_wysiwyg_instCount = 0;
 class SPAW_Wysiwyg {
   // controls name
   var $control_name;
+  // controls unmodified name
+  var $original_name;   
   // value
   var $value;
   // holds control toolbar mode.
@@ -50,10 +52,12 @@ class SPAW_Wysiwyg {
     global $spaw_wysiwyg_instCount;
     global $spaw_default_theme;
     global $spaw_default_css_stylesheet;
+	global $spaw_wysiwyg_instCount;
     
     $spaw_wysiwyg_instCount++;
     
-    $this->control_name = $control_name;
+	$this->original_name = $control_name;
+    $this->control_name = str_replace(']','_',str_replace('[','_',str_replace('[]','_'.$spaw_wysiwyg_instCount.'_',$control_name)));
     $this->value = $value;
     $this->width = $width;
     $this->height = $height;
@@ -128,7 +132,10 @@ class SPAW_Wysiwyg {
     global $spaw_inline_js;
     global $spaw_root;
     global $spaw_active_toolbar;
+    global $spaw_internal_link_script;
+    global $spaw_img_popup_url;
 
+    $buf = '';
     if ($spaw_inline_js)
     {
       // inline javascript
@@ -142,39 +149,16 @@ class SPAW_Wysiwyg {
     else
     {
       // external javascript
-      echo "<script language='JavaScript'>\n";
-      echo "<!--\n";
-      echo "var spaw_active_toolbar = ".($spaw_active_toolbar?"true":"false").";\n";
-      echo "//-->\n";
-      echo "</script>\n";
-      echo '<script language="JavaScript" src="'.$spaw_dir.'spaw_script.js.php"></script>'."\n\n";
+      $buf = "<script language='JavaScript'>\n";
+      $buf .= "<!--\n";
+      $buf .= "var spaw_active_toolbar = ".($spaw_active_toolbar?"true":"false").";\n";
+      $buf .= "//-->\n";
+      $buf .= "</script>\n";
+      $buf .= '<script language="JavaScript" src="'.$spaw_dir.'spaw_script.js.php"></script>'."\n\n";
     }
+    return $buf;
   }
-  
-  // checks browser compatibility with the control
-  function checkBrowser()
-  {
-    $browser = $_SERVER['HTTP_USER_AGENT'];
-    // check if msie
-    if (eregi("MSIE[^;]*",$browser,$msie))
-    {
-      // get version 
-      if (eregi("[0-9]+\.[0-9]+",$msie[0],$version))
-      {
-        // check version
-        if ((float)$version[0]>=5.5)
-        {
-          // finally check if it's not opera impersonating ie
-          if (!eregi("opera",$browser))
-          {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-  
+ 
   // load language data
   function getLang($lang='')
   {
@@ -195,20 +179,21 @@ class SPAW_Wysiwyg {
     
     
     $n = $this->control_name;
+	$orn = $this->original_name;
     // todo: make more customizable
 
     $buf = '';
-    if ($this->checkBrowser())
+    if (SPAW_Util::checkBrowser())
     {
       if ($spaw_wysiwyg_instCount == 1)
       {
-        $this->getCssScript();
+        $buf.= $this->getCssScript();
       }
       // theme based css file and javascript
       $buf.= '<script language="JavaScript" src="'.$spaw_dir.'lib/themes/'.$this->theme.'/js/toolbar.js.php"></script>';
       $buf.= '<link rel="stylesheet" type="text/css" href="'.$spaw_dir.'lib/themes/'.$this->theme.'/css/toolbar.css">';
 
-      $buf.= '<table border="0" cellspacing="0" cellpadding="0" width="'.$this->getWidth().'">';
+      $buf.= '<table border="0" cellspacing="0" cellpadding="0" width="'.$this->getWidth().'" height="'.$this->getHeight().'">';
       $buf.= '<tr>';
 
       $buf .= '<td id="SPAW_'.$n.'_toolbar_top_design" class="SPAW_'.$this->theme.'_toolbar" colspan="3">';
@@ -231,36 +216,58 @@ class SPAW_Wysiwyg {
       $buf.= $this->toolbars->get('left','html');
       $buf .= '</td>';
       
-      $buf .= '<td align="left" valign="top" width="100%">';
+      $buf .= '<td align="left" valign="top" width="100%" height="100%">';
       
       //$buf.= '<input type="hidden" id="'.$n.'" name="'.$n.'">';
-      $buf.= '<textarea id="'.$n.'" name="'.$n.'" style="width:100%; height:'.$this->getHeight().'; display:none;" class="SPAW_'.$this->theme.'_editarea"></textarea>';
+      //$buf.= '<textarea id="'.$n.'" name="'.$orn.'" style="width:'.$this->getWidth().'; height:'.$this->getHeight().'; display:none;" class="SPAW_'.$this->theme.'_editarea"></textarea>';
+
+      $buf.= '<textarea id="'.$n.'" name="'.$orn.'" style="width:'.$this->getWidth().'; height:'.$this->getHeight().'; display:none;" class="SPAW_'.$this->theme.'_editarea">';
+      $buf.= htmlspecialchars($this->getValue());
+      $buf.= '</textarea>';
+
       $buf.= '<input type="hidden" id="SPAW_'.$n.'_editor_mode" name="SPAW_'.$n.'_editor_mode" value="design">';
       $buf.= '<input type="hidden" id="SPAW_'.$n.'_lang" value="'.$this->lang->lang.'">';
       $buf.= '<input type="hidden" id="SPAW_'.$n.'_theme" value="'.$this->theme.'">';
       $buf.= '<input type="hidden" id="SPAW_'.$n.'_borders" value="on">';
 
-  	  $buf.= '<iframe id="'.$n.'_rEdit" style="width:100%; height:'.$this->getHeight().'; direction:'.$this->lang->getDir().';" onLoad="SPAW_editorInit(\''.$n.'\',\''.htmlspecialchars($this->getCssStyleSheet()).'\',\''.$this->lang->getDir().'\');" class="SPAW_'.$this->theme.'_editarea" frameborder="no" style="direction : "></iframe><br>';
+  	  $buf.= '<iframe id="'.$n.'_rEdit" style="width:100%; height:'.$this->getHeight().'; direction:'.$this->lang->getDir().';" class="SPAW_'.$this->theme.'_editarea" frameborder="no" src="'.$spaw_dir.'empty.html"></iframe><br>';
       
       $buf.= "\n<script language=\"javascript\">\n<!--\n";
       
+/*      
       $tmpstr = str_replace("\r\n","\n",$this->getValue());
       $tmpstr = str_replace("\r","\n",$tmpstr);
       $content = explode("\n",$tmpstr);
       $plus = "";
       foreach ($content as $line)
       {
-        $buf.="setTimeout('document.all.".$n.".value ".$plus."=\"".str_replace('"','&quot;',str_replace("'","\'",$line))."\";',0);\n";
+        $buf.="setTimeout('document.getElementById(\"".$n."\").value ".$plus."=\"".str_replace('-->','@@END_COMMENT',str_replace('<!--','@@START_COMMENT',str_replace('"','&quot;',str_replace("'","\'",str_replace("\\","\\\\\\\\",$line)))))."\\\\n\";',0);\n";
         $plus = "+";
       }
 
-      $buf.="setTimeout('document.all.".$n.".value = document.all.".$n.".value.replace(/&quot;/g,\'\"\');',0);"."\n";
+      $buf.="setTimeout('document.getElementById(\"".$n."\").value = document.getElementById(\"".$n."\").value.replace(/&quot;/g,\'\"\');',0);"."\n";
+      $buf.="setTimeout('document.getElementById(\"".$n."\").value = document.getElementById(\"".$n."\").value.replace(/@@START_COMMENT/g,\'<!--\');',0);"."\n";
+      $buf.="setTimeout('document.getElementById(\"".$n."\").value = document.getElementById(\"".$n."\").value.replace(/@@END_COMMENT/g,\'-->\');',0);"."\n";
 
 //      $buf.='setTimeout("alert(document.all.'.$n.'.value);",0);'."\n";
 
 //      $buf.='setTimeout("'.$n.'_rEdit.document.body.innerHTML += document.all.'.$n.'.value;",0);'."\n";
       
 //  $buf.='setTimeout("SPAW_toggle_borders(\''.$n.'\',this[\''.$n.'_rEdit\'].document.body,null);",0);'."\n";
+*/
+      // editor init
+      //$buf.='setTimeout("SPAW_editorInit(\''.$n.'\',\''.htmlspecialchars($this->getCssStyleSheet()).'\',\''.$this->lang->getDir().'\');",0);'."\n";
+      
+      // let's try to call init from document onload
+      $buf.='var spaw_tmpstr="";'."\n";
+      $buf.='if (window.onload != null) {'."\n";
+      $buf.='  spaw_tmpstr = window.onload.toString();'."\n";
+      $buf.='  var spaw_i = spaw_tmpstr.indexOf("{") + 2;'."\n";
+      $buf.='  spaw_tmpstr = spaw_tmpstr.substr(spaw_i,spaw_tmpstr.length-spaw_i-2);'."\n";
+      $buf.='}'."\n";
+      $buf.='window.onload = new Function("SPAW_editorInit(\''.$n.'\',\''.htmlspecialchars($this->getCssStyleSheet()).'\',\''.$this->lang->getDir().'\');" + spaw_tmpstr);'."\n";
+      //$buf.='alert(window.onload.toString());'."\n";
+
 
       $buf.= '//--></script>';
 
@@ -291,7 +298,7 @@ class SPAW_Wysiwyg {
     else
     {
       // show simple text area
-  	  $buf = '<textarea cols="20" rows="5" name="'.$n.'" style="width:'.$this->getWidth().'; height:'.$this->getHeight().'">'.$this->getValue().'</textarea>';
+  	  $buf = '<textarea cols="20" rows="5" name="'.$n.'" style="width:'.$this->getWidth().'; height:'.$this->getHeight().'">'.htmlspecialchars($this->getValue()).'</textarea>';
     }
     return $buf;
   }

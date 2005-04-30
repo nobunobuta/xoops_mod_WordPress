@@ -35,12 +35,10 @@ $spaw_lang_data = array(
   'redo' => array(
     'title' => 'Повторить'
   ),
-  'hyperlink' => array(
-    'title' => 'Ссылка'
-  ),
   'image_insert' => array(
     'title' => 'Вставить изображение',
     'select' => 'Вставить',
+	'delete' => 'Стереть', // new 1.0.5
     'cancel' => 'Отменить',
     'library' => 'Библиотека',
     'preview' => 'Просмотр',
@@ -52,6 +50,7 @@ $spaw_lang_data = array(
     'error_uploading' => 'Во время загрузки произошла ошибка. Попробуйте еще раз.',
     'error_wrong_type' => 'Неправильный тип изображения',
     'error_no_dir' => 'Библиотека не существует',
+	'error_cant_delete' => 'Стереть не удалось', // new 1.0.5
   ),
   'image_prop' => array(
     'title' => 'Параметры изображения',
@@ -92,6 +91,7 @@ $spaw_lang_data = array(
     'cancel' => 'Отменить',
     'rows' => 'Строки',
     'columns' => 'Столбцы',
+    'css_class' => 'Стиль', // <=== new 1.0.6
     'width' => 'Ширина',
     'height' => 'Высота',
     'border' => 'Рамка',
@@ -99,6 +99,7 @@ $spaw_lang_data = array(
     'cellpadding' => 'Отступ от рамки',
     'cellspacing' => 'Растояние между ячейками',
     'bg_color' => 'Цвет фона',
+    'background' => 'Фоновое изображение', // <=== new 1.0.6
     'error' => 'Ошибка',
     'error_rows_nan' => 'Строки не является числом',
     'error_columns_nan' => 'Столбцы не является числом',
@@ -117,6 +118,7 @@ $spaw_lang_data = array(
     'css_class' => 'Стиль',
     'no_wrap' => 'Без переноса',
     'bg_color' => 'Цвет фона',
+    'background' => 'Фоновое изображение', // <=== new 1.0.6
     'ok' => 'ГОТОВО',
     'cancel' => 'Отменить',
     'left' => 'Слева',
@@ -227,10 +229,21 @@ $spaw_lang_data = array(
     'title' => 'Гиперссылка',
     'url' => 'Адрес',
     'name' => 'Имя',
-    'target' => 'Цель',
+    'target' => 'Открыть',
     'title_attr' => 'Название',
+	'a_type' => 'Тип', // <=== new 1.0.6
+	'type_link' => 'Ссылка', // <=== new 1.0.6
+	'type_anchor' => 'Якорь', // <=== new 1.0.6
+	'type_link2anchor' => 'Ссылка на якорь', // <=== new 1.0.6
+	'anchors' => 'Якоря', // <=== new 1.0.6
     'ok' => 'ГОТОВО',
     'cancel' => 'Отменить',
+  ),
+  'hyperlink_targets' => array( // <=== new 1.0.5
+  	'_self' => 'в том же фрейме (_self)',
+	'_blank' => 'в новом окне (_blank)',
+	'_top' => 'на все окно (_top)',
+	'_parent' => 'в родительском фрейме (_parent)'
   ),
   'table_row_prop' => array(
     'title' => 'Параметры строки',
@@ -282,6 +295,11 @@ $spaw_lang_data = array(
   'zoom' => array(
     'title' => 'Увеличение',
   ),
+  'subscript' => array( // <=== new 1.0.7
+    'title' => 'Нижний индекс',
+  ),
+  'superscript' => array( // <=== new 1.0.7
+    'title' => 'Верхний индекс',
+  ),
 );
 ?>
-

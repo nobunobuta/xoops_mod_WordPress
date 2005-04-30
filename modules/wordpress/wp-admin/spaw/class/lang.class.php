@@ -103,8 +103,7 @@ class SPAW_Lang
     {
       // if message is not present in current language data 
       // return message from default language
-      if( isset( $this->default_lang_data[$_block][$message] ) ) return $this->default_lang_data[$_block][$message];
-      else return '' ;
+      return (isset($this->default_lang_data[$_block][$message])?$this->default_lang_data[$_block][$message]:'');
     }
   }
   
@@ -131,4 +130,3 @@ class SPAW_Lang
   }
 } // SPAW_Lang
 ?>
-

@@ -2,7 +2,7 @@
 // ================================================
 // SPAW PHP WYSIWYG editor control
 // ================================================
-// English language file
+// Hungarian language file
 // ================================================
 // Developed: Alan Mendelevich, alan@solmetra.lt
 // Translated: Bagoly Sándor Zsigmond, sasa@networldtrading.com
@@ -14,7 +14,7 @@
 // ================================================
 
 // charset to be used in dialogs
-$spaw_lang_charset = 'iso-8859-1';
+$spaw_lang_charset = 'iso-8859-2';
 
 // language text data array
 // first dimension - block, second - exact phrase
@@ -42,6 +42,7 @@ $spaw_lang_data = array(
   'image_insert' => array(
     'title' => 'Kép beszúrás',
     'select' => 'Kiválaszt',
+	'delete' => 'Töröl', // new 1.0.5
     'cancel' => 'Mégse',
     'library' => 'Könyvtár',
     'preview' => 'Elõnézet',
@@ -53,6 +54,7 @@ $spaw_lang_data = array(
     'error_uploading' => 'Hiba lépett fel a feltöltés folyamatában. Kérjük próbálja késõbb.',
     'error_wrong_type' => 'Hibás képtípus',
     'error_no_dir' => 'A könyvtár fizikailag nem létezik',
+	'error_cant_delete' => 'Nem lehet törölni', // new 1.0.5
   ),
   'image_prop' => array(
     'title' => 'Kép tulajdonságai',
@@ -96,7 +98,7 @@ $spaw_lang_data = array(
     'width' => 'Szélesség',
     'height' => 'Magasság',
     'border' => 'Szegély',
-    'pixels' => 'pixelek',
+    'pixels' => 'pixel',
     'cellpadding' => 'Cella kitöltése',
     'cellspacing' => 'Cellák közötti hely',
     'bg_color' => 'Háttérszín',
@@ -204,7 +206,7 @@ $spaw_lang_data = array(
     'title' => 'Háttérszín'
   ),
   'design_tab' => array(
-    'title' => 'Váltás a WYSWYG (desing) módra'
+    'title' => 'Váltás a WYSWYG (design) módra'
   ),
   'html_tab' => array(
     'title' => 'Váltás a HTML (kód) módra'
@@ -232,10 +234,16 @@ $spaw_lang_data = array(
     'ok' => '   OK   ',
     'cancel' => 'Mégse',
   ),
+  'hyperlink_targets' => array( // <=== new 1.0.5
+  	'_self' => 'saját keret (_self)',
+	'_blank' => 'új keret (_blank)',
+	'_top' => 'legfelsõ keret (_top)',
+	'_parent' => 'fõ keret (_parent)'
+  ),
   'table_row_prop' => array(
     'title' => 'Sor tulajdonságai',
     'horizontal_align' => 'Vízszintes igazítás',
-    'vertical_align' => 'Függleges igazítás align',
+    'vertical_align' => 'Függõeges igazítás',
     'css_class' => 'CSS osztály',
     'no_wrap' => 'Nincs csomagolás',
     'bg_color' => 'Háttérszín',

@@ -34,25 +34,27 @@ $spaw_lang_data = array(
     'title' => 'Zpìt'
   ),
   'redo' => array(
-    'title' => 'Vpøed'
+    'title' => 'Znovu'
   ),
   'hyperlink' => array(
     'title' => 'Hyperlink'
   ),
   'image_insert' => array(
     'title' => 'Vložit obrázek',
-    'select' => 'Výbìr',
+    'select' => 'Vybrat',
+	'delete' => 'Smazat', // new 1.0.5
     'cancel' => 'Zrušit',
     'library' => 'Knihovna',
     'preview' => 'Náhled',
     'images' => 'Obrázek',
-    'upload' => 'Upload obrázek',
-    'upload_button' => 'Upload',
+    'upload' => 'Poslat obrázek',
+    'upload_button' => 'Poslat',
     'error' => 'Chyba',
-    'error_no_image' => 'Vyberte obrázek prosím',
+    'error_no_image' => 'Vyberte prosím obrázek',
     'error_uploading' => 'V prùbìhu uploadu došlo k chybì. Opakujte akci znovu',
-    'error_wrong_type' => 'chybný formát obrázku',
+    'error_wrong_type' => 'Chybný formát obrázku',
     'error_no_dir' => 'Knihovna fyzicky neexistuje',
+	'error_cant_delete' => 'Obrázek nebylo možno smazat', // new 1.0.5
   ),
   'image_prop' => array(
     'title' => 'Vlastnosti obrázku',
@@ -61,14 +63,14 @@ $spaw_lang_data = array(
     'source' => 'Zdroj',
     'alt' => 'Alternativní text',
     'align' => 'Zarovnání',
-    'left' => 'vlevo',
-    'right' => 'vpravo',
-    'top' => 'Horní',
-    'middle' => 'Støední',
-    'bottom' => 'Spodní',
-    'absmiddle' => 'absolutní støed',
-    'texttop' => 'text-nahoru',
-    'baseline' => 'baseline',
+    'left' => 'Vlevo',
+    'right' => 'Vpravo',
+    'top' => 'Nahoru',
+    'middle' => 'Doprostøed',
+    'bottom' => 'Dolù',
+    'absmiddle' => 'Absolutní støed',
+    'texttop' => 'Text nahoru',
+    'baseline' => 'Základní linka',
     'width' => 'Šíøka',
     'height' => 'Výška',
     'border' => 'Okraje',
@@ -97,6 +99,8 @@ $spaw_lang_data = array(
     'height' => 'Výška',
     'border' => 'Okraje',
     'pixels' => 'pixelù',
+    'css_class' => 'Tøída CSS', // <=== new 1.0.6
+    'background' => 'Obrázek pozadí', // <=== new 1.0.6
     'cellpadding' => 'Odsazení v buòce',
     'cellspacing' => 'Vzdálenost bunìk',
     'bg_color' => 'Barva pozadí',
@@ -115,9 +119,10 @@ $spaw_lang_data = array(
     'vertical_align' => 'Vertikální zarovnání',
     'width' => 'Šíøka',
     'height' => 'Výška',
-    'css_class' => 'CSS tøída',
-    'no_wrap' => 'nezalamovat',
+    'css_class' => 'Tøída CSS',
+    'no_wrap' => 'Nezalamovat',
     'bg_color' => 'Barva pozadí',
+    'background' => 'Obrázek pozadí', // <=== new 1.0.6
     'ok' => '   OK   ',
     'cancel' => 'Zrušit',
     'left' => 'Vlevo',
@@ -172,7 +177,7 @@ $spaw_lang_data = array(
     'title' => 'Tuèné'
   ),
   'italic' => array(
-    'title' => 'Kurziva'
+    'title' => 'Kurzíva'
   ),
   'underline' => array(
     'title' => 'Podtržení'
@@ -181,13 +186,13 @@ $spaw_lang_data = array(
     'title' => 'Èíslování'
   ),
   'bulleted_list' => array(
-    'title' => 'Odøážky'
+    'title' => 'Odrážky'
   ),
   'indent' => array(
-    'title' => 'Odsazení'
+    'title' => 'Zvìtšit odsazení'
   ),
   'unindent' => array(
-    'title' => 'Zrušit odsazení'
+    'title' => 'Zmenšit odsazení'
   ),
   'left' => array(
     'title' => 'Vlevo'
@@ -205,10 +210,10 @@ $spaw_lang_data = array(
     'title' => 'Barva pozadí'
   ),
   'design_tab' => array(
-    'title' => 'Pøepnout do WYSIWYG módu'
+    'title' => 'Pøepnout do WYSIWYG režimu'
   ),
   'html_tab' => array(
-    'title' => 'Pøepnout do HTML módu'
+    'title' => 'Pøepnout do HTML režimu'
   ),
   'colorpicker' => array(
     'title' => 'Paleta barev',
@@ -217,28 +222,39 @@ $spaw_lang_data = array(
   ),
   // <<<<<<<<< NEW >>>>>>>>>
   'cleanup' => array(
-    'title' => 'HTML kontrola (odstraní styly)',
-    'confirm' => 'Provedením akce odstraníte všechny styly, fonty a zbyteèné tagy z aktuálního obsahu. Nìkteré, nebo všechno formátování bude odstranìno.',
+    'title' => 'Vyèištìní HTML (odstranit styly)',
+    'confirm' => 'Provedením akce odstraníte všechny styly, fonty a zbyteèné tagy z aktuálního obsahu. Vaše formátování bude èásteènì èi úplnì odstranìno.',
     'ok' => '   OK   ',
     'cancel' => 'Storno',
   ),
   'toggle_borders' => array(
-    'title' => 'Upravit okraje',
+    'title' => 'Pøepnout okraje',
   ),
   'hyperlink' => array(
     'title' => 'Hyperlink',
     'url' => 'URL',
     'name' => 'Jméno',
     'target' => 'Cíl',
-    'title_attr' => 'Název',
+    'title_attr' => 'Popisek',
+	'a_type' => 'Typ', // <=== new 1.0.6
+	'type_link' => 'Odkaz', // <=== new 1.0.6
+	'type_anchor' => 'Kotva', // <=== new 1.0.6
+	'type_link2anchor' => 'Odkaz na kotvu', // <=== new 1.0.6
+	'anchors' => 'Kotvy', // <=== new 1.0.6
     'ok' => '   OK   ',
     'cancel' => 'Storno',
+  ),
+  'hyperlink_targets' => array( // <=== new 1.0.5
+  	'_self' => 'Stejný rámec (_self)',
+	'_blank' => 'Nové okno (_blank)',
+	'_top' => 'Vrchní rámec (_top)',
+	'_parent' => 'Nadøazený rámec (_parent)'
   ),
   'table_row_prop' => array(
     'title' => 'Vlastnosti øádku',
     'horizontal_align' => 'Horizontální zarovnání',
     'vertical_align' => 'Vertikální zarovnání',
-    'css_class' => 'CSS class',
+    'css_class' => 'Tøída CSS',
     'no_wrap' => 'Nezalamovat',
     'bg_color' => 'Barva pozadí',
     'ok' => '   OK   ',
@@ -246,9 +262,9 @@ $spaw_lang_data = array(
     'left' => 'Vlevo',
     'center' => 'Na støed',
     'right' => 'Vpravo',
-    'top' => 'Horní',
-    'middle' => 'Støední',
-    'bottom' => 'Spodní',
+    'top' => 'Nahoru',
+    'middle' => 'Doprostøed',
+    'bottom' => 'Dolù',
     'baseline' => 'Základní linka',
   ),
   'symbols' => array(
@@ -267,7 +283,7 @@ $spaw_lang_data = array(
   'page_prop' => array(
     'title' => 'Vlastnosti stránky',
     'title_tag' => 'Název',
-    'charset' => 'Kódování',
+    'charset' => 'Znaková sada',
     'background' => 'Obrázek pozadí',
     'bgcolor' => 'Barva pozadí',
     'text' => 'Barva textu',
@@ -276,7 +292,7 @@ $spaw_lang_data = array(
     'alink' => 'Barva aktivního odkazu',
     'leftmargin' => 'Levý okraj',
     'topmargin' => 'Horní okraj',
-    'css_class' => 'CSS class',
+    'css_class' => 'Tøída CSS',
     'ok' => '   OK   ',
     'cancel' => 'Storno',
   ),
@@ -284,7 +300,7 @@ $spaw_lang_data = array(
     'title' => 'Náhled',
   ),
   'image_popup' => array(
-    'title' => 'Pøekrývání obrázkù',
+    'title' => 'Odkaz na obrázek v novém oknì',
   ),
   'zoom' => array(
     'title' => 'Pøiblížení',

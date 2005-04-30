@@ -40,9 +40,13 @@ $spaw_lang_data = array(
   'hyperlink' => array(
     'title' => 'Hyperlink'
   ),
+  'internal_link' => array(                //Doesn't appear in Any lang-file?!? (dzy) ;-)
+    'title' => 'Interner Link'
+  ),
   'image_insert' => array(
     'title' => 'Bild einfügen',
     'select' => 'Auswählen',
+	'delete' => 'Löschen', // new 1.0.5
     'cancel' => 'Abbrechen',
     'library' => 'Bibliothek',
     'preview' => 'Vorschau',
@@ -53,7 +57,9 @@ $spaw_lang_data = array(
     'error_no_image' => 'Wählen Sie bitte ein Bild',
     'error_uploading' => 'Ein Fehler trat bei der Übertragung der Datei auf.  Bitte Versuchen Sie es später noch einmal.',
     'error_wrong_type' => 'Unzulässiger Dateityp',
-    'error_no_dir' => 'Bibliothek ist physikalisch vorhanden',
+    'error_no_dir' => 'Bibliothek ist physikalisch nicht vorhanden',
+	'error_cant_delete' => 'Löschen fehlgeschlagen', // new 1.0.5
+
   ),
   'image_prop' => array(
     'title' => 'Bildeigenschaften',
@@ -94,6 +100,7 @@ $spaw_lang_data = array(
     'cancel' => 'Abbrechen',
     'rows' => 'Zeilen',
     'columns' => 'Spalten',
+    'css_class' => 'CSS Klasse', // <=== new 1.0.6
     'width' => 'Breite',
     'height' => 'Höhe',
     'border' => 'Rand',
@@ -101,6 +108,7 @@ $spaw_lang_data = array(
     'cellpadding' => 'Zellauffüllung',
     'cellspacing' => 'Zellabstand',
     'bg_color' => 'Hintergrundfarbe',
+    'background' => 'Hintergrundbild', // <=== new 1.0.6
     'error' => 'Fehler',
     'error_rows_nan' => 'Die Zeilenanzahl ist keine Zahl',
     'error_columns_nan' => 'Die Spaltenanzahl ist keine Zahl',
@@ -119,6 +127,7 @@ $spaw_lang_data = array(
     'css_class' => 'CSS Klasse',
     'no_wrap' => 'Zeilenumbruch verhindern',
     'bg_color' => 'Hintergrundfarbe',
+    'background' => 'Hintergrundbild', // <=== new 1.0.6
     'ok' => '   OK   ',
     'cancel' => 'Abbrechen',
     'left' => 'Links',
@@ -199,6 +208,9 @@ $spaw_lang_data = array(
   'right' => array(
     'title' => 'Rechts'
   ),
+  'justify' => array(     // <- 1.0.5
+    'title' => 'Strecken'
+  ),
   'fore_color' => array(
     'title' => 'Schriftfarbe'
   ),
@@ -232,8 +244,19 @@ $spaw_lang_data = array(
     'name' => 'Name',
     'target' => 'Ziel',
     'title_attr' => 'Titel',
+	'a_type' => 'Typ', // <=== new 1.0.6
+	'type_link' => 'Link', // <=== new 1.0.6
+	'type_anchor' => 'Anker', // <=== new 1.0.6
+	'type_link2anchor' => 'Link -> Anker', // <=== new 1.0.6
+	'anchors' => 'Anker', // <=== new 1.0.6
     'ok' => '   OK   ',
     'cancel' => 'Abbrechen',
+  ),
+  'hyperlink_targets' => array( // <=== new 1.0.5
+  	'_self' => 'Eigenes Frame (_self)',
+	'_blank' => 'Neues Fenster (_blank)',
+	'_top' => 'Oberer Frame (_top)',
+	'_parent' => 'Parent-Frame (_parent)'
   ),
   'table_row_prop' => array(
     'title' => 'Zeileneigenschaften',

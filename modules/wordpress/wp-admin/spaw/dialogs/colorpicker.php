@@ -14,10 +14,11 @@
 
 // include wysiwyg config
 include '../config/spaw_control.config.php';
+include $spaw_root.'class/util.class.php';
 include $spaw_root.'class/lang.class.php';
 
 $theme = empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'];
-$theme_path = $spaw_dir.'lib/themes/default/';
+$theme_path = $spaw_dir.'lib/themes/'.$theme.'/';
 
 $l = new SPAW_Lang($_GET['lang']);
 $l->setBlock('colorpicker');
@@ -30,7 +31,11 @@ $l->setBlock('colorpicker');
   <title><?php echo $l->m('title')?></title>
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $l->getCharset()?>">
   <link rel="stylesheet" type="text/css" href="<?php echo $theme_path.'css/'?>dialog.css">
+  <?php if (SPAW_Util::getBrowser() == 'Gecko') { ?>
+  <script language="javascript" src="utils.gecko.js"></script>
+  <?php }else{ ?>
   <script language="javascript" src="utils.js"></script>
+  <?php } ?>
   
   <script language="javascript">
   <!--  
@@ -39,15 +44,19 @@ $l->setBlock('colorpicker');
     cur_color = window.dialogArguments;
     if (cur_color != null)
     {
-      colorpicker.color.value = cur_color;
-      sample.bgColor = cur_color;
+      document.getElementById("color").value = cur_color;
+      document.getElementById("sample").bgColor = cur_color;
     }
     resizeDialogToContent();
   }
   
   function okClick() {
-    window.returnValue = colorpicker.color.value;
+    window.returnValue = document.getElementById("color").value;
     window.close();
+    <?php
+    if (!empty($_GET['callback']))
+      echo "opener.".$_GET['callback']."('".$_GET['editor']."',this);\n";
+    ?>
   }
 
   function cancelClick() {
@@ -65,8 +74,8 @@ $l->setBlock('colorpicker');
   }
   function selColor(colorcode)
   {
-    sample.bgColor = '#'+colorcode;
-    colorpicker.color.value = '#'+colorcode;
+    document.getElementById("sample").bgColor = '#'+colorcode;
+    document.getElementById("color").value = '#'+colorcode;
   }
   function returnColor(colorcode)
   {
@@ -75,7 +84,7 @@ $l->setBlock('colorpicker');
   }
   function setSample()
   {
-    sample.bgColor = colorpicker.color.value;
+    document.getElementById("sample").bgColor = document.getElementById("color").value;
   }
   //-->
   </script>
@@ -513,13 +522,13 @@ $l->setBlock('colorpicker');
 
 
 <table border="0" cellspacing="0" cellpadding="0" width="336">
-<form name="colorpicker">
+<form name="colorpicker" onsubmit="okClick(); return false;">
 <tr>
 <td id="sample" align="left" width="80"><img src="spacer.gif" border="1" width="80" height="30" hspace="0" vspace="0"></td>
 </td>
 <td align="right" valign="bottom" width="80%" nowrap>
 <input type="text" id="color" name="color" size="7" maxlength="7" class="input_color" onKeyUp="setSample()">
-<input type="button" value="<?php echo $l->m('ok')?>" onClick="okClick()" class="bt">
+<input type="submit" value="<?php echo $l->m('ok')?>" onClick="okClick()" class="bt">
 <input type="button" value="<?php echo $l->m('cancel')?>" onClick="cancelClick()" class="bt">
 </td>
 </tr>

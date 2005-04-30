@@ -35,12 +35,10 @@ $spaw_lang_data = array(
   'redo' => array(
     'title' => 'Redo'
   ),
-  'hyperlink' => array(
-    'title' => 'Hyperlink'
-  ),
   'image_insert' => array(
     'title' => 'Insert image',
     'select' => 'Select',
+	'delete' => 'Delete', // new 1.0.5
     'cancel' => 'Cancel',
     'library' => 'Library',
     'preview' => 'Preview',
@@ -52,6 +50,7 @@ $spaw_lang_data = array(
     'error_uploading' => 'An error occured while handling file upload. Please try again later',
     'error_wrong_type' => 'Wrong image file type',
     'error_no_dir' => 'Library doesn\'t physically exist',
+	'error_cant_delete' => 'Delete failed', // new 1.0.5
   ),
   'image_prop' => array(
     'title' => 'Image properties',
@@ -92,6 +91,7 @@ $spaw_lang_data = array(
     'cancel' => 'Cancel',
     'rows' => 'Rows',
     'columns' => 'Columns',
+    'css_class' => 'CSS class', // <=== new 1.0.6
     'width' => 'Width',
     'height' => 'Height',
     'border' => 'Border',
@@ -99,6 +99,7 @@ $spaw_lang_data = array(
     'cellpadding' => 'Cell padding',
     'cellspacing' => 'Cell spacing',
     'bg_color' => 'Background color',
+    'background' => 'Background image', // <=== new 1.0.6
     'error' => 'Error',
     'error_rows_nan' => 'Rows is not a number',
     'error_columns_nan' => 'Columns is not a number',
@@ -117,6 +118,7 @@ $spaw_lang_data = array(
     'css_class' => 'CSS class',
     'no_wrap' => 'No wrap',
     'bg_color' => 'Background color',
+    'background' => 'Background image', // <=== new 1.0.6
     'ok' => '   OK   ',
     'cancel' => 'Cancel',
     'left' => 'Left',
@@ -228,8 +230,19 @@ $spaw_lang_data = array(
     'name' => 'Name',
     'target' => 'Target',
     'title_attr' => 'Title',
+	'a_type' => 'Type', // <=== new 1.0.6
+	'type_link' => 'Link', // <=== new 1.0.6
+	'type_anchor' => 'Anchor', // <=== new 1.0.6
+	'type_link2anchor' => 'Link to anchor', // <=== new 1.0.6
+	'anchors' => 'Anchors', // <=== new 1.0.6
     'ok' => '   OK   ',
     'cancel' => 'Cancel',
+  ),
+  'hyperlink_targets' => array( // <=== new 1.0.5
+  	'_self' => 'same frame (_self)',
+	'_blank' => 'new empty window (_blank)',
+	'_top' => 'top frame (_top)',
+	'_parent' => 'parent frame (_parent)'
   ),
   'table_row_prop' => array(
     'title' => 'Row properties',
@@ -281,6 +294,11 @@ $spaw_lang_data = array(
   'zoom' => array(
     'title' => 'Zoom',
   ),
+  'subscript' => array( // <=== new 1.0.7
+    'title' => 'Subscript',
+  ),
+  'superscript' => array( // <=== new 1.0.7
+    'title' => 'Superscript',
+  ),
 );
 ?>
-

@@ -14,6 +14,7 @@
 
 // include wysiwyg config
 include '../config/spaw_control.config.php';
+include $spaw_root.'class/util.class.php';
 include $spaw_root.'class/lang.class.php';
 
 $theme = empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'];
@@ -29,7 +30,11 @@ $l->setBlock('image_prop');
   <title><?php echo $l->m('title')?></title>
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $l->getCharset()?>">
   <link rel="stylesheet" type="text/css" href="<?php echo $theme_path.'css/'?>dialog.css">
+  <?php if (SPAW_Util::getBrowser() == 'Gecko') { ?>
+  <script language="javascript" src="utils.gecko.js"></script>
+  <?php }else{ ?>
   <script language="javascript" src="utils.js"></script>
+  <?php } ?>
   
   <script language="javascript">
   <!--  
@@ -39,28 +44,28 @@ $l->setBlock('image_prop');
     {
       // set attribute values
       if (iProps.width) {
-        img_prop.cwidth.value = iProps.width;
+        document.getElementById('cwidth').value = iProps.width;
       }
       if (iProps.height) {
-        img_prop.cheight.value = iProps.height;
+        document.getElementById('cheight').value = iProps.height;
       }
       
       setAlign(iProps.align);
       
       if (iProps.src) {
-        img_prop.csrc.value = iProps.src;
+        document.getElementById('csrc').value = iProps.src;
       }
       if (iProps.alt) {
-        img_prop.calt.value = iProps.alt;
+        document.getElementById('calt').value = iProps.alt;
       }
       if (iProps.border) {
-        img_prop.cborder.value = iProps.border;
+        document.getElementById('cborder').value = iProps.border;
       }
       if (iProps.hspace) {
-        img_prop.chspace.value = iProps.hspace;
+        document.getElementById('chspace').value = iProps.hspace;
       }
       if (iProps.vspace) {
-        img_prop.cvspace.value = iProps.vspace;
+        document.getElementById('cvspace').value = iProps.vspace;
       }
     }
     resizeDialogToContent();
@@ -69,34 +74,34 @@ $l->setBlock('image_prop');
   function validateParams()
   {
     // check width and height
-    if (isNaN(parseInt(img_prop.cwidth.value)) && img_prop.cwidth.value != '')
+    if (isNaN(parseInt(document.getElementById('cwidth').value)) && document.getElementById('cwidth').value != '')
     {
       alert('<?php echo $l->m('error').': '.$l->m('error_width_nan')?>');
-      img_prop.cwidth.focus();
+      document.getElementById('cwidth').focus();
       return false;
     }
-    if (isNaN(parseInt(img_prop.cheight.value)) && img_prop.cheight.value != '')
+    if (isNaN(parseInt(document.getElementById('cheight').value)) && document.getElementById('cheight').value != '')
     {
       alert('<?php echo $l->m('error').': '.$l->m('error_height_nan')?>');
-      img_prop.cheight.focus();
+      document.getElementById('cheight').focus();
       return false;
     }
-    if (isNaN(parseInt(img_prop.cborder.value)) && img_prop.cborder.value != '')
+    if (isNaN(parseInt(document.getElementById('cborder').value)) && document.getElementById('cborder').value != '')
     {
       alert('<?php echo $l->m('error').': '.$l->m('error_border_nan')?>');
-      img_prop.cborder.focus();
+      document.getElementById('cborder').focus();
       return false;
     }
-    if (isNaN(parseInt(img_prop.chspace.value)) && img_prop.chspace.value != '')
+    if (isNaN(parseInt(document.getElementById('chspace').value)) && document.getElementById('chspace').value != '')
     {
       alert('<?php echo $l->m('error').': '.$l->m('error_hspace_nan')?>');
-      img_prop.chspace.focus();
+      document.getElementById('chspace').focus();
       return false;
     }
-    if (isNaN(parseInt(img_prop.cvspace.value)) && img_prop.cvspace.value != '')
+    if (isNaN(parseInt(document.getElementById('cvspace').value)) && document.getElementById('cvspace').value != '')
     {
       alert('<?php echo $l->m('error').': '.$l->m('error_vspace_nan')?>');
-      img_prop.cvspace.focus();
+      document.getElementById('cvspace').focus();
       return false;
     }
     
@@ -108,17 +113,21 @@ $l->setBlock('image_prop');
     if (validateParams())    
     {
       var iProps = {};
-      iProps.align = (img_prop.calign.value)?(img_prop.calign.value):'';
-      iProps.width = (img_prop.cwidth.value)?(img_prop.cwidth.value):'';
-      iProps.height = (img_prop.cheight.value)?(img_prop.cheight.value):'';
-      iProps.border = (img_prop.cborder.value)?(img_prop.cborder.value):'';
-      iProps.src = (img_prop.csrc.value)?(img_prop.csrc.value):'';
-      iProps.alt = (img_prop.calt.value)?(img_prop.calt.value):'';
-      iProps.hspace = (img_prop.chspace.value)?(img_prop.chspace.value):'';
-      iProps.vspace = (img_prop.cvspace.value)?(img_prop.cvspace.value):'';
+      iProps.align = (document.getElementById('calign').value)?(document.getElementById('calign').value):'';
+      iProps.width = (document.getElementById('cwidth').value)?(document.getElementById('cwidth').value):'';
+      iProps.height = (document.getElementById('cheight').value)?(document.getElementById('cheight').value):'';
+      iProps.border = (document.getElementById('cborder').value)?(document.getElementById('cborder').value):'';
+      iProps.src = (document.getElementById('csrc').value)?(document.getElementById('csrc').value):'';
+      iProps.alt = (document.getElementById('calt').value)?(document.getElementById('calt').value):'';
+      iProps.hspace = (document.getElementById('chspace').value)?(document.getElementById('chspace').value):'';
+      iProps.vspace = (document.getElementById('cvspace').value)?(document.getElementById('cvspace').value):'';
 
       window.returnValue = iProps;
       window.close();
+      <?php
+      if (!empty($_GET['callback']))
+        echo "opener.".$_GET['callback']."('".$_GET['editor']."',this);\n";
+      ?>
     }
   }
 
@@ -129,11 +138,11 @@ $l->setBlock('image_prop');
   
   function setAlign(alignment)
   {
-    for (i=0; i<img_prop.calign.options.length; i++)  
+    for (i=0; i<document.getElementById('calign').options.length; i++)  
     {
-      al = img_prop.calign.options.item(i);
+      al = document.getElementById('calign').options.item(i);
       if (al.value == alignment.toLowerCase()) {
-        img_prop.calign.selectedIndex = al.index;
+        document.getElementById('calign').selectedIndex = al.index;
       }
     }
   }
@@ -144,19 +153,19 @@ $l->setBlock('image_prop');
 
 <body onLoad="Init()" dir="<?php echo $l->getDir();?>">
 <table border="0" cellspacing="0" cellpadding="2" width="336">
-<form name="img_prop">
+<form name="img_prop" id="img_prop">
 <tr>
   <td><?php echo $l->m('source')?>:</td>
-  <td colspan="3"><input type="text" name="csrc" class="input" size="32"></td>
+  <td colspan="3"><input type="text" name="csrc" id="csrc" class="input" size="32"></td>
 </tr>
 <tr>
   <td><?php echo $l->m('alt')?>:</td>
-  <td colspan="3"><input type="text" name="calt" class="input" size="32"></td>
+  <td colspan="3"><input type="text" name="calt" id="calt" class="input" size="32"></td>
 </tr>
 <tr>
   <td><?php echo $l->m('align')?>:</td>
   <td align="left">
-  <select name="calign" size="1" class="input">
+  <select name="calign" id="calign" size="1" class="input">
     <option value=""></option>
     <option value="left"><?php echo $l->m('left')?></option>
     <option value="right"><?php echo $l->m('right')?></option>
@@ -169,26 +178,26 @@ $l->setBlock('image_prop');
   </select>
   </td>
   <td><?php echo $l->m('border')?>:</td>
-  <td align="left"><input type="text" name="cborder" class="input_small"></td>
+  <td align="left"><input type="text" name="cborder" id="cborder" class="input_small"></td>
 </tr>
 <tr>
   <td><?php echo $l->m('width')?>:</td>
   <td nowrap>
-    <input type="text" name="cwidth" size="3" maxlenght="3" class="input_small">
+    <input type="text" name="cwidth" id="cwidth" size="3" maxlength="3" class="input_small">
   </td>
   <td><?php echo $l->m('height')?>:</td>
   <td nowrap>
-    <input type="text" name="cheight" size="3" maxlenght="3" class="input_small">
+    <input type="text" name="cheight" id="cheight" size="3" maxlength="3" class="input_small">
   </td>
 </tr>
 <tr>
   <td><?php echo $l->m('hspace')?>:</td>
   <td nowrap>
-    <input type="text" name="chspace" size="3" maxlenght="3" class="input_small">
+    <input type="text" name="chspace" id="chspace" size="3" maxlength="3" class="input_small">
   </td>
   <td><?php echo $l->m('vspace')?>:</td>
   <td nowrap>
-    <input type="text" name="cvspace" size="3" maxlenght="3" class="input_small">
+    <input type="text" name="cvspace" id="cvspace" size="3" maxlength="3" class="input_small">
   </td>
 </tr>
 <tr>

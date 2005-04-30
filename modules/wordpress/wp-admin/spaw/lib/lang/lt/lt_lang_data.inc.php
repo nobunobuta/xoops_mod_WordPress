@@ -37,12 +37,10 @@ $spaw_lang_data = array(
   'redo' => array(
     'title' => 'Pakartoti'
   ),
-  'hyperlink' => array(
-    'title' => 'Nuoroda'
-  ),
   'image_insert' => array(
     'title' => 'Áterpti iliustracijà',
     'select' => 'Pasirinkti',
+	'delete' => 'Iðtrinti', // new 1.0.5
     'cancel' => 'Nutraukti',
     'library' => 'Biblioteka',
     'preview' => 'Perþiûra',
@@ -54,6 +52,7 @@ $spaw_lang_data = array(
     'error_uploading' => 'Ákeliant iliustracijà ávyko klaida. Pabandykite dar kartà vëliau.',
     'error_wrong_type' => 'Neteisingas iliustracijos failo formatas',
     'error_no_dir' => 'Biblioteka neegzistuoja',
+	'error_cant_delete' => 'Iðtrinti nepavyko', // new 1.0.5
   ),
   'image_prop' => array(
     'title' => 'Iliustracijos parametrai',
@@ -94,6 +93,7 @@ $spaw_lang_data = array(
     'cancel' => 'Nutraukti',
     'rows' => 'Eiluèiø',
     'columns' => 'Stulpeliø',
+    'css_class' => 'CSS klasë', // <=== new 1.0.6
     'width' => 'Plotis',
     'height' => 'Aukðtis',
     'border' => 'Rëmelio plotis',
@@ -101,6 +101,7 @@ $spaw_lang_data = array(
     'cellpadding' => 'Laukelio atitraukimas (padding)',
     'cellspacing' => 'Tarpas tarp laukeliø',
     'bg_color' => 'Fono spalva',
+    'background' => 'Fono iliustracija', // <=== new 1.0.6
     'error' => 'Klaida',
     'error_rows_nan' => 'Nurodytas eiluèiø kiekis nëra skaièius',
     'error_columns_nan' => 'Nurodytas stulpeliø kiekis nëra skaièius',
@@ -119,6 +120,7 @@ $spaw_lang_data = array(
     'css_class' => 'CSS klasë',
     'no_wrap' => 'Neperkeliamas',
     'bg_color' => 'Fono spalva',
+    'background' => 'Fono iliustracija', // <=== new 1.0.6
     'ok' => '   GERAI   ',
     'cancel' => 'Nutraukti',
     'left' => 'Kairë',
@@ -231,8 +233,19 @@ $spaw_lang_data = array(
     'name' => 'Vardas',
     'target' => 'Kur atidaryti',
     'title_attr' => 'Pavadinimas',
+	'a_type' => 'Tipas', // <=== new 1.0.6
+	'type_link' => 'Nuoroda', // <=== new 1.0.6
+	'type_anchor' => 'Inkaras', // <=== new 1.0.6
+	'type_link2anchor' => 'Nuoroda á inkarà', // <=== new 1.0.6
+	'anchors' => 'Inkarai', // <=== new 1.0.6
     'ok' => '   GERAI   ',
     'cancel' => 'Nutraukti',
+  ),
+  'hyperlink_targets' => array( // <=== new 1.0.5
+  	'_self' => 'tame paèiame lange (_self)',
+	'_blank' => 'naujame tuðèiame lange (_blank)',
+	'_top' => 'pagrindiniame lange (_top)',
+	'_parent' => 'tëviniame lange (_parent)'
   ),
   'table_row_prop' => array(
     'title' => 'Eilutës parametrai',
@@ -283,6 +296,12 @@ $spaw_lang_data = array(
   ),
   'zoom' => array(
     'title' => 'Mastelis',
+  ),
+  'subscript' => array( // <=== new 1.0.7
+    'title' => 'Nuleistas tekstas',
+  ),
+  'superscript' => array( // <=== new 1.0.7
+    'title' => 'Pakeltas tekstas',
   ),
 );
 ?>

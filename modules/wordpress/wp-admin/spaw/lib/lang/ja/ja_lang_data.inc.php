@@ -42,6 +42,7 @@ $spaw_lang_data = array(
   'image_insert' => array(
     'title' => 'イメージの挿入',
     'select' => ' 選択する ',
+	'delete' => '削除する', // new 1.0.5
     'cancel' => 'キャンセル',
     'library' => 'ライブラリ',
     'preview' => 'プレビュー',
@@ -53,7 +54,8 @@ $spaw_lang_data = array(
     'error_uploading' => 'アップロード中にエラーが起こりました。少ししてからもう一度実行してみてください。',
     'error_wrong_type' => 'イメージファイルではありません',
     'error_no_dir' => 'ライブラリが見つかりません',
-  ),
+  	'error_cant_delete' => '削除できませんでした', // new 1.0.5
+),
   'image_prop' => array(
     'title' => 'イメージのプロパティ',
     'ok' => '    OK    ',
@@ -93,6 +95,7 @@ $spaw_lang_data = array(
     'cancel' => 'キャンセル',
     'rows' => '行',
     'columns' => '列',
+    'css_class' => 'CSS class', // <=== new 1.0.6
     'width' => '幅',
     'height' => '高さ',
     'border' => 'ボーダー',
@@ -100,6 +103,7 @@ $spaw_lang_data = array(
     'cellpadding' => 'セル内余白',
     'cellspacing' => 'セル間余白',
     'bg_color' => '背景色',
+    'background' => 'Background image', // <=== new 1.0.6
     'error' => 'エラー',
     'error_rows_nan' => '行を入力して下さい',
     'error_columns_nan' => '列を入力して下さい',
@@ -118,6 +122,7 @@ $spaw_lang_data = array(
     'css_class' => 'CSS クラス',
     'no_wrap' => '折り返さない',
     'bg_color' => '背景色',
+    'background' => 'Background image', // <=== new 1.0.6
     'ok' => '    OK    ',
     'cancel' => 'キャンセル',
     'left' => '左',
@@ -177,7 +182,7 @@ $spaw_lang_data = array(
     'title' => '下線'
   ),
   'ordered_list' => array(
-    'title' => '番号付リスト'
+    'title' => '番号リスト'
   ),
   'bulleted_list' => array(
     'title' => 'リスト'
@@ -229,8 +234,19 @@ $spaw_lang_data = array(
     'name' => 'サイト名',
     'target' => 'ターゲット',
     'title_attr' => 'タイトル',
+	'a_type' => 'Type', // <=== new 1.0.6
+	'type_link' => 'Link', // <=== new 1.0.6
+	'type_anchor' => 'Anchor', // <=== new 1.0.6
+	'type_link2anchor' => 'Link to anchor', // <=== new 1.0.6
+	'anchors' => 'Anchors', // <=== new 1.0.6
     'ok' => '    OK    ',
     'cancel' => 'キャンセル',
+  ),
+  'hyperlink_targets' => array( // <=== new 1.0.5
+  	'_self' => 'same frame (_self)',
+	'_blank' => 'new empty window (_blank)',
+	'_top' => 'top frame (_top)',
+	'_parent' => 'parent frame (_parent)'
   ),
   'table_row_prop' => array(
     'title' => '行のプロパティ',
@@ -281,6 +297,12 @@ $spaw_lang_data = array(
   ),
   'zoom' => array(
     'title' => '拡大',
+  ),
+  'subscript' => array( // <=== new 1.0.7
+    'title' => 'Subscript',
+  ),
+  'superscript' => array( // <=== new 1.0.7
+    'title' => 'Superscript',
   ),
 );
 ?>

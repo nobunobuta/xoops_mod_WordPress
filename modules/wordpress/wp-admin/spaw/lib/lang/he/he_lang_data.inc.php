@@ -1,4 +1,4 @@
-<?php 
+<?php
 // ================================================
 // SPAW PHP WYSIWYG editor control
 // ================================================
@@ -44,8 +44,9 @@ $spaw_lang_data = array(
   ),
   'image_insert' => array(
     'title' => 'הכנס תמונה',
-    'select' => '  בחר  ',
-    'cancel' => '  בטל  ',
+    'select' => '   בחר   ',
+	'delete' => '  מחיקה  ', // new 1.0.5
+    'cancel' => '   בטל   ',
     'library' => 'ספריה',
     'preview' => 'תצוגה מקדימה',
     'images' => 'תמונות',
@@ -56,6 +57,7 @@ $spaw_lang_data = array(
     'error_uploading' => 'ארעה שגיאה בעת העלאת התמונה. אנא נסה שוב מאוחר יותר.',
     'error_wrong_type' => 'סוג קובץ תמונה שגוי',
     'error_no_dir' => 'הספריה אינה קיימת',
+	'error_cant_delete' => 'שגיאה: המחיקה נכשלה!', // new 1.0.5
   ),
   'image_prop' => array(
     'title' => 'אפשרויות תמונה',
@@ -96,6 +98,7 @@ $spaw_lang_data = array(
     'cancel' => '  בטל  ',
     'rows' => 'שורות',
     'columns' => 'עמודות',
+    'css_class' => 'CSS class', // <=== new 1.0.6
     'width' => 'רוחב',
     'height' => 'גובה',
     'border' => 'גבול',
@@ -103,6 +106,7 @@ $spaw_lang_data = array(
     'cellpadding' => 'דיפון תא',
     'cellspacing' => 'ריווח תא',
     'bg_color' => 'צבע רקע',
+    'background' => 'תמונת רקע', // <=== new 1.0.6
     'error' => 'שגיאה',
     'error_rows_nan' => 'השורות אינן מספר',
     'error_columns_nan' => 'העמודות אינן מספר',
@@ -121,6 +125,7 @@ $spaw_lang_data = array(
     'css_class' => 'CSS class',
     'no_wrap' => 'ללא שבירת שורות',
     'bg_color' => 'צבע רקע',
+    'background' => 'תמונת רקע', // <=== new 1.0.6
     'ok' => '  אוקי  ',
     'cancel' => '  בטל  ',
     'left' => 'שמאל',
@@ -133,7 +138,7 @@ $spaw_lang_data = array(
     'error' => 'שגיאה',
     'error_width_nan' => 'הרוחב אינו מספר',
     'error_height_nan' => 'גובה אינו מספר',
-    
+
   ),
   'table_row_insert' => array(
     'title' => 'הכנס רשומה'
@@ -234,8 +239,19 @@ $spaw_lang_data = array(
     'name' => 'שם',
     'target' => 'מטרה',
     'title_attr' => 'כותרת',
+	'a_type' => 'סוג', // <=== new 1.0.6
+	'type_link' => 'קישור', // <=== new 1.0.6
+	'type_anchor' => 'עוגן', // <=== new 1.0.6
+	'type_link2anchor' => 'קישור לעוגן', // <=== new 1.0.6
+	'anchors' => 'עוגנים', // <=== new 1.0.6
     'ok' => '  אוקי  ',
     'cancel' => '  בטל  ',
+  ),
+  'hyperlink_targets' => array( // <=== new 1.0.5
+  	'_self' => 'החלון עצמו (_self)',
+	'_blank' => 'חלון חדש (_blank)',
+	'_top' => 'פריים עליון (_top)',
+	'_parent' => 'פריים אב (_parent)'
   ),
   'table_row_prop' => array(
     'title' => 'תכונות שורה',
