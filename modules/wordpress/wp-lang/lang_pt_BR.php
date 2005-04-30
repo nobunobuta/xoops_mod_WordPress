@@ -704,6 +704,7 @@ define('_LANG_INST_BASE_VALUE91','Se o arquivo de destino deve ser Gzip ou nôþ. 
 define('_LANG_INST_BASE_VALUE92','Altere este valor para verdadeiro se vocôþplaneja usar arquivos hackeados. Aqui vocôþpoderôþguardar côþigos hackeados que nôþ serôþ sobreescritos quando vocôþatualizar. O arquivo deve estar na pasta raiz do wordpress e se chamar <code>my-hacks.php</code>');
 define('_LANG_INST_BASE_VALUE93','blog_charset');
 define('_LANG_INST_BASE_VALUE94','Diferenôþ em horas entre o fuso horôþio do servidor e o seu.');
+define('_LANG_INST_BASE_VALUE95','Check if Trackback sending site contains my URL');
 
 /* File Name wp-admin/plugins.php */
 define('_LANG_PG_LEAST_LEVEL','Para instalar um plug-in, ôþnecessôþio ter pelo menos nôþel 8.');

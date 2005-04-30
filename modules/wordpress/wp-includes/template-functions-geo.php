@@ -1,4 +1,6 @@
 <?php
+if( ! defined( 'WP_TEMPLATE_FUNCTIONS_GEO_INCLUDED' ) ) {
+	define( 'WP_TEMPLATE_FUNCTIONS_GEO_INCLUDED' , 1 ) ;
 function get_Lat() {
     global $post;
     return $post->post_lat;
@@ -117,5 +119,5 @@ function print_DegreeConfluence_Url() {
     if (longitude_invalid()) return;
     echo "http://confluence.org/confluence.php?lat=".get_Lat()."&amp;lon=".get_Lon();
 }
-
+}
 ?>

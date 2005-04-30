@@ -213,6 +213,7 @@ INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 89, 14);
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 92, 5);
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 93, 15);
+INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 95, 11);
 
 # --------------------------------------------------------
 
@@ -351,6 +352,7 @@ INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_over
 INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (92, 0, 'hack_file', 'Y', 2, '0', 20, 8, '_LANG_INST_BASE_VALUE92', 8);
 INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (93, 0, 'use_comment_preview', 'Y', 2, 0, 20, 8, 'Display Preview Screen after comment posting.', 8);
 INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (94, 0, 'active_plugins', 'Y', 1, '', 20, 8, 'Plugin List', 8);
+INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (95, 0, 'check_trackback_content', 'Y', 2, '0', 20, 8, '_LANG_INST_BASE_VALUE95', 8);
 
 # --------------------------------------------------------
 

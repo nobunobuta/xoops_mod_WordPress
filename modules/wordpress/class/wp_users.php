@@ -1,4 +1,5 @@
 <?php
+if( ! class_exists( 'WordPressUser' ) ) {
 class WordPressUser  extends XoopsTableObject
 {
 	/**
@@ -98,7 +99,6 @@ class WordPressUser  extends XoopsTableObject
 	}
 
 	function upUserLevel() {
-		global $xoopsDB;
 		if ($this->getVar('user_level') < 10) {
 	        return $this->_handler->updateByField($this, 'user_level', $this->getVar('user_level') + 1);
         } else {
@@ -107,7 +107,6 @@ class WordPressUser  extends XoopsTableObject
 	}
 
 	function downUserLevel() {
-		global $xoopsDB;
 		if ($this->getVar('user_level') > 0) {
         	return $this->_handler->updateByField($this, 'user_level', $this->getVar('user_level') - 1);
         } else {
@@ -281,5 +280,6 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 		}
 		return $optionArray;
 	}
+}
 }
 ?>

@@ -2,7 +2,7 @@
 require_once('../wp-config.php');
 require_once('auth.php');
 
-require_once(ABSPATH . 'wp-includes/wpblfunctions.php');
+require_once('../wp-includes/wpblfunctions.php');
 $parent_file = 'wpblacklist.php';
 
 if (!get_magic_quotes_gpc()) {

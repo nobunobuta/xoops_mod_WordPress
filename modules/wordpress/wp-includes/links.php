@@ -1,5 +1,6 @@
 <?php
-
+if( ! defined( 'WP_LINKS_INCLUDED' ) ) {
+	define( 'WP_LINKS_INCLUDED' , 1 ) ;
 /** function get_linksbyname()
  ** Gets the links associated with category 'cat_name'.
  ** Parameters:
@@ -565,5 +566,5 @@ WHERE link_visible =  'Y'
 		}
 	}
 }
-
+}
 ?>

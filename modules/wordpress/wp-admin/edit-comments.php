@@ -4,8 +4,6 @@ require_once('admin.php');
 $parent_file = 'edit.php';
 $this_file = 'edit-comments.php';
 
-$commentHandler =& $wpCommentHandler[$wp_prefix[$wp_id]];
-
 user_level_check();
 
 $standalone = 0;
@@ -46,6 +44,7 @@ $criteria->setSort('comment_date');
 $criteria->setOrder($commentorder);
 $criteria->setStart($commentstart-1);
 $criteria->setLimit($commentend-$commentstart+1);
+$commentHandler =& wp_handler('Comment');
 $commentObjects =& $commentHandler->getObjects($criteria);
 $comment_rows = array();
 if ($commentObjects) {
@@ -53,7 +52,8 @@ if ($commentObjects) {
 	foreach($commentObjects as $commentObject) {
 		$row = $commentObject->getVarArray();
 		$comment = $commentObject->exportWpObject(); //$comment global is used in template_functions.
-		$postObject =& $wpPostHandler[$wp_prefix[$wp_id]]->get($commentObject->getVar('comment_post_ID'));
+		$postHandler =& wp_handler('Post');
+		$postObject =& $postHandler->get($commentObject->getVar('comment_post_ID'));
 		if ($commentObject->getVar('comment_approved') == 0) {
 			$row['class'] = 'class="unapproved" ';
 		} else {
@@ -91,8 +91,8 @@ $wpTpl->assign('selorder_desc', $selorder_desc);
 $wpTpl->assign('selorder_asc', $selorder_asc);
 $wpTpl->assign('comments_found', $comments_found);
 $wpTpl->assign('comment_rows', $comment_rows);
-$wpTpl->template_dir = ABSPATH."wp-admin/templates/";
-$wpTpl->display("edit-comments.html");
+$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
+$wpTpl->display('edit-comments.html');
 
 include('admin-footer.php');
 ?>

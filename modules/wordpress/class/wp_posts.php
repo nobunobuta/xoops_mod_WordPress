@@ -1,4 +1,5 @@
 <?php
+if( ! class_exists( 'WordPressPost' ) ) {
 class WordPressPost  extends XoopsTableObject
 {
 	var $prefix;
@@ -245,5 +246,6 @@ class WordPressPostHandler  extends XoopsTableObjectHandler
 			}
 		}
 	}
+}
 }
 ?>

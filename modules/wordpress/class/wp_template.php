@@ -1,4 +1,5 @@
 <?php
+if( ! class_exists( 'WordPresTpl' ) ) {
 require_once(XOOPS_ROOT_PATH.'/class/template.php');
 class WordPresTpl extends XoopsTpl
 {
@@ -8,5 +9,6 @@ class WordPresTpl extends XoopsTpl
 		$this->template_dir = wp_base().'/'.$tplbase.'/templates/';
 		$this->error_reporting = error_reporting();
 	}
+}
 }
 ?>

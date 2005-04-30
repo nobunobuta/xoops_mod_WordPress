@@ -13,7 +13,7 @@ function wp_mail_quit() {
 function wp_mail_receive() {
   global $wpdb, $wp_pop3, $img_target;
   
-	require_once(ABSPATH . WPINC . '/class-pop3.php');
+	require_once(wp_base() .'/wp_includes/class-pop3.php');
 	timer_start();
 	$use_cache = 1;
 	$time_difference = get_settings('time_difference');

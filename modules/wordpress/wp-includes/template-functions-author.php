@@ -1,4 +1,6 @@
 <?php
+if( ! defined( 'WP_TEMPLATE_FUNCTIONS_AUTHOR_INCLUDED' ) ) {
+	define( 'WP_TEMPLATE_FUNCTIONS_AUTHOR_INCLUDED' , 1 ) ;
 function the_author($idmode = '', $echo=true) {
     if (empty($idmode)) {
         $idmode = $GLOBALS['authordata']->user_idmode;
@@ -236,5 +238,6 @@ function list_authors2($optioncount = false, $exclude_admin = true, $idmode = ''
 function the_author_rss($echo=true)
 {
 	return _echo(wp_convert_rss_charset(the_author('',false)), $echo);
+}
 }
 ?>

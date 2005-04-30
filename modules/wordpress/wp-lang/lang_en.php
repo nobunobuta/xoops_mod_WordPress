@@ -700,6 +700,7 @@ define('_LANG_INST_BASE_VALUE91','Whether your output should be gzipped or not. 
 define('_LANG_INST_BASE_VALUE92','Set this to true if you plan to use a hacks file. This is a place for you to store code hacks that won&#8217;t be overwritten when you upgrade. The file must be in your wordpress root and called <code>my-hacks.php</code>');
 define('_LANG_INST_BASE_VALUE93','blog_charset');
 define('_LANG_INST_BASE_VALUE94','The difference in hours between GMT and your timezone');
+define('_LANG_INST_BASE_VALUE95','Check if Trackback sending site contains my URL');
 
 /* File Name wp-admin/plugins.php */
 define('_LANG_PG_LEAST_LEVEL','Sorry, you must be at least a level 8 user to modify plugins.');

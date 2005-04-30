@@ -4,9 +4,10 @@ require_once('admin.php');
 $parent_file = 'post.php';
 $this_file = 'post.php';
 
-$postHandler =& $wpPostHandler[$wp_prefix[$wp_id]];
-$commentHandler =& $wpCommentHandler[$wp_prefix[$wp_id]];
-$postmetaHandler =& $wpPostMetaHandler[$wp_prefix[$wp_id]];
+$postHandler =& wp_handler('Post');
+$commentHandler =& wp_handler('Comment');
+$postmetaHandler =& wp_handler('PostMeta');
+$userHandler =& wp_handler('User');
 
 init_param('', 'action','string', '');
 switch(get_param('action')) {
@@ -139,7 +140,7 @@ switch(get_param('action')) {
 		if (!($postObject =& $postHandler->get($post_ID))) {
 			redirect_header($siteurl.'/wp-admin/'.$this_file, 5, _LANG_P_OOPS_IDPOS);
 		}
-		$authorObject = $wpUserHandler[$wp_prefix[$wp_id]]->get($postObject->getVar('post_author'));
+		$authorObject = $userHandler->get($postObject->getVar('post_author'));
 		if (!user_can_edit($postObject->getVar('post_author'))) {
 			redirect_header($siteurl.'/wp-admin/',5, _LANG_P_DATARIGHT_EDIT.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
 		}
@@ -199,7 +200,7 @@ switch(get_param('action')) {
 		if (!($postObject =& $postHandler->get($post_ID))) {
 			redirect_header($siteurl.'/wp-admin/'.$this_file, 5, _LANG_P_OOPS_IDPOS);
 		}
-		$authorObject = $wpUserHandler[$wp_prefix[$wp_id]]->get($postObject->getVar('post_author'));
+		$authorObject = $userHandler->get($postObject->getVar('post_author'));
 		if (!user_can_edit($postObject->getVar('post_author'))) {
 			redirect_header($siteurl.'/wp-admin/',5, _LANG_P_DATARIGHT_EDIT.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
 		}
@@ -315,7 +316,7 @@ switch(get_param('action')) {
 		if (!($postObject =& $postHandler->get($post_id))) {
 			redirect_header($siteurl.'/wp-admin/'.$this_file, 5, _LANG_P_OOPS_IDPOS);
 		}
-		$authorObject = $wpUserHandler[$wp_prefix[$wp_id]]->get($postObject->getVar('post_author'));
+		$authorObject = $userHandler->get($postObject->getVar('post_author'));
 		if (!user_can_edit($postObject->getVar('post_author'))) {
 			redirect_header($siteurl.'/wp-admin/',5, _LANG_P_DATARIGHT_DELETE.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
 		}
@@ -343,7 +344,7 @@ switch(get_param('action')) {
 		if (!($postObject =& $postHandler->get($post_id))) {
 			redirect_header($siteurl.'/wp-admin/edit.php', 5, _LANG_P_OOPS_IDPOS);
 		}
-		$authorObject = $wpUserHandler[$wp_prefix[$wp_id]]->get($postObject->getVar('post_author'));
+		$authorObject = $userHandler->get($postObject->getVar('post_author'));
 		if (!user_can_edit($postObject->getVar('post_author'))) {
 			redirect_header($siteurl.'/wp-admin/',5, _LANG_P_DATARIGHT_DELETE.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
 		}
@@ -451,7 +452,7 @@ switch(get_param('action')) {
 		if (!($postObject =& $postHandler->get($p))) {
 			redirect_header($location, 5,_LANG_P_OOPS_IDCOM);
 		}
-		$authorObject = $wpUserHandler[$wp_prefix[$wp_id]]->get($postObject->getVar('post_author'));
+		$authorObject = $userHandler->get($postObject->getVar('post_author'));
 		if ($user_level < $authorObject->getVar('user_level')) {
 			redirect_header($location,5, _LANG_P_DATARIGHT_DELETE.' by <strong>['.$authorObject->getVar('user_nickname').']</strong>');
 		}

@@ -17,6 +17,13 @@ init_param('', '__mode','string','');
 
 require('wp-blog-header.php');
 
+//Anti Trackback SPAM
+$ref = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : (isset($_ENV['HTTP_REFERER']) ? $_ENV['HTTP_REFERER'] : '');
+if ($ref) {
+	// Most of Trackbacks don't have HTTP_REFERER
+	header('Location: ' . get_permalink($tb_id));
+}
+
 if ( (test_param('p') && (get_param('p') != 'all')) || (test_param('name')) ) {
     $_tb_id = $GLOBALS['posts'][0]->ID;
 }
@@ -55,6 +62,20 @@ if (!empty($_tb_id) && !test_param('__mode') && test_param('url')) {
 	if ($postObject->getVar('ping_status') == 'closed') {
 		trackback_response(1, 'Sorry, trackbacks are closed for this item.');
 	}
+
+	if (get_settings('check_trackback_content')) {
+		// Let's check the remote site
+		require_once(XOOPS_ROOT_PATH.'/class/snoopy.php');
+		$snoopy = New Snoopy;
+		if ($snoopy->fetch(get_param('url'))) {
+			$orig_contents = $snoopy->results;
+		}
+
+		if (!strpos($orig_contents, wp_siteurl())) {
+			trackback_response(1, 'Sorry, your contents does not contain any URL of my site.');
+		}
+	}
+	
 	if (function_exists('mb_convert_encoding')) {
 		if (($_charset !="")&&((mb_http_input("P")=="")||(strtolower(ini_get("mbstring.http_input"))=="pass"))) {
 			$_charset = strtoupper(trim($_charset));

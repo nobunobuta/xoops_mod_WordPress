@@ -28,5 +28,6 @@ $wpTpl->assign('rows', $rows);
 $wpTpl->assign('saveasdraft', $saveasdraft);
 $wpTpl->assign('touchtime', $touchtime);
 $wpTpl->assign('ticket', $ticket);
-$wpTpl->display(ABSPATH."wp-admin/templates/edit-form-comment.html");
+$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
+$wpTpl->display('edit-form-comment.html');
 ?>

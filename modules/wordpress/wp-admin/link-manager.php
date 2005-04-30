@@ -4,7 +4,9 @@
 
 require_once('admin.php');
 
-$linkHandler =& $wpLinkHandler[$wp_prefix[$wp_id]];
+$linkHandler =& wp_handler('Link');
+$userHandler =& wp_handler('User');
+$linkCategoryHandler =& wp_handler('LinkCategory');
 
 $title = 'Manage Links';
 $this_file = 'link-manager.php';
@@ -12,6 +14,7 @@ $parent_file = 'link-manager.php';
 
 init_param(array('POST','GET'), 'action2', 'string', '');
 init_param(array('POST','GET'), 'action', 'string', $action2);
+
 
 switch ($action) {
 	case _LANG_WLM_ASSIGN_TEXT:
@@ -31,7 +34,7 @@ switch ($action) {
 			header('Location: ' . $this_file);
 			exit;
 		}
-		if (!$wpUserHandler[$wp_prefix[$wp_id]]->get($newowner)) {
+		if (!$userHandler->get($newowner)) {
 			redirect_header($siteurl.'/wp-admin/'.$this_file, 5,'No owner ID');
 		}
 		
@@ -39,7 +42,7 @@ switch ($action) {
 		$links =& $linkHandler->getObjects($criteria);
 		$ids_to_change = array();
 		foreach($links as $link) {
-			$user =& $wpUserHandler[$wp_prefix[$wp_id]]->get($link->getVar('link_owner'));
+			$user =& $userHandler->get($link->getVar('link_owner'));
 			if (!get_settings('links_use_adminlevels') || ($user_level >= $user->getVar('user_level'))) { // ok to proceed
 				$ids_to_change[] = $link->getVar('link_id');
 			}
@@ -109,7 +112,7 @@ switch ($action) {
 		    exit;
 		}
 
-		if (!$wpLinkCategoryHandler[$wp_prefix[$wp_id]]->get($category)) {
+		if (!$linkCategoryHandler->get($category)) {
 			redirect_header($siteurl.'/wp-admin/'.$this_file, 5,'No category ID');
 		}
 
@@ -297,7 +300,7 @@ switch ($action) {
 			$link_visible = $linkRecord->getVar('link_visible');
 			$link_category = $linkRecord->getVar('link_category');
 
-			$category_options = $wpLinkCategoryHandler[$wp_prefix[$wp_id]]->getOptionArray();
+			$category_options = $linkCategoryHandler->getOptionArray();
 			include('include/link-manager-form.php');
 		}
 		include('admin-footer.php');
@@ -306,12 +309,12 @@ switch ($action) {
 		init_param('POST', 'cat_id', 'string', 'All', true);
 		init_param('POST', 'order_by', 'string', 'link_name', true);
 
-		$_SESSION[$wp_prefix[$wp_id].'links_show_cat_id'] = intval($cat_id);
-		$_SESSION[$wp_prefix[$wp_id].'links_show_order'] = $order_by;
+		$_SESSION[wp_prefix().'links_show_cat_id'] = intval($cat_id);
+		$_SESSION[wp_prefix().'links_show_order'] = $order_by;
  	   //break; fall through
 	default:
-		$links_show_cat_id = init_param('SESSION',$wp_prefix[$wp_id].'links_show_cat_id', 'integer', '');
-		$links_show_order = init_param('SESSION',$wp_prefix[$wp_id].'links_show_order', 'string', '');
+		$links_show_cat_id = init_param('SESSION',wp_prefix().'links_show_cat_id', 'integer', '');
+		$links_show_order = init_param('SESSION',wp_prefix().'links_show_order', 'string', '');
 		if (!empty($links_show_cat_id)) {
 			$cat_id = intval($links_show_cat_id);
 		}
@@ -334,22 +337,22 @@ switch ($action) {
 		}
 		include XOOPS_ROOT_PATH."/class/xoopsformloader.php";
 		$selectLinkCat = new XoopsFormSelect("", "cat_id", $cat_id);
-		$selectLinkCat->addOptionArray(Array('All' => 'All')+$wpLinkCategoryHandler[$wp_prefix[$wp_id]]->getOptionArray());
+		$selectLinkCat->addOptionArray(Array('All' => 'All')+$linkCategoryHandler->getOptionArray());
 		$selectLinkCatControl = $selectLinkCat->render();
 
 		$selectOrder = new XoopsFormSelect("", "order_by", $order_by);
-		$selectOrder->addOptionArray($wpLinkCategoryHandler[$wp_prefix[$wp_id]]->getSortOptionArray());
+		$selectOrder->addOptionArray($linkCategoryHandler->getSortOptionArray());
 		$selectOrderControl = $selectOrder->render();
 
 		$ticketHiddenContorl = $xoopsWPTicket->getTicketHtml(__LINE__);
 		$helpLink =	 gethelp_link($this_file,'list_o_links');
 
 		$selectSetLinkCat = new XoopsFormSelect("", "category");
-		$selectSetLinkCat->addOptionArray($wpLinkCategoryHandler[$wp_prefix[$wp_id]]->getOptionArray());
+		$selectSetLinkCat->addOptionArray($linkCategoryHandler->getOptionArray());
 		$selectSetLinkCatControl = $selectSetLinkCat->render();
 		
 		$selectSetUser = new XoopsFormSelect("", "newowner");
-		$selectSetUser->addOptionArray($wpUserHandler[$wp_prefix[$wp_id]]->getOptionArray());
+		$selectSetUser->addOptionArray($userHandler->getOptionArray());
 		$selectSetUserControl = $selectSetUser->render();
 
 		if (isset($cat_id) && ($cat_id != 'All')) {
@@ -358,7 +361,7 @@ switch ($action) {
 			$criteria = new Criteria(1,1);
 		}
 		$criteria->setSort($order_by);
-		$links = $wpLinkHandler[$wp_prefix[$wp_id]]->getObjects($criteria);
+		$links = $linkHandler->getObjects($criteria);
 		$style = "";
 		if ($links) {
 			$link_rows = array();
@@ -379,9 +382,9 @@ switch ($action) {
 				$row['image'] = ($row['link_image'] != null) ? 'Yes' : 'No';
 				$row['visible'] = ($row['link_visible'] == 'Y') ? 'Yes' : 'No';
 
-				$linkcat = $wpLinkCategoryHandler[$wp_prefix[$wp_id]]->get($row['link_category']);
+				$linkcat = $linkCategoryHandler->get($row['link_category']);
 				$row['category'] = $linkcat->getVar('cat_name');
-				$linkowner = $wpUserHandler[$wp_prefix[$wp_id]]->get($row['link_owner']);
+				$linkowner = $userHandler->get($row['link_owner']);
 				$linkowner_user_level = $linkowner->getVar('user_level');
 				
 				if (get_settings('links_use_adminlevels') && ($linkowner_user_level > $user_level)) {
@@ -401,7 +404,8 @@ switch ($action) {
 		$wpTpl->assign('selectSetUserControl', $selectSetUserControl);
 		$wpTpl->assign('helpLink', $helpLink);
 		$wpTpl->assign('link_rows', $link_rows);
-		$wpTpl->display(ABSPATH."wp-admin/templates/link-manager.html");
+		$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
+		$wpTpl->display('link-manager.html');
 
 		include('admin-footer.php');
 		break;

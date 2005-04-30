@@ -310,11 +310,11 @@ switch ($_REQUEST["view"]) {
 		if ($ImageReplaceString == '') { //画像置換しない
 			$tmp = $post['Content'];
 		}else{ //画像削除する場合、imgタグを指定文字列に置換
-			$imgstr = '<img[^>]*src=[\"\']([^\"\'>]*)[\"\'][^>]*alt=[\"\']([^\"\'>]*)[\"\'][^>]*>';
-			$repstr = '&lt;<a href="'.$HTTP_SERVER_VARS["PHP_SELF"].'?view=imagepage&num='.$_REQUEST["num"].'&url=\\1">'.$ImageReplaceString.'\\2</a>&gt;';
+			$imgstr = '<img[^>]*src\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*alt\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*>';
+			$repstr = '&lt;<a href="'.$HTTP_SERVER_VARS["PHP_SELF"].'?view=imagepage&num='.$_REQUEST["num"].'&url=\\1">'.$ImageReplaceString.'\\2</a>&gt;<br>';
 			$tmp = mb_ereg_replace($imgstr,$repstr,stripslashes($post['Content']));
-			$imgstr = '<img[^>]*src=[\"\']([^\"\'>]*)[\"\'][^>]*>';
-			$repstr = '&lt;<a href="'.$HTTP_SERVER_VARS["PHP_SELF"].'?view=imagepage&num='.$_REQUEST["num"].'&url=\\1">'.$ImageReplaceString.'</a>&gt;';
+			$imgstr = '<img[^>]*src\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*>';
+			$repstr = '&lt;<a href="'.$HTTP_SERVER_VARS["PHP_SELF"].'?view=imagepage&num='.$_REQUEST["num"].'&url=\\1">'.$ImageReplaceString.'</a>&gt;<br>';
 			$tmp = mb_ereg_replace($imgstr,$repstr,$tmp);
 		}
 

@@ -1,4 +1,6 @@
 <?php
+if( ! defined( 'WP_TEMPLATE_FUNCTIONS_POST_INCLUDED' ) ) {
+	define( 'WP_TEMPLATE_FUNCTIONS_POST_INCLUDED' , 1 ) ;
 function get_the_password_form($echo=true) {
 	$output = "<form action='" .wp_siteurl() . "/wp-pass.php' method='post'>
 	<p>This post is password protected. To view it please enter your password below:</p>
@@ -118,7 +120,7 @@ function get_the_content($more_link_text='(more...)', $stripteaser=0, $more_file
 		if (!empty($GLOBALS['more'])) {
 			$output .= '<a id="more-'.$GLOBALS['wp_post_id'].'"></a>'.$content[1];
 		} else {
-            $output .= ' <a href="'. get_permalink() . '#more-.'.$GLOBALS['wp_post_id'].'">'.$more_link_text.'</a>';
+            $output .= ' <a href="'. get_permalink() . '#more-'.$GLOBALS['wp_post_id'].'">'.$more_link_text.'</a>';
 		}
 	}
 	if (!empty($GLOBALS['preview'])) { // preview fix for javascript bug with foreign languages
@@ -455,5 +457,6 @@ function the_meta($echo=true) {
 		$the_meta .= "</ul>\n";
 	}
 	return _echo($the_meta, $echo);
+}
 }
 ?>

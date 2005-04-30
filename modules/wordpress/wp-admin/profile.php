@@ -102,7 +102,7 @@ switch(get_param('action')) {
 		$_form = new XoopsThemeForm(_LANG_WPF_SUBT_EDIT, 'profile', $_this_file);
 		$_form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_USERID, $userObject->getVar('ID','e')));
 		$_form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_LEVEL, $userObject->getVar('user_level','e')));
-		$_form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_POSTS, $userObject->getNumPosts($wp_prefix[$wp_id])));
+		$_form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_POSTS, $userObject->getNumPosts(wp_prefix())));
 		$_form->addElement(new XoopsFormLabel(_LANG_WPF_SUBT_LOGIN, $userObject->getVar('user_login','e')));
 		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_FIRST, 'newuser_firstname', 50, 150, $userObject->getVar('user_firstname','e')));
 		$_form->addElement(new XoopsFormText(_LANG_WPF_SUBT_LAST, 'newuser_lastname', 50, 150, $userObject->getVar('user_lastname','e')));

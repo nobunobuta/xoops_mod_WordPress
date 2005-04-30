@@ -3,7 +3,7 @@
 // Copyright (C) 2002, 2003 Mike Little -- mike@zed1.com
 require_once('admin.php');
 
-$linkCategoryHandler =& $wpLinkCategoryHandler[$wp_prefix[$wp_id]];
+$linkCategoryHandler =& wp_handler('LinkCategory');
 
 $this_file='link-categories.php';
 $parent_file = 'link-manager.php';
@@ -232,7 +232,8 @@ switch ($action) {
 		$wpTpl->assign('linkCat_rows', $linkCat_rows);
 		$wpTpl->assign('note_name', $note_name);
 		$wpTpl->assign('formHTML', $formHTML);
-		$wpTpl->display(ABSPATH."wp-admin/templates/link-categories.html");
+		$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
+		$wpTpl->display('link-categories.html');
 
 		include('admin-footer.php');
 	    break;

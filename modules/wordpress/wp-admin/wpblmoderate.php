@@ -2,7 +2,7 @@
 require_once('../wp-config.php');
 require_once('auth.php');
 
-require_once(ABSPATH . 'wp-includes/wpblfunctions.php');
+require_once('../wp-includes/wpblfunctions.php');
 $title = __('WPBlacklist - Moderate');
 $parent_file = 'wpblacklist.php';
 require_once('admin-header.php');

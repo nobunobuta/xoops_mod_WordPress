@@ -1,14 +1,13 @@
 <?php
-/* ÈþÆý */
 if (!defined('_LANGCODE')) {
-	define("_LANGCODE","en");
+	define('_LANGCODE','en');
 }
-if (file_exists("wp-lang/lang_"._LANGCODE.".php")) {
-	require_once("wp-lang/lang_"._LANGCODE.".php");
+if (file_exists('wp-lang/lang_'._LANGCODE.'.php')) {
+	require_once('wp-lang/lang_'._LANGCODE.'.php');
 } else {
-	require_once("wp-lang/lang_en.php");
+	require_once('wp-lang/lang_en.php');
 }
-global $xoopsDB, $xoopsUser, $blog_charset;
+global $blog_charset;
 
 $GLOBALS['use_cache'] = 1; // No reason not to
 /* Including config and functions files */
@@ -25,13 +24,13 @@ init_param('', 'monthnum','integer',NO_DEFAULT_PARAM);
 init_param('', 'w','integer',NO_DEFAULT_PARAM);  //WeekNum Param
 init_param('', 'day','integer',NO_DEFAULT_PARAM);
 
-init_param('', 'p','string',NO_DEFAULT_PARAM);  //PostID Param ("All" for All);
+init_param('', 'p','string',NO_DEFAULT_PARAM);  //PostID Param ('All' for All);
 init_param('', 'name','string',NO_DEFAULT_PARAM);  //PostName Param
 
-init_param('', 'cat','string',NO_DEFAULT_PARAM);  // Category ID (Start with "-" means Exclude this.).
+init_param('', 'cat','string',NO_DEFAULT_PARAM);  // Category ID (Start with '-' means Exclude this.).
 init_param('', 'category_name','string',NO_DEFAULT_PARAM);  // Category Name
 
-init_param('', 'author','string',NO_DEFAULT_PARAM);// Author ID (Start with "-" means Exclude this.).
+init_param('', 'author','string',NO_DEFAULT_PARAM);// Author ID (Start with '-' means Exclude this.).
 init_param('', 'author_name','string',NO_DEFAULT_PARAM);// Author Name
 
 init_param('', 's','html',NO_DEFAULT_PARAM);    //Search String
@@ -253,7 +252,7 @@ if (test_param('order')) {
 }
 
 // order by stuff
-if (test_param('orderby')) {
+if (!test_param('orderby')) {
 	$_criteria_sort = 'post_date';
 } else {
 	// used to filter values
@@ -265,7 +264,7 @@ if (test_param('orderby')) {
 	for ($_i = 0; $_i < (count($_orderby_list)); $_i++) {
 		// Only allow certain values for safety
 		if (in_array($_orderby_list[$_i], $_allowed_keys)) {
-			$_orderby_array[] = 'post'.$_orderby_list[$_i];
+			$_orderby_array[] = 'post_'.$_orderby_list[$_i];
 		}
 	}
 	$_criteria_sort = $_orderby_array;
@@ -353,7 +352,7 @@ $postHandler =& wp_handler('Post');
 $postObjects =& $postHandler->getObjects($_criteria, false, '', $_distinct, $_joinCriteria);
 
 $GLOBALS['request'] = $postHandler->getLastSQL();
-//echo $GLOBALS['request']."<br>";
+//echo $GLOBALS['request'].'<br>';
 
 if (!empty($preview)) {
 	$GLOBALS['request'] = 'SELECT 1-1'; // dummy mysql query for the preview
@@ -383,15 +382,15 @@ if ($GLOBALS['posts']) {
     // Get the categories for all the posts
 	$_post_id_list = array();
     foreach ($GLOBALS['posts'] as $post) {
-    	$_post_id_list[] = $GLOBALS['post']->ID;
-		$GLOBALS['category_cache'][wp_id()][$GLOBALS['post']->ID] = array();
+    	$_post_id_list[] = $post->ID;
+		$GLOBALS['category_cache'][wp_id()][$post->ID] = array();
     }
     $_post_id_list = implode(',', $_post_id_list);
-	$_post_id_criteria =& new Criteria('post_id', "($_post_id_list)", "IN");
+	$_post_id_criteria =& new Criteria('post_id', '('.$_post_id_list.')', 'IN');
 	$_joinCriteria =& new XoopsJoinCriteria(wp_table('post2cat'), 'ID', 'post_id');
 	$_joinCriteria->cascade(new XoopsJoinCriteria(wp_table('categories'), 'category_id', 'cat_ID'));
 	$postObjects =& $postHandler->getObjects($_post_id_criteria, false,
-							"ID, category_id, cat_name, category_nicename, category_description, category_parent",
+							'ID, category_id, cat_name, category_nicename, category_description, category_parent',
 							true, $_joinCriteria);
     foreach ($postObjects as $postObject) {
     	$_cat->ID = $postObject->getVar('ID');
@@ -411,11 +410,11 @@ if ($GLOBALS['posts']) {
 	$_joinCriteria =& new XoopsJoinCriteria(wp_table('comments'), 'ID', 'comment_post_ID');
     $postObjects =&$postHandler->getObjects($_criteria, false, 'ID, COUNT( comment_ID ) AS ccount', false, $_joinCriteria);
 	foreach ($postObjects as $postObject) {
-		$GLOBALS['comment_count_cache'][wp_id()]["".$postObject->getVar('ID')] = $postObject->getExtraVar('ccount');
+		$GLOBALS['comment_count_cache'][wp_id()][''.$postObject->getVar('ID')] = $postObject->getExtraVar('ccount');
 	}
 
 	// Get post-meta info
-	if ( $meta_list = $GLOBALS['wpdb']->get_results("SELECT post_id, meta_key, meta_value FROM ".wp_table('postmeta')." WHERE post_id IN($_post_id_list) ORDER BY post_id, meta_key", ARRAY_A) ) {
+	if ( $meta_list = $GLOBALS['wpdb']->get_results('SELECT post_id, meta_key, meta_value FROM '.wp_table('postmeta').' WHERE post_id IN('.$_post_id_list.') ORDER BY post_id, meta_key', ARRAY_A) ) {
 		
 		// Change from flat structure to hierarchical:
 		$GLOBALS['post_meta_cache'][wp_id()] = array();
@@ -432,7 +431,7 @@ if ($GLOBALS['posts']) {
 				$GLOBALS['post_meta_cache'][wp_id()][$mpid]["$mkey"] = array();
 			}
 			// Add a value to the current pid/key:
-			$GLOBALS['post_meta_cache'][wp_id()][$mpid][$mkey][] = $mval;
+			$GLOBALS['post_meta_cache'][wp_id()][$mpid]["$mkey"][] = $mval;
 		}
 	}
 

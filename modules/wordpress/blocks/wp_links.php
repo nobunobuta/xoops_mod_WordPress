@@ -1,22 +1,17 @@
 <?php
-if( ! defined( 'WP_LINKS_INCLUDED' ) ) {
+$_wp_base_prefix = 'wp';
+$_wp_my_dirname = basename( dirname(dirname( __FILE__ ) ) );
+if (!preg_match('/\D+(\d*)/', $_wp_my_dirname, $_wp_regs )) {
+	echo ('Invalid dirname for WordPress Module: '. htmlspecialchars($_wp_my_dirname));
+}
+$_wp_my_dirnumber = $_wp_regs[1] ;
+$_wp_my_prefix = $_wp_base_prefix.$_wp_my_dirnumber.'_';
 
-	define( 'WP_LINKS_INCLUDED' , 1 ) ;
+if( ! defined( 'WP_LINKS_BLOCK_INCLUDED' ) ) {
+	define( 'WP_LINKS_BLOCK_INCLUDED' , 1 ) ;
 
-	function b_wp_links_show($option,$wp_num="")
+	function _b_wp_links_show($option,$wp_num="")
 	{
-		global $wpdb;
-		global $wp_id, $wp_inblock, $use_cache, $wp_mod, $wp_base;
-
-		$id=1;
-		$use_cache = 1;
-
-		if ($wp_num == "") {
-			$wp_id = $wp_num;
-			$wp_inblock = 1;
-			require(dirname(__FILE__).'/../wp-config.php');
-			$wp_inblock = 0;
-		}
 		ob_start();
 		block_style_get($wp_num);
 		echo "<ul class='wpBlockList'>\n";
@@ -26,18 +21,17 @@ if( ! defined( 'WP_LINKS_INCLUDED' ) ) {
 		ob_end_clean();
 		return $block;
 	}
-
-	for ($i = 0; $i < 10; $i++) {
-		eval ('
-		function b_wp'.$i.'_links_show($options) {
-			global $wp_id, $wp_inblock, $use_cache, $wp_mod, $wp_base;
-			$wp_id = "'.$i.'";
-			$wp_inblock = 1;
-			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
-			$wp_inblock = 0;
-			return (b_wp_links_show($options,"'.$i.'"));
-		}
-	');
-	}
 }
+
+eval ('
+	function b_'.$_wp_my_prefix.'links_show($options) {
+		$GLOBALS["use_cache"] = 1;
+		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
+		$GLOBALS["wp_inblock"] = 1;
+		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
+		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
+		$GLOBALS["wp_inblock"] = 0;
+		return (_b_wp_links_show($options,"'.$_wp_my_dirnumber.'"));
+	}
+');
 ?>

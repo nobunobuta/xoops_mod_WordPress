@@ -1,4 +1,6 @@
 <?php
+if( ! defined( 'WP_CLASS_SMARTY_INCLUDED' ) ) {
+	define( 'WP_CLASS_SMARTY_INCLUDED' , 1 ) ;
 
 if( is_object( $wpsmarty ) == false )
 {
@@ -258,5 +260,5 @@ function smarty_get_calendar( $params )
 	get_calendar( $daylength );
 }
 $wpsmarty->register_function( 'get_calendar', 'smarty_get_calendar' );
-
+}
 ?>

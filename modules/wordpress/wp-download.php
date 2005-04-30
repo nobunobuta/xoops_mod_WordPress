@@ -53,9 +53,9 @@ $GLOBALS['mimetypes'] = array(
 require_once(dirname(__FILE__) . '/wp-config.php');
 $fname=urldecode($_GET['fname']);
 $from=$_GET['from'];
-$file=get_settings('fileupload_realpath')."/".$from;
+$file=get_settings('fileupload_realpath').'/'.$from;
 if ($GLOBALS['is_IE']) {
-	$fname=mb_conv($fname,"SJIS",get_settings('blog_charset'));
+	$fname=mb_conv($fname,'SJIS',get_settings('blog_charset'));
 }
 
 $obj = &new DocumentFile($file);
@@ -113,7 +113,7 @@ define('ATTACH_CONFIG_PAGE_MIME','plugin/attach/mime-type');
 function document_mime_content_type($filename)
 {
 	$filename_info = pathinfo($filename);
-	$filename_ext = $filename_info["extension"];
+	$filename_ext = $filename_info['extension'];
 	
 	$mimetype = 'application/octet-stream'; //default
 	if (array_key_exists($filename_ext, $GLOBALS['mimetypes'])) {

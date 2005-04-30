@@ -52,7 +52,7 @@ function wp_mail_quit() {
 function wp_mail_receive() {
   global $img_target;
   
-	require_once(ABSPATH . WPINC . '/class-pop3.php');
+	require_once(wp_base() .'/wp_includes/class-pop3.php');
 	timer_start();
 	$use_cache = 1;
 	$time_difference = get_settings('time_difference');
@@ -323,12 +323,12 @@ function wp_mail_receive() {
 								}
 								if ($is_img) {
 									if (file_exists(get_settings('fileupload_realpath')."/thumb-" . $file_name)) {
-										$content_before .= "<a href=\"" . get_settings('fileupload_url') . '/' . rawurlencode($file_name) . "\"".$img_target."><img style=\"float: left;\" hspace=\"6\" src = \"" . get_settings('fileupload_url') . '/thumb-' . rawurlencode($file_name) . "\" alt=\"".$orig_name."\" title=\"".$orig_name."\" /></a>";
+										$content_before .= "<a href=\"" . get_settings('fileupload_url') . '/' . rawurlencode($file_name) . "\"".$img_target."><img style=\"float: left;\" hspace=\"6\" src=\"" . get_settings('fileupload_url') . '/thumb-' . rawurlencode($file_name) . "\" alt=\"".$orig_name."\" title=\"".$orig_name."\" /></a>";
 									} else {
-										$content_before .= "<a href=\"" . get_settings('fileupload_url') . '/' . rawurlencode($file_name) . "\"".$img_target."><img style=\"float: left;\" hspace=\"6\" src = \"" . get_settings('fileupload_url') . '/' . rawurlencode($file_name) . "\" alt=\"".$orig_name."\" title=\"".$orig_name."\" /></a>";
+										$content_before .= "<a href=\"" . get_settings('fileupload_url') . '/' . rawurlencode($file_name) . "\"".$img_target."><img style=\"float: left;\" hspace=\"6\" src=\"" . get_settings('fileupload_url') . '/' . rawurlencode($file_name) . "\" alt=\"".$orig_name."\" title=\"".$orig_name."\" /></a>";
 									}
 								} else {
-									$content_after .= "<a href=\"" . wp_siteurl()."/wp-download.php?from=".rawurlencode($file_name)."&amp;fname=" .urlencode($orig_name). "\"".$img_target."><img style=\"float: left;\" hspace=\"6\" src = \"" . wp_siteurl(). "/wp-images/file.gif\" alt=\"".$orig_name."\" title=\"".$orig_name."\" />".$orig_name."</a>";
+									$content_after .= "<a href=\"" . wp_siteurl()."/wp-download.php?from=".rawurlencode($file_name)."&amp;fname=" .urlencode($orig_name). "\"".$img_target."><img style=\"float: left;\" hspace=\"6\" src=\"" . wp_siteurl(). "/wp-images/file.gif\" alt=\"".$orig_name."\" title=\"".$orig_name."\" />".$orig_name."</a>";
 								}
 							}
 						}

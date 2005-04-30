@@ -46,6 +46,9 @@ if (!function_exists('upgrade_wp_tables')){
 		if(!get_settings('active_plugins')) {
 			add_option('active_plugins',"\n");
 		}
+		if(!get_settings('check_trackback_content')) {
+			add_option('check_trackback_content','0', 3, '_LANG_INST_BASE_VALUE95', 2, 8);
+		}
 	}
 }
 

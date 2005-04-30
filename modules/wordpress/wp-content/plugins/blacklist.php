@@ -8,9 +8,8 @@ Author: Fahim Farook
 Author URI: http://www.farook.org
 */
 
-//require_once(ABSPATH.'/wp-config.php');
-require_once(ABSPATH.'/wp-includes/wpblfunctions.php');
-$tableblacklist = $xoopsDB->prefix("wp_blacklist");
+require_once(wp_base() .'/wp-includes/wpblfunctions.php');
+$tableblacklist = $GLOBALS['xoopsDB']->prefix("wp_blacklist");
 
 /*
    notifies the moderator of the blog (usually the admin) about deleted comments

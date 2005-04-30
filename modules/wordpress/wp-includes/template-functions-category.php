@@ -1,5 +1,6 @@
 <?php
-
+if( ! defined( 'WP_TEMPLATE_FUNCTIONS_CATEGORY_INCLUDED' ) ) {
+	define( 'WP_TEMPLATE_FUNCTIONS_CATEGORY_INCLUDED' , 1 ) ;
 function get_the_category($id=false) {
     if (!$id) {
         $id = $GLOBALS['post']->ID;
@@ -207,8 +208,8 @@ function dropdown_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_
         $optiondates = 0, $optioncount = 0, $hide_empty = 0, $optionnone=false,
         $selected=0, $hide=0, $hierarchical=true, $child_of=0, $link=false, $level=0, $echo = true, $categoryObjects = null) {
     $dropdown_cats = "";
-    if (!$selected) $selected=$GLOBALS['cat'];
-    if (!$categoryObjects) {
+    if (!$selected) $selected = (empty($GLOBALS['cat']) ? 0 : $GLOBALS['cat']);
+    if (!isset($categoryObjects)) {
 	    $criteria =& new CriteriaCompo(new Criteria('cat_ID', 0 ,'>'));
 	    if ($hide) {
 	    	$criteria->add(new Criteria('cat_ID', $hide, '!='));
@@ -474,5 +475,6 @@ function the_category_unicode($echo = true) {
 	$category = get_the_category();
 	$category = apply_filters('the_category_unicode', $category);
 	return _echo(convert_chars($category, 'unicode'),$echo);
+}
 }
 ?>

@@ -701,6 +701,7 @@ define('_LANG_INST_BASE_VALUE91','Whether your output should be gzipped or not. 
 define('_LANG_INST_BASE_VALUE92','Set this to true if you plan to use a hacks file. This is a place for you to store code hacks that won&#8217;t be overwritten when you upgrade. The file must be in your wordpress root and called <code>my-hacks.php</code>');
 define('_LANG_INST_BASE_VALUE93','blog_charset');
 define('_LANG_INST_BASE_VALUE94','Zeitunterschied zwischen GMT und Deiner Zeitzone (in Stunden)');
+define('_LANG_INST_BASE_VALUE95','Check if Trackback sending site contains my URL');
 
 /* Missing tags */
 define('_WP_LIST_CAT_ALL','-----WP KAT-----');

@@ -6,7 +6,7 @@ error_reporting(E_ERROR);
 init_param('GET', 'num','integer');
 if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
 require('wp-blog-header.php');
-header("Content-type: application/xml");
+header('Content-type: application/xml');
 ?>
 <?php echo '<?xml version="1.0" encoding="'.wp_get_rss_charset().'"?'.'>'; ?>
 <feed version="0.3"
@@ -27,7 +27,7 @@ header("Content-type: application/xml");
 		</author>
 		<title><?php the_title_rss() ?></title>
 		<link rel="alternate" type="text/html" href="<?php permalink_single_rss() ?>" />
-		<id><?php bloginfo_rss("url") ?>?p=<?php echo $GLOBALS['wp_post_id']; ?></id>
+		<id><?php bloginfo_rss('url') ?>?p=<?php echo $GLOBALS['wp_post_id']; ?></id>
 		<modified><?php the_time('Y-m-d\TH:i:s\Z'); ?></modified>
 		<issued><?php the_time('Y-m-d\TH:i:s\Z'); ?></issued>
 		<?php the_category_rss('rdf') ?>

@@ -1,4 +1,6 @@
 <?php
+if( ! defined( 'WP_FUNCTION_FILTER_INCLUDED' ) ) {
+	define( 'WP_FUNCTION_FILTER_INCLUDED' , 1 ) ;
 // Filters: these are the core of WP's plugin architecture
 function add_filter($tag, $function_to_add, $priority = 10) {
 //	if ($tag=='comment_text') {echo "Add filter - $tag, $function_to_add<br>";}
@@ -81,5 +83,6 @@ function add_action($tag, $function_to_add, $priority = 10) {
 
 function remove_action($tag, $function_to_remove, $priority = 10) {
 	remove_filter($tag, $function_to_remove, $priority);
+}
 }
 ?>

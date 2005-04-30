@@ -12,16 +12,15 @@ $GLOBALS['excluded_referers'][]=XOOPS_URL;
 
 //$excluded_referers[]="google.com";
 
-function the_referers($num=5, $before="<li>", $after="</li>", $none="none yet"){
-    global $post_meta_cache, $id, $wp_id, $blog_charset;
+function the_referers($num=5, $before='<li>', $after='</li>', $none='none yet'){
     $completed = 0;
-    if ($referers = $post_meta_cache[$wp_id][$id]['wp-refer']){
+    if ($referers = $GLOBALS['post_meta_cache'][wp_id()][$GLOBALS['wp_post_id']]['wp-refer']){
         $referers = array_reverse($referers);
         foreach ($referers as $referer) {
-            $referer = explode(":!-!:", $referer);
-            $title = mb_conv(sanitize_text($referer[0]),$blog_charset,"auto");
+            $referer = explode(':!-!:', $referer);
+            $title = mb_conv(sanitize_text($referer[0]), $GLOBALS['blog_charset'], 'auto');
 			$url = sanitize_text($referer[1],false,true);
-            echo $before."<a href=\"$url\">$title</a>".$after;
+            echo $before.'<a href="$url">$title</a>'.$after;
             $completed++;
             if ($completed==$num) break;
         }
@@ -31,37 +30,34 @@ function the_referers($num=5, $before="<li>", $after="</li>", $none="none yet"){
 }
 
 function add_referer(){
-    global $single, $post_meta_cache, $wp_post_id, $wp_id, $blog_charset, $siteurl;
-    if ($single){
-        if (isset($_SERVER["HTTP_REFERER"])){
-        	$url=$_SERVER["HTTP_REFERER"];
+    if (!empty($GLOBALS['single'])){
+        if (isset($_SERVER['HTTP_REFERER'])){
+        	$url=$_SERVER['HTTP_REFERER'];
             if (not_excluded($url)){
-                if ($referer = fopen($url, "rb")){
-                    $page = '';
-                    while (!feof($referer)) {
-                          $page .= fread($referer, 8192);
-                    }
-                    fclose($referer);
+				require_once(XOOPS_ROOT_PATH.'/class/snoopy.php');
+				$snoopy = New Snoopy;
+				if ($snoopy->fetch($url)) {
+					$page = $snoopy->results;
                     $matched = false;
-                    $page = mb_conv($page,$blog_charset,"auto");
-                    if (preg_match_all("/<a\s[^>]*?href=[\"\']([^\"\']*?)[\"\'][^>]*>/",$page,$matches,PREG_PATTERN_ORDER)) {
+                    $page = mb_conv($page, $GLOBALS['blog_charset'], 'auto');
+                    if (preg_match_all('/<a\s[^>]*?href=[\"\']([^\"\']*?)[\"\'][^>]*>/',$page,$matches,PREG_PATTERN_ORDER)) {
                     	foreach($matches[1] as $match) {
-                    		if (strstr($match,$siteurl)) $matched = true;
+                    		if (strstr($match, wp_siteurl())) $matched = true;
                     	}
                     }
                     if (!$matched) return;
-                    preg_match("/<title>(.+)<\/title>/is",$page,$title);
+                    preg_match('/<title>(.+)<\/title>/is', $page,$title);
                     $title = $title[1];
 	                if (!$title) {
-	                    preg_match("/^(http:\/\/)?([^\/]+)/i",$url, $matches);
+	                    preg_match('/^(http:\/\/)?([^\/]+)/i', $url, $matches);
 	                    $host = $matches[2];
-	                    preg_match("/[^\.\/]+\.[^\.\/]+$/", $host, $matches);
+	                    preg_match('/[^\.\/]+\.[^\.\/]+$/', $host, $matches);
 	                    $title = $matches[0];
 	                }
 	                $new_entry = addslashes($title.":!-!:".$url);
 	            
-	                add_post_meta($wp_post_id,'wp-refer',$new_entry);
-	                $post_meta_cache[$wp_id][$wp_post_id]['wp-refer'][]=$new_entry;
+	                add_post_meta($GLOBALS['wp_post_id'],'wp-refer',$new_entry);
+	                $GLOBALS['post_meta_cache'][wp_id()][$GLOBALS['wp_post_id']]['wp-refer'][] = $new_entry;
                 }
             }
         }

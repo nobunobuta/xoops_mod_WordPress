@@ -1,7 +1,7 @@
 <?php
 require('../wp-config.php');
-require_once(ABSPATH . 'wp-admin/admin-functions.php');
-require_once(ABSPATH . 'wp-admin/auth.php');
+require_once('admin-functions.php');
+require_once('auth.php');
 
 get_currentuserinfo();
 

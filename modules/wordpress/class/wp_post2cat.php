@@ -1,4 +1,5 @@
 <?php
+if( ! class_exists( 'WordPressPost2Cat' ) ) {
 class WordPressPost2Cat  extends XoopsTableObject
 {
 	var $prefix;
@@ -110,5 +111,6 @@ class WordPressPost2CatHandler  extends XoopsTableObjectHandler
 		return parent::getObjects($criteria, $id_as_key, $fieldlist);
 	}
 */
+}
 }
 ?>

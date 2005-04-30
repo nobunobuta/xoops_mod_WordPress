@@ -6,7 +6,7 @@ error_reporting(E_ERROR);
 init_param('GET', 'num','integer');
 if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
 require('wp-blog-header.php');
-header("Content-type: application/xml");
+header('Content-type: application/xml');
 ?>
 <?php echo '<?xml version="1.0" encoding="'.wp_get_rss_charset().'"?'.'>'; ?>
 <!-- generator="wordpress/<?php echo $GLOBALS['wp_version'] ?>" -->
@@ -16,7 +16,7 @@ header("Content-type: application/xml");
 <channel>
 	<title><?php bloginfo_rss('name') ?></title>
 	<link><?php bloginfo_rss('url') ?></link>
-	<description><?php bloginfo_rss("description") ?></description>
+	<description><?php bloginfo_rss('description') ?></description>
 	<language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></language>
 	<copyright>Copyright <?php echo mysql2date('Y', get_lastpostdate()); ?></copyright>
 	<pubDate><?php echo gmdate('r'); ?></pubDate>

@@ -9,14 +9,14 @@
 }
 
 #wpBlockContent$wp_num h2 {
-	font-size : 16px;
+	font-size : 18px;
 	font-family: "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;;
 	border-bottom: 1px solid #dcdcdc;
 	margin-bottom: 5px;
 }
 
 #wpBlockContent$wp_num h3 {
-	font-size : 14px;
+	font-size : 16px;
 	font-family: "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
 	margin-bottom: 5px;
 }
@@ -46,7 +46,7 @@
 }
 
 #wpBlockContent$wp_num .meta {
-	font-size: 0.9em;
+	font-size: .75em;
 }
 
 #wpBlockContent$wp_num .meta,#wpBlockContent$wp_num .meta a {
@@ -65,13 +65,18 @@
 	display: inline;
 }
 
-
 #wpBlockContent$wp_num .storycontent{
 	font: 95% "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
 }
 
 #wpBlockContent$wp_num div.storycontent {
 	clear:right;
+}
+
+#wpBlockContent$wp_num blockquote {
+	border-left: 5px solid #ccc;
+	margin-left: 1.5em;
+	padding-left: 5px;
 }
 
 #wpBlockContent$wp_num .feedback {
@@ -81,12 +86,6 @@
 
 #wpBlockContent$wp_num p,#wpBlockContent$wp_num  li,#wpBlockContent$wp_num .feedback {
 	font: 95%/175% "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
-}
-
-#wpBlockContent$wp_num blockquote {
-	border-left: 5px solid #ccc;
-	margin-left: 1.5em;
-	padding-left: 5px;
 }
 
 EOD;
@@ -211,8 +210,8 @@ li span.post-title {
 }
 EOD;
 /* Don't remove this line */ }
-/* Don't remove this line */ global $wp_id,$wp_filter; if ((@in_array('pukiwiki', $wp_filter[$wp_id]['the_content']["6"])) and
-/* Don't remove this line */ (!preg_match("/^".preg_quote(XOOPS_ROOT_PATH."/modules/wordpress".$wp_num."/","/")."/i",$cur_PATH))){/* Don't remove this line */ if (!defined("WP_BLOCK_WIKI_READ")) {
+/* Don't remove this line */ if ((@in_array('pukiwiki', $GLOBALS['wp_filter'][wp_id()]['the_content']["6"])) and
+/* Don't remove this line */ (!preg_match("/^".preg_quote(wp_base()."/","/")."/i",$cur_PATH))){/* Don't remove this line */ if (!defined("WP_BLOCK_WIKI_READ")) {
 /* Don't remove this line */ define("WP_BLOCK_WIKI_READ","1");$wp_block_style .= <<<EOD
 /*
  * modPukiWikiÍÑ¤Î¥¹¥¿¥¤¥ë¥·¡¼¥È¥µ¥ó¥×¥ë

@@ -118,7 +118,7 @@ if ((get_settings('use_comment_preview'))&&($_action!='confirm')) {
 </form>
 </div>
 <?php
-	include(XOOPS_ROOT_PATH."/footer.php");
+	include(XOOPS_ROOT_PATH.'/footer.php');
 	exit();
 } else {
 	if ((get_settings('use_comment_preview'))&&($_action=='confirm')) {
@@ -194,9 +194,9 @@ if ($_ok) { // if there was no comment from this IP in the last 10 seconds
 	header('Cache-Control: no-cache, must-revalidate');
 	header('Pragma: no-cache');
 	if ($GLOBALS['is_IIS']) {
-		header("Refresh: 0;url=$_location");
+		header('Refresh: 0;url='.$_location);
 	} else {
-		header("Location: $_location");
+		header('Location: '.$_location);
 	}
 } else {
 	   	redirect_header($_location ,5,_LANG_WPCP_SORRY_SECONDS);

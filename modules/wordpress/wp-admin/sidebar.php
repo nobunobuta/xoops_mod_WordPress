@@ -24,7 +24,7 @@ if ($action != 'done') {
 	$wpTpl->assign('category_select', $category_select);
 	$wpTpl->assign('ticket', $ticket);
 }
-$wpTpl->template_dir = ABSPATH."wp-admin/templates/";
-$wpTpl->display("sidebar.html");
+$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
+$wpTpl->display('sidebar.html');
 require_once('admin-footer.php');
 ?>

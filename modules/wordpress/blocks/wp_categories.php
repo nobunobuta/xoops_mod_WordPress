@@ -1,9 +1,16 @@
 <?php
-if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
+$_wp_base_prefix = 'wp';
+$_wp_my_dirname = basename( dirname(dirname( __FILE__ ) ) );
+if (!preg_match('/\D+(\d*)/', $_wp_my_dirname, $_wp_regs )) {
+	echo ('Invalid dirname for WordPress Module: '. htmlspecialchars($_wp_my_dirname));
+}
+$_wp_my_dirnumber = $_wp_regs[1] ;
+$_wp_my_prefix = $_wp_base_prefix.$_wp_my_dirnumber.'_';
 
-	define( 'WP_CATEGORIES_INCLUDED' , 1 ) ;
+if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
+	define( 'WP_CATEGORIES_BLOCK_INCLUDED' , 1 ) ;
 
-	function b_wp_categories_edit($options)
+	function _b_wp_categories_edit($options)
 	{
 		$form = "";
 		$form .= "Category List Style:&nbsp;";
@@ -58,21 +65,13 @@ if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
 		return $form;
 	}
 
-	function b_wp_categories_show($options, $wp_num="")
+	function _b_wp_categories_show($options, $wp_num="")
 	{
 		$block_style =  ($options[0])?$options[0]:0;
 		$with_count =  ($options[1])?$options[1]:0;
 		$sorting_key = ($options[2])?$options[2]:'name';
 		$sorting_order = ($options[3])?$options[3]:'asc';
 		
-		$id=1;
-		$GLOBALS['use_cache'] = 1;
-		if ($wp_num == "") {
-			$GLOBALS['wp_id'] = $wp_num;
-			$GLOBALS['wp_inblock'] = 1;
-			require(dirname(__FILE__).'/../wp-config.php');
-			$GLOBALS['wp_inblock'] = 0;
-		}
 		if (current_wp()) {
 			init_param('GET', 'cat','string','');
 			init_param('GET', 'category_name','string','');
@@ -95,14 +94,14 @@ if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
 			// Simple Listing
 			ob_start();
 			block_style_get($wp_num);
-			echo "<ul class='wpBlockList'>\n";
-			wp_list_cats("sort_column=$sorting_key&sorting_order=$sorting_order&optioncount=$with_count");
-			echo "</ul>\n";
+			echo '<ul class="wpBlockList">'."\n";
+			wp_list_cats("hide_empty=0&sort_column=$sorting_key&sorting_order=$sorting_order&optioncount=$with_count");
+			echo '</ul>'."\n";
 			$block['content'] = ob_get_contents();
 			ob_end_clean();
 		} else {
 			// Dropdown Listing
-			$file = wp_siteurl()."/index.php";
+			$file = wp_siteurl().'/index.php';
 			$link = $file.'?cat=';
 			ob_start();
 			block_style_get($wp_num);
@@ -116,21 +115,21 @@ if( ! defined( 'WP_CATEGORIES_INCLUDED' ) ) {
 		}
 		return $block;
 	}
-
-	for ($i = 0; $i < 10; $i++) {
-		eval ('
-		function b_wp'.$i.'_categories_edit($options) {
-			return (b_wp_categories_edit($options));
-		}
-
-		function b_wp'.$i.'_categories_show($options) {
-			$GLOBALS["wp_id"] = "'.$i.'";
-			$GLOBALS["wp_inblock"] = 1;
-			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
-			$GLOBALS["wp_inblock"] = 0;
-			return (b_wp_categories_show($options,"'.$i.'"));
-		}
-	');
-	}
 }
+
+eval ('
+	function b_'.$_wp_my_prefix.'categories_edit($options) {
+		return (_b_wp_categories_edit($options));
+	}
+	function b_'.$_wp_my_prefix.'categories_show($options) {
+		$GLOBALS["use_cache"] = 1;
+		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
+		$GLOBALS["wp_inblock"] = 1;
+		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
+		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
+		$GLOBALS["wp_inblock"] = 0;
+		return (_b_wp_categories_show($options,"'.$_wp_my_dirnumber.'"));
+	}
+');
+
 ?>

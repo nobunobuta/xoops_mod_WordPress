@@ -1,4 +1,6 @@
 <?php
+if( ! defined( 'WP_KSES_INCLUDED' ) ) {
+	define( 'WP_KSES_INCLUDED' , 1 ) ;
 // Added wp_ prefix to avoid conflicts with existing kses users
 # kses 0.2.1 - HTML/XHTML filter that only allows some elements and attributes
 # Copyright (C) 2002, 2003  Ulf Harnhammar
@@ -901,4 +903,5 @@ function wp_kses_decode_entities($string)
 
   return $string;
 } # function wp_kses_decode_entities
+}
 ?>

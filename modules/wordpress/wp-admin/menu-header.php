@@ -43,7 +43,7 @@ foreach ($menu as $item) {
 			 	$class = '';
 			}
 		}
-		if (file_exists(ABSPATH . "wp-content/plugins/{$item[2]}")) {
+		if (file_exists(wp_base()."/wp-content/plugins/{$item[2]}")) {
 			echo "\n\t<li><a href='" . $siteurl . "/wp-admin/admin.php?page={$item[2]}'$class>{$item[0]}</a></li>";
 		} else {
 			echo "\n\t<li><a href='" . $siteurl . "/wp-admin/{$item[2]}'$class>{$item[0]}</a></li>";

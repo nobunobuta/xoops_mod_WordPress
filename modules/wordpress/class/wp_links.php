@@ -1,4 +1,5 @@
 <?php
+if( ! class_exists( 'WordPressLink' ) ) {
 class WordPressLink  extends XoopsTableObject
 {
 	/**
@@ -122,5 +123,6 @@ class WordPressLinkHandler  extends XoopsTableObjectHandler
 		return parent::getObjects($criteria, $id_as_key, $fieldlist);
 	}
 */
+}
 }
 ?>

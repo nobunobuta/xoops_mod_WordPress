@@ -1,4 +1,6 @@
 <?php
+if( ! defined( 'WP_TEMPLATE_FUNCTIONS_COMMENT_INCLUDED' ) ) {
+	define( 'WP_TEMPLATE_FUNCTIONS_COMMENT_INCLUDED' , 1 ) ;
 function clean_url($url) {
 	if ('' == $url) return $url;
 	$url = preg_replace('|[^a-z0-9-~+_.?#=&;,/:]|i', '', $url);
@@ -304,5 +306,6 @@ function trackback_rdf($timezone = 0, $echo= true) {
 		$trackback_rdf .=  '</rdf:RDF>';
 	}
 	return _echo($trackback_rdf, $echo);
+}
 }
 ?>

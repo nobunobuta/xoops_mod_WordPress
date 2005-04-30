@@ -1,7 +1,7 @@
 <?php 
 /* Don't remove these lines. */
 $blog = 1;
-include_once (dirname(__FILE__)."/../../mainfile.php");
+include_once (dirname(__FILE__).'/../../mainfile.php');
 require ('wp-blog-header.php');
 add_filter('comment_text', 'popuplinks');
 foreach ($posts as $post) { start_wp();
@@ -25,7 +25,7 @@ foreach ($posts as $post) { start_wp();
 <div id="wpMainContent">
 
 <h1 id="header"><a href="" title="<?php echo get_settings('blogname'); ?>"><?php echo get_settings('blogname'); ?></a></h1>
-<?php include "wp-comments.php" ?>
+<?php include 'wp-comments.php' ?>
 <?php return ?>
 <h2 id="comments"><?php echo _LANG_WPCM_COM_TITLE; ?></h2>
 
@@ -69,7 +69,7 @@ if (!empty($commentstatus->post_password) && $_COOKIE['wp-postpass_'.$cookiehash
 	  <input type="text" name="author" id="author" class="textarea" value="<?php echo $comment_author; ?>" size="28" tabindex="1" />
 	   <label for="author"><?php echo _LANG_WPCM_COM_NAME; ?></label>
 	<input type="hidden" name="comment_post_ID" value="<?php echo $id; ?>" />
-	<input type="hidden" name="redirect_to" value="<?php echo htmlspecialchars($_SERVER["REQUEST_URI"]); ?>" />
+	<input type="hidden" name="redirect_to" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>" />
 	</p>
 
 	<p>

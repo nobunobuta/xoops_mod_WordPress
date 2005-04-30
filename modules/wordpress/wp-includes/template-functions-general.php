@@ -1,4 +1,6 @@
 <?php
+if( ! defined( 'WP_TEMPLATE_FUNCTIONS_GENERAL_INCLUDED' ) ) {
+	define( 'WP_TEMPLATE_FUNCTIONS_GENERAL_INCLUDED' , 1 ) ;
 /* Note: these tags go anywhere in the template */
 function bloginfo($show='', $echo=true) {
     $info = apply_filters('bloginfo', get_bloginfo($show));
@@ -665,5 +667,6 @@ function the_weekday_date($before='',$after='', $echo=true) {
 	}
 	$the_weekday_date = apply_filters('the_weekday_date', $the_weekday_date);
 	return _echo($the_weekday_date, $echo);
+}
 }
 ?>

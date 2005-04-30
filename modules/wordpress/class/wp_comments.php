@@ -1,4 +1,5 @@
 <?php
+if( ! class_exists( 'WordPressComment' ) ) {
 class WordPressComment extends XoopsTableObject
 {
 	var $prefix;
@@ -143,5 +144,6 @@ class WordPressCommentHandler  extends XoopsTableObjectHandler
 		$criteria = new Criteria('comment_ID', $comment_ID);
 		return $this->updateAll('comment_approved', '0', $criteria, $force);
 	}
+}
 }
 ?>

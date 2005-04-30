@@ -7,7 +7,7 @@ global $siteurl;
 
 if(!defined('WPINC')) define('WPINC', 'wp-includes');
 
-require_once (ABSPATH . WPINC . '/wp-db.php');
+require_once ($GLOBALS['wp_base'][$GLOBALS['wp_id']]. '/wp-includes/wp-db.php');
 // Table names
 $GLOBALS['wpdb']->posts[$GLOBALS['wp_id']] = $GLOBALS['table_prefix'][$GLOBALS['wp_id']].'posts';
 $GLOBALS['wpdb']->users[$GLOBALS['wp_id']] = $GLOBALS['table_prefix'][$GLOBALS['wp_id']].'users';
@@ -27,8 +27,8 @@ $GLOBALS['wpdb']->postmeta[$GLOBALS['wp_id']] = $GLOBALS['table_prefix'][$GLOBAL
 // This is the name of the include directory. No "/" allowed.
 
 require ('wp-ver.php');
-require_once (ABSPATH.WPINC.'/functions.php');
-require_once (ABSPATH . 'class/wp_classes.php');
+require_once ($GLOBALS['wp_base'][$GLOBALS['wp_id']].'/wp-includes/functions.php');
+require_once (wp_base().'/class/wp_classes.php');
 if (empty($GLOBALS['wpPostHandler'][wp_prefix()])) {
 	$GLOBALS['wpPostHandler'][wp_prefix()] =& new WordPressPostHandler($GLOBALS['xoopsDB'], wp_prefix());
 	$GLOBALS['wpPost2CatHandler'][wp_prefix()] =& new WordPressPost2CatHandler($GLOBALS['xoopsDB'], wp_prefix());
@@ -41,25 +41,25 @@ if (empty($GLOBALS['wpPostHandler'][wp_prefix()])) {
 	$GLOBALS['wpOptionGroup2OptionHandler'][wp_prefix()] =& new WordPressOptionGroup2OptionHandler($GLOBALS['xoopsDB'], wp_prefix());
 	$GLOBALS['wpOptionHandler'][wp_prefix()] =& new WordPressOptionHandler($GLOBALS['xoopsDB'], wp_prefix());
 }
-require_once (ABSPATH.WPINC.'/wp-tickets.php');
-require_once (ABSPATH.WPINC.'/functions-formatting.php');
-require_once (ABSPATH.WPINC.'/functions-filter.php');
+require_once (wp_base().'/wp-includes/wp-tickets.php');
+require_once (wp_base().'/wp-includes/functions-formatting.php');
+require_once (wp_base().'/wp-includes/functions-filter.php');
 if (get_settings('hack_file')) {
-	include_once($wp_base[$wp_id].'/my-hacks.php');
+	include_once(wp_base().'/my-hacks.php');
 }
 require ('wp-config-extra.php');
-require_once (ABSPATH.WPINC.'/template-functions.php');
-require_once (ABSPATH.WPINC.'/class-xmlrpc.php');
-require_once (ABSPATH.WPINC.'/class-xmlrpcs.php');
-require_once (ABSPATH.WPINC.'/links.php');
-require_once (ABSPATH.WPINC.'/kses.php');
+require_once (wp_base().'/wp-includes/template-functions.php');
+require_once (wp_base().'/wp-includes/class-xmlrpc.php');
+require_once (wp_base().'/wp-includes/class-xmlrpcs.php');
+require_once (wp_base().'/wp-includes/links.php');
+require_once (wp_base().'/wp-includes/kses.php');
 
 if (empty($GLOBALS['cache_categories'][wp_id()])||(count($GLOBALS['cache_categories'][wp_id()])==0)) {
 	$GLOBALS['cache_categories'][wp_id()] = array();
 	$categoryHandler =& wp_handler('Category');
-	$categoriyObjects =& $categoryHandler->getObjects();
-	foreach ($categoriyObjects as $categoriyObject) {
-		$catt = $categoriyObject->exportWpObject();
+	$categoryObjects =& $categoryHandler->getObjects();
+	foreach ($categoryObjects as $categoryObject) {
+		$catt = $categoryObject->exportWpObject();
 		$GLOBALS['cache_categories'][wp_id()][$catt->cat_ID] = $catt;
 	}
 }
@@ -68,13 +68,13 @@ if (empty($GLOBALS['cache_categories'][wp_id()])||(count($GLOBALS['cache_categor
 // accessing a single global $all_settings var
 
 if (!strstr($_SERVER['REQUEST_URI'], 'install.php')) {
-	$GLOBALS['siteurl'] = wp_siteurl();
 	if (get_xoops_option(wp_mod(),'wp_use_xoops_smilies')) {
 		$GLOBALS['smilies_directory'] = XOOPS_URL."/uploads";
 	} else {
 		$GLOBALS['smilies_directory'] = get_settings('smilies_directory');
 	}
 	//WordPressプラグイン互換性確保用
+	$GLOBALS['siteurl'] = wp_siteurl();
     $GLOBALS['querystring_start'] = '?';
     $GLOBALS['querystring_equal'] = '=';
     $GLOBALS['querystring_separator'] = '&amp;';
@@ -85,25 +85,28 @@ $GLOBALS['timeformat'] = stripslashes(get_settings('time_format'));
 // Used to guarantee unique cookies
 $GLOBALS['cookiehash'] = md5($GLOBALS['siteurl']);
 
-require(ABSPATH.WPINC.'/vars.php');
-require(ABSPATH.WPINC.'/wp-filter-setup.php');
-if ($wp_inblock!=1) {
+require(wp_base().'/wp-includes/vars.php');
+require(wp_base().'/wp-includes/wp-filter-setup.php');
+if (empty($GLOBALS['wp_inblock']) || $GLOBALS['wp_inblock'] != 1) {
 	if (!defined('XOOPS_PULUGIN'.wp_id())) {
 		define('XOOPS_PULUGIN'.wp_id(), 1);
 		if (get_settings('active_plugins')) {
 			$check_plugins = explode("\n", (get_settings('active_plugins')));
 			foreach ($check_plugins as $check_plugin) {
-				if (file_exists(ABSPATH . 'wp-content/plugins/'. $check_plugin)) {
-					require_once(ABSPATH . 'wp-content/plugins/'. $check_plugin);
+				if( ! defined( 'WP_PLUGIN_'.strtoupper($check_plugin).'_INCLUDED' ) ) {
+					define( 'WP_PLUGIN_'.strtoupper($check_plugin).'_INCLUDED' , 1 ) ;
+					if (file_exists(wp_base() . '/wp-content/plugins/'. $check_plugin)) {
+						require_once(wp_base(). '/wp-content/plugins/'. $check_plugin);
+					}
 				}
 			}
 		}
 		if (!defined('SHUTDOWN_ACTION_HOOK')) {
 			define('SHUTDOWN_ACTION_HOOK','1');
-			function shutdown_action_hook() {
+			function wp_shutdown_action_hook() {
 				do_action('shutdown', '');
 			}
-			register_shutdown_function('shutdown_action_hook');
+			register_shutdown_function('wp_shutdown_action_hook');
 		}
 	}
 }

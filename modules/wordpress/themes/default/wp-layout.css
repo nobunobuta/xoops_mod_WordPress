@@ -37,57 +37,12 @@
 	color: #7AA0CF;
 }
 
-#wpMainContent acronym,#wpMainContent abbr {
-	border-bottom: 1px dashed #333;
+#wpMainContent .storytitle {
+	margin: 0;
 }
 
-#wpMainContent acronym,#wpMainContent abbr,#wpMainContent span.caps {
-	cursor: help;
-	font-size: 90%;
-	letter-spacing: .07em;
-}
-#wpMainContent blockquote {
-	border-left: 5px solid #ccc;
-	margin-left: 1.5em;
-	padding-left: 5px;
-}
-#wpMainContent cite {
-	font-size: 90%;
-	font-style: normal;
-}
-
-#wpMainContent ol#commentlist li p {
-	font-size: 100%;
-}
-
-#wpMainContent p,#wpMainContent li,#wpMainContent .feedback {
-	font: 90%/175% "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
-}
-#wpMainContent .storycontent{
-	font: 100% "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
-}
-
-#wpMainContent div.storycontent {
-	clear:right;
-}
-
-#wpMainContent .credit {
-	background: #ffffff;
-	color: #666666;
-	font-size: 11px;
-	margin: 10px 0 0 0;
-	padding: 3px;
-	text-align: center;
-	font-family: "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
-}
-
-#wpMainContent .credit a:link, #wpMainContent .credit a:hover {
-	color: #9B9FAE;
-}
-
-#wpMainContent .feedback {
-	color: #ccc;
-	text-align: right;
+#wpMainContent .storytitle a {
+	text-decoration: none;
 }
 
 #wpMainContent .meta {
@@ -110,13 +65,61 @@
 	display: inline;
 }
 
-#wpMainContent .storytitle {
-	margin: 0;
+#wpMainContent .storycontent{
+	font: 100% "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
 }
 
-#wpMainContent .storytitle a {
-	text-decoration: none;
+#wpMainContent div.storycontent {
+	clear:right;
 }
+
+#wpMainContent blockquote {
+	border-left: 5px solid #ccc;
+	margin-left: 1.5em;
+	padding-left: 5px;
+}
+
+#wpMainContent acronym,#wpMainContent abbr {
+	border-bottom: 1px dashed #333;
+}
+
+#wpMainContent acronym,#wpMainContent abbr,#wpMainContent span.caps {
+	cursor: help;
+	font-size: 90%;
+	letter-spacing: .07em;
+}
+#wpMainContent cite {
+	font-size: 90%;
+	font-style: normal;
+}
+
+#wpMainContent ol#commentlist li p {
+	font-size: 100%;
+}
+
+#wpMainContent p,#wpMainContent li,#wpMainContent .feedback {
+	font: 90%/175% "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
+}
+
+#wpMainContent .credit {
+	background: #ffffff;
+	color: #666666;
+	font-size: 11px;
+	margin: 10px 0 0 0;
+	padding: 3px;
+	text-align: center;
+	font-family: "¥Ò¥é¥®¥Î³Ñ¥´ Pro W3", Osaka, Verdana, "£Í£Ó £Ð¥´¥·¥Ã¥¯", sans-serif;
+}
+
+#wpMainContent .credit a:link, #wpMainContent .credit a:hover {
+	color: #9B9FAE;
+}
+
+#wpMainContent .feedback {
+	color: #ccc;
+	text-align: right;
+}
+
 
 #wpMainContent #commentform input,#wpMainContent #commentform textarea {
 	background: #fff;

@@ -1,12 +1,16 @@
 <?php
-if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
+$_wp_base_prefix = 'wp';
+$_wp_my_dirname = basename( dirname(dirname( __FILE__ ) ) );
+if (!preg_match('/\D+(\d*)/', $_wp_my_dirname, $_wp_regs )) {
+	echo ('Invalid dirname for WordPress Module: '. htmlspecialchars($_wp_my_dirname));
+}
+$_wp_my_dirnumber = $_wp_regs[1] ;
+$_wp_my_prefix = $_wp_base_prefix.$_wp_my_dirnumber.'_';
 
-	define( 'WP_RECENT_POSTS_INCLUDED' , 1 ) ;
-
-	function b_wp_recent_posts_edit($options, $wp_num = "")
+if( ! defined( 'WP_RECENT_POSTS_BLOCK_INCLUDED' ) ) {
+	define( 'WP_RECENT_POSTS_BLOCK_INCLUDED' , 1 ) ;
+	function _b_wp_recent_posts_edit($options, $wp_num = "")
 	{
-		global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache;
-
 		$form = "<table width='100%'>";
 		
 		$form .= "<tr><td width='40%'>Number of Posts in this block:</td>";
@@ -46,12 +50,6 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 		$form .= "<td><input type='text' name='options[6]' value='".$options[6]."' /></td></tr>";
 		
 		$form .= "<tr><td>Listing only in a following categoty:</td><td>";
-		if ($wp_num == "") {
-			$wp_id = $wp_num;
-			$wp_inblock = 1;
-			require(dirname(__FILE__).'/../wp-config.php');
-			$wp_inblock = 0;
-		}
 		$cat = $options[7];
 		ob_start();
 		dropdown_cats(1,_WP_LIST_CAT_ALL,'ID','asc',0,0,0,FALSE,$options[7]);
@@ -70,10 +68,9 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 		$form .= "</table>";
 		
 		return $form;
-
 	}
 
-	function b_wp_recent_posts_show($options, $wp_num = "")
+	function _b_wp_recent_posts_show($options, $wp_num = "")
 	{
 		$no_posts = (empty($options[0]))? 10 : $options[0];
 		$cat_date = (empty($options[1]))? 0 : $options[1];
@@ -82,34 +79,24 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 		$show_rss2_icon = (empty($options[4]))? 0 : $options[4];
 		$show_atom_icon = (empty($options[5]))? 0 : $options[5];
 		$rss_num = (empty($options[6]))? "" : $options[6];
-		$category = (empty($options[7]))? "all" : $options[7];
+		$category = intval((empty($options[7]))? "all" : $options[7]);
 		$new_flg = (empty($options[8]))? 0 : $options[8];
-//	echo "$wp_num:$cat_date";
-		global $xoopsDB;
-		global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache, $wp_mod, $wp_base;
 
-		$id=1;
-		$GLOBALS['use_cache'] = 1;
+		global $wpdb;
 
-		if ($wp_num == "") {
-			$GLOBALS['wp_id'] = $wp_num;
-			$GLOBALS['wp_inblock'] = 1;
-			require(dirname(__FILE__).'/../wp-config.php');
-			$GLOBALS['wp_inblock'] = 0;
-		}
 		if ((empty($category)) || ($category == 'all') || ($category == '0')) {
 			$whichcat='';
 			$join = '';
 			$cat_param ='';
 		} else {
-			$join = " LEFT JOIN {$wpdb->post2cat[$wp_id]} ON ({$wpdb->posts[$wp_id]}.ID = {$wpdb->post2cat[$wp_id]}.post_id) ";
+			$join = ' LEFT JOIN '.wp_table('post2cat').' ON ('.wp_table('posts').'.ID = '.wp_table('post2cat').'.post_id) ';
 		    $whichcat = ' AND (category_id = '.$category.')';
 		    $cat_param = 'cat='.$category;
 		}
 		$now = date('Y-m-d H:i:s',(time() + (get_settings('time_difference') * 3600)));
-		$request = "SELECT * FROM ".$xoopsDB->prefix("wp{$wp_num}_posts").$join." WHERE post_status = 'publish' ";
-		$request .= " AND post_date <= '".$now."'". $whichcat;
-		$request .= " ORDER BY post_date DESC LIMIT 0, $no_posts";
+		$request = 'SELECT * FROM '. wp_table('posts'). $join. ' WHERE post_status = \'publish\'';
+		$request .= ' AND post_date <= \''.$now.'\''. $whichcat;
+		$request .= ' ORDER BY post_date DESC LIMIT 0, '. $no_posts;
 		$lposts = $wpdb->get_results($request);
 		$date = "";
 		$pdate = "";
@@ -117,21 +104,21 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 		block_style_get($wp_num);
 		$output = ob_get_contents();
 		ob_end_clean();
-		$output .= "<div class='wpRecentPost'>";
+		$output .= '<div class="wpRecentPost">';
 		if ($lposts) {
 			if (!$cat_date) {
-				$output .= "<ul class='wpBlockList'>\n";
+				$output .= '<ul class="wpBlockList">'."\n";
 			} else {
-				$output .= "<ul class='wpBlockDateList'>\n";
+				$output .= '<ul class="wpBlockDateList">'."\n";
 			}
 			foreach ($lposts as $lpost) {
 				if ($cat_date) {
-					$date=mysql2date("Y-n-j", $lpost->post_date);
+					$date=mysql2date('Y-n-j', $lpost->post_date);
 					if ($date <> $pdate) {
 						if ($pdate <> "") {
-							$output .= "</ul></li>\n";
+							$output .= '</ul></li>'."\n";
 						}
-						$output .= "<li><span class=\"postDate\">".$date."</span>\n<ul class=\"children\">\n";
+						$output .= '<li><span class="postDate">'.$date.'</span>'."\n".'<ul class="children">'."\n";
 						$pdate = $date;
 					}
 				}
@@ -152,74 +139,69 @@ if( ! defined( 'WP_RECENT_POSTS_INCLUDED' ) ) {
 					$post_title = _WP_POST_NOTITLE;
 				$permalink = get_permalink($lpost->ID);
 				$output .= '<li><span class="post-title"><a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '">' . $post_title . '</a></span>'.$newstr.'<br />';
-				$output .= "</li>\n";
+				$output .= '</li>'."\n";
 			}
-			$output .= "</ul>\n";
+			$output .= '</ul>'."\n";
 			if ($cat_date) {
-				$output .= "</li></ul>\n";
+				$output .= '</li></ul>'."\n";
 			}
 		}
 		if ($show_rss_icon || $show_rdf_icon || $show_rss2_icon || $show_atom_icon) {
 			$output .= '<hr width="100%" />';
 		}
 		$feed_param = $rss_num ? "?num=".$rss_num : "";
-/*
-		if ($feed_param != "") {
-			$feed_param .= $cat_param ? "&".$cat_param : "";
-		} else {
-			$feed_param = $cat_param ? "?".$cat_param : "";
-		}
-*/
+
 		if ((empty($category)) || ($category == 'all') || ($category == '0')) {
 			if ($show_rss_icon) {
-				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('rss_url').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss.gif" alt="rss" /></a></div>';
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('rss_url').$feed_param.'"><img src="'.wp_siteurl().'/wp-images/rss.gif" alt="rss" /></a></div>';
 			}
 			if ($show_rdf_icon) {
-				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('rdf_url').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rdf.gif"  alt="rdf" /></a></div>';
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('rdf_url').$feed_param.'"><img src="'.wp_siteurl().'/wp-images/rdf.gif"  alt="rdf" /></a></div>';
 			}
 			if ($show_rss2_icon) {
-				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('rss2_url').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss2.gif" alt="rss2" /></a></div>';
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('rss2_url').$feed_param.'"><img src="'.wp_siteurl().'/wp-images/rss2.gif" alt="rss2" /></a></div>';
 			}
 			if ($show_atom_icon) {
-				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('atom_url').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/atom.gif" alt="atom" /></a></div>';
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('atom_url').$feed_param.'"><img src="'.wp_siteurl().'/wp-images/atom.gif" alt="atom" /></a></div>';
 			}
 		} else {
 			if ($show_rss_icon) {
-				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_category_rss_link(false, $category,"",'rss').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss.gif" alt="rss"  /></a></div>';
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_category_rss_link(false, $category,"",'rss').$feed_param.'"><img src="'.wp_siteurl().'/wp-images/rss.gif" alt="rss"  /></a></div>';
 			}
 			if ($show_rdf_icon) {
-				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_category_rss_link(false, $category,"",'rdf').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rdf.gif" alt="rdf"  /></a></div>';
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_category_rss_link(false, $category,"",'rdf').$feed_param.'"><img src="'.wp_siteurl().'/wp-images/rdf.gif" alt="rdf"  /></a></div>';
 			}
 			if ($show_rss2_icon) {
-				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_category_rss_link(false, $category,"",'rss2').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss2.gif" alt="rss2"  /></a></div>';
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_category_rss_link(false, $category,"",'rss2').$feed_param.'"><img src="'.wp_siteurl().'/wp-images/rss2.gif" alt="rss2"  /></a></div>';
 			}
 			if ($show_atom_icon) {
-				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_category_rss_link(false, $category,"",'atom').$feed_param.'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/atom.gif"  alt="atom" /></a></div>';
+				$output .= '<div style="text-align:right">&nbsp;<a href="'.get_category_rss_link(false, $category,"",'atom').$feed_param.'"><img src="'.wp_siteurl().'/wp-images/atom.gif"  alt="atom" /></a></div>';
 			}
 		}
 		$output .= "</div>";
 		$block['content'] = $output;
 		return $block;
 	}
-
-	for ($i = 0; $i < 10; $i++) {
-		eval ('
-		function b_wp'.$i.'_recent_posts_edit($options) {
-			$GLOBALS["wp_id"] = "'.$i.'";
-			$GLOBALS["wp_inblock"] = 1;
-			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
-			$GLOBALS["wp_inblock"] = 0;
-			return (b_wp_recent_posts_edit($options,"'.$i.'"));
-		}
-
-		function b_wp'.$i.'_recent_posts_show($options) {
-			$GLOBALS["wp_id"] = "'.$i.'";
-			$GLOBALS["wp_inblock"] = 1;
-			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
-			$GLOBALS["wp_inblock"] = 0;
-			return (b_wp_recent_posts_show($options,"'.$i.'"));
-		}
-	');
-	}
 }
+
+eval ('
+	function b_'.$_wp_my_prefix.'recent_posts_edit($options) {
+		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
+		$GLOBALS["wp_inblock"] = 1;
+		$GLOBALS["use_cache"] = 1;
+		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
+		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
+		$GLOBALS["wp_inblock"] = 0;
+		return (_b_wp_recent_posts_edit($options,"'.$_wp_my_dirnumber.'"));
+	}
+	function b_'.$_wp_my_prefix.'recent_posts_show($options) {
+		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
+		$GLOBALS["wp_inblock"] = 1;
+		$GLOBALS["use_cache"] = 1;
+		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
+		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
+		$GLOBALS["wp_inblock"] = 0;
+		return (_b_wp_recent_posts_show($options,"'.$_wp_my_dirnumber.'"));
+	}
+');
 ?>

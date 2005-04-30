@@ -15,7 +15,7 @@ $_start = count($GLOBALS['posts'])-1;
 for ($_i = $_start; $_i >= 0; $_i--) {
     $GLOBALS['post'] = $GLOBALS['posts'][$_i];
     start_wp();
-    if ((get_Lon() != "") && (get_Lon() != null) && (get_Lon() > -360) && (get_Lon() < 360 )) {
+    if ((get_Lon() != '') && (get_Lon() != null) && (get_Lon() > -360) && (get_Lon() < 360 )) {
 ?>
     <location arrival="<?php the_date_xml() ?>">
         <name><?php the_title_rss() ?></name>

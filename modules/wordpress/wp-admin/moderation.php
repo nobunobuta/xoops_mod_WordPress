@@ -3,8 +3,8 @@ require_once('admin.php');
 $this_file = 'moderation.php';
 $parent_file = 'edit.php';
 
-$commentHandler =& $wpCommentHandler[$wp_prefix[$wp_id]];
-$postHandler =& $wpPostHandler[$wp_prefix[$wp_id]];
+$commentHandler =& wp_handler('Comment');
+$postHandler =& wp_handler('Post');
 
 init_param(array('POST','GET'), 'action', 'string', '');
 
@@ -97,8 +97,8 @@ switch($action) {
 		$wpTpl->assign('comments_notify', get_settings('comments_notify'));
 		$wpTpl->assign('comment_rows', $comment_rows);
 		$wpTpl->assign('ticket', $ticket);
-		$wpTpl->template_dir = ABSPATH."wp-admin/templates/";
-		$wpTpl->display("moderation.html");
-		include("admin-footer.php");
+		$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
+		$wpTpl->display('moderation.html');
+		include('admin-footer.php');
 		break;
 }

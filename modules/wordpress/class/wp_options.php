@@ -1,4 +1,5 @@
 <?php
+if( ! class_exists( 'WordPressOption' ) ) {
 class WordPressOption  extends XoopsTableObject
 {
 	var $prefix;
@@ -133,5 +134,6 @@ class WordPressOptionHandler  extends XoopsTableObjectHandler
 		return parent::getObjects($criteria, $id_as_key, $fieldlist);
 	}
 */
+}
 }
 ?>

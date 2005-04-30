@@ -6,15 +6,17 @@ init_param('GET', 'profile', 'integer', 0);
 init_param('GET', 'redirect', 'integer', 0);
 if (($GLOBALS['standalone'] == 0)&&(get_param('profile') == 0)) {
 	$_wp_id_keep = $GLOBALS['wp_id'];
+	$_wp_mod_keep = $GLOBALS['wp_mod'][$GLOBALS['wp_id']];
 	include_once (dirname(__FILE__)."/../../../mainfile.php");
 	include(XOOPS_ROOT_PATH.'/header.php');
 	$GLOBALS['wp_id'] = $_wp_id_keep;
+	$GLOBALS['wp_mod'][$GLOBALS['wp_id']] = $_wp_mod_keep;
 	$GLOBALS['wp_inblock'] = 1;
 	require('../wp-config.php');
 	$GLOBALS['wp_inblock'] = 0;
 }
 
-require_once(ABSPATH . 'wp-admin/admin-functions.php');
+require_once('admin-functions.php');
 require_once('auth.php');
 
 if (get_xoops_option(wp_mod(),'wp_use_spaw') == 1) {
@@ -22,11 +24,11 @@ if (get_xoops_option(wp_mod(),'wp_use_spaw') == 1) {
 } else {
 	$GLOBALS['wp_use_spaw']=false;
 }
-if (get_xoops_option(wp_mod(),'wp_use_spaw') == 2) {
-	$GLOBALS['wp_use_koivi']=true;
-} else {
-	$GLOBALS['wp_use_koivi']=false;
-}
+//if (get_xoops_option(wp_mod(),'wp_use_spaw') == 2) {
+//	$GLOBALS['wp_use_koivi']=true;
+//} else {
+//	$GLOBALS['wp_use_koivi']=false;
+//}
 
 if (!isset($use_cache))	$GLOBALS['use_cache'] = 1;
 if (!isset($blogID))	$GLOBALS['blog_ID'] = 1;

@@ -1,16 +1,16 @@
 <?php
 $GLOBALS['xoopsOption']['show_rblock'] =1;
-include_once (dirname(__FILE__)."/../../mainfile.php");
+include_once (dirname(__FILE__).'/../../mainfile.php');
 include(XOOPS_ROOT_PATH.'/header.php');
 require('wp-blog-header.php');
 /* Sending HTTP headers */
 // It is presumptious to think that WP is the only thing that might change on the page.
-@header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 				// Date in the past
-@header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); // always modified
-@header("Cache-Control: no-store, no-cache, must-revalidate"); 	// HTTP/1.1
-@header("Cache-Control: post-check=0, pre-check=0", false);
-@header("Pragma: no-cache"); 									// HTTP/1.0
-@header ("X-Pingback: ".wp_siteurl()."/xmlrpc.php");
+@header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); 				// Date in the past
+@header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+@header('Cache-Control: no-store, no-cache, must-revalidate'); 	// HTTP/1.1
+@header('Cache-Control: post-check=0, pre-check=0', false);
+@header('Pragma: no-cache'); 									// HTTP/1.0
+@header ('X-Pingback: '.wp_siteurl().'/xmlrpc.php');
 ob_start();
 ?>
 	<meta name="generator" content="WordPress <?php echo $GLOBALS['wp_version']; ?>" />
@@ -56,14 +56,16 @@ ob_end_clean();
 
 $_module_title = get_bloginfo('name');
 if (!strstr($_SERVER['REQUEST_URI'], 'wp-comments-post.php')) {
-	$_sub_title = wp_title("",false);
+	$_sub_title = wp_title('',false);
 	if (trim($_sub_title)) {
 		$_module_title .= ' : '. $_sub_title;
 	}
 }
 if ($GLOBALS['xoopsTpl']){
-	$GLOBALS['xoopsTpl']->assign("xoops_pagetitle",$_module_title);
-	$GLOBALS['xoopsTpl']->assign('xoops_module_header', $_my_header);
+	$GLOBALS['xoopsTpl']->assign('xoops_pagetitle',$_module_title);
+
+	$_xoops_module_header = $GLOBALS['xoopsTpl']->get_template_vars('xoops_module_header');
+	$GLOBALS['xoopsTpl']->assign('xoops_module_header',$_xoops_module_header.$_my_header);
 }
 
 ?>

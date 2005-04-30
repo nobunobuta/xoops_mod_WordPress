@@ -1,4 +1,5 @@
 <?php
+if( ! class_exists( 'WordPressCategory' ) ) {
 class WordPressCategory  extends XoopsTableObject
 {
 	/**
@@ -259,5 +260,6 @@ class WordPressCategoryHandler  extends XoopsTableObjectHandler
 		}
 		return $optionArray;
 	}
+}
 }
 ?>

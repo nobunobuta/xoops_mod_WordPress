@@ -1,9 +1,9 @@
 <?php
 // this file contains customizable arrays for smilies, weekdays and month names.
-if ( file_exists(dirname(__FILE__)."/language/".$GLOBALS['xoopsConfig']['language']."/main.php") ) {
-	include_once dirname(__FILE__)."/language/".$GLOBALS['xoopsConfig']['language']."/main.php";
+if ( file_exists(dirname(__FILE__).'/language/'.$GLOBALS['xoopsConfig']['language'].'/main.php') ) {
+	include_once dirname(__FILE__).'/language/'.$GLOBALS['xoopsConfig']['language'].'/main.php';
 } else {
-	include_once dirname(__FILE__)."/language/english/main.php";
+	include_once dirname(__FILE__).'/language/english/main.php';
 }
 
 // the weekdays and the months.. translate them if necessary
@@ -37,8 +37,8 @@ $GLOBALS['wp_month_format'] = _WP_MONTH_FORMAT;
 // here's the conversion table, you can modify it if you know what you're doing
 if (get_xoops_option(wp_mod(), 'wp_use_xoops_smilies')) {
 	// Get smilies infomation from XOOPS DB
-	$_getsmiles = $GLOBALS['xoopsDB']->query("SELECT id, code, smile_url FROM ".$GLOBALS['xoopsDB']->prefix("smiles")." ORDER BY id");
-	if ($GLOBALS['xoopsDB']->getRowsNum($_getsmiles) == "0") {
+	$_getsmiles = $GLOBALS['xoopsDB']->query('SELECT id, code, smile_url FROM '.$GLOBALS['xoopsDB']->prefix('smiles').' ORDER BY id');
+	if ($GLOBALS['xoopsDB']->getRowsNum($_getsmiles) == '0') {
 		//EMPTY
 	} else {
 		while ($_smiles = $GLOBALS['xoopsDB']->fetchArray($_getsmiles)) {

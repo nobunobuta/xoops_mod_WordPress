@@ -717,6 +717,7 @@ define('_LANG_INST_BASE_VALUE91','ファイル出力時にgzipを有効にするかどうかを選択
 define('_LANG_INST_BASE_VALUE92','Hackファイルを使用する場合はここを[true]にしてください。<br>HackファイルはWordPressのルート上に置いて、my-hacks.phpの<br>ように呼び出します。<br>これはアップグレード時に上書きされないようにするためのものです。');
 define('_LANG_INST_BASE_VALUE93','Blogのキャラクターセット (<a href="http://developer.apple.com/documentation/macos8/TextIntlSvcs/TextEncodingConversionManager/TEC1.5/TEC.b0.html">文字コードリスト</a>');
 define('_LANG_INST_BASE_VALUE94','グリニッジ標準時(GMT)からの時差');
+define('_LANG_INST_BASE_VALUE95','トラックバック受信時に元サイトに当サイトのURLが存在するかのチェックを行う。');
 
 /* File Name wp-admin/plugins.php */
 define('_LANG_PG_LEAST_LEVEL','プラグインの設定にはユーザーレベル8以上が必要です。');

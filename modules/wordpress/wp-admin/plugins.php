@@ -54,7 +54,7 @@ switch(get_param('action')) {
 
 		$check_plugins = explode("\n", (get_settings('active_plugins')));
 		foreach ($check_plugins as $check_plugin) {
-			if (!file_exists(ABSPATH . 'wp-content/plugins/' . $check_plugin)) {
+			if (!file_exists(wp_base(). '/wp-content/plugins/' . $check_plugin)) {
 					$current = get_settings('active_plugins') . "\n";
 					$current = str_replace($check_plugin . "\n", '', $current);
 					$current = preg_replace("|\n+|", "\n", $current);
@@ -75,7 +75,7 @@ switch(get_param('action')) {
 <p><?php echo _LANG_PG_NEED_PUT; ?></p>
 <?php
 	// Files in wp-content/plugins directory
-	$plugins_dir = @ dir(ABSPATH . 'wp-content/plugins');
+	$plugins_dir = @ dir(wp_base(). '/wp-content/plugins');
 	if ($plugins_dir) {
 		while(($file = $plugins_dir->read()) !== false) {
 		  if ( !preg_match('|^\.+$|', $file) && preg_match('|\.php$|', $file) ) 
@@ -104,7 +104,7 @@ switch(get_param('action')) {
 		$style = '';
 		$ticket=$xoopsWPTicket->getTicketParamString('plugins');
 		foreach($plugin_files as $plugin_file) {
-			$plugin_data = implode('', file(ABSPATH . '/wp-content/plugins/' . $plugin_file));
+			$plugin_data = implode('', file(wp_base().'/wp-content/plugins/' . $plugin_file));
 			preg_match("|Plugin Name:(.*)|i", $plugin_data, $plugin_name);
 			preg_match("|Plugin URI:(.*)|i", $plugin_data, $plugin_uri);
 			preg_match("|Description:(.*)|i", $plugin_data, $description);

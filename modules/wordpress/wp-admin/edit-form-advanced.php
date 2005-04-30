@@ -11,8 +11,8 @@ $ping_check_open = checked($ping_status, 'open', false);
 $ping_check_close = checked($ping_status, 'closed', false);
 
 $use_quicktags = (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))&&($mode != 'bookmarklet')) ;
-$use_spaw = ($GLOBALS['wp_use_spaw']&&$is_winIE);
-$use_koivi = $GLOBALS['wp_use_koivi'];
+$use_spaw = ($GLOBALS['wp_use_spaw']);
+// $use_koivi = $GLOBALS['wp_use_koivi'];
 
 $smilies = array();
 foreach($wpsmiliestrans[$wp_id] as $smiley => $img) {
@@ -29,15 +29,15 @@ if ($use_spaw) {
 	$content = strtr ($content, $trans_tbl);
 	$sw = new SPAW_Wysiwyg( 'wp_content', $content, _LANGCODE, 'full', 'default', '70%', '400px' );
 	$spaw_form = $sw->getHtml();
-} else if ($use_koivi) {
-	include XOOPS_ROOT_PATH."/class/xoopsformloader.php";
-	include_once ABSPATH. "wp-admin/wysiwyg/formwysiwygtextarea.php";
-	$trans_tbl = get_html_translation_table (HTML_SPECIALCHARS);
-	$trans_tbl = array_flip ($trans_tbl);
-	$content = strtr ($content, $trans_tbl);
-	$wysiwyg_text_area = new XoopsFormWysiwygTextArea( $caption, 'wp_content', $content, '100%', '400px','');
-	$wysiwyg_text_area->setUrl(ABSBASE. "wp-admin/wysiwyg");
-	$spaw_form = $wysiwyg_text_area->render();
+//} else if ($use_koivi) {
+//	include XOOPS_ROOT_PATH."/class/xoopsformloader.php";
+//	include_once "wysiwyg/formwysiwygtextarea.php";
+//	$trans_tbl = get_html_translation_table (HTML_SPECIALCHARS);
+//	$trans_tbl = array_flip ($trans_tbl);
+//	$content = strtr ($content, $trans_tbl);
+//	$wysiwyg_text_area = new XoopsFormWysiwygTextArea( $caption, 'wp_content', $content, '100%', '400px','');
+//	$wysiwyg_text_area->setUrl(wp_siteurl(). "/wp-admin/wysiwyg");
+//	$spaw_form = $wysiwyg_text_area->render();
 } else {
 	$spaw_form = "";
 }
@@ -119,7 +119,7 @@ $wpTpl->assign('excerpt', $excerpt);
 $wpTpl->assign('use_quicktags', $use_quicktags);
 $wpTpl->assign('smilies', $smilies);
 $wpTpl->assign('use_spaw', $use_spaw);
-$wpTpl->assign('use_koivi', $use_koivi);
+$wpTpl->assign('use_koivi', false);
 $wpTpl->assign('spaw_form', $spaw_form);
 $wpTpl->assign('content', $content);
 $wpTpl->assign('rows', $rows);
@@ -138,7 +138,7 @@ $wpTpl->assign('form_addon', $form_addon);
 $wpTpl->assign('ticket', $ticket);
 $wpTpl->assign('postmetaRows', $postmetaRows);
 $wpTpl->assign('postmetaKeys', $postmetaKeys);
-$wpTpl->template_dir = ABSPATH."wp-admin/templates/";
-$wpTpl->display("edit-form-advanced.html");
+$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
+$wpTpl->display('edit-form-advanced.html');
 return;
 ?>

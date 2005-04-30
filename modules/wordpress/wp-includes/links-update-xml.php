@@ -3,7 +3,7 @@
 // Copyright (C) 2003 Mike Little -- mike@zed1.com
 
 // Get the path of our parent directory:
-$parentpath = $wp_base[$wp_id];
+$parentpath = wp_base();
 
 require_once($parentpath.'/wp-config.php');
 
@@ -11,6 +11,8 @@ require_once($parentpath.'/wp-config.php');
 $updated_timestamp = 0;
 $all_links = array();
 
+if( ! defined( 'WP_LINKS_UPDATE_XML_INCLUDED' ) ) {
+	define( 'WP_LINKS_UPDATE_XML_INCLUDED' , 1 ) ;
 /**
  ** preload_links()
  ** Pre-load the visible, non-blank, links into an associative array $all_links
@@ -49,10 +51,9 @@ function update_links() {
  ** otherwise return false (nothing to do)
  **/
 function get_weblogs_updatedfile() {
-	global $ignore_weblogs_cache, $wp_id, $wp_base;
 	$update = false;
-	$file = $wp_base[$wp_id] ."/". get_settings('weblogs_cache_file');
-	if ($ignore_weblogs_cache) {
+	$file = wp_base() ."/". get_settings('weblogs_cache_file');
+	if ($GLOBALS['ignore_weblogs_cache']) {
 		$update = true;
 	} else {
 		if (file_exists($file)) {
@@ -76,7 +77,7 @@ function get_weblogs_updatedfile() {
 			$contents = preg_replace("/'/",'&#39;',$contents);
 			$contents = preg_replace('|[^[:space:][:punct:][:alpha:][:digit:]]|','',$contents);
 
-			$cachefp = fopen($wp_base[$wp_id] ."/". get_settings('weblogs_cache_file'), "w");
+			$cachefp = fopen(wp_base() ."/". get_settings('weblogs_cache_file'), "w");
 			fwrite($cachefp, $contents);
 			fclose($cachefp);
 		} else {
@@ -132,6 +133,7 @@ function transform_url($url) {
 	//echo(" now equals $url\n");
 	return $url;
 } // end transform_url
+}
 
 // get/update the cache file.
 // true return means new copy
@@ -147,7 +149,7 @@ if (get_weblogs_updatedfile()) {
 	xml_set_element_handler($xml_parser, "startElement", "endElement");
 
 	// Open the XML file for reading
-	$fp = fopen($wp_base[$wp_id] ."/". get_settings('weblogs_cache_file'), "r")
+	$fp = fopen(wp_base() ."/". get_settings('weblogs_cache_file'), "r")
 		  or die("Error reading XML data.");
 
 	// Read the XML file 16KB at a time
@@ -170,5 +172,4 @@ if (get_weblogs_updatedfile()) {
 
 	//echo('</pre>');
 } // end if updated cache file
-
 ?>

@@ -8,7 +8,7 @@ $category_select = categories_nested_select(array($default_post_cat));
 
 $use_quicktags = (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))&&($mode != 'bookmarklet')) ;
 $use_spaw = ($GLOBALS['wp_use_spaw']&&$is_winIE);
-$use_koivi = $GLOBALS['wp_use_koivi'];
+// $use_koivi = $GLOBALS['wp_use_koivi'];
 
 $smilies = array();
 foreach($wpsmiliestrans[$wp_id] as $smiley => $img) {
@@ -25,15 +25,15 @@ if ($use_spaw) {
 	$content = strtr ($content, $trans_tbl);
 	$sw = new SPAW_Wysiwyg( 'wp_content', $content, _LANGCODE, 'full', 'default', '70%', '400px' );
 	$spaw_form = $sw->getHtml();
-} else if ($use_koivi) {
-	include XOOPS_ROOT_PATH."/class/xoopsformloader.php";
-	include_once ABSPATH. "wp-admin/wysiwyg/formwysiwygtextarea.php";
-	$trans_tbl = get_html_translation_table (HTML_SPECIALCHARS);
-	$trans_tbl = array_flip ($trans_tbl);
-	$content = strtr ($content, $trans_tbl);
-	$wysiwyg_text_area = new XoopsFormWysiwygTextArea( $caption, 'wp_content', $content, '100%', '400px','');
-	$wysiwyg_text_area->setUrl(ABSBASE. "wp-admin/wysiwyg");
-	$spaw_form = $wysiwyg_text_area->render();
+//} else if ($use_koivi) {
+//	include XOOPS_ROOT_PATH."/class/xoopsformloader.php";
+//	include_once 'wysiwyg/formwysiwygtextarea.php';
+//	$trans_tbl = get_html_translation_table (HTML_SPECIALCHARS);
+//	$trans_tbl = array_flip ($trans_tbl);
+//	$content = strtr ($content, $trans_tbl);
+//	$wysiwyg_text_area = new XoopsFormWysiwygTextArea( $caption, 'wp_content', $content, '100%', '400px','');
+//	$wysiwyg_text_area->setUrl(wp_siteurl()."/wp-admin/wysiwyg");
+//	$spaw_form = $wysiwyg_text_area->render();
 } else {
 	$spaw_form = "";
 }
@@ -42,7 +42,7 @@ $allowed_users = explode(" ", trim(get_settings('fileupload_allowedusers')));
 $can_upload = ( (get_settings('use_fileupload')) && ($user_level >= get_settings('fileupload_minlevel')) && (in_array($user_login, $allowed_users) || (trim(get_settings('fileupload_allowedusers'))=="")) );
 
 $use_pingback = get_settings('use_pingback');
-if ($post_pingback) {
+if (!empty($post_pingback)) {
 	$ping_checked = 'checked="checked"';
 } else {
 	$ping_checked = '';
@@ -78,7 +78,7 @@ $wpTpl->assign('category_select', $category_select);
 $wpTpl->assign('use_quicktags', $use_quicktags);
 $wpTpl->assign('smilies', $smilies);
 $wpTpl->assign('use_spaw', $use_spaw);
-$wpTpl->assign('use_koivi', $use_koivi);
+$wpTpl->assign('use_koivi', false);
 $wpTpl->assign('spaw_form', $spaw_form);
 $wpTpl->assign('content', $content);
 $wpTpl->assign('rows', $rows);
@@ -93,8 +93,8 @@ $wpTpl->assign('pingedlist', $pingedlist);
 $wpTpl->assign('form_addon', $form_addon);
 $wpTpl->assign('target_charset', $target_charset);
 $wpTpl->assign('ticket', $ticket);
-$wpTpl->template_dir = ABSPATH."wp-admin/templates/";
-$wpTpl->display("edit-form.html");
+$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
+$wpTpl->display('edit-form.html');
 
 return;
 ?>

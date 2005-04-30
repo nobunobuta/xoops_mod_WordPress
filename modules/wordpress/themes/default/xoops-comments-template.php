@@ -23,7 +23,7 @@
 <?php } ?>
 <h2 id="xcomments"><?php echo _LANG_WPCM_COM_TITLE; ?></h2>
 <?php if ('open' == $post->comment_status) { ?>
-<?php require XOOPS_ROOT_PATH.'/modules/'.$wp_mod[$wp_id].'/include/comment_view.php'; ?>
+<?php require XOOPS_ROOT_PATH.'/modules/'.wp_mod().'/include/comment_view.php'; ?>
 <div style="text-align: center; padding: 3px; margin: 3px;">
   <?php echo $navbar; ?>
   <?php echo _CM_NOTICE; ?>

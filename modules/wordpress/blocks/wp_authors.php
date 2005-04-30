@@ -1,9 +1,16 @@
 <?php
-if( ! defined( 'WP_AUTHORS_INCLUDED' ) ) {
+$_wp_base_prefix = 'wp';
+$_wp_my_dirname = basename( dirname(dirname( __FILE__ ) ) );
+if (!preg_match('/\D+(\d*)/', $_wp_my_dirname, $_wp_regs )) {
+	echo ('Invalid dirname for WordPress Module: '. htmlspecialchars($_wp_my_dirname));
+}
+$_wp_my_dirnumber = $_wp_regs[1] ;
+$_wp_my_prefix = $_wp_base_prefix.$_wp_my_dirnumber.'_';
 
-	define( 'WP_AUTHORS_INCLUDED' , 1 ) ;
+if( ! defined( 'WP_AUTHORS_BLOCK_INCLUDED' ) ) {
+	define( 'WP_AUTHORS_BLOCK_INCLUDED' , 1 ) ;
 
-	function b_wp_authors_edit($options)
+	function _b_wp_authors_edit($options)
 	{
 		$form = "<table width='100%'>";
 
@@ -39,21 +46,12 @@ if( ! defined( 'WP_AUTHORS_INCLUDED' ) ) {
 		return $form;
 	}
 
-	function b_wp_authors_show($options, $wp_num="")
+	function _b_wp_authors_show($options, $wp_num="")
 	{
 		$with_count =  (empty($options[0]))? 0 : $options[0];
 		$idmode = (empty($options[1]))? '' : $options[1];
 		$show_rss2_icon = (empty($options[2]))? 0 : $options[2];
 
-		$id=1;
-		$GLOBALS['use_cache'] = 1;
-
-		if ($wp_num == "") {
-			$GLOBALS['wp_id'] = $wp_num;
-			$GLOBALS['wp_inblock'] = 1;
-			require(dirname(__FILE__).'/../wp-config.php');
-			$GLOBALS['wp_inblock'] = 0;
-		}
 		$optioncount = ($with_count == 1);
 		$exclude_admin = false;
 		$show_fullname = false;
@@ -69,21 +67,20 @@ if( ! defined( 'WP_AUTHORS_INCLUDED' ) ) {
 		ob_end_clean();
 		return $block;
 	}
-
-	for ($i = 0; $i < 10; $i++) {
-		eval ('
-		function b_wp'.$i.'_authors_edit($options) {
-			return (b_wp_authors_edit($options));
-		}
-
-		function b_wp'.$i.'_authors_show($options) {
-			$GLOBALS["wp_id"] = "'.$i.'";
-			$GLOBALS["wp_inblock"] = 1;
-			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
-			$GLOBALS["wp_inblock"] = 0;
-			return (b_wp_authors_show($options,"'.$i.'"));
-		}
-	');
-	}
 }
+
+eval ('
+	function b_'.$_wp_my_prefix.'authors_edit($options) {
+		return (_b_wp_authors_edit($options));
+	}
+	function b_'.$_wp_my_prefix.'authors_show($options) {
+		$GLOBALS["use_cache"] = 1;
+		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
+		$GLOBALS["wp_inblock"] = 1;
+		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
+		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
+		$GLOBALS["wp_inblock"] = 0;
+		return (_b_wp_authors_show($options,"'.$_wp_my_dirnumber.'"));
+	}
+');
 ?>

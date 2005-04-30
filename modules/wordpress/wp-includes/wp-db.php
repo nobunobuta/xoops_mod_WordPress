@@ -1,4 +1,6 @@
 <?php
+if( ! defined( 'WP_WP_DB_INCLUDED' ) ) {
+	define( 'WP_WP_DB_INCLUDED' , 1 ) ;
 	// ==================================================================
 	//  Author: Justin Vincent (justin@visunet.ie)
 	//	Web: 	http://php.justinvincent.com
@@ -335,5 +337,5 @@
 	}
 
 $wpdb = new wpdb(WP_DB_USER, WP_DB_PASSWORD, WP_DB_NAME, WP_DB_HOST);
-
+}
 ?>

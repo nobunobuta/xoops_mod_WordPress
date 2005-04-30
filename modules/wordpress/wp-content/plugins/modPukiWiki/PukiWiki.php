@@ -73,7 +73,7 @@ if (defined('XOOPS_ROOT_PATH')) {
 	//キャッシュのファイルの保管先 
 	// XOOPS環境下では、wp-contentディレクトリ下にmodPukiWikiというディレクトリを作成して自動設定
 	if (!defined('MOD_PUKI_CACHE_DIR')) {
-		define('MOD_PUKI_CACHE_DIR',ABSPATH.'/wp-content/modPukiWiki/');
+		define('MOD_PUKI_CACHE_DIR', wp_base().'/wp-content/modPukiWiki/');
 		if (!file_exists(MOD_PUKI_CACHE_DIR)) mkdir(MOD_PUKI_CACHE_DIR, 0777);
 	}
 	//画像キャッシュなどのファイルの保管先 

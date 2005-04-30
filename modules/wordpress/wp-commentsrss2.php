@@ -6,7 +6,7 @@ error_reporting(E_ERROR);
 init_param('GET', 'num','integer');
 if (test_param('num')) $showposts = get_param('num');
 require('wp-blog-header.php');
-header("Content-type: application/xml");
+header('Content-type: application/xml');
 echo '<?xml version="1.0" encoding="'.wp_get_rss_charset().'"?'.'>';
 ?>
 <!-- generator="wordpress/<?php echo $wp_version ?>" -->
@@ -23,9 +23,9 @@ foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp();
 	if ($_i < 1) {
 		$_i++;
 ?>
-	<title><?php if (test_param('p')) { echo "Comments on: "; the_title_rss(); } else { bloginfo_rss("name"); echo " Comments"; } ?></title>
-	<link><?php test_param('p') ? permalink_single_rss() : bloginfo_rss("url") ?></link>
-	<description><?php bloginfo_rss("description") ?></description>
+	<title><?php if (test_param('p')) { echo 'Comments on: '; the_title_rss(); } else { bloginfo_rss('name'); echo ' Comments'; } ?></title>
+	<link><?php test_param('p') ? permalink_single_rss() : bloginfo_rss('url') ?></link>
+	<description><?php bloginfo_rss('description') ?></description>
 	<dc:language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></dc:language>
 	<dc:creator><?php echo antispambot(get_settings('admin_email')) ?></dc:creator>
 	<dc:rights>Copyright <?php echo mysql2date('Y', get_lastpostdate()); ?></dc:rights>
@@ -39,7 +39,7 @@ foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp();
 <?php 
 		$_criteria =& new CriteriaCompo(new Criteria('comment_approved','1 '));
 		$_criteria->add(new Criteria('post_status','publish'));
-		$_criteria->add(new Criteria('post_date',date("Y-m-d H:i:s"), '<'));
+		$_criteria->add(new Criteria('post_date',date('Y-m-d H:i:s'), '<'));
 		if (test_param('p')) {
 			$_criteria->add(new Criteria('comment_post_ID',$GLOBALS['wp_post_id']));
 		} else {
@@ -63,7 +63,7 @@ foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp();
 		<title>by: <?php comment_author_rss() ?></title>
 		<link><?php comment_link_rss() ?></link>
 		<dc:date><?php comment_time('Y-m-d\TH:i:s'); ?></dc:date>
-		<guid isPermaLink="false"><?php comment_ID(); echo ":".$GLOBALS['comment']->comment_post_ID; ?>@<?php bloginfo_rss("url") ?></guid>
+		<guid isPermaLink="false"><?php comment_ID(); echo ':'.$GLOBALS['comment']->comment_post_ID; ?>@<?php bloginfo_rss('url') ?></guid>
 		<?php if (!empty($GLOBALS['comment']->post_password) && $_COOKIE['wp-postpass'] != $GLOBALS['comment']->post_password) { ?>
 		<description>Protected Comments: Please enter your password to view comments.</description>
 		<content:encoded><![CDATA[<?php echo get_the_password_form() ?>]]></content:encoded>

@@ -1,47 +1,46 @@
 <?php
-if( ! defined( 'WP_ARCHIVES_MONTHLY_INCLUDED' ) ) {
+$_wp_base_prefix = 'wp';
+$_wp_my_dirname = basename( dirname(dirname( __FILE__ ) ) );
+if (!preg_match('/\D+(\d*)/', $_wp_my_dirname, $_wp_regs )) {
+	echo ('Invalid dirname for WordPress Module: '. htmlspecialchars($_wp_my_dirname));
+}
+$_wp_my_dirnumber = $_wp_regs[1] ;
+$_wp_my_prefix = $_wp_base_prefix.$_wp_my_dirnumber.'_';
 
-	define( 'WP_ARCHIVES_MONTHLY_INCLUDED' , 1 ) ;
+if( ! defined( 'WP_ARCHIVES_MONTHLY_BLOCK_INCLUDED' ) ) {
+	define( 'WP_ARCHIVES_MONTHLY_BLOCK_INCLUDED' , 1 ) ;
 
-	function b_wp_archives_monthly_edit($options)
+	function _b_wp_archives_monthly_edit($options)
 	{
-		$form = "";
-		$form .= "Month List Style:&nbsp;";
+		$form = '';
+		$form .= 'Month List Style:&nbsp;';
 		if ( $options[0] == 0 ) {
-			$chk = " checked='checked'";
+			$chk = ' checked="checked"';
 		}
-		$form .= "<input type='radio' name='options[]' value='0'".$chk." />&nbsp;Simple List";
-		$chk = "";
+		$form .= '<input type="radio" name="options[]" value="0"'.$chk.' />&nbsp;Simple List';
+		$chk = '';
 		if ( $options[0] == 1 ) {
-			$chk = " checked=\"checked\"";
+			$chk = ' checked="checked"';
 		}
-		$form .= "&nbsp;<input type='radio' name='options[]' value='1'".$chk." />&nbsp;Dropdown List";
-		$form .= "<br />Listing with count:&nbsp;";
+		$form .= '&nbsp;<input type="radio" name="options[]" value="1"'.$chk.' />&nbsp;Dropdown List';
+		$form .= '<br />Listing with count:&nbsp;';
 		if ( $options[1] == 1 ) {
-			$chk = " checked='checked'";
+			$chk = ' checked="checked"';
 		}
-		$form .= "<input type='radio' name='options[1]' value='1'".$chk." />&nbsp;"._YES."";
+		$form .= '<input type="radio" name="options[1]" value="1"'.$chk.' />&nbsp;'._YES;
 		$chk = "";
 		if ( $options[1] == 0 ) {
-			$chk = " checked=\"checked\"";
+			$chk = ' checked="checked"';
 		}
-		$form .= "&nbsp;<input type='radio' name='options[1]' value='0'".$chk." />"._NO."";
+		$form .= '&nbsp;<input type="radio" name="options[1]" value="0"'.$chk.' />'._NO;
 		return $form;
 	}
 
-	function b_wp_archives_monthly_show($options, $wp_num="")
+	function _b_wp_archives_monthly_show($options, $wp_num='')
 	{
 		$block_style =  ($options[0])?$options[0]:0;
 		$with_count =  ($options[1]==0)?false:true;
 
-		$id=1;
-		$GLOBALS['use_cache'] = 1;
-		if ($wp_num == "") {
-			$GLOBALS['wp_id'] = $wp_num;
-			$GLOBALS['wp_inblock'] = 1;
-			require(dirname(__FILE__).'/../wp-config.php');
-			$GLOBALS['wp_inblock'] = 0;
-		}
 		$sel_value = '';
 		if (current_wp()) {
 			init_param('GET', 'm','string','');
@@ -57,9 +56,9 @@ if( ! defined( 'WP_ARCHIVES_MONTHLY_INCLUDED' ) ) {
 		block_style_get($wp_num);
 		if ($block_style == 0) {
 		// Simple Listing
-			echo "<ul class='wpBlockList'>\n";
+			echo '<ul class="wpBlockList">'."\n";
 			get_archives('monthly','','html', '','',$with_count);
-			echo "</ul>\n";
+			echo '</ul>'."\n";
 		} else {
 		// Dropdown Listing
 			echo '<form name="archiveform'.$wp_num.'" id="archiveform'.$wp_num.'" action="#">';
@@ -73,21 +72,20 @@ if( ! defined( 'WP_ARCHIVES_MONTHLY_INCLUDED' ) ) {
 		ob_end_clean();
 		return $block;
 	}
-
-	for ($i = 0; $i < 10; $i++) {
-		eval ('
-		function b_wp'.$i.'_archives_monthly_edit($options) {
-			return (b_wp_archives_monthly_edit($options));
-		}
-
-		function b_wp'.$i.'_archives_monthly_show($options) {
-			$GLOBALS["wp_id"] = "'.$i.'";
-			$GLOBALS["wp_inblock"] = 1;
-			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
-			$GLOBALS["wp_inblock"] = 0;
-			return (b_wp_archives_monthly_show($options,"'.$i.'"));
-		}
-	');
-	}
 }
+
+eval ('
+	function b_'.$_wp_my_prefix.'archives_monthly_edit($options) {
+		return (_b_wp_archives_monthly_edit($options));
+	}
+	function b_'.$_wp_my_prefix.'archives_monthly_show($options) {
+		$GLOBALS["use_cache"] = 1;
+		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
+		$GLOBALS["wp_inblock"] = 1;
+		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
+		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
+		$GLOBALS["wp_inblock"] = 0;
+		return (_b_wp_archives_monthly_show($options,"'.$_wp_my_dirnumber.'"));
+	}
+');
 ?>

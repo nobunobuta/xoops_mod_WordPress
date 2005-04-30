@@ -699,6 +699,7 @@ define('_LANG_INST_BASE_VALUE91','A seconda che desideri la pubblicazione gzippa
 define('_LANG_INST_BASE_VALUE92','Settalo questo dato a vero se pensi di usare un file di hack. Questo è il luogo per salvare il codice di hack che desideri sovrascrivere con l aggiornamento. Il file deve essere in root e si deve chiamare  <code>my-hacks.php</code>');
 define('_LANG_INST_BASE_VALUE93','blog_charset');
 define('_LANG_INST_BASE_VALUE94','La differenza di orario tra il GMT e la tua zona temporale');
+define('_LANG_INST_BASE_VALUE95','Check if Trackback sending site contains my URL');
 
 /* File Name wp-admin/plugins.php */
 define('_LANG_PG_LEAST_LEVEL','Spiacente, devi avere almeno un livello utente 8 per modificare il plugin.');

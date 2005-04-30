@@ -1,4 +1,7 @@
 <?php
+if( ! defined( 'WP_WPBLFUNCTIONS_INCLUDED' ) ) {
+	define( 'WP_WPBLFUNCTIONS_INCLUDED' , 1 ) ;
+
 /*
  clean a given string so that it will work with regex
  */
@@ -57,5 +60,5 @@ if (!function_exists('add_magic_quotes')) {
 	    return $array;
 	}
 }
-
+}
 ?>

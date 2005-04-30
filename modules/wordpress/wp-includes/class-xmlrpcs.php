@@ -1,4 +1,7 @@
 <?php
+if( ! defined( 'WP_CLASS_XMLRPCS_INCLUDED' ) ) {
+	define( 'WP_CLASS_XMLRPCS_INCLUDED' , 1 ) ;
+
 // by Edd Dumbill (C) 1999-2001
 // <edd@usefulinc.com>
 // $Id$
@@ -305,5 +308,5 @@ class xmlrpc_server {
 	print $r->serialize();
   }
 }
-
+}
 ?>

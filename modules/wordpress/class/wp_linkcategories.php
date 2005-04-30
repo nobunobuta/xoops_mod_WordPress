@@ -1,4 +1,5 @@
 <?php
+if( ! class_exists( 'WordPressLinkCategory' ) ) {
 class WordPressLinkCategory  extends XoopsTableObject
 {
 	/**
@@ -170,5 +171,6 @@ class WordPressLinkCategoryHandler  extends XoopsTableObjectHandler
 			'link_rating' => 'Rating',
 		);
 	}
+}
 }
 ?>

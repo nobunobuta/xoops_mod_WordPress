@@ -199,14 +199,14 @@ if (XOOPS_COMMENT_APPROVENONE != $xoopsModuleConfig['com_rule']) {
 			}
 		}
 		if (isset($postcomment_link)) {
-			$navbar .= '&nbsp;<input type="button" onclick="self.location.href=\''.XOOPS_URL.'/modules/'.$wp_mod[$wp_id].'/'.$postcomment_link.''.$link_extra.'\'" class="formButton" value="'._CM_POSTCOMMENT.'" />';
+			$navbar .= '&nbsp;<input type="button" onclick="self.location.href=\''.XOOPS_URL.'/modules/'.wp_mod().'/'.$postcomment_link.''.$link_extra.'\'" class="formButton" value="'._CM_POSTCOMMENT.'" />';
 		}
 		$navbar .= '
     </td>
   </tr>
 </table>
 </form>';
-		$xoopsTpl->assign(array('commentsnav' => $navbar, 'editcomment_link' => XOOPS_URL.'/modules/'.$wp_mod[$wp_id].'/'.'comment_edit.php?com_itemid='.$com_itemid.'&amp;com_order='.$com_order.'&amp;com_mode='.$com_mode.''.$link_extra, 'deletecomment_link' => XOOPS_URL.'/modules/'.$wp_mod[$wp_id].'/'.'comment_delete.php?com_itemid='.$com_itemid.'&amp;com_order='.$com_order.'&amp;com_mode='.$com_mode.''.$link_extra, 'replycomment_link' => XOOPS_URL.'/modules/'.$wp_mod[$wp_id].'/'.'comment_reply.php?com_itemid='.$com_itemid.'&amp;com_order='.$com_order.'&amp;com_mode='.$com_mode.''.$link_extra));
+		$xoopsTpl->assign(array('commentsnav' => $navbar, 'editcomment_link' => XOOPS_URL.'/modules/'.wp_mod().'/'.'comment_edit.php?com_itemid='.$com_itemid.'&amp;com_order='.$com_order.'&amp;com_mode='.$com_mode.''.$link_extra, 'deletecomment_link' => XOOPS_URL.'/modules/'.wp_mod().'/'.'comment_delete.php?com_itemid='.$com_itemid.'&amp;com_order='.$com_order.'&amp;com_mode='.$com_mode.''.$link_extra, 'replycomment_link' => XOOPS_URL.'/modules/'.wp_mod().'/'.'comment_reply.php?com_itemid='.$com_itemid.'&amp;com_order='.$com_order.'&amp;com_mode='.$com_mode.''.$link_extra));
 
 		// assign some lang variables
 		$xoopsTpl->assign(array('lang_from' => _CM_FROM, 'lang_joined' => _CM_JOINED, 'lang_posts' => _CM_POSTS, 'lang_poster' => _CM_POSTER, 'lang_thread' => _CM_THREAD, 'lang_edit' => _EDIT, 'lang_delete' => _DELETE, 'lang_reply' => _REPLY, 'lang_subject' => _CM_REPLIES, 'lang_posted' => _CM_POSTED, 'lang_updated' => _CM_UPDATED, 'lang_notice' => _CM_NOTICE));

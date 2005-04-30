@@ -1,9 +1,16 @@
 <?php
-if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
+$_wp_base_prefix = 'wp';
+$_wp_my_dirname = basename( dirname(dirname( __FILE__ ) ) );
+if (!preg_match('/\D+(\d*)/', $_wp_my_dirname, $_wp_regs )) {
+	echo ('Invalid dirname for WordPress Module: '. htmlspecialchars($_wp_my_dirname));
+}
+$_wp_my_dirnumber = $_wp_regs[1] ;
+$_wp_my_prefix = $_wp_base_prefix.$_wp_my_dirnumber.'_';
 
-	define( 'WP_RECENT_COMMENTS_INCLUDED' , 1 ) ;
+if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
+	define( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' , 1 ) ;
 
-	function b_wp_recent_comments_edit($options)
+	function _b_wp_recent_comments_edit($options)
 	{
 		$form = "<table width='100%'>";
 		$form .= "<tr><td width='40%'>Comment List Style (=0 or 1):</td>";
@@ -35,30 +42,22 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 		return $form;
 
 	}
-	function b_wp_recent_comments_show($options, $wp_num="")
+
+	function _b_wp_recent_comments_show($options, $wp_num="")
 	{
 		$block_style =  ($options[0])?$options[0]:0;
 		$num_of_list = (!isset($options[1]))? 10 : $options[1];
 		$show_rss_icon = (!isset($options[2]))? 0 : $options[2];
 		$cat_date = (!isset($options[3]))? ($block_style ? 1 : 0) : $options[3];
 		$show_type = (!isset($options[4]))? 1 : $options[4];
-		global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache, $wp_mod, $wp_base;
-		$id=1;
-		$use_cache = 1;
-
-		if ($wp_num == "") {
-			$wp_id = $wp_num;
-			$wp_inblock = 1;
-			require(dirname(__FILE__).'/../wp-config.php');
-			$wp_inblock = 0;
-		}
+		global $wpdb, $wp_id;
 
 		if ($block_style==0) {
 			$no_comments = $num_of_list;
 			$comment_lenth = 30;
 			$skip_posts = 0;
 			$request = "SELECT ID, comment_ID, comment_content, comment_author,comment_date FROM {$wpdb->posts[$wp_id]}, {$wpdb->comments[$wp_id]} WHERE {$wpdb->posts[$wp_id]}.ID={$wpdb->comments[$wp_id]}.comment_post_ID AND post_status = 'publish' AND comment_approved = '1' ";
-			if (get_xoops_option($wp_mod[$wp_id],'wp_use_xoops_comments') == 1) {
+			if (get_xoops_option(wp_mod(), 'wp_use_xoops_comments') == 1) {
 				$request .= "AND (comment_content like '<trackback />%' OR comment_content like '<pingkback />%') ";
 			}
 			$request .= "ORDER BY {$wpdb->comments[$wp_id]}.comment_date DESC LIMIT $no_comments";
@@ -113,7 +112,7 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 		}
 		if ($show_rss_icon) {
 			$output .= '<hr width="100%" />';
-			$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('comments_rss2_url').'"><img src="'.XOOPS_URL.'/modules/wordpress'.$wp_num.'/wp-images/rss_comment.gif" /></a></div>';
+			$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('comments_rss2_url').'"><img src="'.wp_siteurl().'/wp-images/rss_comment.gif" /></a></div>';
 		}
 		ob_start();
 		block_style_get($wp_num);
@@ -122,14 +121,14 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 		ob_end_clean();
 		return $block;
 	}
+
 	function tkzy_get_recent_comments($limit = 10, $cat_date=1, $show_type = 1) { 
-		global $wpdb,  $wp_id, $wp_mod; 
-		global $siteurl; 
+		global $wpdb,  $wp_id; 
 		$comment_lenth = 30;
 		$request = "SELECT ID, post_title, post_date, 
 		comment_ID, comment_author, comment_author_url, comment_author_email, comment_date, comment_content 
 		FROM {$wpdb->posts[$wp_id]}, {$wpdb->comments[$wp_id]} WHERE {$wpdb->posts[$wp_id]}.ID={$wpdb->comments[$wp_id]}.comment_post_ID AND {$wpdb->comments[$wp_id]}.comment_approved='1'";
-		if (get_xoops_option($wp_mod[$wp_id],'wp_use_xoops_comments') == 1) {
+		if (get_xoops_option(wp_mod(), 'wp_use_xoops_comments') == 1) {
 			$request .= "AND (comment_content like '<trackback />%' OR comment_content like '<pingkback />%') ";
 		}
 		$request .= " ORDER BY {$wpdb->comments[$wp_id]}.comment_date DESC LIMIT $limit";
@@ -154,7 +153,7 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 					} else {
 						$comment_excerpt = substr($comment_content,0,$comment_lenth);
 					}
-					$permalink = "$siteurl/index.php?p=$lcomment->ID&amp;c=1"; 
+					$permalink = wp_siteurl()."/index.php?p=$lcomment->ID&amp;c=1"; 
 					$output .= "<li>"; 
 					$output .= "<span class='comment-title'><a href=\"$permalink\">$post_title</a></span>\n"; 
 					$output .= "\t<ul class=\"children\" style=\"list-style-type: none;\">\n"; 
@@ -177,17 +176,19 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 				if ($show_type) {
 					$output .= "<span style=\"font-size:90%\"> - $type</span>";
 				}
-		     } 
-	     }
-	     $output .= "\t</ul>\n</li>\n</ul>\n"; 
-	     return $output; 
+			} 
+		}
+		$output .= "\t</ul>\n</li>\n</ul>\n"; 
+		return $output; 
 	} 
-     function sort_comment_by_date($a, $b){ 
-          if( $b->ID == $a->ID ){ 
-               return mysql2date('U',$a->comment_date) - mysql2date('U',$b->comment_date); 
-          } 
-          return mysql2date('U',$b->post_date) - mysql2date('U',$a->post_date); 
-     } 
+
+    function sort_comment_by_date($a, $b){ 
+		if( $b->ID == $a->ID ){ 
+		   return mysql2date('U',$a->comment_date) - mysql2date('U',$b->comment_date); 
+		} 
+		return mysql2date('U',$b->post_date) - mysql2date('U',$a->post_date); 
+    } 
+
 	function tkzy_get_comment_author_link($my_comment,$abbr=0) { 
 		// modified comment_author_link() 
 		$ret = ""; 
@@ -226,21 +227,20 @@ if( ! defined( 'WP_RECENT_COMMENTS_INCLUDED' ) ) {
 		} 
 		 return $ret; 
 	}
-	for ($i = 0; $i < 10; $i++) {
-		eval ('
-		function b_wp'.$i.'_recent_comments_edit($options) {
-			return (b_wp_recent_comments_edit($options));
-		}
-
-		function b_wp'.$i.'_recent_comments_show($options) {
-			global $wpdb, $siteurl, $wp_id, $wp_inblock, $use_cache, $wp_mod, $wp_base;
-			$wp_id = "'.$i.'";
-			$wp_inblock = 1;
-			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
-			$wp_inblock = 0;
-			return (b_wp_recent_comments_show($options,"'.$i.'"));
-		}
-	');
-	}
 }
+
+eval ('
+	function b_'.$_wp_my_prefix.'recent_comments_edit($options) {
+		return (_b_wp_recent_comments_edit($options));
+	}
+	function b_'.$_wp_my_prefix.'recent_comments_show($options) {
+		$GLOBALS["use_cache"] = 1;
+		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
+		$GLOBALS["wp_inblock"] = 1;
+		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
+		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
+		$GLOBALS["wp_inblock"] = 0;
+		return (_b_wp_recent_comments_show($options,"'.$_wp_my_dirnumber.'"));
+	}
+');
 ?>

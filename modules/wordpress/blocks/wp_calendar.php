@@ -1,18 +1,17 @@
 <?php
-if( ! defined( 'WP_CALENDAR_POSTS_INCLUDED' ) ) {
+$_wp_base_prefix = 'wp';
+$_wp_my_dirname = basename( dirname(dirname( __FILE__ ) ) );
+if (!preg_match('/\D+(\d*)/', $_wp_my_dirname, $_wp_regs )) {
+	echo ('Invalid dirname for WordPress Module: '. htmlspecialchars($_wp_my_dirname));
+}
+$_wp_my_dirnumber = $_wp_regs[1] ;
+$_wp_my_prefix = $_wp_base_prefix.$_wp_my_dirnumber.'_';
 
-	define( 'WP_CALENDAR_POSTS_INCLUDED' , 1 ) ;
+if( ! defined( 'WP_CALENDAR_BLOCK_INCLUDED' ) ) {
+	define( 'WP_CALENDAR_BLOCK_INCLUDED' , 1 ) ;
 
-	function b_wp_calendar_show($option, $wp_num = "")
+	function _b_wp_calendar_show($option, $wp_num = "")
 	{
-		$id=1;
-		$GLOBALS['use_cache'] = 1;
-		if ($wp_num == "") {
-			$GLOBALS['wp_id'] = $wp_num;
-			$GLOBALS['wp_inblock'] = 1;
-			require(dirname(__FILE__).'/../wp-config.php');
-			$GLOBALS['wp_inblock'] = 0;
-		}
 		if (current_wp()) {
 			init_param('GET', 'm','integer','');
 			init_param('GET', 'w','integer','');
@@ -26,17 +25,17 @@ if( ! defined( 'WP_CALENDAR_POSTS_INCLUDED' ) ) {
 		ob_end_clean();
 		return $block;
 	}
-
-	for ($i = 0; $i < 10; $i++) {
-		eval ('
-		function b_wp'.$i.'_calendar_show($options) {
-			$GLOBALS["wp_id"] = "'.$i.'";
-			$GLOBALS["wp_inblock"] = 1;
-			require(XOOPS_ROOT_PATH."/modules/wordpress'.$i.'/wp-config.php");
-			$GLOBALS["wp_inblock"] = 0;
-			return (b_wp_calendar_show($options,"'.$i.'"));
-		}
-	');
-	}
 }
+
+eval ('
+	function b_'.$_wp_my_prefix.'calendar_show($options) {
+		$GLOBALS["use_cache"] = 1;
+		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
+		$GLOBALS["wp_inblock"] = 1;
+		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
+		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
+		$GLOBALS["wp_inblock"] = 0;
+		return (_b_wp_calendar_show($options,"'.$_wp_my_dirnumber.'"));
+	}
+');
 ?>

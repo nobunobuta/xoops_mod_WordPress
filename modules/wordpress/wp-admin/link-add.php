@@ -39,8 +39,8 @@ $link_rating = 0;
 $link_target = "";
 $link_visible = "Y";
 $link_category = 1;
-
-$category_options = $wpLinkCategoryHandler[$wp_prefix[$wp_id]]->getOptionArray();
+$categorHandler =& wp_handler('Category');
+$category_options = $categorHandler->getOptionArray();
 
 include('include/link-manager-form.php');
 ?>

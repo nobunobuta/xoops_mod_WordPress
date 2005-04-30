@@ -1,5 +1,7 @@
 <?php
 /* Don't remove this line */ if (!defined('XOOPS_ROOT_PATH')) { exit; }
+//Debug Log 出力モード
+//$GLOBALS['wp_debug'] = true;
 //
 // PINGサーバの指定
 $GLOBALS['my_pingserver'][0]['server']="rpc.weblogs.com";

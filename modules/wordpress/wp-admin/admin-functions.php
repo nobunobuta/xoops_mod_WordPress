@@ -1,4 +1,6 @@
 <?php
+if( ! defined( 'WP_ADMIN_FUNCTIONS_INCLUDED' ) ) {
+	define( 'WP_ADMIN_FUNCTIONS_INCLUDED' , 1 ) ;
 function selected($selected, $current, $echo=true) {
 	if ($selected == $current) {
 		if ($echo) echo ' selected="selected"';
@@ -20,10 +22,8 @@ function gethelp_link($this_file, $helptag) {
 }
 
 function categories_nested_select($sel_categories) {
-    global $wpCategoryHandler;
-	global $wp_id ,$wp_mod, $wp_prefix;
-
-	$categoryObjects =& $wpCategoryHandler[$wp_prefix[$wp_id]]->getNestedObjects(null,'');
+	$categoryHandler =& wp_handler('Category');
+	$categoryObjects =& $categoryHandler->getNestedObjects(null,'');
 	$prev_level = 1;
 	$output = "";
 	foreach ($categoryObjects as $categoryObject) {
@@ -45,11 +45,10 @@ function categories_nested_select($sel_categories) {
 }
 
 function wp_dropdown_cats($currentcat, $currentparent = 0, $parent = 0, $level = 0, $categories = 0) {
-	global $xoopsDB, $wp_id, $wp_prefix, $bgcolor;
 	$myts =& MyTextSanitizer::getInstance();
 
 	if (!$categories) {
-		$categoryHandler =& new WordPressCategoryHandler($xoopsDB, $wp_prefix[$wp_id]);
+		$categoryHandler =& wp_handler('Category');
  		$categories =& $categoryHandler->getObjects();
 	}
 	if ($categories) {
@@ -248,17 +247,15 @@ function add_options_page($page_title, $menu_title, $access_level, $file) {
 
 /* checking login & pass in the database */
 function veriflog() {
-	global $wp_id ,$wp_mod, $wp_prefix;
-	global $xoopsUser;
-	global $wpUserHandler;
-	if($xoopsUser){
-		$user =& $wpUserHandler[$wp_prefix[$wp_id]]->get($xoopsUser->uid());
-		if ($user) {
-			$wpUserHandler[$wp_prefix[$wp_id]]->insert($user, true, true);
+	if($GLOBALS['xoopsUser']){
+		$userHandler =& wp_handler('User');
+		$userObject =& $userHandler->get($GLOBALS['xoopsUser']->uid());
+		if ($userObject) {
+			$userHandler->insert($userObject, true, true);
 		} else {
-			$user =& $wpUserHandler[$wp_prefix[$wp_id]]->create();
-			$user->setVar('ID',$xoopsUser->uid());
-			$wpUserHandler[$wp_prefix[$wp_id]]->insert($user, true, true, $wp_mod[$wp_id]);
+			$userObject =& $userHandler->create();
+			$userObject->setVar('ID', $GLOBALS['xoopsUser']->uid());
+			$userHandler->insert($userObject, true, true, wp_mod());
 		}
 		return true;
 	}
@@ -404,5 +401,6 @@ function show_bookmarklet_link() {
 	</p>
 </div>
 <?php
+}
 }
 ?>

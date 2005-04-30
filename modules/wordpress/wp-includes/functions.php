@@ -1,4 +1,6 @@
 <?php
+if( ! defined( 'WP_FUNCTIONS_INCLUDED' ) ) {
+	define( 'WP_FUNCTIONS_INCLUDED' , 1 ) ;
 
 if (!function_exists('_')) {
 	function _($string) {
@@ -1678,7 +1680,7 @@ function block_style_get($wp_num, $echo = true, $with_tpl = true) {
 	if ($with_tpl) {
 		if (get_xoops_option(wp_mod(),'wp_use_blockcssheader')) {
 			$tplVars =& $GLOBALS['xoopsTpl']->get_template_vars();
-			$csslink = "\n<link rel='stylesheet' type='text/css' media='screen' href='".XOOPS_URL."/modules/wordpress".$wp_num ."/wp-blockstyle.php' />";
+			$csslink = "\n<link rel='stylesheet' type='text/css' media='screen' href='".wp_siteurl() ."/wp-blockstyle.php' />";
 			if(array_key_exists('xoops_block_header', $tplVars)) {
 				if (!strstr($tplVars['xoops_block_header'],$csslink)) {
 					$GLOBALS['xoopsTpl']->assign('xoops_block_header',$tplVars['xoops_block_header'].$csslink);
@@ -1689,13 +1691,13 @@ function block_style_get($wp_num, $echo = true, $with_tpl = true) {
 			return;
 		}
 	}
-	if (file_exists(XOOPS_ROOT_PATH.'/modules/wordpress'. $wp_num .'/themes/'.$GLOBALS['xoopsConfig']['theme_set'].'/wp-blocks.css.php')) {
+	if (file_exists(wp_base().'/themes/'.$GLOBALS['xoopsConfig']['theme_set'].'/wp-blocks.css.php')) {
 		$themes = $GLOBALS['xoopsConfig']['theme_set'];
 	} else {
-		$themes = "default";
+		$themes = 'default';
 	}
-	$wp_block_style="";
-	include_once(XOOPS_ROOT_PATH."/modules/wordpress". $wp_num ."/themes/".$themes."/wp-blocks.css.php");
+	$wp_block_style='';
+	include_once(wp_base().'/themes/'.$themes.'/wp-blocks.css.php');
 	if ($echo) {
 		if (trim($wp_block_style) != "") {
 		echo <<< EOD
@@ -1972,5 +1974,6 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
 	} else {
 		return 1;
 	} 
+}
 }
 ?>

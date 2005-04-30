@@ -8,7 +8,7 @@ if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
 require('wp-blog-header.php');
 add_filter('the_content', 'trim');
 $_rss_charset = wp_get_rss_charset();
-header("Content-type: application/xml");
+header('Content-type: application/xml');
 ?>
 <?php echo '<?xml version="1.0" encoding="'.$_rss_charset.'"?'.'>'; ?>
 <!-- generator="wordpress/<?php echo $GLOBALS['wp_version'] ?>" -->
@@ -20,7 +20,7 @@ header("Content-type: application/xml");
 	xmlns:admin="http://webns.net/mvcb/"
 	xmlns:content="http://purl.org/rss/1.0/modules/content/"
 >
-<channel rdf:about="<?php bloginfo_rss("url") ?>">
+<channel rdf:about="<?php bloginfo_rss('url') ?>">
 	<title><?php bloginfo_rss('name') ?></title>
 	<link><?php bloginfo_rss('url') ?></link>
 	<description><?php bloginfo_rss('description') ?></description>

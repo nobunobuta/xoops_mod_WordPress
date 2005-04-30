@@ -1,4 +1,6 @@
 <?php
+if( ! defined( 'WP_TEMPLATE_FUNCTIONS_LINKS_INCLUDED' ) ) {
+	define( 'WP_TEMPLATE_FUNCTIONS_LINKS_INCLUDED' , 1 ) ;
 function the_permalink($echo = true) {
 	return _echo(get_permalink(), $echo);
 }
@@ -203,5 +205,6 @@ function edit_comment_link($link = _WP_TPL_EDIT_THIS, $before = '', $after = '',
 	}
 	$location = wp_siteurl() ."/wp-admin/post.php?action=editcomment&amp;comment={$GLOBALS['comment']->comment_ID}";
 	return _echo("$before <a href='$location'>$link</a> $after", $echo);
+}
 }
 ?>

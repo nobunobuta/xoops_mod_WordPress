@@ -1,4 +1,5 @@
 <?php
+if( ! class_exists( 'WordPressPostMeta' ) ) {
 class WordPressPostMeta  extends XoopsTableObject
 {
 	var $prefix;
@@ -124,5 +125,6 @@ class WordPressPostMetaHandler  extends XoopsTableObjectHandler
 		return parent::getObjects($criteria, $id_as_key, $fieldlist);
 	}
 */
+}
 }
 ?>
