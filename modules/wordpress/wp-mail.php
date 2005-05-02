@@ -342,7 +342,8 @@ function wp_mail_receive() {
 					} else {
 						$content = addslashes(trim($content));
 						$post_title = addslashes(trim($post_title));
-					} 
+					}
+					$post_name = sanitize_title($post_title);
 					// If we find an attachment, add it to the post
 					if ($attachment) {
 						if (file_exists("attach/thumb-" . $attachment)) {
@@ -352,47 +353,51 @@ function wp_mail_receive() {
 						} 
 					} 
 					if ($flat > 500) {
-						$sql = "INSERT INTO {$wpdb->posts[$wp_id]} (post_author, post_date, post_content, post_title, post_category) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category)";
+						$sql = "INSERT INTO {$wpdb->posts[$wp_id]} (post_author, post_date, post_content, post_title, post_category, post_name) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category, '$post_name')";
 					} else {
-						$sql = "INSERT INTO {$wpdb->posts[$wp_id]} (post_author, post_date, post_content, post_title, post_category, post_lat, post_lon) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category, $flat, $flon)";
+						$sql = "INSERT INTO {$wpdb->posts[$wp_id]} (post_author, post_date, post_content, post_title, post_category, post_name, post_lat, post_lon) VALUES ($post_author, '$post_date', '$content', '$post_title', $post_category, '$post_name', $flat, $flon)";
 					} 
 					$result = $wpdb->query($sql);
-					$post_ID = $wpdb->insert_id;
-					echo "Post ID = $post_ID<br />\n";
-					if (isset($sleep_after_edit) && $sleep_after_edit > 0) {
-						sleep($sleep_after_edit);
-					} 
+					if ($result) {
+						$post_ID = $wpdb->insert_id;
+		
+						if ($post_name == "") {
+							$post_name = "post-".$post_ID;
+							$wpdb->query("UPDATE {$wpdb->posts[$wp_id]} SET post_name='$post_name' WHERE ID = $post_ID");
+						}
+						echo "Post ID = $post_ID<br />\n";
+						$blog_ID = 1;
+						if ($flat < 500) {
+							pingGeoUrl($post_ID);
+						} 
+						// Double check it's not there already
+						$exists = $wpdb->get_row("SELECT * FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID AND category_id = $post_category");
+						if (!$exists && $result) {
+							$wpdb->query("
+							INSERT INTO {$wpdb->post2cat[$wp_id]}
+							(post_id, category_id)
+							VALUES
+							($post_ID, $post_category)
+							");
+						} 
 
-					$blog_ID = 1;
-					if ($flat < 500) {
-						pingGeoUrl($post_ID);
-					} 
-					// Double check it's not there already
-					$exists = $wpdb->get_row("SELECT * FROM {$wpdb->post2cat[$wp_id]} WHERE post_id = $post_ID AND category_id = $post_category");
-					if (!$exists && $result) {
-						$wpdb->query("
-						INSERT INTO {$wpdb->post2cat[$wp_id]}
-						(post_id, category_id)
-						VALUES
-						($post_ID, $post_category)
-						");
-					} 
+						pingWeblogs($blog_ID);
+						pingBlogs($blog_ID);
+						do_action('publish_post', $post_ID);
+						do_action('publish_phone', $post_ID);
+						echo "\n<p><b>Posted title:</b> $post_title<br />\n";
+						echo "<b>Posted content:</b><br /><pre>" . $content . "</pre></p>\n";
 
-					pingWeblogs($blog_ID);
-					pingBlogs($blog_ID);
-//					pingback($content, $post_ID);
-					do_action('publish_post', $post_ID);
-					do_action('publish_phone', $post_ID);
-				} 
-				echo "\n<p><b>Posted title:</b> $post_title<br />\n";
-				echo "<b>Posted content:</b><br /><pre>" . $content . "</pre></p>\n";
-
-				if (!$wp_pop3->delete($iCount)) {
-					echo "<p>Oops " . $wp_pop3->ERROR . "</p></div>\n";
-					$wp_pop3->reset();
-					return;
-				} else {
-					echo "<p>Mission complete, message <strong>$iCount</strong> deleted.</p>\n";
+						if (!$wp_pop3->delete($iCount)) {
+							echo "<p>Oops " . $wp_pop3->ERROR . "</p></div>\n";
+							$wp_pop3->reset();
+							return;
+						} else {
+							echo "<p>Mission complete, message <strong>$iCount</strong> deleted.</p>\n";
+						} 
+					} else {
+						echo "<p><b>Error: </b>Could not insert record to database</p>\n";
+					}
 				} 
 			} else {
 				echo "<p><strong>Level 0 users can\'t post.</strong></p>\n";
