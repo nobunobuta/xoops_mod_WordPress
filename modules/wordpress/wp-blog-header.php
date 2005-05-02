@@ -108,7 +108,7 @@ $wpvarstoreset = array('m','p','posts','w','c', 'cat','withcomments','s','search
 
 for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 	$wpvar = $wpvarstoreset[$i];
-	if (!isset($$wpvar)) {
+	if (empty($$wpvar)) {
 		if (empty($_POST[$wpvar])) {
 			if (empty($_GET[$wpvar]) && empty($path_info[$wpvar])) {
 				$$wpvar = '';
