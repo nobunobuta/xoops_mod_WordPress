@@ -14,6 +14,13 @@ $charset = $_POST['charset'];
 
 require('wp-blog-header.php');
 
+//Anti Trackback SPAM
+$ref = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : (isset($_ENV['HTTP_REFERER']) ? $_ENV['HTTP_REFERER'] : '');
+if ($ref) {
+	// Most of Trackbacks don't have HTTP_REFERER
+	header('Location: ' . get_permalink($tb_id));
+}
+
 if ( (($p != '') && ($p != 'all')) || ($name != '') ) {
     $tb_id = $posts[0]->ID;
 }
