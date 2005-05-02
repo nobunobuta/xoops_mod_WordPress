@@ -279,9 +279,8 @@ if ('' != $category_name) {
 	$tables = ", {$wpdb->post2cat[$wp_id]}, {$wpdb->categories[$wp_id]}";
 	$join = " LEFT JOIN {$wpdb->post2cat[$wp_id]} ON ({$wpdb->posts[$wp_id]}.ID = {$wpdb->post2cat[$wp_id]}.post_id) LEFT JOIN {$wpdb->categories[$wp_id]} ON ({$wpdb->post2cat[$wp_id]}.category_id = {$wpdb->categories[$wp_id]}.cat_ID) ";
 	$whichcat = " AND (category_nicename = '$category_name') ";
+	$cat = $wpdb->get_var("SELECT cat_ID FROM {$wpdb->categories[$wp_id]} WHERE category_nicename = '$category_name'");
     $whichcat .= get_category_children($cat, " OR category_id = ");
-
-		$cat = $wpdb->get_var("SELECT cat_ID FROM {$wpdb->categories[$wp_id]} WHERE category_nicename = '$category_name'");
 }
 
 // author stuff
