@@ -19,17 +19,19 @@ include $spaw_root.'class/lang.class.php';
 include_once '../../../../../mainfile.php';
 //include_once 'header.php';
 
-$theme = empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'];
-$theme_path = '../lib/themes/'.$theme.'/';
+// Security Patch nobunobu (2005/05/02)
+$theme = !empty($_GET['theme'])&&file_exists("{$spaw_root}lib/themes/{$_GET['theme']}/css/dialog.css")?$_GET['theme']:$spaw_default_theme;
+$theme_path = $spaw_dir.'lib/themes/'.$theme.'/';
 
-$l = new SPAW_Lang(empty($_POST['lang'])?$_GET['lang']:$_POST['lang']);
+$l = new SPAW_Lang(htmlspecialchars($_GET['lang']));
 $l->setBlock('image_insert');
+// Security Patch nobunobu end
 
 $lib = isset( $_GET['lib'] ) ? $_GET['lib'] : '' ;
-$lib = isset( $_POST['lib'] ) ? $_POST['lib'] : $lib ;
+$lib = intval(isset( $_POST['lib'] ) ? $_POST['lib'] : $lib );
 
-$zoom = isset( $_POST['zoom'] ) ? $_POST['zoom'] : '0';
-$zoomrate = isset( $_POST['zoomrate'] ) ? $_POST['zoomrate'] : '100';
+$zoom = intval(isset( $_POST['zoom'] ) ? $_POST['zoom'] : '0');
+$zoomrate = intval(isset( $_POST['zoomrate'] ) ? $_POST['zoomrate'] : '100');
 
 
 $value_found = false;

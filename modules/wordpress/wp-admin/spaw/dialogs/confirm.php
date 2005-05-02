@@ -16,14 +16,16 @@
 include '../config/spaw_control.config.php';
 include $spaw_root.'class/lang.class.php';
 
-$theme = empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'];
+// Security Patch nobunobu (2005/05/02)
+$theme = !empty($_GET['theme'])&&file_exists("{$spaw_root}lib/themes/{$_GET['theme']}/css/dialog.css")?$_GET['theme']:$spaw_default_theme;
 $theme_path = $spaw_dir.'lib/themes/'.$theme.'/';
 
 $block = $_GET['block'];
 $message = $_GET['message'];
 
-$l = new SPAW_Lang($_GET['lang']);
+$l = new SPAW_Lang(htmlspecialchars($_GET['lang']));
 $l->setBlock($block);
+// Security Patch nobunobu end
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 
