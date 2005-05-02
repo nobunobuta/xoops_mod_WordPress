@@ -348,63 +348,69 @@ function list_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_orde
 	$thelist = "";
 	
 	foreach ($categories as $category) {
-		if ((intval($hide_empty) == 0 || isset($category_posts["$category->cat_ID"])) && (!$hierarchical || $category->category_parent == $child_of) && ($children || $category->category_parent == 0)) {
-			$num_found++;
-			$link = '<a href="'.get_category_link(0, $category->cat_ID, $category->category_nicename).'" ';
-			if ($use_desc_for_title == 0 || empty($category->category_description)) {
-				$link .= 'title="'. sprintf("View all posts filed under %s", htmlspecialchars($category->cat_name)) . '"';
-			} else {
-				$link .= 'title="' . htmlspecialchars($category->category_description) . '"';
+		$child_list = '';
+		if ((!$hierarchical || $category->category_parent == $child_of) && ($children || $category->category_parent == 0)) {
+			if ($hierarchical && $children) {
+				$child_list = list_cats($optionall, $all, $sort_column, $sort_order, $file, $list, $optiondates, $optioncount, $hide_empty, $use_desc_for_title, $hierarchical, $category->cat_ID, $categories, 1, $feed, $feed_image, $exclude, $hierarchical);
 			}
-			$link .= '>';
-			$link .= apply_filters('list_cats', $category->cat_name).'</a>';
-
-			if ( (! empty($feed_image)) || (! empty($feed)) ) {
-				
-				$link .= ' ';
-
-				if (empty($feed_image)) {
-					$link .= '(';
-				}
-
-				$link .= '<a href="' . get_category_rss_link(0, $category->cat_ID, $category->category_nicename)  . '"';
-
-				if ( !empty($feed) ) {
-					$title =  ' title="' . $feed . '"';
-					$alt = ' alt="' . $feed . '"';
-					$name = $feed;
-					$link .= $title;
-				}
-
-				$link .= '>';
-
-				if (! empty($feed_image)) {
-					$link .= "<img src=\"$feed_image\" border=\"0\"$alt$title" . ' />';
+			if (intval($hide_empty) == 0 || isset($category_posts["$category->cat_ID"]) || $child_list) {
+				$num_found++;
+				$link = '<a href="'.get_category_link(0, $category->cat_ID, $category->category_nicename).'" ';
+				if ($use_desc_for_title == 0 || empty($category->category_description)) {
+					$link .= 'title="'. sprintf("View all posts filed under %s", htmlspecialchars($category->cat_name)) . '"';
 				} else {
-					$link .= $name;
+					$link .= 'title="' . htmlspecialchars($category->category_description) . '"';
 				}
-				
-				$link .= '</a>';
+				$link .= '>';
+				$link .= apply_filters('list_cats', $category->cat_name).'</a>';
 
-				if (empty($feed_image)) {
-					$link .= ')';
+				if ( (! empty($feed_image)) || (! empty($feed)) ) {
+					
+					$link .= ' ';
+
+					if (empty($feed_image)) {
+						$link .= '(';
+					}
+
+					$link .= '<a href="' . get_category_rss_link(0, $category->cat_ID, $category->category_nicename)  . '"';
+
+					if ( !empty($feed) ) {
+						$title =  ' title="' . $feed . '"';
+						$alt = ' alt="' . $feed . '"';
+						$name = $feed;
+						$link .= $title;
+					}
+
+					$link .= '>';
+
+					if (! empty($feed_image)) {
+						$link .= "<img src=\"$feed_image\" border=\"0\"$alt$title" . ' />';
+					} else {
+						$link .= $name;
+					}
+					
+					$link .= '</a>';
+
+					if (empty($feed_image)) {
+						$link .= ')';
+					}
 				}
-			}
 
-			if (intval($optioncount) == 1) {
-				$link .= ' ('.intval($category_posts["$category->cat_ID"]).')';
+				if (intval($optioncount) == 1) {
+					$link .= ' ('.intval($category_posts["$category->cat_ID"]).')';
+				}
+				if (intval($optiondates) == 1) {
+					$link .= ' '.$category_lastday["$category->cat_ID"].'/'.$category_lastmonth["$category->cat_ID"];
+				}
+				if ($list) {
+					$thelist .= "\t<li>$link\n";
+				} else {
+					$thelist .= "\t$link<br />\n";
+				}
+				if ($hierarchical && $children) $thelist .= $child_list;
+				if ($list) $thelist .= "</li>\n";
 			}
-			if (intval($optiondates) == 1) {
-				$link .= ' '.$category_lastday["$category->cat_ID"].'/'.$category_lastmonth["$category->cat_ID"];
-			}
-			if ($list) {
-				$thelist .= "\t<li>$link\n";
-			} else {
-				$thelist .= "\t$link<br />\n";
-			}
-			if ($hierarchical && $children) $thelist .= list_cats($optionall, $all, $sort_column, $sort_order, $file, $list, $optiondates, $optioncount, $hide_empty, $use_desc_for_title, $hierarchical, $category->cat_ID, $categories, 1, $feed, $feed_image, $exclude, $hierarchical);
-			if ($list) $thelist .= "</li>\n";
-			}
+		}
 	}
 	if (!$num_found && !$child_of){
 		if ($list) {
