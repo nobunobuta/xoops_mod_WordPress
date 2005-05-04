@@ -57,7 +57,7 @@ See documentation.html
 
 Credits
 =======
-SPAW Editor copyright © 2003-2004 by Solmetra. All rights reserved.
+SPAW Editor copyright ôþ2003-2004 by Solmetra. All rights reserved.
 
 - Programming, documentation, "classic" theme, English and 
   Russian language files - Alan Mendelevich (alan@solmetra.com); 
@@ -65,7 +65,7 @@ SPAW Editor copyright © 2003-2004 by Solmetra. All rights reserved.
 - Lithuanian translation - Martynas Majeris (martynas@solmetra.com),
                            Saulius Okunevicius (saulius@solmetra.lt); 
 - German translation - Simon Schmitz (schmitz@unitedfuor.com), 
-                       Matthias Höschele (matthias.hoeschele@gmx.net); 
+                       Matthias Hôþchele (matthias.hoeschele@gmx.net); 
 - Dutch translation: Koen Koppens (k.koppens@home.nl); 
 - Italian translation: Omar Di Marzio (omar@networking.it);
 - French translation: Laurent Fasnacht (lf@o-t.ch);
@@ -73,10 +73,10 @@ SPAW Editor copyright © 2003-2004 by Solmetra. All rights reserved.
 - Turkish translation: Zeki Erkmen (erkmen@t-online.de);
 - Chinese translation: (aman@wealthgrp.com.tw);
 - Czech translation: BrM (BrM@bridlicna.cz);
-- Brazilian Portuguese translation: Fernando José Karl (fernandokarl@superig.com.br);
+- Brazilian Portuguese translation: Fernando JosôþKarl (fernandokarl@superig.com.br);
 - Swedish translation: Tomas Jogin (tomas@jogin.com);
 - Danish translation: Morten Skyt Eriksen (xgd_bitnissen@hotmail.com);
-- Hungarian translation: Bagoly Sándor Zsigmond (sasa@networldtrading.com);
+- Hungarian translation: Bagoly Sôþdor Zsigmond (sasa@networldtrading.com);
 - Bulgarian translation: Atanas Tchobanov (atanas@webdressy.com);
 - Polish translation: Jacek Czekala (jacek_czekala@post.pl);
 - Finish translation: Teemu Joensuu (teemu.joensuusaunalahti.fi);
@@ -90,5 +90,10 @@ SPAW Editor copyright © 2003-2004 by Solmetra. All rights reserved.
 - Portuguese translation: Ricardo Vidal 
 - Catalan translation: Jordi Cato 
 - Thai translation: Chanon Mee-iam
+- Vietnamese translation: Nguyen Viet Son
+- Croatian translation: dragan@pfri.hr
+- Ukrainian translation: Alexandr Kaplun
+- Korean translation: zionweb@hotmail.com
+
 
 

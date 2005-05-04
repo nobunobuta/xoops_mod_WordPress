@@ -38,7 +38,7 @@ $spaw_lang_data = array(
     'title' => 'Wiederherstellen'
   ),
   'hyperlink' => array(
-    'title' => 'Hyperlink'
+    'title' => 'Hyperlink einfügen'
   ),
   'internal_link' => array(                //Doesn't appear in Any lang-file?!? (dzy) ;-)
     'title' => 'Interner Link'
@@ -68,14 +68,14 @@ $spaw_lang_data = array(
     'source' => 'Quelle',
     'alt' => 'Alternativer Text',
     'align' => 'Ausrichtung',
-    'left' => 'Links',
-    'right' => 'Rechts',
+    'left' => 'Linksbündig',
+    'right' => 'Rechtsbündig',
     'top' => 'Oben',
     'middle' => 'Mitte',
     'bottom' => 'Unten',
     'absmiddle' => 'Absolute Mitte',
     'texttop' => 'TextTop',
-    'baseline' => 'Grundlinie',
+    'baseline' => 'An Grundlinie ausrichten',
     'width' => 'Breite',
     'height' => 'Höhe',
     'border' => 'Rand',
@@ -92,7 +92,7 @@ $spaw_lang_data = array(
     'title' => 'Horizontale Linie'
   ),
   'table_create' => array(
-    'title' => 'Tabelle erstellen'
+    'title' => 'Tabelle einfügen'
   ),
   'table_prop' => array(
     'title' => 'Tabelleneigenschaften',
@@ -155,28 +155,28 @@ $spaw_lang_data = array(
     'title' => 'Spalte löschen'
   ),
   'table_cell_merge_right' => array(
-    'title' => 'Zelle mit rechts daneben liegender verbinden.'
+    'title' => 'Zelle mit rechts daneben liegender verbinden'
   ),
   'table_cell_merge_down' => array(
-    'title' => 'Zelle mit darunter liegender verbinden.'
+    'title' => 'Zelle mit darunter liegender verbinden'
   ),
   'table_cell_split_horizontal' => array(
-    'title' => 'Zelle horizontal aufteilen'
+    'title' => 'Zelle horizontal teilen'
   ),
   'table_cell_split_vertical' => array(
-    'title' => 'Zelle vertikal aufteilen'
+    'title' => 'Zelle vertikal teilen'
   ),
   'style' => array(
     'title' => 'Style'
   ),
   'font' => array(
-    'title' => 'Schrift'
+    'title' => 'Schriftart'
   ),
   'fontsize' => array(
-    'title' => 'Grösse'
+    'title' => 'Schriftgrad'
   ),
   'paragraph' => array(
-    'title' => 'Punkt'
+    'title' => 'Formatvorlage'
   ),
   'bold' => array(
     'title' => 'Fett'
@@ -191,25 +191,25 @@ $spaw_lang_data = array(
     'title' => 'Nummerierung'
   ),
   'bulleted_list' => array(
-    'title' => 'Aufzählung'
+    'title' => 'Aufzählungszeichen'
   ),
   'indent' => array(
-    'title' => 'Einzug vergrössern'
+    'title' => 'Einzug vergrößern'
   ),
   'unindent' => array(
     'title' => 'Einzug verkleinern'
   ),
   'left' => array(
-    'title' => 'Links'
+    'title' => 'Linksbündig'
   ),
   'center' => array(
     'title' => 'Zentriert'
   ),
   'right' => array(
-    'title' => 'Rechts'
+    'title' => 'Rechtsbündig'
   ),
   'justify' => array(     // <- 1.0.5
-    'title' => 'Strecken'
+    'title' => 'Blocksatz'
   ),
   'fore_color' => array(
     'title' => 'Schriftfarbe'
@@ -253,10 +253,10 @@ $spaw_lang_data = array(
     'cancel' => 'Abbrechen',
   ),
   'hyperlink_targets' => array( // <=== new 1.0.5
-  	'_self' => 'Eigenes Frame (_self)',
+  	'_self' => 'Eigenes Fenster (_self)',
 	'_blank' => 'Neues Fenster (_blank)',
-	'_top' => 'Oberer Frame (_top)',
-	'_parent' => 'Parent-Frame (_parent)'
+	'_top' => 'Hauptfenster (_top)',
+	'_parent' => 'Aufrufendes Fenster (_parent)'
   ),
   'table_row_prop' => array(
     'title' => 'Zeileneigenschaften',
@@ -312,6 +312,12 @@ $spaw_lang_data = array(
   ),
   'zoom' => array(
     'title' => 'Zoom',
+  ),
+  'subscript' => array( // <=== new 1.0.7
+    'title' => 'Tiefgestellt',
+  ),
+  'superscript' => array( // <=== new 1.0.7
+    'title' => 'Hochgestellt',
   ),
 );
 ?>

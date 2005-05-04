@@ -44,15 +44,17 @@ $spaw_lang_data = array(
     'select' => 'Selecionar',
     'cancel' => 'Cancelar',
     'library' => 'Biblioteca',
-    'preview' => 'Preview',
+    'preview' => 'Prévia',
     'images' => 'Imagens',
+    'delete'=> 'Apagar',
     'upload' => 'Enviar imagem',
-    'upload_button' => 'Upload',
+    'upload_button' => 'Enviar',
     'error' => 'Erro',
     'error_no_image' => 'Favor selecionar uma imagem',
     'error_uploading' => 'Ocorreu um erro no envio do arquivo. Favor tentar novamente',
     'error_wrong_type' => 'Tipo de arquivo de imagem inválido',
-    'error_no_dir' => 'A bilbioteca não existe fisicamente',
+    'error_no_dir' => 'A biblioteca não existe no servidor',
+	'error_cant_delete' => 'Falha ao apagar', // new 1.0.5
   ),
   'image_prop' => array(
     'title' => 'Propriedades da imagem',
@@ -66,9 +68,9 @@ $spaw_lang_data = array(
     'top' => 'superior',
     'middle' => 'meio',
     'bottom' => 'inferior',
-    'absmiddle' => 'absmiddle',
-    'texttop' => 'texttop',
-    'baseline' => 'baseline',
+    'absmiddle' => 'meio absoluto',
+    'texttop' => 'totpo do texto',
+    'baseline' => 'linha-base',
     'width' => 'Comprimento',
     'height' => 'Altura',
     'border' => 'Borda',
@@ -92,6 +94,7 @@ $spaw_lang_data = array(
     'ok' => '   OK   ',
     'cancel' => 'Cancelar',
     'rows' => 'Linhas',
+    'css_class' => 'Classe CSS', // <=== new 1.0.6
     'columns' => 'Colunas',
     'width' => 'Comprimento',
     'height' => 'Altura',
@@ -99,15 +102,16 @@ $spaw_lang_data = array(
     'pixels' => 'pixels',
     'cellpadding' => 'Recuo células',
     'cellspacing' => 'Espaço células',
+    'background' => 'Imagem de fundo', // <=== new 1.0.6
     'bg_color' => 'Cor de Fundo',
     'error' => 'Erro',
     'error_rows_nan' => 'Linhas não é um número',
     'error_columns_nan' => 'Colunas não é um número',
     'error_width_nan' => 'Comprimento não é um número',
-    'error_height_nan' => 'Height is not a number',
-    'error_border_nan' => 'Border is not a number',
-    'error_cellpadding_nan' => 'Cell padding is not a number',
-    'error_cellspacing_nan' => 'Cell spacing is not a number',
+    'error_height_nan' => 'Altura não é um número',
+    'error_border_nan' => 'Borda não é um número',
+    'error_cellpadding_nan' => 'Espaço da cCélula não é um número',
+    'error_cellspacing_nan' => 'Espáco Entre Céclulas não é um número',
   ),
   'table_cell_prop' => array(
     'title' => 'Propriedades da célula',
@@ -118,6 +122,7 @@ $spaw_lang_data = array(
     'css_class' => 'Classe CSS',
     'no_wrap' => 'Sem quebras',
     'bg_color' => 'Cor de fundo',
+    'background' => 'Imagem de fundo', // <=== new 1.0.6
     'ok' => '   OK   ',
     'cancel' => 'Cancelar',
     'left' => 'Esquerda',
@@ -126,7 +131,7 @@ $spaw_lang_data = array(
     'top' => 'Superior',
     'middle' => 'Meio',
     'bottom' => 'Inferior',
-    'baseline' => 'Baseline',
+    'baseline' => 'Linha-base',
     'error' => 'Erro',
     'error_width_nan' => 'Comprimento não é um número',
     'error_height_nan' => 'Altura não é um número',
@@ -198,6 +203,9 @@ $spaw_lang_data = array(
   'right' => array(
     'title' => 'Direita'
   ),
+    'justify' => array(
+    'title' => 'Justificado'
+  ),
   'fore_color' => array(
     'title' => 'Realçar'
   ),
@@ -218,22 +226,36 @@ $spaw_lang_data = array(
   // <<<<<<<<<< NEW >>>>>>>>>>>>>>>
   'cleanup' => array(
     'title' => 'Limpeza HTML (remover estilos)',
-    'confirm' => 'Realizando esta ação vai remover todos estilos, fontes e tags inúteis do conteúdo. Alguma ou toda formatação pode ser perdida.',
+    'confirm' => 'Esta função remove todos os estilos, fontes e códigos inúteis do conteúdo. Alguma ou toda formatação pode ser perdida.',
     'ok' => '   OK   ',
     'cancel' => 'Cancelar',
   ),
   'toggle_borders' => array(
-    'title' => 'Toggle borders',
+    'title' => 'Inverter bordas',
   ),
   'hyperlink' => array(
-    'title' => 'Hiperlink',
+    'title' => 'Link',
     'url' => 'URL',
     'name' => 'Nome',
     'target' => 'Alvo',
     'title_attr' => 'Título',
+	'a_type' => 'Tipo', // <=== new 1.0.6
+	'type_link' => 'Link', // <=== new 1.0.6
+	'type_anchor' => 'Âncora', // <=== new 1.0.6
+	'type_link2anchor' => 'Link para âncora', // <=== new 1.0.6
+	'anchors' => 'Ancoras', // <=== new 1.0.6
     'ok' => '   OK   ',
     'cancel' => 'Cancelar',
   ),
+  
+    'hyperlink_targets' => array( // <=== new 1.0.5
+  	'_self' => 'mesma janela (_self)',
+	'_blank' => 'nova janela (_blank)',
+	'_top' => 'janela principal(_top)',
+	'_parent' => 'janela paterna (_parent)'
+  ),
+  
+  
   'table_row_prop' => array(
     'title' => 'Propriedades da linha',
     'horizontal_align' => 'Alinhamento horizontal',
@@ -249,7 +271,7 @@ $spaw_lang_data = array(
     'top' => 'Topo',
     'middle' => 'Meio',
     'bottom' => 'Inferior',
-    'baseline' => 'Linha base',
+    'baseline' => 'Linha-base',
   ),
   'symbols' => array(
     'title' => 'Caracteres especiais',
@@ -266,8 +288,8 @@ $spaw_lang_data = array(
     'background' => 'Imagem de Fundo',
     'bgcolor' => 'Cor de Fundo',
     'text' => 'Cor texto',
-    'link' => 'Cor link',
-    'vlink' => 'Cor link visitados',
+    'link' => 'Cor links',
+    'vlink' => 'Cor links visitados',
     'alink' => 'Cor link ativo',
     'leftmargin' => 'Margem esquerda',
     'topmargin' => 'Margem topo',
@@ -276,13 +298,19 @@ $spaw_lang_data = array(
     'cancel' => 'Cancelar',
   ),
   'preview' => array(
-    'title' => 'Preview',
+    'title' => 'Prévia',
   ),
   'image_popup' => array(
     'title' => 'Imagem popup',
   ),
   'zoom' => array(
     'title' => 'Zoom',
+  ),
+  'subscript' => array( // <=== new 1.0.7
+    'title' => 'Sobscrito',
+  ),
+  'superscript' => array( // <=== new 1.0.7
+    'title' => 'Sobrescrito',
   ),
 );
 ?>

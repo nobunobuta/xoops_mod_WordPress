@@ -16,13 +16,13 @@
 include '../config/spaw_control.config.php';
 include $spaw_root.'class/lang.class.php';
 
-$theme = empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'];
+$theme = htmlspecialchars(empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'],ENT_QUOTES);
 $theme_path = $spaw_dir.'lib/themes/'.$theme.'/';
 
 $block = $_GET['block'];
 $message = $_GET['message'];
 
-$l = new SPAW_Lang($_GET['lang']);
+$l = new SPAW_Lang(htmlspecialchars($_GET['lang'],ENT_QUOTES));
 $l->setBlock($block);
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">

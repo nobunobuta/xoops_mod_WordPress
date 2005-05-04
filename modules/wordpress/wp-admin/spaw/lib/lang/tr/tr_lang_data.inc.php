@@ -2,15 +2,15 @@
 // =========================================================
 // SPAW PHP WYSIWYG editor control
 // =========================================================
-// German language file
+// Turkish language file
 // =========================================================
 // Developed: Alan Mendelevich, alan@solmetra.lt
-// Turkish translation: Zeki Erkmen, erkmen@t-online.de
+// Turkish translation: Zeki Erkmen, zerkmen@erdoweb.com
 // Copyright: Solmetra (c)2003 All rights reserved.
 // ---------------------------------------------------------
 //                                www.solmetra.com
 // =========================================================
-// v.1.0, 2003-04-10
+// 1.0.7, 2004-12-09
 // =========================================================
 
 // charset to be used in dialogs
@@ -41,18 +41,20 @@ $spaw_lang_data = array(
   ),
   'image_insert' => array(
     'title' => 'Resim ekle',
-    'select' => 'Seç',
+    'select' => 'Resmi al',
+	'delete' => 'Resmi sil', // new 1.0.5
     'cancel' => 'İptal',
     'library' => 'Kütüphane',
     'preview' => 'Ön izle',
     'images' => 'Resim',
     'upload' => 'Resim yükle',
     'upload_button' => 'Yükle',
-    'error' => 'Fehler',
+    'error' => 'Hata',
     'error_no_image' => 'Lütfen bir resim seçiniz',
-    'error_uploading' => 'Dosya yükleme işleminde bir hata oluştu. Lütfen biraz sonra tekrar deneyiniz.',
-    'error_wrong_type' => 'Yanlış resim tipi',
-    'error_no_dir' => 'Kütüphane fiziksel olarak mevcut',
+    'error_uploading' => 'Resim yükleme işleminde bir hata oluştu. Lütfen biraz sonra tekrar deneyiniz.',
+    'error_wrong_type' => 'Resim türü yanlış',
+    'error_no_dir' => 'Dizinde kütüphane bulunmuyor',
+	'error_cant_delete' => 'Silme işleminde hata oluştu', // new 1.0.5
   ),
   'image_prop' => array(
     'title' => 'Resim ayarları',
@@ -93,6 +95,7 @@ $spaw_lang_data = array(
     'cancel' => 'İptal et',
     'rows' => 'Satırlar',
     'columns' => 'Haneler',
+	'css_class' => 'CSS class', // <=== new 1.0.6
     'width' => 'Genişlik',
     'height' => 'Yükseklik',
     'border' => 'Çerceve',
@@ -100,6 +103,7 @@ $spaw_lang_data = array(
     'cellpadding' => 'Hücreyi dolumu',
     'cellspacing' => 'Hücre mesafesi',
     'bg_color' => 'Arka ekran rengi',
+	'background' => 'Arka ekran resmi', // <=== new 1.0.6
     'error' => 'Hata',
     'error_rows_nan' => 'Satır rakam değil',
     'error_columns_nan' => 'Hane rakam değil',
@@ -118,6 +122,7 @@ $spaw_lang_data = array(
     'css_class' => 'CSS sınıfı',
     'no_wrap' => 'Paketsiz',
     'bg_color' => 'Arka ekran rengi',
+	'background' => 'Arka ekran resmi', // <=== new 1.0.6
     'ok' => '   OK   ',
     'cancel' => 'İptal et',
     'left' => 'Sol',
@@ -230,8 +235,19 @@ $spaw_lang_data = array(
     'name' => 'Adı',
     'target' => 'Hedef',
     'title_attr' => 'Başlık',
+	'a_type' => 'Tip', // <=== new 1.0.6
+	'type_link' => 'Link', // <=== new 1.0.6
+	'type_anchor' => 'Çapa', // <=== new 1.0.6
+	'type_link2anchor' => 'Çapaya link', // <=== new 1.0.6
+	'anchors' => 'Anchors', // <=== new 1.0.6
     'ok' => '   OK   ',
     'cancel' => 'İptal',
+  ),
+  'hyperlink_targets' => array( // <=== new 1.0.5
+  	'_self' => 'kendi penceresi (_self)',
+	'_blank' => 'boş yeni pencerede (_blank)',
+	'_top' => 'bir üst pencerede (_top)',
+	'_parent' => 'aynı pencerede (_parent)'
   ),
   'table_row_prop' => array(
     'title' => 'Satır özellikleri',
@@ -283,6 +299,11 @@ $spaw_lang_data = array(
   'zoom' => array(
     'title' => 'Büyülteç',
   ),
+  'subscript' => array( // <=== new 1.0.7
+    'title' => 'Subscript',
+  ),
+  'superscript' => array( // <=== new 1.0.7
+    'title' => 'Superscript',
+  ),
 );
 ?>
-

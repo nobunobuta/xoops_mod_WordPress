@@ -36,9 +36,6 @@ $spaw_lang_data = array(
   'redo' => array(
     'title' => 'やり直す'
   ),
-  'hyperlink' => array(
-    'title' => 'ハイパーリンク'
-  ),
   'image_insert' => array(
     'title' => 'イメージの挿入',
     'select' => ' 選択する ',

@@ -5,12 +5,13 @@
 // Hebrew language file
 // ================================================
 // Developed: Alan Mendelevich, alan@solmetra.lt
-// Translation to Hebrew: Yaron Gonen (lord_gino@yahoo.com)
+// Original Translation to Hebrew (v.1.0): Yaron Gonen (lord_gino@yahoo.com)
+// Additional Translation to Hebrew (v.1.1): Boris Aranovich (beer_nomaed@hotmail.com)
 // Copyright: Solmetra (c)2003 All rights reserved.
 // ------------------------------------------------
 //                                www.solmetra.com
 // ================================================
-// v.1.0, 2003-03-20
+// v.1.1, 2005-03-20
 // ================================================
 
 // charset to be used in dialogs
@@ -61,7 +62,7 @@ $spaw_lang_data = array(
   ),
   'image_prop' => array(
     'title' => 'אפשרויות תמונה',
-    'ok' => '  אוקי  ',
+    'ok' => '  המשך  ',
     'cancel' => '  בטל  ',
     'source' => 'מקור',
     'alt' => 'טקסט אלטרנטיבי',
@@ -94,7 +95,7 @@ $spaw_lang_data = array(
   ),
   'table_prop' => array(
     'title' => 'אפשרויות טבלה',
-    'ok' => '  אוקי  ',
+    'ok' => '  המשך  ',
     'cancel' => '  בטל  ',
     'rows' => 'שורות',
     'columns' => 'עמודות',
@@ -126,7 +127,7 @@ $spaw_lang_data = array(
     'no_wrap' => 'ללא שבירת שורות',
     'bg_color' => 'צבע רקע',
     'background' => 'תמונת רקע', // <=== new 1.0.6
-    'ok' => '  אוקי  ',
+    'ok' => '  המשך  ',
     'cancel' => '  בטל  ',
     'left' => 'שמאל',
     'center' => 'מרכז',
@@ -220,14 +221,14 @@ $spaw_lang_data = array(
   ),
   'colorpicker' => array(
     'title' => 'בחר צבע',
-    'ok' => '  אוקי  ',
+    'ok' => '  המשך  ',
     'cancel' => '  בטל  ',
   ),
   // <<<<<<<<< NEW >>>>>>>>>
   'cleanup' => array(
     'title' => 'ניקוי Html (הסר סגנונות)',
     'confirm' => 'ביצוע פעולה זו יסיר את כל הסגנונות, גופנים וכל התאגים הלא שימושיים ממסמך זה. חלק או כל העיצובים יאבדו.',
-    'ok' => '  אוקי  ',
+    'ok' => '  המשך  ',
     'cancel' => '  בטל  ',
   ),
   'toggle_borders' => array(
@@ -244,7 +245,7 @@ $spaw_lang_data = array(
 	'type_anchor' => 'עוגן', // <=== new 1.0.6
 	'type_link2anchor' => 'קישור לעוגן', // <=== new 1.0.6
 	'anchors' => 'עוגנים', // <=== new 1.0.6
-    'ok' => '  אוקי  ',
+    'ok' => '  המשך  ',
     'cancel' => '  בטל  ',
   ),
   'hyperlink_targets' => array( // <=== new 1.0.5
@@ -260,7 +261,7 @@ $spaw_lang_data = array(
     'css_class' => 'CSS class',
     'no_wrap' => 'ללא שבירת שורות',
     'bg_color' => 'צבע רקע',
-    'ok' => '  אוקי  ',
+    'ok' => '  המשך  ',
     'cancel' => '  בטל  ',
     'left' => 'שמאל',
     'center' => 'מרכז',
@@ -272,7 +273,7 @@ $spaw_lang_data = array(
   ),
   'symbols' => array(
     'title' => 'תווים מיוחדים',
-    'ok' => '  אוקי  ',
+    'ok' => '  המשך  ',
     'cancel' => '  בטל  ',
   ),
   'templates' => array(
@@ -291,7 +292,7 @@ $spaw_lang_data = array(
     'leftmargin' => 'שוליים שמאליים',
     'topmargin' => 'שוליים עליונים',
     'css_class' => 'CSS class',
-    'ok' => '  אוקי  ',
+    'ok' => '  המשך  ',
     'cancel' => '  בטל  ',
   ),
   'preview' => array(
@@ -302,6 +303,13 @@ $spaw_lang_data = array(
   ),
   'zoom' => array(
     'title' => 'זום',
+  ),
+  /***** New for 1.0.7, added by Boris A. *****/
+  'subscript' => array( // <=== new 1.0.7
+    'title' => 'כתב תחתון',
+  ),
+  'superscript' => array( // <=== new 1.0.7
+    'title' => 'כתב עליון',
   ),
 );
 ?>

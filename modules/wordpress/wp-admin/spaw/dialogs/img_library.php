@@ -21,19 +21,20 @@ include $spaw_root.'class/util.class.php';
 include $spaw_root.'class/lang.class.php';
 //include_once 'header.php';
 
-$theme = empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'];
+$theme = htmlspecialchars(empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'],ENT_QUOTES);
 $theme_path = $spaw_dir.'lib/themes/'.$theme.'/';
 
-$l = new SPAW_Lang(empty($_POST['lang'])?$_GET['lang']:$_POST['lang']);
+$l = new SPAW_Lang(htmlspecialchars(empty($_POST['lang'])?$_GET['lang']:$_POST['lang'],ENT_QUOTES));
 $l->setBlock('image_insert');
 
 $request_uri = urldecode(empty($_POST['request_uri'])?(empty($_GET['request_uri'])?'':$_GET['request_uri']):$_POST['request_uri']);
 
 $lib = isset( $_GET['lib'] ) ? $_GET['lib'] : '' ;
 $lib = isset( $_POST['lib'] ) ? $_POST['lib'] : $lib ;
+$lib = intval($lib)
 
-$zoom = isset( $_POST['zoom'] ) ? $_POST['zoom'] : '0';
-$zoomrate = isset( $_POST['zoomrate'] ) ? $_POST['zoomrate'] : '100';
+$zoom = isset( $_POST['zoom'] ) ? intval($_POST['zoom']) : '0';
+$zoomrate = isset( $_POST['zoomrate'] ) ? intval($_POST['zoomrate']) : '100';
 
 // if set include file specified in $spaw_imglib_include
 if (!empty($spaw_imglib_include))
@@ -51,7 +52,6 @@ function is_array_value($value, $key, $_imglib)
   if (in_array($_imglib,$value)){
     $value_found=true;
     $lib = $spaw_imglibs[$key]['catID'];
-    var_dump($key);
   }
 }
 //array_walk($spaw_imglibs, 'is_array_value',$imglib);
@@ -63,8 +63,7 @@ foreach ($spaw_imglibs as $spawimg){
         $libtype =  $spawimg['type'];
         $value_found=true;
         break;
-        }
-
+    }
 }
 if (!$value_found || empty($lib))
 {
@@ -141,7 +140,7 @@ if ($spaw_img_delete_allowed && isset($_POST['lib_action'])
         window.close();
         <?php
         if (!empty($_GET['callback']))
-          echo "opener.".$_GET['callback']."('".$_GET['editor']."',this);\n";
+          echo "opener.".urlencode($_GET['callback'])."('".htmlspecialchars($_GET['editor'],ENT_QUOTES)."',this);\n";
         ?>
       } else {
         alert('<?php echo $l->m('error').': '.$l->m('error_no_image')?>');

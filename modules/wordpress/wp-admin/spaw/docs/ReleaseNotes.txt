@@ -1,19 +1,17 @@
 SPAW Editor PHP Edition
-version 1.1 Beta
+version 1.1 RC1
 Release Notes
 
 Thanks to everyone who downloaded, tried and supported SPAW Editor!
 
-OK. Here's long awaited Gecko compatible version of SPAW Editor PHP Edition!
-As you may have noticed it's named 1.1 Beta. This means it wasn't thoroughly
-tested and some features are still missing. So far it was tested only on
-Firefox 1.0 on Windows and it seems to work ok. It should work fine on IE
-cause we tried not mess with IE code alot.
+Here is updated Gecko compatible release of SPAW Editor PHP Edition. Now
+it should be quite stable (at least with the latest version of Firefox).
+Active toolbar now works in Gecko and lots of language files have been
+added or updated.
 
 Here's the list of know issues and limitations in Gecko implementation. Please,
 don't report these as bugs!
 
-- Active toolbar is not implemented, yet
 - Cut, Copy and Paste function aren't available cause they are disabled in
   Mozilla for security reasons and it takes editing config files to enable them
 - Word cleanup is not implemented, yet
@@ -29,7 +27,6 @@ don't report these as bugs!
 - You need to change paragraph values in config file to <H1>, <H2>, etc. in 
   order for paragraphs to work in Gecko. It will also work in IE but wont
   be reflected in active toolbar
-- Sometimes it is necessary to reload the page to make it work
 - Documentation is not updated
 
 

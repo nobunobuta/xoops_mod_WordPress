@@ -6,11 +6,11 @@
 // ================================================
 // Developed: Alan Mendelevich, alan@solmetra.lt
 // Copyright: Solmetra (c)2003 All rights reserved.
-// Polish translation: Jacek Czekala (jacek_czekala@post.pl)
 // ------------------------------------------------
 //                                www.solmetra.com
 // ================================================
-// v.1.0, 2003-06-28
+// polish bersion by Slawomir Jasinski slav123@gmail.com
+// v.1.0.7, 2004-10-13
 // ================================================
 
 // charset to be used in dialogs
@@ -36,12 +36,10 @@ $spaw_lang_data = array(
   'redo' => array(
     'title' => 'Ponów'
   ),
-  'hyperlink' => array(
-    'title' => 'Odsy³acz'
-  ),
   'image_insert' => array(
     'title' => 'Wstaw obrazek',
     'select' => 'Wybierz',
+	'delete' => 'Usuñ', // new 1.0.5
     'cancel' => 'Anuluj',
     'library' => 'Biblioteka',
     'preview' => 'Podgl±d',
@@ -53,6 +51,7 @@ $spaw_lang_data = array(
     'error_uploading' => 'Przy wysy³aniu obrazka wyst±pi³ b³±d. Proszê spróbowaæ pó¼niej.',
     'error_wrong_type' => 'Niew³a¶ciwy typ pliku obrazka',
     'error_no_dir' => 'Brak biblioteki obrazków',
+	'error_cant_delete' => 'B³±d usuwania', // new 1.0.5
   ),
   'image_prop' => array(
     'title' => 'W³a¶ciwo¶ci obrazka',
@@ -93,6 +92,7 @@ $spaw_lang_data = array(
     'cancel' => 'Anuluj',
     'rows' => 'Liczba wierszy',
     'columns' => 'Liczba kolumn',
+    'css_class' => 'Styl CSS', // <=== new 1.0.6
     'width' => 'Szeroko¶æ',
     'height' => 'Wysoko¶æ',
     'border' => 'Obramowanie',
@@ -100,6 +100,7 @@ $spaw_lang_data = array(
     'cellpadding' => 'Margines komórki',
     'cellspacing' => 'Obramowanie komórki',
     'bg_color' => 'Kolor t³a',
+    'background' => 'Obrazek t³a', // <=== new 1.0.6
     'error' => 'B³±d',
     'error_rows_nan' => 'Liczba wierszy nie jest liczb±',
     'error_columns_nan' => 'Liczba kolumn nie jest liczb±',
@@ -118,6 +119,7 @@ $spaw_lang_data = array(
     'css_class' => 'styl CSS',
     'no_wrap' => 'Blokuj dzielenie akapitu',
     'bg_color' => 'Kolor t³a',
+    'background' => 'Obrazek t³a', // <=== new 1.0.6
     'ok' => '   OK   ',
     'cancel' => 'Anuluj',
     'left' => 'Do lewej',
@@ -229,8 +231,19 @@ $spaw_lang_data = array(
     'name' => 'Nazwa',
     'target' => 'Okno docelowe',
     'title_attr' => 'Tytu³',
+	'a_type' => 'Typ', // <=== new 1.0.6
+	'type_link' => 'Link', // <=== new 1.0.6
+	'type_anchor' => 'Kotwica', // <=== new 1.0.6
+	'type_link2anchor' => 'Adres kotwicy', // <=== new 1.0.6
+    'anchors' => 'Kotwice', // <=== new 1.0.6
     'ok' => '   OK   ',
     'cancel' => 'Anuluj',
+  ),
+  'hyperlink_targets' => array( // <=== new 1.0.5
+  	'_self' => 'to samo (_self)',
+	'_blank' => 'nowe okno (_blank)',
+	'_top' => 'górna ramka (_top)',
+	'_parent' => 'nadrzêdna ramka (_parent)'
   ),
   'table_row_prop' => array(
     'title' => 'W³a¶ciwosci wiersza',
@@ -281,6 +294,12 @@ $spaw_lang_data = array(
   ),
   'zoom' => array(
     'title' => 'Zoom',
+  ),
+  'subscript' => array( // <=== new 1.0.7
+    'title' => 'Indeks dolny',
+  ),
+  'superscript' => array( // <=== new 1.0.7
+    'title' => 'Indeks górny',
   ),
 );
 ?>

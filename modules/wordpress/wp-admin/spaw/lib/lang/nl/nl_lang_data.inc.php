@@ -7,10 +7,11 @@
 // Developed: Alan Mendelevich, alan@solmetra.lt
 // Copyright: Solmetra (c)2003 All rights reserved.
 // Translation to dutch: Koen Koppens, k.koppens@home.nl
+// Translation updated: Alex Timmermans, alex@artbizz.com
 // ------------------------------------------------
 //                                www.solmetra.com
 // ================================================
-// v.1.0, 2003-03-20
+// v.1.1, 2004-12-30
 // ================================================
 
 // charset to be used in dialogs
@@ -42,6 +43,7 @@ $spaw_lang_data = array(
   'image_insert' => array(
     'title' => 'Afbeelding invoeren',
     'select' => 'Selecteren',
+	'delete' => 'Verwijderen', // new 1.0.5
     'cancel' => 'Annuleren',
     'library' => 'Bibliotheek',
     'preview' => 'Voorbeeld',
@@ -53,6 +55,7 @@ $spaw_lang_data = array(
     'error_uploading' => 'Er is een fout opgetreden bij het uploaden van het bestand. Probeert u het later nogmaals',
     'error_wrong_type' => 'Verkeerd afbeelding bestandstype',
     'error_no_dir' => 'De bibliotheek is niet beschikbaar',
+	'error_cant_delete' => 'Het verwijderen is mislukt!', // new 1.0.5
   ),
   'image_prop' => array(
     'title' => 'Afbeelding eigenschappen',
@@ -101,6 +104,8 @@ $spaw_lang_data = array(
     'cellspacing' => 'Cel opvulling',
     'bg_color' => 'Achtergrond kleur',
     'error' => 'Fout',
+	'background' => 'Achtergrond afbeelding', // <=== new 1.0.6
+    'error' => 'Fout',
     'error_rows_nan' => 'Opgegeven rij(en) zijn geen getallen',
     'error_columns_nan' => 'Opgegeven kolom(men) zijn geen getallen',
     'error_width_nan' => 'Breedte is geen getal',
@@ -118,6 +123,7 @@ $spaw_lang_data = array(
     'css_class' => 'CSS klasse',
     'no_wrap' => 'Regels niet afbreken',
     'bg_color' => 'Achtergrond kleur',
+	'background' => 'Achtergrond afbeelding', // <=== new 1.0.6
     'ok' => '   OK   ',
     'cancel' => 'Annulerenl',
     'left' => 'Linkerkant',
@@ -230,8 +236,19 @@ $spaw_lang_data = array(
     'name' => 'Naam',
     'target' => 'Doel',
     'title_attr' => 'Titel',
+	'a_type' => 'Type', // <=== new 1.0.6
+	'type_link' => 'Link', // <=== new 1.0.6
+	'type_anchor' => 'Anker', // <=== new 1.0.6
+	'type_link2anchor' => 'Link naar anker', // <=== new 1.0.6
+	'anchors' => 'Anker', // <=== new 1.0.6
     'ok' => '   OK   ',
     'cancel' => 'Annuleren',
+  ),
+    'hyperlink_targets' => array( // <=== new 1.0.5
+  	'_self' => 'dit frame (_self)',
+	'_blank' => 'nieuw scherm (_blank)',
+	'_top' => 'top frame (_top)',
+	'_parent' => 'ouderlijk frame (_parent)'
   ),
   'table_row_prop' => array(
     'title' => 'Rij eigenschappen',
@@ -282,6 +299,12 @@ $spaw_lang_data = array(
   ),
   'zoom' => array(
     'title' => 'Zoom in',
+  ),
+  'subscript' => array( // <=== new 1.0.7
+    'title' => 'Subschrift',
+  ),
+  'superscript' => array( // <=== new 1.0.7
+    'title' => 'Superschrift',
   ),
 );
 ?>

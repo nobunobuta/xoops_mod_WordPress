@@ -20,6 +20,7 @@ if( ! defined( 'XOOPS_ROOT_PATH' ) ) {
 	$root_dir = preg_replace('|'.$cur_path.'$|', '', $spaw_conf_path);
 	include_once( $root_dir. '/mainfile.php' ) ;
 }
+error_reporting(E_ERROR);
 
 // directory where spaw files are located
 // $spaw_dir = 'spaw/';
@@ -88,7 +89,8 @@ $spaw_a_targets['_top'] = 'Top';
 $spaw_a_targets['_parent'] = 'Parent';
 
 // image popup script url
-$spaw_img_popup_url = $spaw_dir.'img_popup.php';
+// This feature may contains XSS , 05/05/01 nobunobu
+//$spaw_img_popup_url = $spaw_dir.'img_popup.php';
 
 // internal link script url
 $spaw_internal_link_script = 'url to your internal link selection script';
@@ -113,13 +115,14 @@ foreach ($modules as $module){
 	$mod = $module->getVar('dirname');
 	$wpconf_fname =  XOOPS_ROOT_PATH."/modules/".$mod."/wp-config.php";
 	if (file_exists($wpconf_fname)) {
-		include_once($wpconf_fname);
-		get_currentuserinfo();
-		if ($GLOBALS['user_level'] > 1) {
+		if( ! preg_match( '/^(\D+)(\d*)$/' , $mod , $regs ) ) echo ( "invalid dirname: " . htmlspecialchars( $mod ) ) ;
+		$imnumber = $regs[2] === '' ? '' : intval( $regs[2] ) ;
+		$result = $xoopsDB->query('SELECT option_value FROM ' . $xoopsDB->prefix('wp'.$imnumber.'_options') . " WHERE option_name='fileupload_realpath'");
+		if ($option = $xoopsDB->fetcharray($result)){
 			$spaw_imglibs[$i] = array(
 				'type'    =>  'Dir',
-				'value'   => ereg_replace(XOOPS_URL.'\/(.*)',"\\1",get_settings('fileupload_url'))."/" ,
-				'text'    => 'Uploads[WordPress]',
+				'value'   => ereg_replace(XOOPS_ROOT_PATH.'\/(.*)',"\\1",$option['option_value'])."/" ,
+				'text'    => 'Uploads['.$module->getVar('name').']',
 				'catID'   => $i,
 				'storetype' => 'file',
 				'autoID' => 0
@@ -143,7 +146,7 @@ if( !strstr( $top_of_imagemanager , '$mydirname' ) &&
 	while($imgcat = $xoopsDB->fetcharray($result)){
 		$spaw_imglibs[$i]["type"]  = "XoopsImage";
 		$spaw_imglibs[$i]["value"] = 'uploads/';
-		$spaw_imglibs[$i]["text"] = $imgcat["imgcat_name"]."[XOOPS IM]";
+		$spaw_imglibs[$i]["text"] = $imgcat["imgcat_name"]."[Image Manager]";
 		$spaw_imglibs[$i]["catID"] = $i;
 		$spaw_imglibs[$i]["storetype"] = $imgcat["imgcat_storetype"];
 		$spaw_imglibs[$i]["autoID"] = $imgcat["imgcat_id"];
@@ -166,7 +169,7 @@ foreach ($modules as $module){
 		while($imgcat = $xoopsDB->fetcharray($result)){
 			$spaw_imglibs[$i]["type"]  = "myAlbum-P";
 			$spaw_imglibs[$i]["value"] = 'uploads/';
-			$spaw_imglibs[$i]["text"] = $imgcat["title"]."[$mod]";
+			$spaw_imglibs[$i]["text"] = $imgcat["title"].'['.$module->getVar('name').']';
 			$spaw_imglibs[$i]["catID"] = $i;
 			$spaw_imglibs[$i]["autoID"] = $imgcat["cid"];
 			$spaw_imglibs[$i]["storetype"] = $imnumber ;

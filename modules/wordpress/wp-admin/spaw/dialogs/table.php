@@ -17,13 +17,14 @@ include '../config/spaw_control.config.php';
 include $spaw_root.'class/util.class.php';
 include $spaw_root.'class/lang.class.php';
 
-$theme = empty($HTTP_GET_VARS['theme'])?$spaw_default_theme:$HTTP_GET_VARS['theme'];
+$theme = htmlspecialchars(empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'],ENT_QUOTES);
 $theme_path = $spaw_dir.'lib/themes/'.$theme.'/';
 
-$l = new SPAW_Lang($HTTP_GET_VARS['lang']);
+$lang = htmlspecialchars($_GET['lang'],ENT_QUOTES);
+$l = new SPAW_Lang($lang);
 $l->setBlock('table_prop');
 
-$request_uri = urldecode(empty($HTTP_POST_VARS['request_uri'])?(empty($HTTP_GET_VARS['request_uri'])?'':$HTTP_GET_VARS['request_uri']):$HTTP_POST_VARS['request_uri']);
+$request_uri = urldecode(empty($_POST['request_uri'])?(empty($_GET['request_uri'])?'':$_GET['request_uri']):$_POST['request_uri']);
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 
@@ -45,7 +46,7 @@ $request_uri = urldecode(empty($HTTP_POST_VARS['request_uri'])?(empty($HTTP_GET_
 
   <?php if (SPAW_Util::getBrowser() == 'Gecko') { ?>
 
-    var wnd = window.open('<?php echo $spaw_dir?>dialogs/colorpicker.php?lang=<?php echo $_GET["lang"]?>&theme=<?php echo $_GET["theme"]?>&editor=<?php echo $_GET["editor"]?>&callback=showColorPicker_callback', 
+    var wnd = window.open('<?php echo $spaw_dir?>dialogs/colorpicker.php?lang=<?php echo $lang?>&theme=<?php echo $theme?>&editor=<?php echo htmlspecialchars($_GET["editor"],ENT_QUOTES)?>&callback=showColorPicker_callback', 
       "color_picker", 
       'status=no,modal=yes,width=350,height=250'); 
     wnd.dialogArguments = curcolor;
@@ -78,7 +79,7 @@ $request_uri = urldecode(empty($HTTP_POST_VARS['request_uri'])?(empty($HTTP_GET_
   {
   <?php if (SPAW_Util::getBrowser() == 'Gecko') { ?>
 
-    var wnd = window.open('<?php echo $spaw_dir?>dialogs/img_library.php?lang=<?php echo $_GET["lang"]?>&theme=<?php echo $_GET["theme"]?>&editor=<?php echo $_GET["editor"]?>&callback=showImgPicker_callback',
+    var wnd = window.open('<?php echo $spaw_dir?>dialogs/img_library.php?lang=<?php echo $lang?>&theme=<?php echo $theme?>&editor=<?php echo htmlspecialchars($_GET["editor"],ENT_QUOTES)?>&callback=showImgPicker_callback',
       "img_library", 
       'status=no,modal=yes,width=420,height=420'); 
 
@@ -246,7 +247,7 @@ $request_uri = urldecode(empty($HTTP_POST_VARS['request_uri'])?(empty($HTTP_GET_
       window.close();
       <?php
       if (!empty($_GET['callback']))
-        echo "opener.".$_GET['callback']."('".$_GET['editor']."',this);\n";
+        echo "opener.".urlencode($_GET['callback'])."('".htmlspecialchars($_GET['editor'],ENT_QUOTES)."',this);\n";
       ?>
     }
   }

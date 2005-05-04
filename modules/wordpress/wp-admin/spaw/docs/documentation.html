@@ -33,7 +33,7 @@
 
 <P><STRONG><a href="http://www.solmetra.com/">Solmetra's</a> SPAW Editor</STRONG> is a web based WYSIWYG editor control enabling web site developers to replace a standard textarea html control with full-featured, fully customizable, multilingual, skinable web based WYSIWYG editor. </P>
 
-<P>Check out the <A href="http://www.solmetra.com/en/disp.php/en_products/en_spaw/en_spaw_demo">online demonstration</A> (IE 5.5 or above required) or <A href="http://www.solmetra.com/en/disp.php/en_products/en_spaw/en_spaw_screenshots">screenshots</A> to get an idea how powerful the control is.</P>
+<P>Check out the <A href="http://www.solmetra.com/en/disp.php/en_products/en_spaw/en_spaw_demo">online demonstration</A> (IE 5.5 or above or Mozilla/Firefox/Netscape required) or <A href="http://www.solmetra.com/en/disp.php/en_products/en_spaw/en_spaw_screenshots">screenshots</A> to get an idea how powerful the control is.</P>
 
 <P>Subscribe to <A href="http://lists.sourceforge.net/lists/listinfo/spaw-announce" target=_blank><STRONG>spaw-announce mailing list</STRONG></A> to be notified about new releases.</P>
 
@@ -47,7 +47,7 @@
 <LI>Advanced table manipulation - create, modify attributes of table and cells, insert/delete rows and columns, merge/split cells (including unique vertical merging feature!); </LI>
 <LI>Support for themes (skins) - 2 ready to use themes included; </LI>
 <LI>Fully customizable toolbars - 4 presets included; </LI>
-<LI>Multilanguage support - English, Lithuanian, Russian, German, Dutch, Italian, French, Hebrew, Turkish, Chinese, Czech, Brazilian Portuguese, Swedish, Danish, Hungarian, Bulgarian, Polish, Finish, Estonian, Japanese, Galego, Norwegian, Slovak, Catalan, Portuguese, Slovenian, Greek and Thai language files included; </LI>
+<LI>Multilanguage support - English, Lithuanian, Russian, German, Dutch, Italian, French, Hebrew, Turkish, Chinese, Czech, Brazilian Portuguese, Swedish, Danish, Hungarian, Bulgarian, Polish, Finish, Estonian, Japanese, Galego, Norwegian, Slovak, Catalan, Portuguese, Slovenian, Greek, Thai, Vietnamese, Korean, Ukrainian and Croatian language files included; </LI>
 <LI>Support for multiple fully independent instances of control on the same page (each instance can have different theme, toolbar, language, style classes, etc.); </LI>
 <li>HTML code cleanup (useful for copy/pasting content from MS Word);</li>
 <li>Optional design time borders on borderless tables;</li>
@@ -59,7 +59,7 @@
 <P><STRONG>Requirements for PHP edition:</STRONG></P>
 <UL>
 <LI>Server: PHP4 on any compatible OS </LI>
-<LI>Client: Microsoft Internet Explorer 5.5. or above on Windows.</LI></UL>
+<LI>Client: Microsoft Internet Explorer 5.5. or above on Windows, modern Gecko based browsers on other OSs.</LI></UL>
 
 <hr>
 <h2><a name="license">License</a></h2>
@@ -152,9 +152,9 @@ SPAW_Wysiwyg(
 
 <p>Parameters:</p>
 
-<p><strong>$control_name</strong> - the name of the control. This will be used for the id of the field holding the contents of the control and you will use it to obtain the contents when submitted to the server (i.e. $HTTP_POST_VARS['spaweditor']). The default value is <em>"spaw_editor"</em>. <em>Don't forget to set this parameter to different values if using more than one instance of the control on one page.</em></p>
+<p><strong>$control_name</strong> - the name of the control. This will be used for the id of the field holding the contents of the control and you will use it to obtain the contents when submitted to the server (i.e. $_POST['spaweditor']). The default value is <em>"spaw_editor"</em>. <em>Don't forget to set this parameter to different values if using more than one instance of the control on one page.</em></p>
 
-<p><strong>$value</strong> - initial content of the control. This is what you want to be in the editable area when control loads. Use something like <code>stripslashes($HTTP_POST_VARS['spaweditor'])</code> if you want control to display what was typed prior to submitting.</p>
+<p><strong>$value</strong> - initial content of the control. This is what you want to be in the editable area when control loads. Use something like <code>stripslashes($_POST['spaweditor'])</code> if you want control to display what was typed prior to submitting.</p>
 
 <p><strong>$lang</strong> - this denotes the language to be used in the control's interface. The default is the value of <strong>$spaw_default_lang</strong> variable set in config file which by default is equal to <em>"en"</em> (English). If you specify a value other than set in <strong>$spaw_default_lang</strong> variable, the control loads language data for default language as a "backup". This is done so in case the translation is a little outdated control is still usable (i.e. you will get messages in default language (most likely English) instead of missing translations from your selected language files. Available languages can be determined by taking a look at <em>lib/lang/</em> subdirectory. Names of the subdirectories in there are the valid values for the <strong>$lang</strong> parameter.</p>
 
@@ -175,14 +175,14 @@ SPAW_Wysiwyg(
 <h4>Example 1</h4>
 <p>This is the simpliest usage of the control with all the default parameters</p>
 <pre>
-$sw = new SPAW_Wysiwyg('spaw1',stripslashes($HTTP_POST_VARS['spaw1']));
+$sw = new SPAW_Wysiwyg('spaw1',stripslashes($_POST['spaw1']));
 $sw->show();
 </pre>
 
 <h4>Example #2</h4>
 <p>Now let's try something else... let's specify width and height of the control, Lithuanian language and different toolbar mode (sidetable in this example).</p>
 <pre>
-$sw = new SPAW_Wysiwyg('spaw2' /*name*/,stripslashes($HTTP_POST_VARS['spaw2']) /*value*/,
+$sw = new SPAW_Wysiwyg('spaw2' /*name*/,stripslashes($_POST['spaw2']) /*value*/,
                        'lt' /*language*/, 'sidetable' /*toolbar mode*/, 'default' /*theme*/,
                        '550px' /*width*/, '350px' /*height*/);
 $sw->show();
@@ -191,7 +191,7 @@ $sw->show();
 <h4>Example #3</h4>
 <p>In this example we pass an url (demo_red.css) of the stylesheet file to the consturctor/p>
 <pre>
-$sw = new SPAW_Wysiwyg('spaw5' /*name*/,stripslashes($HTTP_POST_VARS['spaw5']) /*value*/,
+$sw = new SPAW_Wysiwyg('spaw5' /*name*/,stripslashes($_POST['spaw5']) /*value*/,
                        'en' /*language*/, 'mini' /*toolbar mode*/, '' /*theme*/,
                        '250px' /*width*/, '90px' /*height*/, 'demo_red.css' /*stylesheet file*/);
 $sw->show();
@@ -211,7 +211,7 @@ $demo_array['style']['crazystyle2'] = 'Crazy style no. 2';
 $demo_array['style']['crazystyle3'] = 'Crazy style no. 3';
 
 // pass $demo_array to the constructor
-$sw = new SPAW_Wysiwyg('spaw6' /*name*/,stripslashes($HTTP_POST_VARS['spaw6']) /*value*/,
+$sw = new SPAW_Wysiwyg('spaw6' /*name*/,stripslashes($_POST['spaw6']) /*value*/,
                        'en' /*language*/, 'default' /*toolbar mode*/, '' /*theme*/,
                        '550px' /*width*/, '90px' /*height*/, '' /*stylesheet file*/,
                        $demo_array /*dropdown data*/);
@@ -271,37 +271,41 @@ array(
 <hr>
 <h2><a name="credits">Credits</a></h2>
 
-<p>SPAW Editor copyright &copy; 2003 by Solmetra. All rights reserved.</p>
+<p>SPAW Editor copyright &copy; 2003-2005 by Solmetra. All rights reserved.</p>
 
 <ul>
 	<li>Programming, documentation, "classic" theme, English and Russian language files - Alan Mendelevich (alan@solmetra.com);</li>
 	<li>"default", "blue" and "green" themes - Margarita Buksnaityte (marga@solmetra.com);</li>
 	<li>Lithuanian translation - Martynas Majeris (martynas@solmetra.com), Saulius Okunevicius (saulius@solmetra.lt);</li>
-	<li>German translation - Simon Schmitz (schmitz@unitedfuor.com), Matthias Höschele (matthias.hoeschele@gmx.net);</li>
-	<li>Dutch translation: Koen Koppens (k.koppens@home.nl);</li>
-	<li>Italian translation: Omar Di Marzio (omar@networking.it);</li>
+	<li>German translation - Simon Schmitz (schmitz@unitedfuor.com), Matthias Hôþchele (matthias.hoeschele@gmx.net);</li>
+	<li>Dutch translation: Koen Koppens (k.koppens@home.nl), Alex Timmermans;</li>
+	<li>Italian translation: Omar Di Marzio (omar@networking.it), Stefano Luchetta;</li>
 	<li>French translation: Laurent Fasnacht (lf@o-t.ch);</li>
-	<li>Hebrew translation: Yaron Gonen (lord_gino@yahoo.com);</li>
+	<li>Hebrew translation: Yaron Gonen (lord_gino@yahoo.com), Boris Aranovich;</li>
 	<li>Turkish translation: Zeki Erkmen (erkmen@t-online.de);</li>
   <li>Chinese translation: (aman@wealthgrp.com.tw);</li>
   <li>Czech translation: BrM (BrM@bridlicna.cz);</li>
-  <li>Brazilian Portuguese translation: Fernando José Karl (fernandokarl@superig.com.br);</li>
+  <li>Brazilian Portuguese translation: Fernando JosôþKarl (fernandokarl@superig.com.br);</li>
   <li>Swedish translation: Tomas Jogin (tomas@jogin.com);</li>
   <li>Danish translation: Morten Skyt Eriksen (xgd_bitnissen@hotmail.com);</li>
-  <li>Hungarian translation: Bagoly Sándor Zsigmond (sasa@networldtrading.com);</li>
+  <li>Hungarian translation: Bagoly Sôþdor Zsigmond (sasa@networldtrading.com);</li>
 	<li>Bulgarian translation: Atanas Tchobanov (atanas@webdressy.com);</li>
-	<li>Polish translation: Jacek Czekala (jacek_czekala@post.pl);</li>
+	<li>Polish translation: Jacek Czekala (jacek_czekala@post.pl), Slawomir Jasinski;</li>
 	<li>Finish translation: Teemu Joensuu (teemu.joensuusaunalahti.fi);</li>
 	<li>Estonian translation: Maku (maktak@phpnuke-est.net);</li>
 	<li>Japanese translation: DigiPower (http://pwr.jp/);</li>
 	<li>Galego translation: Pedro Telmo (p.telmo@valminor.info);</li>
 	<li>Norwegian translation: Torkil Johnsen (torkil@torkiljohnsen.com);</li>
 	<li>Slovak translation: Pavel Koutny (pavel.koutny@inetix.sk);</li>
-	<li>Greek translation: Saxinidis B. Konstantinos</li>
-	<li>Slovenian translation:Vladimir Ota</li>
-	<li>Portuguese translation: Ricardo Vidal</li>
-	<li>Catalan translation: Jordi Cato</li>
-	<li>Thai translation: Chanon Mee-iam</li>
+	<li>Greek translation: Saxinidis B. Konstantinos;</li>
+	<li>Slovenian translation:Vladimir Ota;</li>
+	<li>Portuguese translation: Ricardo Vidal;</li>
+	<li>Catalan translation: Jordi Cato;</li>
+	<li>Thai translation: Chanon Mee-iam;</li>
+	<li>Vietnamese translation: Nguyen Viet Son;</li>
+	<li>Croatian translation: dragan@pfri.hr;</li>
+	<li>Ukrainian translation: Alexandr Kaplun;</li>
+	<li>Korean translation: zionweb@hotmail.com.</li>
 </ul>
 
 <hr>

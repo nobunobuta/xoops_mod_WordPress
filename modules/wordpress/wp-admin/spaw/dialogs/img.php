@@ -17,10 +17,10 @@ include '../config/spaw_control.config.php';
 include $spaw_root.'class/util.class.php';
 include $spaw_root.'class/lang.class.php';
 
-$theme = empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'];
+$theme = htmlspcialchars(empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'],ENT_QUOTES);
 $theme_path = $spaw_dir.'lib/themes/'.$theme.'/';
 
-$l = new SPAW_Lang($_GET['lang']);
+$l = new SPAW_Lang(htmlspecialchars($_GET['lang'],ENT_QUOTES));
 $l->setBlock('image_prop');
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -126,7 +126,7 @@ $l->setBlock('image_prop');
       window.close();
       <?php
       if (!empty($_GET['callback']))
-        echo "opener.".$_GET['callback']."('".$_GET['editor']."',this);\n";
+        echo "opener.".urlencode($_GET['callback'])."('".htmlspecialchars($_GET['editor'],ENT_QUOTES)."',this);\n";
       ?>
     }
   }
