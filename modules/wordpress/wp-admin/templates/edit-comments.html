@@ -16,7 +16,7 @@
 	<p>Posted <{$comment.comment_date}> | 
 <{if $comment.canEdit}>
 		<a href="post.php?action=editcomment&amp;comment=<{$comment.comment_ID}>"><{$smarty.const._LANG_EC_EDIT_COM}></a>
-		- <a href="post.php?action=confirmdeletecomment&amp;p=<{$comment.comment_post_ID}>&amp;comment=<{$comment.comment_ID}>&amp;referredby=edit-comment"><{$smarty.const._LANG_EC_DELETE_COM}></a>
+		- <a href="post.php?action=confirmdeletecomment&amp;p=<{$comment.comment_post_ID}>&amp;comment=<{$comment.comment_ID}>&amp;referredby=edit-comments"><{$smarty.const._LANG_EC_DELETE_COM}></a>
 		- <a href="post.php?action=edit&amp;post=<{$comment.comment_post_ID}>"><{$smarty.const._LANG_EC_EDIT_POST}><{$comment.post_title}>&#8221;</a>
 		- <a href="<{$comment.post_permalink}>"><{$smarty.const._LANG_EC_VIEW_POST}></a></p>
 <{/if}>

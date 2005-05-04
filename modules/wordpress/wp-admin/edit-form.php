@@ -7,7 +7,7 @@ if (($rows < 3) || ($rows > 100)) {
 $category_select = categories_nested_select(array($default_post_cat));
 
 $use_quicktags = (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))&&($mode != 'bookmarklet')) ;
-$use_spaw = ($GLOBALS['wp_use_spaw']&&$is_winIE);
+$use_spaw = ($GLOBALS['wp_use_spaw']);
 // $use_koivi = $GLOBALS['wp_use_koivi'];
 
 $smilies = array();
@@ -63,7 +63,7 @@ ob_end_clean();
 
 $ticket = $xoopsWPTicket->getTicketHtml(__LINE__, 10800);
 if (!empty($_SERVER['HTTP_REFERER'])) {
-	$referer = $_SERVER['HTTP_REFERER'];
+	$referer = urlencode($_SERVER['HTTP_REFERER']);
 } else {
 	$referer = "";
 }

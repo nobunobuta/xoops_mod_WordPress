@@ -72,6 +72,9 @@ if (!empty($_tb_id) && !test_param('__mode') && test_param('url')) {
 		}
 
 		if (!strpos($orig_contents, wp_siteurl())) {
+			if ($GLOBALS['wp_debug']) {
+				fwrite($_fp, 'Error: Sorry, your contents does not contain any URL of my site.');
+			}
 			trackback_response(1, 'Sorry, your contents does not contain any URL of my site.');
 		}
 	}
@@ -132,10 +135,10 @@ if (!empty($_tb_id) && !test_param('__mode') && test_param('url')) {
 		die ("There is an error with the database, it can't store your comment...<br />Please contact the <a href='mailto:".get_settings('admin_email')."'>webmaster</a>.");
 	} else {
 		$_comment_ID = $commentObject->getVar('comment_ID');
+		do_action('trackback_post', $_comment_ID);
 		if (get_settings('comments_notify'))
 			wp_notify_postauthor($_comment_ID, 'trackback');
 		trackback_response(0);
-		do_action('trackback_post', $_comment_ID);
 	}
 }
 ?>

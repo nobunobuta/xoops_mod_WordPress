@@ -1894,9 +1894,9 @@ function pingback_ping($m) { // original code by Mort
 						($post_ID, '$title', '$pagelinkedfrom', '$now', '$context')
 						");
 					$comment_ID = $wpdb->get_var('SELECT last_insert_id()');
+					do_action('pingback_post', $comment_ID);
 					if (get_settings('comments_notify'))
 						wp_notify_postauthor($comment_ID, 'pingback');
-					do_action('pingback_post', $comment_ID);
 			} else {
 					// URL pattern not found
 					$message = "Page linked to: $pagelinkedto\nPage linked from:"

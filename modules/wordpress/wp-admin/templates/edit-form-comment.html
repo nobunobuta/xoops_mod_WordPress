@@ -46,5 +46,5 @@
 <{/if}>
 	<{$ticket}>
   </form>
-  <p><a class='delete' href="post.php?action=confirmdeletecomment&amp;noredir=true&amp;comment=<{$commentdata.comment_ID}>&amp;p=<{$commentdata.comment_post_ID}>"><{$smarty.const._LANG_EFA_DEL_THISPOST}></a></p>
+  <p><a class='delete' href="post.php?action=confirmdeletecomment&amp;referredby=<{$referer}>&amp;comment=<{$commentdata.comment_ID}>&amp;p=<{$commentdata.comment_post_ID}>"><{$smarty.const._LANG_EFA_DEL_THISPOST}></a></p>
 </div>

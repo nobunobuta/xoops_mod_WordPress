@@ -76,7 +76,7 @@ if ($use_geo_positions) {
 $touchtime = touch_time(1,false);
 
 if (!empty($_SERVER['HTTP_REFERER'])) {
-	$referer = $_SERVER['HTTP_REFERER'];
+	$referer = urlencode($_SERVER['HTTP_REFERER']);
 } else {
 	$referer = "";
 }

@@ -173,10 +173,10 @@ if ($_ok) { // if there was no comment from this IP in the last 10 seconds
 		redirect_header($_location, 3, $commentHandler->getErrors());
 	}
 	$_comment_ID = $commentObject->getVar('comment_ID');
+	do_action('comment_post', $_comment_ID);
 	if ((get_settings('moderation_notify')) && (!$_approved)) {
 	    wp_notify_moderator($_comment_ID);
 	}
-	
 	if ((get_settings('comments_notify')) && ($_approved)) {
 	    wp_notify_postauthor($_comment_ID, 'comment');
 	}
@@ -185,7 +185,6 @@ if ($_ok) { // if there was no comment from this IP in the last 10 seconds
 	if ($_url == '')
 		$_url = ' '; // this to make sure a cookie is set for 'no url'
 
-	do_action('comment_post', $_comment_ID);
 	setcookie('comment_author_'.$GLOBALS['cookiehash'], $_author, time()+30000000);
 	setcookie('comment_author_email_'.$GLOBALS['cookiehash'], $_email, time()+30000000);
 	setcookie('comment_author_url_'.$GLOBALS['cookiehash'], $_url, time()+30000000);

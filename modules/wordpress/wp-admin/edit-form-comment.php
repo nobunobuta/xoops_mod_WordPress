@@ -10,7 +10,7 @@ include('quicktags.php');
 $quicktags = ob_get_contents();
 ob_end_clean();
 
-$referer = $_SERVER['HTTP_REFERER'];
+$referer = urlencode($_SERVER['HTTP_REFERER']);
 
 $touchtime = touch_time(0, false);
 

@@ -15,7 +15,7 @@ switch(get_param('action')) {
 	case 'post':
 		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/edit.php',3,$xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/edit.php',3,$xoopsWPTicket->getErrors());
 		}
 		//Check User_Level
 		user_level_check();
@@ -87,7 +87,7 @@ switch(get_param('action')) {
 		$postObject->setVar('post_status', $post_status);
 
 		if(!$postHandler->insert($postObject)) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $postHandler->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $postHandler->getErrors());
 		}
 
 		$post_ID = $postObject->getVar('ID');
@@ -138,11 +138,11 @@ switch(get_param('action')) {
 		
 		$post_ID = $p = $post;
 		if (!($postObject =& $postHandler->get($post_ID))) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 5, _LANG_P_OOPS_IDPOS);
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 5, _LANG_P_OOPS_IDPOS);
 		}
 		$authorObject = $userHandler->get($postObject->getVar('post_author'));
 		if (!user_can_edit($postObject->getVar('post_author'))) {
-			redirect_header($siteurl.'/wp-admin/',5, _LANG_P_DATARIGHT_EDIT.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
+			redirect_header(wp_siteurl().'/wp-admin/',5, _LANG_P_DATARIGHT_EDIT.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
 		}
 		$postdata = $postObject->getVarArray('e');
 		$mode = "";
@@ -168,7 +168,7 @@ switch(get_param('action')) {
 	case 'editpost':
 		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/edit.php',3,$xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/edit.php',3,$xoopsWPTicket->getErrors());
 		}
 		//Check User_Level
 		user_level_check();
@@ -198,11 +198,11 @@ switch(get_param('action')) {
 		init_param('POST', 'deletemeta','array');
 
 		if (!($postObject =& $postHandler->get($post_ID))) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 5, _LANG_P_OOPS_IDPOS);
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 5, _LANG_P_OOPS_IDPOS);
 		}
 		$authorObject = $userHandler->get($postObject->getVar('post_author'));
 		if (!user_can_edit($postObject->getVar('post_author'))) {
-			redirect_header($siteurl.'/wp-admin/',5, _LANG_P_DATARIGHT_EDIT.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
+			redirect_header(wp_siteurl().'/wp-admin/',5, _LANG_P_DATARIGHT_EDIT.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
 		}
 		$prev_status = $postObject->getVar('post_status');
 		$post_name = sanitize_title($post_title);
@@ -252,7 +252,7 @@ switch(get_param('action')) {
 		$postObject->setVar('post_status', $post_status);
 
 		if(!$postHandler->insert($postObject, false, true)) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $postHandler->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $postHandler->getErrors());
 		}
 
 		$post_ID = $postObject->getVar('ID');
@@ -264,7 +264,7 @@ switch(get_param('action')) {
 		} elseif (!empty($deletemeta)) {
 			$location = $_SERVER['HTTP_REFERER'] . '&message=3#postcustom';
 		} elseif (!empty($referredby)) {
-			$location = $referredby;
+			$location = urldecode($referredby);
 		} else {
 			$location = 'post.php';
 		}
@@ -314,11 +314,11 @@ switch(get_param('action')) {
 		init_param('GET', 'post','integer', NO_DEFAULT_PARAM, true);
 		$post_id = $post;
 		if (!($postObject =& $postHandler->get($post_id))) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 5, _LANG_P_OOPS_IDPOS);
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 5, _LANG_P_OOPS_IDPOS);
 		}
 		$authorObject = $userHandler->get($postObject->getVar('post_author'));
 		if (!user_can_edit($postObject->getVar('post_author'))) {
-			redirect_header($siteurl.'/wp-admin/',5, _LANG_P_DATARIGHT_DELETE.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
+			redirect_header(wp_siteurl().'/wp-admin/',5, _LANG_P_DATARIGHT_DELETE.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
 		}
 		//Show Confirmation message
 		$delete_confirm = array(
@@ -334,7 +334,7 @@ switch(get_param('action')) {
 	case 'delete':
 		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/edit.php',3,$xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/edit.php',3,$xoopsWPTicket->getErrors());
 		}
 		//Check User_Level
 		user_level_check();
@@ -342,19 +342,19 @@ switch(get_param('action')) {
 		init_param('POST', 'post','integer', NO_DEFAULT_PARAM, true);
 		$post_id = $post;
 		if (!($postObject =& $postHandler->get($post_id))) {
-			redirect_header($siteurl.'/wp-admin/edit.php', 5, _LANG_P_OOPS_IDPOS);
+			redirect_header(wp_siteurl().'/wp-admin/edit.php', 5, _LANG_P_OOPS_IDPOS);
 		}
 		$authorObject = $userHandler->get($postObject->getVar('post_author'));
 		if (!user_can_edit($postObject->getVar('post_author'))) {
-			redirect_header($siteurl.'/wp-admin/',5, _LANG_P_DATARIGHT_DELETE.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
+			redirect_header(wp_siteurl().'/wp-admin/',5, _LANG_P_DATARIGHT_DELETE.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
 		}
 
 		if(!$postHandler->delete($postObject)) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $postHandler->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $postHandler->getErrors());
 		}
 
 		do_action('delete_post', $post_ID);
-		$location = $siteurl .'/wp-admin/edit.php';
+		$location = wp_siteurl() .'/wp-admin/edit.php';
 		header ('Location: ' . $location);
 
 		if($postObject->getVar('latf') != null ) {
@@ -364,7 +364,7 @@ switch(get_param('action')) {
 		break;
    case 'editcomment':
 		if ($user_level == 0) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		//Check Paramaters
 		init_param('GET', 'comment','integer', NO_DEFAULT_PARAM, true);
@@ -374,7 +374,7 @@ switch(get_param('action')) {
 		require_once ('admin-header.php');
 		
 		if (!($commentObject =& $commentHandler->get($comment))) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file,5,_LANG_P_OOPS_IDPOS);
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file,5,_LANG_P_OOPS_IDPOS);
 		}
 		$commentdata = $commentObject->getVarArray('e');
 
@@ -386,7 +386,7 @@ switch(get_param('action')) {
 		break;
 	case 'confirmdeletecomment':
 		if ($user_level == 0) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		$parent_file = 'edit.php';
 		
@@ -399,7 +399,7 @@ switch(get_param('action')) {
 		init_param('GET', 'referredby', 'string', NO_DEFAULT_PARAM, true);
 
 		if (!($commentObject =& $commentHandler->get($comment))) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file,5,_LANG_P_OOPS_IDPOS);
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file,5,_LANG_P_OOPS_IDPOS);
 		}
 		$commentdata = $commentObject->getVarArray();
 		$delete_confirm = array(
@@ -410,7 +410,7 @@ switch(get_param('action')) {
 						);
 		$delete_confirm += $xoopsWPTicket->getTicketArray(__LINE__);
 ?>
-<?php xoops_confirm($delete_confirm,'post.php',_LANG_P_CONFIRM_DELETE); ?>
+<?php xoops_confirm($delete_confirm, wp_siteurl().'/wp-admin/post.php',_LANG_P_CONFIRM_DELETE); ?>
 <div class="wrap">
 	<p><strong>Caution:</strong><?php echo _LANG_P_ABOUT_FOLLOW ?></p>
 	<table border="0">
@@ -425,7 +425,7 @@ switch(get_param('action')) {
 		break;
 	case 'deletecomment':
 		if ($user_level == 0) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		init_param('POST', 'comment', 'integer', NO_DEFAULT_PARAM, true);
 		init_param('POST', 'p', 'integer', NO_DEFAULT_PARAM, true);
@@ -433,16 +433,19 @@ switch(get_param('action')) {
 
 		switch($referredby) {
 			case 'edit':
-				$location = $siteurl.'/wp-admin/edit.php?p='.$p.'&c=1#comments';
+				$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&c=1#comments';
 				break;
 			case 'edit-comments':
-				$location = $siteurl.'/wp-admin/edit-comments.php';
+				$location = wp_siteurl().'/wp-admin/edit-comments.php';
 				break;
 			case 'moderation':
-				$location = $siteurl.'/wp-admin/moderation.php';
+				$location = wp_siteurl().'/wp-admin/moderation.php';
+				break;
+			case '':
+				$location = wp_siteurl().'/wp-admin/';
 				break;
 			default:
-				$location = $siteurl.'/wp-admin/';
+				$location = $referredby;
 		}
 
 		if ( ! $xoopsWPTicket->check() ) {
@@ -460,10 +463,9 @@ switch(get_param('action')) {
 		if (!($commentObject =& $commentHandler->get($comment))) {
 			redirect_header($location, 5,_LANG_P_OOPS_IDPOS);
 		}
-		$commentdata = $commentObject->getVarArray();
-		
-		if(!$commentHandler->delete($comment)) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $commentHandler->getErrors());
+
+		if(!$commentHandler->delete($commentObject)) {
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $commentHandler->getErrors());
 		}
 		do_action('delete_comment', $comment);
 
@@ -473,7 +475,7 @@ switch(get_param('action')) {
 	case 'unapprovecomment':
 		wp_refcheck("/wp-admin");
 		if ($user_level == 0) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 	
 		init_param('GET', 'comment', 'integer', NO_DEFAULT_PARAM, true);
@@ -487,7 +489,7 @@ switch(get_param('action')) {
 		if (($_SERVER['HTTP_REFERER'] != "") && (false == $noredir)) {
 			$location = $_SERVER['HTTP_REFERER'];
 		} else {
-			$location = $siteurl.'/wp-admin/edit.php?p='.$p.'&c=1#comments';
+			$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&c=1#comments';
 		}
 		if ( ! $xoopsWPTicket->check(false) ) {
 			redirect_header($location,3,$xoopsWPTicket->getErrors());
@@ -504,7 +506,7 @@ switch(get_param('action')) {
 		break;
 	case 'mailapprovecomment':
 		if ($user_level == 0) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		$parent_file = 'edit.php';
 		
@@ -516,7 +518,7 @@ switch(get_param('action')) {
 		init_param('GET', 'p', 'integer', NO_DEFAULT_PARAM, true);
 
 		if (!($commentObject =& $commentHandler->get($comment))) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file,5,_LANG_P_OOPS_IDPOS);
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file,5,_LANG_P_OOPS_IDPOS);
 		}
 		$commentdata = $commentObject->getVarArray();
 		$delete_confirm = array(
@@ -542,7 +544,7 @@ switch(get_param('action')) {
 		$standalone = 1;
 		wp_refcheck("/wp-admin");
 		if ($user_level == 0) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 			exit();
 		}
 			
@@ -558,7 +560,7 @@ switch(get_param('action')) {
 		if (($_SERVER['HTTP_REFERER'] != "") && (false == $noredir)) {
 			$location = $_SERVER['HTTP_REFERER'];
 		} else {
-			$location = $siteurl.'/wp-admin/edit.php?p='.$p.'&c=1#comments';
+			$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&c=1#comments';
 		}
 
 		if ( ! $xoopsWPTicket->check(false) ) {
@@ -580,10 +582,10 @@ switch(get_param('action')) {
 		break;
 	case 'editedcomment':
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/',3,$xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/',3,$xoopsWPTicket->getErrors());
 		}
 		if ($user_level == 0) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 
 		init_param('POST', 'comment_ID', 'integer', NO_DEFAULT_PARAM, true);

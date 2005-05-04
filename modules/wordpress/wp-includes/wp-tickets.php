@@ -39,7 +39,7 @@ class _XoopsTicket {
 	// return GET parameter string.
 	function getTicketParamString( $salt = '' , $noamp = false , $timeout=1800 )
 	{
-	    return ( $noamp ? '' : '&amp;' ) . $this->_post_param_name .'='. $this->issue( $salt, $timeout ) ;
+	    return ( $noamp ? '' : '&amp;' ) . $this->_post_param_name .'=' . $this->issue( $salt, $timeout ) ;
 	}
 
 	// issue a ticket
@@ -47,7 +47,8 @@ class _XoopsTicket {
 	{
 		// create a token
 		list( $usec , $sec ) = explode( " " , microtime() ) ;
-		$token = crypt( $salt . $usec . $_SERVER['PATH'] . $sec ) ;
+		$appendix_salt = empty( $_SERVER['PATH'] ) ? XOOPS_DB_NAME : $_SERVER['PATH'] ;
+		$token = crypt( $salt . $usec . $appendix_salt . $sec ) ;
 		$this->_latest_token = $token ;
 
 		if( empty( $_SESSION[$this->_session_param_name] ) ) $_SESSION[$this->_session_param_name] = array() ;
@@ -124,11 +125,11 @@ class _XoopsTicket {
 		}
 
 		// CHECK: different ip
-		if( $found_stub['ip'] != $_SERVER['REMOTE_ADDR'] ) {
+		/* if( $found_stub['ip'] != $_SERVER['REMOTE_ADDR'] ) {
 			$this->clear() ;
 			$this->_errors[] = 'IP has been changed' ;
 			return false ;
-		}
+		} */
 
 		// all green
 		return true;
