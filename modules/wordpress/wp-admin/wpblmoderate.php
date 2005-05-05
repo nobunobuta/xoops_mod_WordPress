@@ -33,7 +33,7 @@ $tableblacklist = $xoopsDB->prefix("wp_blacklist");
 $tablecomments = wp_table('comments');
 $tableposts =  wp_table('posts');
 
-if ($user_level < 3) {
+if ($user_level < 4) {
 ?>
 	<div class="wrap">
 		<p>
@@ -44,7 +44,7 @@ if ($user_level < 3) {
 	</div>
 <?php
 	exit();
-} // $user_level < 3
+} // $user_level < 4
 ?>
 <script type="text/javascript">
 <!--

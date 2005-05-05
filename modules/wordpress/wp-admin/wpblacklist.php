@@ -182,24 +182,19 @@ switch($action) {
 		break;
 }
 require_once ('./admin-header.php');
-if ($user_level <= 0) {
+if ($user_level < 4) {
 ?>
 	<div class="wrap">
 		<p>
-			Since you&#8217;re a newcomer, you&#8217;ll have to wait for an admin to raise your level to 1, in order to be authorized to modify the Blacklist.<br />
+			You don&#8217;t have sufficient rights to work with comments, you&#8217;ll have to wait for an admin to raise your level to 3, in order to be authorized to work with comments.<br />
 			You can also <a href="mailto:<?php echo $admin_email ?>?subject=Plugin permission">e-mail the admin</a> to ask for a promotion.<br />
 			When you&#8217;re promoted, just reload this page to play with the Blacklist. :)
 		</p>
 	</div>
 <?php
 	exit();
-} // $user_level <= 0
+} // $user_level < 4
 ?>
-	<ul id="adminmenu2">
-	  <li><a href="wpblacklist.php" class="current"><?php _e('Manage') ?></a></li>
-	  <li><a href="wpblsearch.php"><?php _e('Search') ?></a></li>
-	  <li class="last"><a href="wpblmoderate.php"><?php _e('Moderate') ?></a></li>
-	</ul>
 	<script type="text/javascript">
 	<!--
 	function checkAll(form)
