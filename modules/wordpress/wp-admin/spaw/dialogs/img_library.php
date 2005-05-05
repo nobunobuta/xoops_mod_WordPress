@@ -31,7 +31,7 @@ $request_uri = urldecode(empty($_POST['request_uri'])?(empty($_GET['request_uri'
 
 $lib = isset( $_GET['lib'] ) ? $_GET['lib'] : '' ;
 $lib = isset( $_POST['lib'] ) ? $_POST['lib'] : $lib ;
-$lib = intval($lib)
+$lib = intval($lib);
 
 $zoom = isset( $_POST['zoom'] ) ? intval($_POST['zoom']) : '0';
 $zoomrate = isset( $_POST['zoomrate'] ) ? intval($_POST['zoomrate']) : '100';

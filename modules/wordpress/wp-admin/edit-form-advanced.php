@@ -11,7 +11,20 @@ $ping_check_open = checked($ping_status, 'open', false);
 $ping_check_close = checked($ping_status, 'closed', false);
 
 $use_quicktags = (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))&&($mode != 'bookmarklet')) ;
-$use_spaw = ($GLOBALS['wp_use_spaw']);
+if ($GLOBALS['wp_use_spaw']) {
+	if ($is_gecko || $is_winIE) {
+		if (file_exists('spaw/spaw_control.class.php')) {
+			$use_spaw = true;
+			$spaw_root = dirname(__FILE__).'/spaw/';
+		} else if (file_exists(XOOPS_ROOT_PATH.'/common/spaw/spaw_control.class.php')) {
+			$use_spaw = true;
+			$spaw_root = XOOPS_ROOT_PATH.'/common/spaw/';
+		}
+		if (!file_exists($spaw_root.'class/script_gecko.js.php') && $is_gecko) {
+			$use_spaw = false;
+		}
+	}
+}
 // $use_koivi = $GLOBALS['wp_use_koivi'];
 
 $smilies = array();
@@ -23,7 +36,7 @@ foreach($GLOBALS['wpsmiliestrans'][wp_id()] as $smiley => $img) {
 }
 
 if ($use_spaw) {
-	include_once "spaw/spaw_control.class.php";
+	include_once $spaw_root."spaw/spaw_control.class.php";
 	$trans_tbl = get_html_translation_table (HTML_SPECIALCHARS);
 	$trans_tbl = array_flip ($trans_tbl);
 	$content = strtr ($content, $trans_tbl);

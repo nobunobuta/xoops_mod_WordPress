@@ -11,20 +11,20 @@
 // ================================================
 // v.1.0, 2003-03-27
 // ================================================
-
-$spaw_conf_path = dirname(__FILE__);
-$spaw_root = dirname($spaw_conf_path) . '/';
-
+$spaw_root = dirname(dirname(__FILE__)) . '/';
 if( ! defined( 'XOOPS_ROOT_PATH' ) ) {
-	$cur_path = '/modules/wordpress\d?/wp-admin/spaw/config';
-	$root_dir = preg_replace('|'.$cur_path.'$|', '', $spaw_conf_path);
+	$conf_pattern_module = '/modules/.+/config/'.basename(__FILE__);
+	$conf_pattern_common = '/common/[^/]+/config/'.basename(__FILE__);
+	if (preg_match('|'.$conf_pattern_module.'$|',__FILE__)) {
+		$root_dir = preg_replace('|'.$conf_pattern_module.'$|', '', __FILE__);
+	}
+	if (preg_match('|'.$conf_pattern_common.'$|',__FILE__)) {
+		$root_dir = preg_replace('|'.$conf_pattern_common.'$|', '', __FILE__);
+	}
 	include_once( $root_dir. '/mainfile.php' ) ;
 }
 error_reporting(E_ERROR);
-
 // directory where spaw files are located
-// $spaw_dir = 'spaw/';
-//$spaw_dir = XOOPS_URL . '/common/spaw/' ;
 $spaw_dir = preg_replace('|^'.XOOPS_ROOT_PATH.'|', XOOPS_URL , $spaw_root);
 
 // base url for images
