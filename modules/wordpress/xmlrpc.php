@@ -41,6 +41,7 @@ logIO('I',$HTTP_RAW_POST_DATA);
 function miniHTMLtoWiki($str) {
 	logIO('O','miniHTMLtoWiki(IN) : ' .$str);
 	$wsp = mb_conv('¡¡', $GLOBALS['blog_charset'], 'EUC-JP');
+	$str = str_replace(array('&lt;','&gt;','&quot;','&amp;'),array('<','>','"','&'),$str);
 	$str = preg_replace('/<a href=\\"(.*?)\\".*?>(.*?)<\/a>/', '[[$2:$1]]', $str);
 	$str = preg_replace('/[\n\r]+/',"~\n".$wsp, $str);
 	$str = preg_replace('/<br \/>/',"~\n".$wsp, $str);
