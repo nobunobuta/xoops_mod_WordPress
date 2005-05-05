@@ -34,7 +34,7 @@ $GLOBALS['wp_siteurl'][$GLOBALS['wp_id']] = XOOPS_URL.'/modules/'.$GLOBALS['wp_m
 $GLOBALS['table_prefix'][$GLOBALS['wp_id']] = $GLOBALS['xoopsDB']->prefix($GLOBALS['wp_prefix'][$GLOBALS['wp_id']]);
 
 if(!defined('ABSBASE')) define ('ABSBASE' , '/modules/'.$GLOBALS['wp_mod'][$GLOBALS['wp_id']]. '/');
-if(!defined('ABSPATH')) define ('ABSPATH' , $GLOBALS['wp_base'][$GLOBALS['wp_id']]);
+if(!defined('ABSPATH')) define ('ABSPATH' , $GLOBALS['wp_base'][$GLOBALS['wp_id']]. '/');
 
 //Obsolute Variables, XOOPS Module Use XOOPS DB Connection
 //$server = WP_DB_HOST;

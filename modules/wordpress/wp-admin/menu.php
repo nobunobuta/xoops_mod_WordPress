@@ -16,7 +16,7 @@ ksort($menu); // So other files can plugin
 
 $submenu['edit.php'][5] = array(_LANG_E_LATEST_POSTS, 1, 'edit.php');
 $submenu['edit.php'][20] = array(_LANG_E_LATEST_COMMENTS, 1, 'edit-comments.php');
-$awaiting_mod = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->comments[$wp_id]} WHERE comment_approved = '0'");
+$awaiting_mod = $wpdb->get_var("SELECT COUNT(*) FROM ".wp_table('comments')." WHERE comment_approved = '0'");
 $submenu['edit.php'][25] = array(sprintf(_LANG_E_AWAIT_MODER." (%s)", $awaiting_mod), 1, 'moderation.php');
 
 $submenu['link-manager.php'][5] = array(_LANG_WLA_MANAGE_LINK, 5, 'link-manager.php');
@@ -26,7 +26,7 @@ $submenu['link-manager.php'][20] = array(_LANG_WLA_IMPORT_BLOG, 5, 'link-import.
 
 $option_groups = $wpdb->get_results("
 							SELECT group_id, group_name, group_desc, group_longdesc 
-							FROM {$wpdb->optiongroups[$wp_id]} ORDER BY group_id
+							FROM ".wp_table('optiongroups')." ORDER BY group_id
 						");
 $submenu['options.php'] = array();
 foreach ($option_groups as $option_group) {

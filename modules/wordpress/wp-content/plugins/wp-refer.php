@@ -20,7 +20,7 @@ function the_referers($num=5, $before='<li>', $after='</li>', $none='none yet'){
             $referer = explode(':!-!:', $referer);
             $title = mb_conv(sanitize_text($referer[0]), $GLOBALS['blog_charset'], 'auto');
 			$url = sanitize_text($referer[1],false,true);
-            echo $before.'<a href="$url">$title</a>'.$after;
+            echo $before.'<a href="'.$url.'">'.$title.'</a>'.$after;
             $completed++;
             if ($completed==$num) break;
         }

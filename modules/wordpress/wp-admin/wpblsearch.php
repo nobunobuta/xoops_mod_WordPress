@@ -31,8 +31,8 @@ for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 }
 
 $tableblacklist = $xoopsDB->prefix("wp_blacklist");
-$tablecomments = $wpdb->comments[$wp_id];
-$tableposts = $wpdb->posts[$wp_id];
+$tablecomments = wp_table('comments');
+$tableposts =  wp_table('posts');
 if ($user_level < 3) {
 ?>
 	<div class="wrap">

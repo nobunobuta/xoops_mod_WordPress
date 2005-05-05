@@ -8,7 +8,7 @@ require_once('../wp-config.php');
 ** editable      - flag to determine whether the returned widget will be editable
 **/
 function &get_option_formElement($option_result, $editable=true, $between="") {
-    global $wpdb, $wp_id;
+    global $wpdb;
     $disabled = $editable ? '' : 'disabled';
     
     switch ($option_result->option_type) {
@@ -34,7 +34,7 @@ function &get_option_formElement($option_result, $editable=true, $between="") {
         case 5: // select
 			$elem = new XoopsFormSelect($option_result->option_name, "$option_result->option_name", $option_result->option_value);
 			$select = $wpdb->get_results("SELECT optionvalue, optionvalue_desc "
-										."FROM {$wpdb->optionvalues[$wp_id]} "
+										."FROM ".wp_table('optionvalues')." "
 										."WHERE option_id = $option_result->option_id "
 										."ORDER BY optionvalue_seq");
 			if ($select) {
@@ -44,7 +44,7 @@ function &get_option_formElement($option_result, $editable=true, $between="") {
 			}
 			break;
         case 7: // SQL select
-			$sql = $wpdb->get_var("SELECT optionvalue FROM {$wpdb->optionvalues[$wp_id]} WHERE option_id = $option_result->option_id");
+			$sql = $wpdb->get_var("SELECT optionvalue FROM ".wp_table('optionvalues')." WHERE option_id = $option_result->option_id");
 			if (!$sql) {
 				$elem = new XoopsFormLabel($option_result->option_nam, $editable);
 				break;
@@ -71,12 +71,12 @@ function &get_option_formElement($option_result, $editable=true, $between="") {
 }
 
 function validate_option($option, $name, $val) {
-    global $wpdb, $wp_id;
+    global $wpdb;
     $msg = '';
     switch ($option->option_type) {
         case 6: // range
             // get range
-            $range = $wpdb->get_row("SELECT optionvalue_max, optionvalue_min FROM {$wpdb->optionvalues[$wp_id]} WHERE option_id = $option->option_id");
+            $range = $wpdb->get_row("SELECT optionvalue_max, optionvalue_min FROM ".wp_table('optionvalues')." WHERE option_id = $option->option_id");
             if ($range) {
                 if (($val < $range->optionvalue_min) || ($val > $range->optionvalue_max)) {
                     $msg = "$name is outside the valid range ($range->optionvalue_min - $range->optionvalue_max). ";

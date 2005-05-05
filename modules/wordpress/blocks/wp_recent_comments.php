@@ -50,18 +50,17 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 		$show_rss_icon = (!isset($options[2]))? 0 : $options[2];
 		$cat_date = (!isset($options[3]))? ($block_style ? 1 : 0) : $options[3];
 		$show_type = (!isset($options[4]))? 1 : $options[4];
-		global $wpdb, $wp_id;
 
 		if ($block_style==0) {
 			$no_comments = $num_of_list;
 			$comment_lenth = 30;
 			$skip_posts = 0;
-			$request = "SELECT ID, comment_ID, comment_content, comment_author,comment_date FROM {$wpdb->posts[$wp_id]}, {$wpdb->comments[$wp_id]} WHERE {$wpdb->posts[$wp_id]}.ID={$wpdb->comments[$wp_id]}.comment_post_ID AND post_status = 'publish' AND comment_approved = '1' ";
+			$request = "SELECT ID, comment_ID, comment_content, comment_author,comment_date FROM ".wp_table('posts').", ".wp_table('comments')." WHERE ".wp_table('posts').".ID=".wp_table('comments').".comment_post_ID AND post_status = 'publish' AND comment_approved = '1' ";
 			if (get_xoops_option(wp_mod(), 'wp_use_xoops_comments') == 1) {
 				$request .= "AND (comment_content like '<trackback />%' OR comment_content like '<pingkback />%') ";
 			}
-			$request .= "ORDER BY {$wpdb->comments[$wp_id]}.comment_date DESC LIMIT $no_comments";
-			$lcomments = $wpdb->get_results($request);
+			$request .= "ORDER BY ".wp_table('comments').".comment_date DESC LIMIT $no_comments";
+			$lcomments = $GLOBALS['wpdb']->get_results($request);
 			$output = '';
 			$pdate = "";
 			if ($lcomments) {
@@ -123,16 +122,15 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 	}
 
 	function tkzy_get_recent_comments($limit = 10, $cat_date=1, $show_type = 1) { 
-		global $wpdb,  $wp_id; 
 		$comment_lenth = 30;
 		$request = "SELECT ID, post_title, post_date, 
 		comment_ID, comment_author, comment_author_url, comment_author_email, comment_date, comment_content 
-		FROM {$wpdb->posts[$wp_id]}, {$wpdb->comments[$wp_id]} WHERE {$wpdb->posts[$wp_id]}.ID={$wpdb->comments[$wp_id]}.comment_post_ID AND {$wpdb->comments[$wp_id]}.comment_approved='1'";
+		FROM ".wp_table('posts').", ".wp_table('comments')." WHERE ".wp_table('posts').".ID=".wp_table('comments').".comment_post_ID AND ".wp_table('comments').".comment_approved='1'";
 		if (get_xoops_option(wp_mod(), 'wp_use_xoops_comments') == 1) {
 			$request .= "AND (comment_content like '<trackback />%' OR comment_content like '<pingkback />%') ";
 		}
-		$request .= " ORDER BY {$wpdb->comments[$wp_id]}.comment_date DESC LIMIT $limit";
-		$lcomments = $wpdb->get_results($request);
+		$request .= " ORDER BY ".wp_table('comments').".comment_date DESC LIMIT $limit";
+		$lcomments = $GLOBALS['wpdb']->get_results($request);
 		$output = ''; 
 		if($lcomments){ 
 			usort($lcomments, "sort_comment_by_date"); 

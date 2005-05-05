@@ -124,7 +124,7 @@ if ($GLOBALS['posts']) {
 <?php
 // comments
 	if ((test_param('withcomments')) or (test_param('c'))) {
-		$comments = $wpdb->get_results("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $wp_post_id ORDER BY comment_date");
+		$comments = $wpdb->get_results("SELECT * FROM ".wp_table('comments')." WHERE comment_post_ID = $wp_post_id ORDER BY comment_date");
 		if ($comments) {
 ?> 
 <h3><?php echo _LANG_E_TITLE_COMMENTS; ?></h3>

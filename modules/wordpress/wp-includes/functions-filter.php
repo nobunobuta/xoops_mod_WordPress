@@ -43,17 +43,17 @@ function apply_filters($tag, $string) {
 		}
 
 	}
-	/* Keep Plugin Comatibility */
-	$tables = array('posts','users','categories','post2cat','comments','links','linkcategories','options','optiontypes','optionvalues','optiongroups','optiongroup_options','postmeta','settings');
-	$oldtables = array();
-	foreach($tables as $table) {
-		if (isset($GLOBALS['table'.$table])) {
-			$oldtables[$table] = $GLOBALS['table'.$table];
-		}
-		$GLOBALS['table'.$table] = $GLOBALS['wpdb']->{$table}[wp_id()];
-	}
 	if (isset($GLOBALS['wp_filter'][wp_id()][$tag])) {
 		ksort($GLOBALS['wp_filter'][wp_id()][$tag]);
+		/* Keep Plugin Comatibility */
+		$tables = array('posts','users','categories','post2cat','comments','links','linkcategories','options','optiontypes','optionvalues','optiongroups','optiongroup_options','postmeta','settings');
+		$oldtables = array();
+		foreach($tables as $table) {
+			if (isset($GLOBALS['table'.$table])) {
+				$oldtables[$table] = $GLOBALS['table'.$table];
+			}
+			$GLOBALS['table'.$table] = wp_table($table);
+		}
 		foreach ($GLOBALS['wp_filter'][wp_id()][$tag] as $priority => $functions) {
 			foreach($functions as $function) {
 //				echo "<br/>$tag - $function  <br>";
@@ -61,12 +61,12 @@ function apply_filters($tag, $string) {
 //				echo $string;
 			}
 		}
-	}
-	foreach($tables as $table) {
-		unset($GLOBALS['table'.$table]);
-	}
-	foreach($oldtables as $table=>$value) {
-		$GLOBALS['table'.$table] = $value;
+		foreach($tables as $table) {
+			unset($GLOBALS['table'.$table]);
+		}
+		foreach($oldtables as $table=>$value) {
+			$GLOBALS['table'.$table] = $value;
+		}
 	}
 	return $string;
 }

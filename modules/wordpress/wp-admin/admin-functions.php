@@ -69,9 +69,9 @@ function wp_dropdown_cats($currentcat, $currentparent = 0, $parent = 0, $level =
 }
 
 function wp_dropdown_month($current) {
-	global $wpdb, $wp_id;
+	global $wpdb;
 	global $wp_month_format, $month;
-	$arc_result=$wpdb->get_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date) FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC",ARRAY_A);
+	$arc_result=$wpdb->get_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date) FROM ".wp_table('posts')." ORDER BY post_date DESC",ARRAY_A);
 	foreach ($arc_result as $arc_row) {
 		$arc_year  = $arc_row["YEAR(post_date)"];
 		$arc_month = $arc_row["MONTH(post_date)"];
@@ -85,10 +85,10 @@ function wp_dropdown_month($current) {
 }
 
 function wp_dropdown_daily($current) {
-	global $wpdb, $wp_id;
+	global $wpdb;
 
 	$archive_day_date_format = "Y/m/d";
-	$arc_result=$wpdb->get_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date), DAYOFMONTH(post_date) FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC", ARRAY_A);
+	$arc_result=$wpdb->get_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date), DAYOFMONTH(post_date) FROM ".wp_table('posts')." ORDER BY post_date DESC", ARRAY_A);
 	foreach ($arc_result as $arc_row) {
 		$arc_year  = $arc_row["YEAR(post_date)"];
 		$arc_month = $arc_row["MONTH(post_date)"];
@@ -101,12 +101,12 @@ function wp_dropdown_daily($current) {
 	}
 }
 function wp_dropdown_weekly($current) {
-	global $wpdb, $wp_id;
+	global $wpdb;
 
 		$archive_week_start_date_format = "Y/m/d";
 		$archive_week_end_date_format   = "Y/m/d";
 		$archive_week_separator = " - ";
-		$arc_result=$wpdb->geT_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date), DAYOFMONTH(post_date), WEEK(post_date) FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC", ARRAY_A);
+		$arc_result=$wpdb->geT_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date), DAYOFMONTH(post_date), WEEK(post_date) FROM ".wp_table('posts')." ORDER BY post_date DESC", ARRAY_A);
 		$arc_w_last = '';
         foreach ($arc_result as $arc_row) {
 			$arc_year = $arc_row["YEAR(post_date)"];
@@ -126,8 +126,8 @@ function wp_dropdown_weekly($current) {
 }
 
 function wp_dropdown_postbypost($current) {
-	global $wpdb, $wp_id;
-	$resultarc = $wpdb->get_results("SELECT ID,post_date,post_title FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC");
+	global $wpdb;
+	$resultarc = $wpdb->get_results("SELECT ID,post_date,post_title FROM ".wp_table('posts')." ORDER BY post_date DESC");
 	foreach ($resultarc as $row) {
 		if ($row->post_date != "0000-00-00 00:00:00") {
 			$title = (strip_tags($row->post_title)) ? strip_tags(stripslashes($row->post_title)) : $row->ID;
@@ -255,7 +255,7 @@ function veriflog() {
 		} else {
 			$userObject =& $userHandler->create();
 			$userObject->setVar('ID', $GLOBALS['xoopsUser']->uid());
-			$userHandler->insert($userObject, true, true, wp_mod());
+			$userHandler->insert($userObject, true, true);
 		}
 		return true;
 	}
@@ -263,7 +263,7 @@ function veriflog() {
 }
 // Some postmeta stuff
 function add_meta($post_ID) {
-	global $wpdb,$wp_id;
+	global $wpdb;
 	
 	$metakeyselect = $wpdb->escape( stripslashes( trim($_POST['metakeyselect']) ) );
 	$metakeyinput  = $wpdb->escape( stripslashes( trim($_POST['metakeyinput']) ) );
@@ -280,7 +280,7 @@ function add_meta($post_ID) {
 			$metakey = $metakeyinput; // default
 
 		$result = $wpdb->query("
-				INSERT INTO {$wpdb->postmeta[$wp_id]} 
+				INSERT INTO ".wp_table('postmeta')." 
 				(post_id,meta_key,meta_value) 
 				VALUES ('$post_ID','$metakey','$metavalue')
 			");
@@ -288,20 +288,20 @@ function add_meta($post_ID) {
 } // add_meta
 
 function delete_meta($mid) {
-	global $wpdb,$wp_id;
+	global $wpdb;
 
-	$result = $wpdb->query("DELETE FROM {$wpdb->postmeta[$wp_id]} WHERE meta_id = '$mid'");
+	$result = $wpdb->query("DELETE FROM ".wp_table('postmeta')." WHERE meta_id = '$mid'");
 }
 
 function update_meta($mid, $mkey, $mvalue) {
-	global $wpdb,$wp_id;
+	global $wpdb;
 
-	return $wpdb->query("UPDATE {$wpdb->postmeta[$wp_id]} SET meta_key = '$mkey', meta_value = '$mvalue' WHERE meta_id = '$mid'");
+	return $wpdb->query("UPDATE ".wp_table('postmeta')." SET meta_key = '$mkey', meta_value = '$mvalue' WHERE meta_id = '$mid'");
 }
 
 function draft_list($user_ID) {
-	global $wpdb, $wp_id;
-	$drafts = $wpdb->get_results("SELECT ID, post_title FROM {$wpdb->posts[$wp_id]} WHERE post_status = 'draft' AND post_author = $user_ID");
+	global $wpdb;
+	$drafts = $wpdb->get_results("SELECT ID, post_title FROM ".wp_table('posts')." WHERE post_status = 'draft' AND post_author = $user_ID");
 	if ($drafts) {
 ?>
 <div class="wrap">
@@ -327,8 +327,6 @@ function draft_list($user_ID) {
 }
 
 function do_trackback($postObject, $useutf8, $target_charset="") {
-global $wpdb, $wp_id;
-
 	$pinged = explode("\n", $postObject->getVar('pinged'));
 	$to_ping = $postObject->getVar('to_ping');
 	if ('' != $to_ping) {

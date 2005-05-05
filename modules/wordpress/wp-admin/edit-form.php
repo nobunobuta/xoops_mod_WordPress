@@ -11,7 +11,7 @@ $use_spaw = ($GLOBALS['wp_use_spaw']);
 // $use_koivi = $GLOBALS['wp_use_koivi'];
 
 $smilies = array();
-foreach($wpsmiliestrans[$wp_id] as $smiley => $img) {
+foreach($GLOBALS['wpsmiliestrans'][wp_id()] as $smiley => $img) {
 	$smile['id'] = str_replace("'","\'",$smiley);
 	$smile['path'] = $smilies_directory.'/'.$img;
 	$smile['name'] = $smiley;

@@ -169,7 +169,7 @@ if ($_ok) { // if there was no comment from this IP in the last 10 seconds
 	$commentObject->setVar('comment_date',$_now);
 	$commentObject->setVar('comment_content',$_comment);
 	$commentObject->setVar('comment_approved',$_approved);
-	if(!$commentHandler->insert($postObject)) {
+	if(!$commentHandler->insert($commentObject)) {
 		redirect_header($_location, 3, $commentHandler->getErrors());
 	}
 	$_comment_ID = $commentObject->getVar('comment_ID');

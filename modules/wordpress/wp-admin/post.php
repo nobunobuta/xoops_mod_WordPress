@@ -209,7 +209,6 @@ switch(get_param('action')) {
 		if ($post_name == "") {
 			$post_name = "post-".$post_ID;
 		}
-		$postObject->setVar('post_author', $user_ID);
 		$postObject->setVar('post_content', apply_filters('content_save_pre', $wp_content));
 		$postObject->setVar('post_title', $post_title);
 		$postObject->setVar('post_excerpt', apply_filters('excerpt_save_pre',$excerpt));

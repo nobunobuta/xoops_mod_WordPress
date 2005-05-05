@@ -16,9 +16,9 @@ $tableblacklist = $GLOBALS['xoopsDB']->prefix("wp_blacklist");
    always returns true
  */
 function wpbl_notify($comment_id, $reason, $harvest) {
-    global $wpdb, $wp_id, $url, $email, $comment, $user_ip, $comment_post_ID, $author, $tableposts;
+    global $wpdb, $url, $email, $comment, $user_ip, $comment_post_ID, $author, $tableposts;
 	
-	$tableposts = $wpdb->posts[$wp_id];
+	$tableposts = wp_table('posts');
     $sql = "SELECT * FROM $tableposts WHERE ID='$comment_post_ID' LIMIT 1";
     $post = $wpdb->get_row($sql);
     if (!empty($user_ip)) {

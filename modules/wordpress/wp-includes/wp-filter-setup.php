@@ -21,7 +21,7 @@ add_filter('comment_text', 'convert_chars');
 add_filter('comment_text', 'make_clickable');
 add_filter('comment_text', 'wpautop', 30);
 add_filter('comment_text', 'balanceTags', 50);
-add_filter('comment_text', 'convert_smilies', 20);
+add_filter('comment_text', 'convert_smilies', 40);
 
 add_filter('comment_excerpt', 'convert_chars');
 
@@ -36,14 +36,14 @@ add_filter('the_title_rss', 'strip_tags');
 add_filter('the_content', 'wptexturize');
 add_filter('the_content', 'convert_bbcode',5);
 add_filter('the_content', 'convert_gmcode',5);
-add_filter('the_content', 'convert_smilies');
+add_filter('the_content', 'convert_smilies',40);
 add_filter('the_content', 'convert_chars');
 add_filter('the_content', 'wpautop');
 
 add_filter('the_excerpt', 'wptexturize');
 add_filter('the_excerpt', 'convert_bbcode',5);
 add_filter('the_excerpt', 'convert_gmcode',5);
-add_filter('the_excerpt', 'convert_smilies');
+add_filter('the_excerpt', 'convert_smilies',40);
 add_filter('the_excerpt', 'convert_chars');
 add_filter('the_excerpt', 'wpautop');
 
