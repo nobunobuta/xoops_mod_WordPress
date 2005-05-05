@@ -21,8 +21,8 @@ if( ! defined( 'WP_LINKS_UPDATE_XML_INCLUDED' ) ) {
  ** the db) the ones which have been updated (on weblogs.com).
  **/
 function preload_links() {
-	global  $all_links, $wpdb ,$wp_id;
-	$links = $wpdb->get_results("SELECT link_id, link_url FROM {$wpdb->links[$wp_id]} WHERE link_visible = 'Y' AND link_url <> ''");
+	global  $all_links;
+	$links = $GLOBALS['wpdb']->get_results("SELECT link_id, link_url FROM ".wp_table('links')." WHERE link_visible = 'Y' AND link_url <> ''");
 	foreach ($links as $link) {
 		$link_url = transform_url($link->link_url);
 		$all_links[$link_url] = array($link->link_id, 0);
@@ -34,11 +34,11 @@ function preload_links() {
  ** Update in the db the links which have been updated ($all_links[url][1] != 0)
  **/
 function update_links() {
-	global  $all_links, $wpdb ,$wp_id;
+	global  $all_links;
 	reset($all_links);
 	while (list($id, $val) = each($all_links)) {
 		if ($val[1]) {
-			$wpdb->query("UPDATE {$wpdb->links[$wp_id]} SET link_updated = '$val[1]' WHERE link_id = $val[0]");
+			$GLOBALS['wpdb']->query("UPDATE ".wp_table('links')." SET link_updated = '$val[1]' WHERE link_id = $val[0]");
 		}
 	} // end while
 }

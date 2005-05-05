@@ -13,11 +13,10 @@ function wp_mail_quit() {
 function wp_mail_receive() {
   global $wpdb, $wp_pop3, $img_target;
   
-	require_once(wp_base() .'/wp_includes/class-pop3.php');
+	require_once(wp_base() .'/wp-includes/class-pop3.php');
 	timer_start();
 	$use_cache = 1;
 	$time_difference = get_settings('time_difference');
-	$blog_charset = get_settings('blog_charset');
 
 	// Get Server Time Zone
 	// If Server Time Zone is not collect, Please comment out following line;
@@ -200,7 +199,7 @@ function wp_mail_receive() {
 			$content = trim($content);
 			echo "<p><b>Content-type:</b> $content_type, <b>boundary:</b> $boundary</p>\n";
 			echo "<p><b>att_boundary:</b> $att_boundary, <b>hatt_boundary:</b> $hatt_boundary</p>\n";
-			echo "<p><b>charset:</b>$charset, <b>BLOG charset:</b>$blog_charset</p>\n"; 
+			echo "<p><b>charset:</b>$charset, <b>BLOG charset:</b>".$GLOBALS['blog_charset']."</p>\n"; 
 			// echo "<p><b>Raw content:</b><br /><pre>".$content.'</pre></p>';
 
 			if (($charset == "") || (trim(strtoupper($charset)) == "ISO-2022-JP")) $charset = "JIS";
@@ -256,7 +255,7 @@ function wp_mail_receive() {
 			$blah = explode(':', $userpassstring);
 			$user_login = $blah[0];
 			$user_pass = $blah[1];
-			$user_login = mb_conv(trim($user_login), $blog_charset, $charset);
+			$user_login = mb_conv(trim($user_login), $GLOBALS['blog_charset'], $charset);
 			
 			$content = $contentfirstline . str_replace($firstline, '', $content);
 			$content = trim($content); 
@@ -284,7 +283,7 @@ function wp_mail_receive() {
 				if ($post_category == '') {
 					$post_category = get_settings('default_post_category');
 				} 
-				echo "Subject : " . mb_conv($subject, $blog_charset, $sub_charset) . " <br />\n";
+				echo "Subject : " . mb_conv($subject, $GLOBALS['blog_charset'], $sub_charset) . " <br />\n";
 				echo "Category : $post_category <br />\n";
 				if (!get_settings('emailtestonly')) {
 					// Attaching Image Files Save
@@ -308,8 +307,8 @@ function wp_mail_receive() {
 
 					$content = preg_replace("|\n([^\n])|", " $1", $content);
 					$content = preg_replace("/\=([0-9a-fA-F]{2,2})/e", "pack('c',base_convert('\\1',16,10))", $content);
-					$content = addslashes(mb_conv(trim($content), $blog_charset, $charset));
-					$post_title = addslashes(trim(mb_conv($post_title, $blog_charset, $sub_charset)));
+					$content = addslashes(mb_conv(trim($content), $GLOBALS['blog_charset'], $charset));
+					$post_title = addslashes(trim(mb_conv($post_title, $GLOBALS['blog_charset'], $sub_charset)));
 					// If we find an attachment, add it to the post
 					if ($attachment) {
 						if (isset($img_target) && $img_target) {
@@ -395,7 +394,7 @@ function wp_getattach($content, $prefix = "", $create_thumbs = 0)
 		if (($prefix == 0) && eregi("name=\"?([^\"\n]+)\"?", $contents[0], $filereg)) {
 			$filename = ereg_replace("[\t\r\n]", "", $filereg[1]);
 			if (function_exists('mb_convert_encoding')) {
-				$temp_file = mb_conv(mb_decode_mimeheader($filename), get_settings('blog_charset'), "auto");
+				$temp_file = mb_conv(mb_decode_mimeheader($filename), $GLOBALS['blog_charset'], "auto");
 			} else {
 				$temp_file = $filename;
 			} 

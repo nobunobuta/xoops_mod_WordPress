@@ -27,9 +27,9 @@ $defaultorder = 'DESC';
 define('NL', "\n");
 
 function show_year_select() {
-    global $wpdb, $tableposts, $m, $wp_id;
+    global $wpdb, $tableposts, $m;
     $m = substr($m,0,4);
-    $years = $wpdb->get_col("SELECT DISTINCT YEAR(post_date) as year FROM {$wpdb->posts[$wp_id]} ORDER BY year ASC");
+    $years = $wpdb->get_col("SELECT DISTINCT YEAR(post_date) as year FROM ".wp_table('posts')." ORDER BY year ASC");
     $output .= '<option value="">Á´´ü´Ö</option>'.NL;
     foreach ($years as $year) {
         $output .= '<option value="'.$year.'"';
@@ -43,8 +43,8 @@ function show_year_select() {
 }
 
 function show_author_select() {
-    global $wpdb, $tableusers, $author, $wp_id;
-    $users = $wpdb->get_results("SELECT * FROM {$wpdb->users[$wp_id]} WHERE user_level > 0", ARRAY_A);
+    global $wpdb, $tableusers, $author;
+    $users = $wpdb->get_results("SELECT * FROM ".wp_table('users')." WHERE user_level > 0", ARRAY_A);
     $output .= '<option value="">Á´Åê¹Æ¼Ô</option>'.NL;
     foreach ($users as $user) {
         $output .= '<option value="'.$user['ID'].'"';
@@ -58,7 +58,7 @@ function show_author_select() {
 }
 
 function show_orderby_select() {
-    global $orderby, $wp_id;
+    global $orderby;
     $orderby = explode(' ', $orderby);
     $orderby = $orderby[0];
     if ($orderby == 'date') {
@@ -97,7 +97,7 @@ function show_order_select() {
 }
 
 function archive_header($before='', $after='') {
-    global $post, $orderby, $month, $previous, $siteurl, $blogfilename, $archiveheadstart, $archiveheadend, $category_name, $blog_charset;
+    global $post, $orderby, $month, $previous, $siteurl, $blogfilename, $archiveheadstart, $archiveheadend, $category_name;
     $orderby = explode(' ', $orderby);
     $orderby = $orderby[0];
     if ('date' == $orderby || empty($orderby)) {
@@ -110,7 +110,7 @@ function archive_header($before='', $after='') {
         }
         $previous = $thisdate;
     } elseif ('title' == $orderby) {
-    	$thisletter = ucfirst(mb_substr($post->yomi,0,1,$blog_charset));
+    	$thisletter = ucfirst(mb_substr($post->yomi,0,1,$GLOBALS['blog_charset']));
     	if ($thisletter > "¤ó") $thisletter = "´Á»ú";
         if ($thisletter != $previous) {
             $output .= "<br/>".$thisletter;
@@ -198,7 +198,7 @@ if ($_GET["orderby"] == 'category') {
             }
         }
         $author_name = preg_replace('|[^a-z0-9-]|', '', strtolower($author_name));
-        $author = $wpdb->get_var("SELECT ID FROM {$wpdb->users[$wp_id]} WHERE user_nicename='".$author_name."'");
+        $author = $wpdb->get_var("SELECT ID FROM ".wp_table('users')." WHERE user_nicename='".$author_name."'");
         $whichauthor .= ' AND (post_author = '.intval($author).')';
     }
     if (!empty($year)) $where .= ' AND YEAR(post_date)=' . $year;
@@ -214,12 +214,12 @@ if ($_GET["orderby"] == 'category') {
     <input type="submit" name="submit" value="ÊÂ¤ÓÂØ¤¨¤ë" />
     </form>
     <?php
-    $dogs = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]} WHERE 1=1 ORDER BY cat_name $order");
+    $dogs = $wpdb->get_results("SELECT * FROM ".wp_table('categories')." WHERE 1=1 ORDER BY cat_name $order");
     foreach ($dogs as $catt) {
-        $categories = $wpdb->get_results("SELECT * FROM {$wpdb->post2cat[$wp_id]} WHERE category_id = $catt->cat_ID");
+        $categories = $wpdb->get_results("SELECT * FROM ".wp_table('post2cat')." WHERE category_id = $catt->cat_ID");
         if ($categories) {
             foreach ($categories as $post2category) {
-                $posts = $wpdb->get_results("SELECT * FROM {$wpdb->posts[$wp_id]} WHERE $post2category->post_id = ID".$where);
+                $posts = $wpdb->get_results("SELECT * FROM ".wp_table('posts')." WHERE $post2category->post_id = ID".$where);
                 global $category_name;
                 $category_name = $post2category->category_id;
                 if ($posts) {
@@ -258,18 +258,18 @@ else {
 			$process = proc_open($kakasi." -kH -KH -JH", $descriptorspec, $pipes);
 			if (is_resource($process)) {
 		    	for($i = 0; $i < count($posts); $i++) {
-					fputs($pipes[0], mb_convert_encoding($posts[$i]->post_title."\n", $kakasi_encode, $blog_charset));
+					fputs($pipes[0], mb_convert_encoding($posts[$i]->post_title."\n", $kakasi_encode, $GLOBALS['blog_charset']));
 				}
 				fclose($pipes[0]);
 		    	for($i = 0; $i < count($posts); $i++) {
-					$posts[$i]->yomi = mb_convert_encoding(fgets ($pipes[1]), $blog_charset, $kakasi_encode);
+					$posts[$i]->yomi = mb_convert_encoding(fgets ($pipes[1]), $GLOBALS['blog_charset'], $kakasi_encode);
 		    	}
 				fclose($pipes[1]);
 				$return_value = proc_close($process);
 			}
 		} else {
 	    	for($i = 0; $i < count($posts); $i++) {
-				$posts[$i]->yomi = mb_convert_kana($posts[$i]->post_title,"KcV", $blog_charset);
+				$posts[$i]->yomi = mb_convert_kana($posts[$i]->post_title,"KcV", $GLOBALS['blog_charset']);
 			}
 		}
     	usort($posts, "cmp");

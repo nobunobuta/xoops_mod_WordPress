@@ -40,8 +40,8 @@ foreach ($posts as $post) { start_wp();
 $comment_author = (isset($_COOKIE['comment_author_'.$cookiehash])) ? trim($_COOKIE['comment_author_'.$cookiehash]) : '';
 $comment_author_email = (isset($_COOKIE['comment_author_email_'.$cookiehash])) ? trim($_COOKIE['comment_author_email_'.$cookiehash]) : '';
 $comment_author_url = (isset($_COOKIE['comment_author_url_'.$cookiehash])) ? trim($_COOKIE['comment_author_url_'.$cookiehash]) : '';
-$comments = $wpdb->get_results("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_post_ID = $id AND comment_approved = '1' ORDER BY comment_date");
-$commentstatus = $wpdb->get_row("SELECT comment_status, post_password FROM {$wpdb->posts[$wp_id]} WHERE ID = $id");
+$comments = $wpdb->get_results("SELECT * FROM ".wp_table('comments')." WHERE comment_post_ID = $id AND comment_approved = '1' ORDER BY comment_date");
+$commentstatus = $wpdb->get_row("SELECT comment_status, post_password FROM ".wp_table('posts')." WHERE ID = $id");
 if (!empty($commentstatus->post_password) && $_COOKIE['wp-postpass_'.$cookiehash] != $commentstatus->post_password) {  // and it doesn't match the cookie
 	echo(get_the_password_form());
 } else { 

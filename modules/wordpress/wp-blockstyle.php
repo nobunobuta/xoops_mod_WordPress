@@ -2,7 +2,7 @@
 $GLOBALS['blog'] = 1;
 require(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
-header('Content-type: text/css; charset=EUC-JP');
+header('Content-type: text/css; charset='.$GLOBALS['blog_charset']);
 if (wp_id()=='-') {
 	echo block_style_get('', false, false);
 } else {

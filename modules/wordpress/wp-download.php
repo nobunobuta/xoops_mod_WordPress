@@ -55,7 +55,7 @@ $fname=urldecode($_GET['fname']);
 $from=$_GET['from'];
 $file=get_settings('fileupload_realpath').'/'.$from;
 if ($GLOBALS['is_IE']) {
-	$fname=mb_conv($fname,'SJIS',get_settings('blog_charset'));
+	$fname=mb_conv($fname,'SJIS', $GLOBALS['blog_charset']);
 }
 
 $obj = &new DocumentFile($file);

@@ -2,8 +2,8 @@
 /*
 Plugin Name: Blacklist
 Plugin URI: http://www.farook.org
-Description: Checks each entered comment against a standard blacklist and either approves or holds the comment for later approval or automatically deletes it. Also allows you to work with comments in the moderation queue so that you can harvest information to add to the blacklist while mass-deleting held comments.<BR /><a href="wpblacklist.php?action=install">Blacklist Installer</a><BR /><a href="wpblacklist.php">Blacklist Configuration</a>
-Version: 2.6.1
+Description: Checks each entered comment against a standard blacklist and either approves or holds the comment for later approval or automatically deletes it. Also allows you to work with comments in the moderation queue so that you can harvest information to add to the blacklist while mass-deleting held comments. If it's your first time you can use the <a href="../blacklist-install.php">Blacklist Installer</a> or you can simply go to the <a href="wpblacklist.php">Blacklist Configuration</a> screen.
+Version: 2.9
 Author: Fahim Farook
 Author URI: http://www.farook.org
 */
@@ -16,23 +16,31 @@ $tableblacklist = $GLOBALS['xoopsDB']->prefix("wp_blacklist");
    always returns true
  */
 function wpbl_notify($comment_id, $reason, $harvest) {
-    global $wpdb, $url, $email, $comment, $user_ip, $comment_post_ID, $author, $tableposts;
+    global $wbbl_comment;
 	
 	$tableposts = wp_table('posts');
-    $sql = "SELECT * FROM $tableposts WHERE ID='$comment_post_ID' LIMIT 1";
-    $post = $wpdb->get_row($sql);
-    if (!empty($user_ip)) {
-        $comment_author_domain = gethostbyaddr($user_ip);
+    $sql = "SELECT * FROM $tableposts WHERE ID='{$wbbl_comment['comment_post_ID']}' LIMIT 1";
+    $post = $GLOBALS['wpdb']->get_row($sql);
+    if (!empty($wpbl_comment['comment_author_IP'])) {
+        $comment_author_domain = gethostbyaddr($wpbl_comment['comment_author_IP']);
     } else {
         $comment_author_domain = '';
     }
     // create the e-mail body
-    $notify_message  = "A new comment on post #$comment_post_ID \"".stripslashes($post->post_title)."\" has been automatically deleted by the WPBlacklist plugin.\r\n\r\n";
-    $notify_message .= "Author : $author (IP: $user_ip , $comment_author_domain)\r\n";
-    $notify_message .= "E-mail : $email\r\n";
-    $notify_message .= "URL    : $url\r\n";
-    $notify_message .= "Whois  : http://ws.arin.net/cgi-bin/whois.pl?queryinput=$user_ip\r\n";
-    $notify_message .= "Comment:\r\n".stripslashes($comment)."\r\n\r\n";
+    $notify_message  = "A new ";
+    if ($wpbl_comment['comment_type'] == '') {
+        $notify_message .= "Comment";
+    } else if ($wpbl_comment['comment_type'] == 'trackback') {
+        $notify_message .= "TrackBack";
+    } else if ($wpbl_comment['comment_type'] == 'pingback') {
+        $notify_message .= "PingBack";
+    }
+    $notify_message .= " on post #{$wbbl_comment['comment_post_ID']} \"".stripslashes($post->post_title)."\" has been automatically deleted by the WPBlacklist plugin.\r\n\r\n";
+    $notify_message .= "Author : {$wpbl_comment['comment_author']} (IP: {$wpbl_comment['comment_author_IP']} , $comment_author_domain)\r\n";
+    $notify_message .= "E-mail : {$wpbl_comment['comment_author_email']}\r\n";
+    $notify_message .= "URL    : {$wpbl_comment['comment_author_url']}\r\n";
+    $notify_message .= "Whois  : http://ws.arin.net/cgi-bin/whois.pl?queryinput={$wpbl_comment['comment_author_IP']}\r\n";
+    $notify_message .= "Comment:\r\n".stripslashes($wpbl_comment['comment_content'])."\r\n\r\n";
     $notify_message .= "Triggered by : $reason\r\n\r\n";
     // add harvested info - if there is any
     if (!empty($harvest)) {
@@ -42,6 +50,14 @@ function wpbl_notify($comment_id, $reason, $harvest) {
     $subject = '[' . stripslashes(get_settings('blogname')) . '] Automatically deleted: "' .stripslashes($post->post_title).'"';
     $admin_email = get_settings("admin_email");
     $from  = "From: $admin_email";
+	if (strtolower(get_settings('blog_charset'))=="euc-jp") {
+		$mail_charset = "iso-2022-jp";
+	} else {
+		$mail_charset = get_settings('blog_charset');
+	}
+    $message_headers = "MIME-Version: 1.0\r\n"
+    	. "$from\r\n"
+    	. "Content-Type: text/plain; charset=\"" . $mail_charset . "\"\r\n";
     // send e-mail
 	if (function_exists('mb_send_mail')) {
 		mb_send_mail($admin_email, $subject, $notify_message, $from);
@@ -56,61 +72,12 @@ function wpbl_notify($comment_id, $reason, $harvest) {
   return true on successful deletion, false otherwise
  */
 function mail_and_del($commentID, $reason) {
-    global $wpdb, $wpbl_options, $url, $email, $comment, $user_ip,$tableblacklist;
+    global $wpbl_options;
 
     $info = '';
     // harvest information - if necessary
     if (in_array('harvestinfo', $wpbl_options)) {
-        // Add author e-mail to blacklist
-        $buf = sanctify($email);
-        $request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$buf'");
-        if (!$request) {
-            $wpdb->query("INSERT INTO $tableblacklist (regex, regex_type) VALUES ('$buf','url')");
-            $info .= "Author e-mail: $email\r\n";
-        }
-        // Add author IP to blacklist
-        $buf = sanctify($user_ip);
-        $request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$buf'");
-        if (!$request) {
-            $wpdb->query("INSERT INTO $tableblacklist (regex, regex_type) VALUES ('$buf','ip')");
-            $info .= "Author IP: $user_ip\r\n";
-        }
-        // get the author's url without the prefix stuff
-        $regex   = "/([a-z]*)(:\/\/)([a-z]*\.)?(.*)/i";
-        preg_match($regex, $url, $matches);
-        if (strcasecmp('www.', $matches[3]) == 0) {
-            $buf = $matches[4];
-        } else {
-            $buf = $matches[3] . $matches[4];
-        }
-        $buf = remove_trailer($buf);
-        $buf = sanctify($buf);
-        $request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$buf'");
-        if (!$request) {
-            $wpdb->query("INSERT INTO $tableblacklist (regex, regex_type) VALUES ('$buf','url')");
-            $info .= "Author URL: $buf\r\n";
-        }
-        // harvest links found in comment
-        $regex = "/([a-z]*)(:\/\/)([a-z]*\.)?([^\">\s]*)/im";
-        preg_match_all($regex, $comment, $matches);
-        for ($i=0; $i < count($matches[4]); $i++ ) {
-            if (strcasecmp('www.', $matches[3][$i]) == 0) {
-                $buf = $matches[4][$i];
-            } else {
-                $buf = $matches[3][$i] . $matches[4][$i];
-            }
-            $ps = strrpos($buf, '/');
-            if ($ps) {
-                $buf = substr($buf, 0, $ps);
-            }
-            $buf = remove_trailer($buf);
-            $buf = sanctify($buf);
-            $request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$buf'");
-            if (!$request) {
-                $wpdb->query("INSERT INTO $tableblacklist (regex, regex_type) VALUES ('$buf','url')");
-                $info .= "Comment URL: $buf\r\n";
-            }
-        } // for
+        $info = harvest($commentID);
     }
     // send e-mail first since details won't be there after delete :p
     if (in_array('sendmail', $wpbl_options)) {
@@ -127,34 +94,37 @@ function mail_and_del($commentID, $reason) {
   the main function which approves/holds/deletes comments based on the internal blacklist
  */
 function blacklist($commentID) {
-    global $wpdb, $url, $email, $comment, $user_ip, $wpbl_options, $tablecomments, $tableblacklist;
+    global $wpbl_options, $wbbl_comment, $tableblacklist, $approved;
 
-//    $row = $wpdb->get_row("SELECT * FROM $tablecomments WHERE comment_ID='$commentID'");
-//    echo "Author: $row->comment_author<br />";
+	$wpbl_comment=get_commentdata($commentID,1,false);
     // first check the comment status based on WP core moderation
     $stat = wp_get_comment_status($commentID);
     if ($stat == 'deleted') {
         // no need to proceed since there is no comment
         return;
     } else if ($stat == 'unapproved') {
-        $approved = False;
+        $held = True;
     } else {
-        $approved = True;
+        $held = False;
     }
     // are we supposed to delete comments held by the core?
-    if (!$approved && in_array('deletecore', $wpbl_options)) {
+    if ($held && in_array('deletecore', $wpbl_options)) {
         mail_and_del($commentID, "Mail held for moderation outside WPBlacklist");
+        return;
+    } else if ($held && !in_array('checkcore', $wpbl_options)) {
+        // comment held for moderation but option to check against blacklist not specified
         return;
     }
     // IP check
-    $sites = $wpdb->get_results("SELECT regex FROM $tableblacklist WHERE regex_type='ip'");
+    $sites = $GLOBALS['wpdb']->get_results("SELECT regex FROM $tableblacklist WHERE regex_type='ip'");
     if ($sites) {
         foreach ($sites as $site)  {
             $regex = "/^$site->regex/";
-            if (preg_match($regex, $user_ip)) {
-                $approved = False;
+            if (preg_match($regex, $wpbl_comment['comment_author_IP'])) {
+                $held = True;
                 if (in_array('deleteip', $wpbl_options)) {
-                    mail_and_del($commentID, "Author IP: $user_ip matched $regex");
+                    $approved = 'deleted';
+                    mail_and_del($commentID, "Author IP: {$wpbl_comment['comment_author_IP']} matched $regex");
                     return;
                 }
                 break;
@@ -162,18 +132,18 @@ function blacklist($commentID) {
         }
     }
     // RBL check
-    if ($approved || in_array('deleterbl', $wpbl_options)) {
-        $sites = $wpdb->get_results("SELECT regex FROM $tableblacklist WHERE regex_type='rbl'");
+    if (!$held || in_array('deleterbl', $wpbl_options)) {
+        $sites = $GLOBALS['wpdb']->get_results("SELECT regex FROM $tableblacklist WHERE regex_type='rbl'");
         if ($sites) {
             foreach ($sites as $site)  {
                 $regex = $site->regex;
-                if (preg_match("/([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/", $user_ip, $matches)) {
+                if (preg_match("/([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/", $wpbl_comment['comment_author_IP'], $matches)) {
                     $rblhost = $matches[4] . "." . $matches[3] . "." . $matches[2] . "." . $matches[1] . "." . $regex;
                     $resolved = gethostbyname($rblhost);
                     if ($resolved != $rblhost) {
-                        $approved = False;
+                        $held = True;
                         if (in_array('deleterbl', $wpbl_options)) {
-                            mail_and_del($commentID, "Author IP: $user_ip blacklisted by RBL $regex");
+                            mail_and_del($commentID, "Author IP: {$wpbl_comment['comment_author_IP']} blacklisted by RBL $regex");
                             return;
                         }
                         break;
@@ -183,31 +153,34 @@ function blacklist($commentID) {
         }
     }
     // expression check
-    if ($approved || in_array('deletemail', $wpbl_options) || in_array('deleteurl', $wpbl_options) || in_array('delcommurl', $wpbl_options)) {
-        $sites = $wpdb->get_results("SELECT regex FROM $tableblacklist WHERE regex_type='url'");
+    if (!$held || in_array('deletemail', $wpbl_options) || in_array('deleteurl', $wpbl_options) || in_array('delcommurl', $wpbl_options)) {
+        $sites = $GLOBALS['wpdb']->get_results("SELECT regex FROM $tableblacklist WHERE regex_type='url'");
         if ($sites) {
             foreach ($sites as $site)  {
+
                 $regex = "/$site->regex/i";
 //                echo "Regex: $regex <br />";
-                if (preg_match($regex, $url)) {
-                    $approved = False;
+                if (preg_match($regex, $wpbl_comment['comment_author_url'])) {
+                    $held = True;
                     if (in_array('deleteurl', $wpbl_options)) {
-                        mail_and_del($commentID, "Author URL: $url matched $regex");
+                        $approved = 'deleted';
+                        mail_and_del($commentID, "Author URL: {$wpbl_comment['comment_author_url']} matched $regex");
                         return;
                     }
                     break;
                 }
-                if (preg_match($regex, $email)) {
-                    $approved = False;
+                if (preg_match($regex, $wpbl_comment['comment_author_email'])) {
+                    $held = True;
                     if (in_array('deletemail', $wpbl_options)) {
-                        mail_and_del($commentID, "Author e-mail: $email matched $regex");
+                        mail_and_del($commentID, "Author e-mail: {$wpbl_comment['comment_author_email']} matched $regex");
                         return;
                     }
                     break;
                 }
-                if (preg_match($regex, $comment)) {
-                    $approved = False;
+                if (preg_match($regex, $wpbl_comment['comment_content'])) {
+                    $held = True;
                     if (in_array('delcommurl', $wpbl_options)) {
+                        $approved = 'deleted';
                         mail_and_del($commentID, "Comment text contained $regex");
                         return;
                     }
@@ -216,11 +189,29 @@ function blacklist($commentID) {
             }
         }
     }
-    if ($approved) {
-        wp_set_comment_status($commentID, 'approve');
-    } else {
+	if (!$held || in_array('deltbsp', $wpbl_options)) {
+		// Let's check the remote site
+		require_once(XOOPS_ROOT_PATH.'/class/snoopy.php');
+		$snoopy = New Snoopy;
+		if ($snoopy->fetch($wpbl_comment['comment_author_url'])) {
+			$orig_contents = $snoopy->results;
+		}
+
+		if (!strpos($orig_contents, $siteurl)) {
+			$approved = 'deleted';
+			mail_and_del($commentID, "TrackBack URL does not contain my site URL");
+		}
+	}
+    if ($held) {
+        $approved = 0;
         wp_set_comment_status($commentID, 'hold');
+    } else {
+        $approved = 1;
+        wp_set_comment_status($commentID, 'approve');
+
     }
+    // the following is essential not to break other plugins
+    return $commentID;
 }
 
 function wpblmenu() {
@@ -233,9 +224,11 @@ function wpblmenu() {
 
 // set up the options array
 $wpbl_options = array();
+// set up the other global variables
+$wpbl_comment=array();
 // load options from DB
 $sql = "SELECT * FROM $tableblacklist WHERE regex_type = 'option'";
-$results = $wpdb->get_results($sql);
+$results = $GLOBALS['wpdb']->get_results($sql);
 if ($results) {
     foreach ($results as $result) {
         $wpbl_options[] = $result->regex;
@@ -245,5 +238,6 @@ if ($results) {
 // the hook
 add_action('comment_post', 'blacklist');
 add_action('trackback_post', 'blacklist');
+add_action('pingback_post', 'blacklist');
 add_action('admin_menu', 'wpblmenu');
 ?>

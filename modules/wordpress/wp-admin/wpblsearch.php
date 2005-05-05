@@ -33,6 +33,7 @@ for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 $tableblacklist = $xoopsDB->prefix("wp_blacklist");
 $tablecomments = wp_table('comments');
 $tableposts =  wp_table('posts');
+
 if ($user_level < 3) {
 ?>
 	<div class="wrap">
@@ -44,7 +45,7 @@ if ($user_level < 3) {
 	</div>
 <?php
 	exit();
-} // $user_level <= 0
+} // $user_level < 3
 ?>
 <script type="text/javascript">
 <!--
@@ -63,7 +64,7 @@ function checkAll(form)
 </script>
 <div class="wrap">
 <p>
-<?php _e('You can search your existing comments using multiple options and delete any of the results of your searches. In addition, you can also use the "Delete & Add" button (where relevant) to add the search expression you specified to your blacklist while deleting the checked entries. Please note that searching all comments using the blacklist might take a longtime and so it is better to specify a number of comments to search.') ?>
+<?php _e('You can search your existing comments using multiple options and delete any of the results of your searches. In addition, you can also use the "Delete & Add" button to add the search expression you specified, as well as any information harvested from the selected comments, to your blacklist while deleting the selected comments. Please note that searching all comments using the blacklist might take a longtime and so it is better to specify the number of comments to search.') ?>
 </p>
 <form name="searchform" action="wpblsearch.php?action=search" method="post">
 	<fieldset>
@@ -95,32 +96,46 @@ if (($action == 'delete') && !empty($delete_comments)) {
 		$post_id = $wpdb->get_var("SELECT comment_post_ID FROM $tablecomments WHERE comment_ID = $comment");
 		$authordata = get_userdata($wpdb->get_var("SELECT post_author FROM $tableposts WHERE ID = $post_id"));
 		if (($user_level > $authordata->user_level) or ($user_login == $authordata->user_login)) {
+			// harvest information before deleting if this is a delete & add operation
+            if (!empty($deladd)) {
+				if (!empty($info)) {
+					$info .= '<br />';
+				}
+				$info .= harvest($comment);
+			}
+			// delete the comment
 			$wpdb->query("DELETE FROM $tablecomments WHERE comment_ID = $comment");
 			++$i;
 		}
 	}
 	echo "<p><strong>" . sprintf(__('%s comments deleted.'), $i);
-	// was this an add & delete operation - if so, add search item to blacklist
+	// was this an add & delete operation - if so, add search item & harvested items to blacklist
 	if ($deladd <> '') {
-		if ($rb_search == 1) {
-			$answer = "IP : $search ";
-			$search = sanctify($search);
-			$sql = "INSERT INTO $tableblacklist (regex,regex_type) VALUES ('$search','ip')";
-		} else {
-			$search = sanctify($search);
-			$answer = "Expression : $search";
-			$sql = "INSERT INTO $tableblacklist (regex,regex_type) VALUES ('$search','url')";
-		}
-		$request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$search'");
-		if (!$request) {
-			$request = $wpdb->query($sql);
-			if (!$request) {
-				$answer = $answer . " could not be added!";
-			} else {
-				$answer = $answer . " successfully added!";
+		// the search item is only added for IP or regex searches
+        if (($rb_search > 0) && (!empty($search))) {
+			if ($rb_search == 1) {
+				$answer = "IP : $search ";
+				$search = sanctify($search);
+				$sql = "INSERT INTO $tableblacklist (regex,regex_type) VALUES ('$search','ip')";
+			} else if ($rb_search == 2) {
+				$search = sanctify($search);
+				$answer = "Expression : $search";
+				$sql = "INSERT INTO $tableblacklist (regex,regex_type) VALUES ('$search','url')";
 			}
-		} else {
-			$answer = $answer . " already exists in blacklist!";
+			$request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$search'");
+			if (!$request) {
+				$request = $wpdb->query($sql);
+				if (!$request) {
+					$answer = $answer . " could not be added!";
+				} else {
+					$answer = $answer . " successfully added!";
+				}
+			} else {
+				$answer = $answer . " already exists in blacklist!";
+			}
+		}
+		if (!empty($info)) {
+			$answer .= '<br />Harvested the following information: <br />' . $info;
 		}
 		echo "<br />$answer";
     }
@@ -228,6 +243,7 @@ if (($action == 'search') || ($action == 'delete')) {
 		case 2:
 			// search by expression
 			if (!empty($search)) {
+				$search = sanctify($search, False);
 				$sql = "SELECT * FROM $tablecomments ORDER BY comment_date DESC";
 				$comments = $wpdb->get_results($sql);
 				$sql = '';
@@ -235,23 +251,15 @@ if (($action == 'search') || ($action == 'delete')) {
 					foreach ($comments as $comment) {
 						$next = False;
 						// regular expression/URL check
-						$sites = $wpdb->get_results("SELECT regex FROM $tableblacklist WHERE regex_type='url'");
-						if ($sites) {
-							foreach ($sites as $site)  {
-								$regex = "/$site->regex/i";
-								if (preg_match($regex, $comment->comment_author_url)) {
-									$next = True;
-									break;
-								}
-								if (preg_match($regex, $comment->comment_author_email)) {
-									$next = True;
-									break;
-								}
-								if (preg_match($regex, $comment->comment_content)) {
-									$next = True;
-									break;
-								}
-							}
+						$regex = "/$search/i";
+						if (preg_match($regex, $comment->comment_author_url)) {
+							$next = True;
+						}
+						if (preg_match($regex, $comment->comment_author_email)) {
+							$next = True;
+						}
+						if (preg_match($regex, $comment->comment_content)) {
+							$next = True;
 						}
 						// was a match found - if so add ID to list
                         if ($next) {
@@ -266,16 +274,6 @@ if (($action == 'search') || ($action == 'delete')) {
 						$sql = "SELECT * FROM $tablecomments WHERE comment_ID IN (" . $sql . ')';
 					}
 				}
-			} else {
-				$valid = False;
-			}
-
-
-            if (!empty($search)) {
-				$sql = strtoupper($search);
-				$sql = "SELECT * FROM $tablecomments WHERE UPPER(comment_author) LIKE '%$sql%' OR " .
-					"UPPER(comment_author_email) LIKE '%$sql%' OR UPPER(comment_author_url) LIKE ('%$sql%') OR " .
-					"UPPER(comment_content) LIKE ('%$sql%') ORDER BY comment_date DESC";
 			} else {
 				$valid = False;
 			}
@@ -321,13 +319,7 @@ if (($action == 'search') || ($action == 'delete')) {
 				<a href="javascript:;" onclick="checkAll(document.getElementById('deletecomments')); return false; "><?php _e('Invert Checkbox Selection') ?></a>
 			</p>
 			<p style="text-align: right;">
-<?php
-			if ($rb_search > 0) {
-?>
 				<input type="submit" name="deladd" value="<?php _e('Delete & Add') ?>" onclick="return confirm('<?php _e("You are about to delete these comments permanently \\n  \'Cancel\' to stop, \'OK\' to delete.") ?>')" />
-<?php
-			} // $rb_search > 0
-?>
 				<input type="submit" name="Submit" value="<?php _e('Delete Checked') ?>" onclick="return confirm('<?php _e("You are about to delete these comments permanently \\n  \'Cancel\' to stop, \'OK\' to delete.") ?>')" />
 			</p>
 		</form>

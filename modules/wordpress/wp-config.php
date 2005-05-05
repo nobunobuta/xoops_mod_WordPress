@@ -11,7 +11,7 @@ if (!defined('WP_DB_NAME')) {
 	define('WP_DB_HOST', XOOPS_DB_HOST);
 }
 
-global $wpdb, $wp_id, $wp_base;
+global $wpdb, $wp_id;
 
 if (empty($GLOBALS['wp_inblock'])) {
 	$_wp_my_dirname = basename( dirname( __FILE__ ) ) ;
@@ -32,7 +32,7 @@ if (($GLOBALS['wp_id']==="")||($GLOBALS['wp_id']==="-")) {
 $GLOBALS['wp_base'][$GLOBALS['wp_id']] = XOOPS_ROOT_PATH.'/modules/'.$GLOBALS['wp_mod'][$GLOBALS['wp_id']];
 $GLOBALS['wp_siteurl'][$GLOBALS['wp_id']] = XOOPS_URL.'/modules/'.$GLOBALS['wp_mod'][$GLOBALS['wp_id']];
 $GLOBALS['table_prefix'][$GLOBALS['wp_id']] = $GLOBALS['xoopsDB']->prefix($GLOBALS['wp_prefix'][$GLOBALS['wp_id']]);
-
+//For compatiblity 
 if(!defined('ABSBASE')) define ('ABSBASE' , '/modules/'.$GLOBALS['wp_mod'][$GLOBALS['wp_id']]. '/');
 if(!defined('ABSPATH')) define ('ABSPATH' , $GLOBALS['wp_base'][$GLOBALS['wp_id']]. '/');
 

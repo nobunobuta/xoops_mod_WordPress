@@ -28,14 +28,14 @@ if ( function_exists('debug_backtrace') ) {
 
 ob_start();
 if ($GLOBALS['wp_mail_debug']) {
-	header("Content-Type: text/html; charset=EUC-JP");
-	echo <<<EOD
+	header('Content-Type: text/html; charset='.$GLOBALS['blog_charset']);
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo _LANGCODE ?>" lang="<?php echo _LANGCODE ?>">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=EUC-JP" />
 </head><body>
-EOD;
+<?php
 }
 wp_mail_receive();
 if ($GLOBALS['wp_mail_debug']) {
@@ -52,11 +52,10 @@ function wp_mail_quit() {
 function wp_mail_receive() {
   global $img_target;
   
-	require_once(wp_base() .'/wp_includes/class-pop3.php');
+	require_once(wp_base() .'/wp-includes/class-pop3.php');
 	timer_start();
 	$use_cache = 1;
 	$time_difference = get_settings('time_difference');
-	$blog_charset = get_settings('blog_charset');
 
 	error_reporting(2037);
 
@@ -213,7 +212,7 @@ function wp_mail_receive() {
 
 			echo "<p><b>Content-type:</b> $content_type, <b>boundary:</b> $boundary</p>\n";
 			echo "<p><b>alt_boundary:</b> $alt_boundary, <b>emb_boundary:</b> $emb_boundary</p>\n";
-			echo "<p><b>charset:</b>$charset, <b>BLOG charset:</b>$blog_charset</p>\n"; 
+			echo "<p><b>charset:</b>$charset, <b>BLOG charset:</b>".$GLOBALS['blog_charset']."</p>\n"; 
 			// echo "<p><b>Raw content:</b><br /><pre>".$content.'</pre></p>';
 
 			if (($charset == "") || (trim(strtoupper($charset)) == "ISO-2022-JP")) $charset = "JIS";
@@ -269,7 +268,7 @@ function wp_mail_receive() {
 			$blah = explode(':', $userpassstring);
 			$user_login = $blah[0];
 			$user_pass = $blah[1];
-			$user_login = mb_conv(trim($user_login), $blog_charset, $charset);
+			$user_login = mb_conv(trim($user_login), $GLOBALS['blog_charset'], $charset);
 			
 			$content = $contentfirstline . str_replace($firstline, '', $content);
 			$content = trim($content); 
@@ -290,7 +289,7 @@ function wp_mail_receive() {
 					$post_title = $subject;
 				} 
 
-				echo "Subject : " . mb_conv($post_title, $blog_charset, $sub_charset) . " <br />\n";
+				echo "Subject : " . mb_conv($post_title, $GLOBALS['blog_charset'], $sub_charset) . " <br />\n";
 
 				$post_category = get_settings('default_category');
 				if (preg_match('/<category>(.+?)<\/category>/is', $content, $matchcat)) {
@@ -306,7 +305,7 @@ function wp_mail_receive() {
 				if (!get_settings('emailtestonly')) {
 					$content = preg_replace("|\n([^\n])|", " $1", $content);
 					$content = preg_replace("/\=([0-9a-fA-F]{2,2})/e", "pack('c',base_convert('\\1',16,10))", $content);
-					$content = mb_conv(trim($content), $blog_charset, $charset);
+					$content = mb_conv(trim($content), $GLOBALS['blog_charset'], $charset);
 					$content_before = "";
 					$content_after = "";
 					for ($i =0; $i < count($attaches); $i++) {
@@ -337,7 +336,7 @@ function wp_mail_receive() {
 					$postHandler =& wp_handler('Post');
 					$postObject =& $postHandler->create();
 					$postObject->setVar('post_content', $content);
-					$postObject->setVar('post_title', trim(mb_conv($post_title, $blog_charset, $sub_charset)));
+					$postObject->setVar('post_title', trim(mb_conv($post_title, $GLOBALS['blog_charset'], $sub_charset)));
 					$postObject->setVar('post_date', $post_date);
 					$postObject->setVar('post_author', $post_author);
 					$postObject->setVar('post_category', $post_category[0]);
@@ -393,7 +392,7 @@ function wp_getattach(&$content, $prefix = "", $create_thumbs = 0)
 	if (!empty($content['name'])) {
 		$origname = $content['name'];
 		if (function_exists('mb_convert_encoding')) {
-			$origname = mb_conv(mb_decode_mimeheader($origname), get_settings('blog_charset'), "auto");
+			$origname = mb_conv(mb_decode_mimeheader($origname), $GLOBALS['blog_charset'], "auto");
 		}
 		$filename_info = pathinfo($origname);
 		$subtype = $filename_info["extension"];

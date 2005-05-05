@@ -144,7 +144,7 @@ switch($action) {
 			$exportfile .=$result->regex."\n";
 			}
 			//Send the headers to control the download
-		header('Content-Type: text/plain');
+		header('Content-Type: text/comma-separated-values');
 		header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 		header('Content-Disposition: inline; filename="blacklist.txt"');
 		echo $exportfile;
@@ -182,7 +182,24 @@ switch($action) {
 		break;
 }
 require_once ('./admin-header.php');
+if ($user_level <= 0) {
 ?>
+	<div class="wrap">
+		<p>
+			Since you&#8217;re a newcomer, you&#8217;ll have to wait for an admin to raise your level to 1, in order to be authorized to modify the Blacklist.<br />
+			You can also <a href="mailto:<?php echo $admin_email ?>?subject=Plugin permission">e-mail the admin</a> to ask for a promotion.<br />
+			When you&#8217;re promoted, just reload this page to play with the Blacklist. :)
+		</p>
+	</div>
+<?php
+	exit();
+} // $user_level <= 0
+?>
+	<ul id="adminmenu2">
+	  <li><a href="wpblacklist.php" class="current"><?php _e('Manage') ?></a></li>
+	  <li><a href="wpblsearch.php"><?php _e('Search') ?></a></li>
+	  <li class="last"><a href="wpblmoderate.php"><?php _e('Moderate') ?></a></li>
+	</ul>
 	<script type="text/javascript">
 	<!--
 	function checkAll(form)
@@ -215,7 +232,11 @@ require_once ('./admin-header.php');
 				</label>
 				<label>
 					<input type="checkbox" name="options[]" value="deletecore" <?php echo (in_array('deletecore', $options) ? 'checked' : ''); ?> />
-					Delete comments which are already held for moderation (by the WP core moderation system, for instance) <br />
+					Delete comments which are already held for moderation (by the WP core moderation system, for instance) - does not check against blacklist <br />
+				</label>
+				<label>
+					<input type="checkbox" name="options[]" value="checkcore" <?php echo (in_array('checkcore', $options) ? 'checked' : ''); ?> />
+					Check externally held comments against blacklist and delete per the following options<br />
 				</label>
 				<label>
 					<input type="checkbox" name="options[]" value="deleteip" <?php echo (in_array('deleteip', $options) ? 'checked' : ''); ?> />
@@ -236,6 +257,10 @@ require_once ('./admin-header.php');
 				<label>
 					<input type="checkbox" name="options[]" value="delcommurl" <?php echo (in_array('delcommurl', $options) ? 'checked' : ''); ?> />
 					Delete comments where the comment contains URLs which are blacklisted <br />
+				</label>
+				<label>
+					<input type="checkbox" name="options[]" value="deltbsp" <?php echo (in_array('deltbsp', $options) ? 'checked' : ''); ?> />
+					Delete TrackBack where the author URL site does not contains my site URL <br />
 				</label>
 				<input name="saveoptions" type="submit" id="saveoptions" tabindex="9" value="Save Settings" />
 			</fieldset>

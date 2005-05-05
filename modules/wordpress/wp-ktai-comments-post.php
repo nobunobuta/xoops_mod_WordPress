@@ -6,12 +6,11 @@
 require( dirname(__FILE__) . '/wp-config.php' );
 
 if (!defined('XOOPS_URL')) {
-	$blog_charset = get_settings('blog_charset');
+	$GLOBALS['blog_charset'] = get_settings('blog_charset');
 } else {
-	$tableposts = $wpdb->posts[$wp_id];
-	$tablecomments = $wpdb->comments[$wp_id];
+	$tableposts = wp_table('posts');
+	$tablecomments = wp_table('comments');
 }
-
 
 function add_magic_quotes($array) {
 	foreach ($array as $k => $v) {
@@ -30,7 +29,7 @@ if (!get_magic_quotes_gpc()) {
 }
 
 $author = trim(strip_tags($_POST['author']));
-$author = mb_convert_encoding($author, $blog_charset, "auto");
+$author = mb_convert_encoding($author, $GLOBALS['blog_charset'], "auto");
 
 $email = trim(strip_tags($_POST['email']));
 if (strlen($email) < 6)
@@ -60,7 +59,7 @@ $now = current_time('mysql');
 $comment = balanceTags($comment, 1);
 $comment = format_to_post($comment);
 $comment = apply_filters('post_comment_text', $comment);
-$comment = mb_convert_encoding($comment, $blog_charset, "auto");
+$comment = mb_convert_encoding($comment, $GLOBALS['blog_charset'], "auto");
 
 // Simple flood-protection
 $lasttime = $wpdb->get_var("SELECT comment_date FROM $tablecomments WHERE comment_author_IP = '$user_ip' ORDER BY comment_date DESC LIMIT 1");

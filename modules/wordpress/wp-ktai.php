@@ -99,8 +99,8 @@ if (file_exists(dirname(__FILE__)."/xoops_version.php")) {
 require_once(dirname(__FILE__).'/wp-config.php');
 
 if (defined('XOOPS_URL')) {
-	$tableposts = $wpdb->posts[$wp_id];
-	$tablecomments = $wpdb->comments[$wp_id];
+	$tableposts = wp_table('posts');
+	$tablecomments = wp_table('comments');
 }
 
 if (preg_match('/DoCoMo/', $HTTP_USER_AGENT)) {

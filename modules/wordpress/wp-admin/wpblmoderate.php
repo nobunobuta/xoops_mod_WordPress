@@ -63,7 +63,6 @@ function checkAll(form)
 </script>
 <div class="wrap">
 <p>
-
 <?php
 // figure out what the action is
 if ($btndeladd <> '') {
@@ -77,64 +76,17 @@ if ($btndeladd <> '') {
 }
 
 $cnt = 0;
-$add = 0;
+$add = '';
 switch($action) {
 	case 'deladd':
 	case 'delete':
 		foreach ($delete_comments as $comment) {
 			// first get the details and add it to blacklist - if necessary
 			if ($action == 'deladd') {
-				// Add author e-mail to blacklist
-				$details = $wpdb->get_row("SELECT * FROM $tablecomments WHERE comment_ID = $comment");
-				$url = sanctify($details->comment_author_email);
-				$request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$url'");
-				if (!$request) {
-					$wpdb->query("INSERT INTO $tableblacklist (regex, regex_type) VALUES ('$url','url')");
-					++$add;
+				if (!empty($add)) {
+					$add .= '<br />';
 				}
-				// Add author IP to blacklist
-				$url = sanctify($details->comment_author_IP);
-				$request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$url'");
-				if (!$request) {
-					$wpdb->query("INSERT INTO $tableblacklist (regex, regex_type) VALUES ('$url','ip')");
-					++$add;
-				}
-				// get the author's url without the prefix stuff
-				$regex   = "/([a-z]*)(:\/\/)([a-z]*\.)?(.*)/i";
-				preg_match($regex, $details->comment_author_url, $matches);
-				if (strcasecmp('www.', $matches[3]) == 0) {
-					$url = $matches[4];
-				} else {
-					$url = $matches[3] . $matches[4];
-				}
-				$url = remove_trailer($url);
-				$url = sanctify($url);
-				$request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$url'");
-				if (!$request) {
-					$wpdb->query("INSERT INTO $tableblacklist (regex, regex_type) VALUES ('$url','url')");
-					++$add;
-				}
-				// harvest links found in comment
-				$regex = "/([a-z]*)(:\/\/)([a-z]*\.)?([^\">\s]*)/im";
-				preg_match_all($regex, $details->comment_content, $matches);
-				for ($i=0; $i < count($matches[4]); $i++ ) {
-					if (strcasecmp('www.', $matches[3][$i]) == 0) {
-						$url = $matches[4][$i];
-					} else {
-						$url = $matches[3][$i] . $matches[4][$i];
-					}
-					$ps = strrpos($url, '/');
-					if ($ps) {
-						$url = substr($url, 0, $ps);
-					}
-					$url = remove_trailer($url);
-					$url = sanctify($url);
-					$request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$url'");
-					if (!$request) {
-						$wpdb->query("INSERT INTO $tableblacklist (regex, regex_type) VALUES ('$url','url')");
-						++$add;
-					}
-				} // for
+				$add .= harvest($comment);
 			} // $action == 'deladd'
 			wp_set_comment_status($comment, 'delete');
 			++$cnt;
@@ -158,8 +110,8 @@ if ($cnt <> 0) {
 	switch ($action) {
 		case 'deladd':
 			$resp = $resp . 'deleted <br />' . "\n";
-			if ($add <> 0) {
-				$resp = $resp . sprintf("%s comment details added to blacklist <br />", $add) . "\n";
+			if (!empty($add)) {
+				$resp = $resp . 'The following comment details were added to blacklist: <br />' . $add . "\n";
 			}
 			break;
 
