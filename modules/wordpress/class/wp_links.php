@@ -47,10 +47,11 @@ class WordPressLink  extends XoopsTableObject
 class WordPressLinkHandler  extends XoopsTableObjectHandler
 {
 	var $prefix;
+	var $moudule;
 	/**
 	 * コンストラクタ
 	 */
-	function WordPressLinkHandler($db,$prefix)
+	function WordPressLinkHandler($db,$prefix,$module)
 	{
 	////////////////////////////////////////
 	// 各クラス共通部分(書換不要)
@@ -64,6 +65,7 @@ class WordPressLinkHandler  extends XoopsTableObjectHandler
 	////////////////////////////////////////
 		//ハンドラの対象テーブル名定義
 		$this->prefix = $prefix;
+		$this->module = $module;
 		$this->tableName = $this->db->prefix($prefix.'links');
 	}
 	

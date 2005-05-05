@@ -80,7 +80,7 @@ class WordPressUser  extends XoopsTableObject
 	function getNumPosts() {
 		$criteria =& new CriteriaCompo(new Criteria('post_author', $this->getVar('ID')));
 		$criteria->add(new Criteria('post_status', 'publish'));
-		$postHandler =& new WordPressPostHandler($this->_handler->db, $this->_handler->prefix);
+		$postHandler =& new WordPressPostHandler($this->_handler->db, $this->_handler->prefix, $this->_handler->module);
 		return $postHandler->getCount($criteria);
 	}
 
@@ -89,7 +89,7 @@ class WordPressUser  extends XoopsTableObject
 		if ($status) {
 			$criteria->add(new Criteria('post_status', $status));
 		}
-		$postHandler =& new WordPressPostHandler($this->_handler->db, $this->_handler->prefix);
+		$postHandler =& new WordPressPostHandler($this->_handler->db, $this->_handler->prefix, $this->_handler->module);
 		$posts =& $postHandler->getObjects($criteria);
 		$IDs = array();
 		foreach($posts as $post) {
@@ -118,10 +118,11 @@ class WordPressUser  extends XoopsTableObject
 class WordPressUserHandler  extends XoopsTableObjectHandler
 {
 	var $prefix;
+	var $module;
 	/**
 	 * コンストラクタ
 	 */
-	function WordPressUserHandler($db,$prefix)
+	function WordPressUserHandler($db,$prefix,$module)
 	{
 	////////////////////////////////////////
 	// 各クラス共通部分(書換不要)
@@ -135,7 +136,12 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 	////////////////////////////////////////
 		//ハンドラの対象テーブル名定義
 		$this->prefix = $prefix;
+		$this->module = $module;
 		$this->tableName = $this->db->prefix($prefix.'users');
+		if (empty($GLOBALS['__'.$prefix.'usersync'])) {
+			$this->syncXoopsUsers();
+			$GLOBALS['__'.$prefix.'usersync'] = true;
+		}
 	}
 	
 	/**
@@ -145,7 +151,7 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 	 *
      * @return	object  {@link WordPressUser}, FALSE on fail
      */
-	function &get($key)
+	function &get($key, $sync_xoops=true)
 	{
 		if ($userObject =& parent::get($key)) {
 			$member_handler =& xoops_gethandler('member');
@@ -153,7 +159,25 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 			$userObject->assignVar('user_pass', $member->getVar('pass'));
 			return $userObject;
 		} else {
-			return false;
+			if ($sync_xoops) {
+				$member_handler =& xoops_gethandler('member');
+				$member =& $member_handler->getUser($key);
+				if ($member) {
+					$userObject =& $this->create();
+					$userObject->setVar('ID', $key);
+					if ($this->insert($userObject,true)) {
+						$userObject =& parent::get($key);
+						$userObject->assignVar('user_pass', $member->getVar('pass'));
+						return $userObject;
+					} else {
+						return false;
+					}
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
 		}
 	}
 	/**
@@ -163,9 +187,9 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 	 *
      * @return	object  {@link WordPressUser}, FALSE on fail
      */
-	function &getByLogin($login)
+	function &getByLogin($login, $sync_xoops=true)
 	{
-		$criteria = new Criteria('user_login', $login);
+		$criteria =& new Criteria('user_login', $login);
 		$userObjects =& $this->getObjects($criteria);
 		if (count($userObjects) == 1) {
 			$userObject =& $userObjects[0];
@@ -173,8 +197,29 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 			$member =& $member_handler->getUser($userObject->getVar('ID'));
 			$userObject->assignVar('user_pass', $member->getVar('pass'));
 			return $userObject;
+		} else {
+			if ($sync_xoops) {
+				$member_handler =& xoops_gethandler('member');
+				$criteria =& new Criteria('uname', $login);
+				$members =& $member_handler->getUsers($criteria);
+				if (count($members)) {
+					$member = $members[0];
+					$userObject =& $this->create();
+					$userObject->setVar('ID', $key);
+					if ($this->insert($userObject,true)) {
+						$userObject =& parent::get($key);
+						$userObject->assignVar('user_pass', $member->getVar('pass'));
+						return $userObject;
+					} else {
+						return false;
+					}
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
 		}
-		return false;
 	}
     /**
      * レコードの保存
@@ -184,18 +229,15 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
      * 
      * @return	bool    成功の時は TRUE
      */
-	function insert(&$record, $force=false, $updateOnlyChanged=false, $mod_name='')
+	function insert(&$record, $force=false, $updateOnlyChanged=false)
 	{
 		$member_handler =& xoops_gethandler('member');
 		$member =& $member_handler->getUser($record->getVar('ID'));
 		if ($record->isNew()) {
-			if (!$mod_name) {
-				return false;
-			}
 			$user_level = 0;
 			$group = $member->getGroups();
-			$edit_groups = get_xoops_option($mod_name, 'wp_edit_authgrp');
-			$admin_groups = get_xoops_option($mod_name, 'wp_admin_authgrp');
+			$edit_groups = get_xoops_option($this->module, 'wp_edit_authgrp');
+			$admin_groups = get_xoops_option($this->module, 'wp_admin_authgrp');
 			if (count(array_intersect($group,$edit_groups)) > 0) {
 				$user_level = 1;
 			}
@@ -233,13 +275,13 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 		}
 		//ユーザが投稿した記事及び関連情報の削除
 		$criteria =& new Criteria('post_author', $record->getVar('ID'));
-		$post_handler =& new WordPressPostHandler($this->db, $this->prefix);
+		$post_handler =& new WordPressPostHandler($this->db, $this->prefix, $this->module);
 		if (!($post_handler->deleteAll($criteria))) {
 			return false;
 		}
 		//ユーザが作成したリンク情報の削除
 		$criteria =& new Criteria('link_owner', $record->getVar('ID'));
-		$link_handler =& new WordPressLinkHandler($this->db, $this->prefix);
+		$link_handler =& new WordPressLinkHandler($this->db, $this->prefix, $this->module);
 		if (!($link_handler->deleteAll($criteria))) {
 			return false;
 		}
@@ -279,6 +321,15 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 			}
 		}
 		return $optionArray;
+	}
+	function syncXoopsUsers()
+	{
+		$member_handler =& xoops_gethandler('member');
+		$members =& $member_handler->getUsers();
+		$this->getObjects();
+		foreach($members as $member) {
+			$this->get($member->getVar('uid'));
+		}
 	}
 }
 }

@@ -36,10 +36,11 @@ class WordPressPost2Cat  extends XoopsTableObject
 class WordPressPost2CatHandler  extends XoopsTableObjectHandler
 {
 	var $prefix;
+	var $module;
 	/**
 	 * コンストラクタ
 	 */
-	function WordPressPost2CatHandler($db,$prefix)
+	function WordPressPost2CatHandler($db,$prefix,$module)
 	{
 	////////////////////////////////////////
 	// 各クラス共通部分(書換不要)
@@ -53,6 +54,7 @@ class WordPressPost2CatHandler  extends XoopsTableObjectHandler
 	////////////////////////////////////////
 		//ハンドラの対象テーブル名定義
 		$this->prefix = $prefix;
+		$this->module = $module;
 		$this->tableName = $this->db->prefix($prefix.'post2cat');
 	}
 	

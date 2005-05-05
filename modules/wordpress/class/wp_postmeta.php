@@ -37,10 +37,11 @@ class WordPressPostMeta  extends XoopsTableObject
 class WordPressPostMetaHandler  extends XoopsTableObjectHandler
 {
 	var $prefix;
+	var $module;
 	/**
 	 * コンストラクタ
 	 */
-	function WordPressPostMetaHandler($db,$prefix)
+	function WordPressPostMetaHandler($db,$prefix,$module)
 	{
 	////////////////////////////////////////
 	// 各クラス共通部分(書換不要)
@@ -54,6 +55,7 @@ class WordPressPostMetaHandler  extends XoopsTableObjectHandler
 	////////////////////////////////////////
 		//ハンドラの対象テーブル名定義
 		$this->prefix = $prefix;
+		$this->prefix = $module;
 		$this->tableName = $this->db->prefix($prefix.'postmeta');
 	}
 	

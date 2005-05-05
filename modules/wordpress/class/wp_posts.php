@@ -54,7 +54,7 @@ class WordPressPost  extends XoopsTableObject
 	}
 	function assignCategories($categories, $force=false)
 	{
-		$post2catHandler =& new WordPressPost2CatHandler($this->_handler->db, $this->_handler->prefix);
+		$post2catHandler =& new WordPressPost2CatHandler($this->_handler->db, $this->_handler->prefix, $this->_handler->module);
 		$criteria = new Criteria('post_id', $this->getVar('ID'));
 		$oldCategories =& $post2catHandler->getObjects($criteria);
 		$oldCategoryArray = array();
@@ -79,7 +79,7 @@ class WordPressPost  extends XoopsTableObject
 	
 	function &getCategories()
 	{
-		$post2catHandler =& new WordPressPost2CatHandler($this->_handler->db, $this->_handler->prefix);
+		$post2catHandler =& new WordPressPost2CatHandler($this->_handler->db, $this->_handler->prefix, $this->_handler->module);
 		$criteria = new Criteria('post_id', $this->getVar('ID'));
 		$categoryObjects =& $post2catHandler->getObjects($criteria);
 		return $categoryObjects;
@@ -89,10 +89,11 @@ class WordPressPost  extends XoopsTableObject
 class WordPressPostHandler  extends XoopsTableObjectHandler
 {
 	var $prefix;
+	var $module;
 	/**
 	 * コンストラクタ
 	 */
-	function WordPressPostHandler($db,$prefix)
+	function WordPressPostHandler($db,$prefix,$module)
 	{
 	////////////////////////////////////////
 	// 各クラス共通部分(書換不要)
@@ -106,6 +107,7 @@ class WordPressPostHandler  extends XoopsTableObjectHandler
 	////////////////////////////////////////
 		//ハンドラの対象テーブル名定義
 		$this->prefix = $prefix;
+		$this->module = $module;
 		$this->tableName = $this->db->prefix($prefix.'posts');
 	}
 	
@@ -160,7 +162,7 @@ class WordPressPostHandler  extends XoopsTableObjectHandler
 		}
 		//記事に対するコメントの削除
 		$criteria =& new Criteria('comment_post_ID', $record->getVar('ID'));
-		$comment_handler =& new WordPressCommentHandler($this->db, $this->prefix);
+		$comment_handler =& new WordPressCommentHandler($this->db, $this->prefix, $this->module);
 		if (!($comment_handler->deleteAll($criteria, $force))) {
 			return false;
 		}
@@ -175,14 +177,14 @@ class WordPressPostHandler  extends XoopsTableObjectHandler
 		}
 		//記事に関連するカテゴリー情報の削除
 		$criteria =& new Criteria('post_id', $record->getVar('ID'));
-		$post2cat_handler =& new WordPressPost2CatHandler($this->db, $this->prefix);
+		$post2cat_handler =& new WordPressPost2CatHandler($this->db, $this->prefix, $this->module);
 		if (!($post2cat_handler->deleteAll($criteria, $force))) {
 			return false;
 		}
 
 		//記事に関連するメタ情報の削除
 		$criteria =& new Criteria('post_id', $record->getVar('ID'));
-		$postmeta_handler =& new WordPressPostMetaHandler($this->db, $this->prefix);
+		$postmeta_handler =& new WordPressPostMetaHandler($this->db, $this->prefix, $this->module);
 		if (!($postmeta_handler->deleteAll($criteria, $force))) {
 			return false;
 		}
@@ -227,20 +229,20 @@ class WordPressPostHandler  extends XoopsTableObjectHandler
 			$IDs = "(".implode(',', $IDs).")";
 			//記事に対するコメントの削除
 			$criteria =& new Criteria('comment_post_ID', $IDs, 'IN');
-			$comment_handler =& new WordPressCommentHandler($this->db, $this->prefix);
+			$comment_handler =& new WordPressCommentHandler($this->db, $this->prefix, $this->module);
 			if (!($comment_handler->deleteAll($criteria, $force))) {
 				return false;
 			}
 			//記事に関連するカテゴリー情報の削除
 			$criteria =& new Criteria('post_id', $IDs, 'IN');
-			$post2cat_handler =& new WordPressPost2CatHandler($this->db, $this->prefix);
+			$post2cat_handler =& new WordPressPost2CatHandler($this->db, $this->prefix, $this->module);
 			if (!($post2cat_handler->deleteAll($criteria, $force))) {
 				return false;
 			}
 
 			//記事に関連するメタ情報の削除
 			$criteria =& new Criteria('post_id', $IDs, 'IN');
-			$postmeta_handler =& new WordPressPostMetaHandler($this->db, $this->prefix);
+			$postmeta_handler =& new WordPressPostMetaHandler($this->db, $this->prefix, $this->module);
 			if (!($postmeta_handler->deleteAll($criteria, $force))) {
 				return false;
 			}

@@ -60,10 +60,11 @@ class WordPressComment extends XoopsTableObject
 class WordPressCommentHandler  extends XoopsTableObjectHandler
 {
 	var $prefix;
+	var $module;
 	/**
 	 * コンストラクタ
 	 */
-	function WordPressCommentHandler($db,$prefix)
+	function WordPressCommentHandler($db,$prefix,$module)
 	{
 	////////////////////////////////////////
 	// 各クラス共通部分(書換不要)
@@ -77,6 +78,7 @@ class WordPressCommentHandler  extends XoopsTableObjectHandler
 	////////////////////////////////////////
 		//ハンドラの対象テーブル名定義
 		$this->prefix = $prefix;
+		$this->module = $module;
 		$this->tableName = $this->db->prefix($prefix.'comments');
 	}
 	

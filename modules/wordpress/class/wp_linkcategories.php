@@ -45,10 +45,11 @@ class WordPressLinkCategory  extends XoopsTableObject
 class WordPressLinkCategoryHandler  extends XoopsTableObjectHandler
 {
 	var $prefix;
+	var $module;
 	/**
 	 * コンストラクタ
 	 */
-	function WordPressLinkCategoryHandler($db,$prefix)
+	function WordPressLinkCategoryHandler($db,$prefix,$module)
 	{
 	////////////////////////////////////////
 	// 各クラス共通部分(書換不要)
@@ -62,6 +63,7 @@ class WordPressLinkCategoryHandler  extends XoopsTableObjectHandler
 	////////////////////////////////////////
 		//ハンドラの対象テーブル名定義
 		$this->prefix = $prefix;
+		$this->module = $module;
 		$this->tableName = $this->db->prefix($prefix.'linkcategories');
 	}
 	
@@ -113,7 +115,7 @@ class WordPressLinkCategoryHandler  extends XoopsTableObjectHandler
 		}
 		//削除カテゴリに属するリンクは、Defaultカテゴリに一括変更
 		$criteria =& new Criteria('link_category', $record->getVar('cat_id'));
-		$link_handler =& new WordPressLinkHandler($this->db, $this->prefix);
+		$link_handler =& new WordPressLinkHandler($this->db, $this->prefix, $this->module);
 		if (!($link_handler->updateAll('link_category', 1, $criteria, $force))) {
 			return false;
 		}

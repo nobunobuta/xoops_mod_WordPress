@@ -31,10 +31,11 @@ class WordPressOptionGroup2Option  extends XoopsTableObject
 class WordPressOptionGroup2OptionHandler  extends XoopsTableObjectHandler
 {
 	var $prefix;
+	var $module;
 	/**
 	 * コンストラクタ
 	 */
-	function WordPressOptionGroup2OptionHandler($db,$prefix)
+	function WordPressOptionGroup2OptionHandler($db,$prefix,$module)
 	{
 	////////////////////////////////////////
 	// 各クラス共通部分(書換不要)
@@ -48,6 +49,7 @@ class WordPressOptionGroup2OptionHandler  extends XoopsTableObjectHandler
 	////////////////////////////////////////
 		//ハンドラの対象テーブル名定義
 		$this->prefix = $prefix;
+		$this->module = $module;
 		$this->tableName = $this->db->prefix($prefix.'optiongroup_options');
 	}
 	

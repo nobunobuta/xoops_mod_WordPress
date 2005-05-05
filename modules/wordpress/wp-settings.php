@@ -30,16 +30,16 @@ require ('wp-ver.php');
 require_once ($GLOBALS['wp_base'][$GLOBALS['wp_id']].'/wp-includes/functions.php');
 require_once (wp_base().'/class/wp_classes.php');
 if (empty($GLOBALS['wpPostHandler'][wp_prefix()])) {
-	$GLOBALS['wpPostHandler'][wp_prefix()] =& new WordPressPostHandler($GLOBALS['xoopsDB'], wp_prefix());
-	$GLOBALS['wpPost2CatHandler'][wp_prefix()] =& new WordPressPost2CatHandler($GLOBALS['xoopsDB'], wp_prefix());
-	$GLOBALS['wpPostMetaHandler'][wp_prefix()] =& new WordPressPostMetaHandler($GLOBALS['xoopsDB'], wp_prefix());
-	$GLOBALS['wpCommentHandler'][wp_prefix()] =& new WordPressCommentHandler($GLOBALS['xoopsDB'], wp_prefix());
-	$GLOBALS['wpUserHandler'][wp_prefix()] =& new WordPressUserHandler($GLOBALS['xoopsDB'], wp_prefix());
-	$GLOBALS['wpCategoryHandler'][wp_prefix()] =& new WordPressCategoryHandler($GLOBALS['xoopsDB'], wp_prefix());
-	$GLOBALS['wpLinkHandler'][wp_prefix()] =& new WordPressLinkHandler($GLOBALS['xoopsDB'], wp_prefix());
-	$GLOBALS['wpLinkCategoryHandler'][wp_prefix()] =& new WordPressLinkCategoryHandler($GLOBALS['xoopsDB'], wp_prefix());
-	$GLOBALS['wpOptionGroup2OptionHandler'][wp_prefix()] =& new WordPressOptionGroup2OptionHandler($GLOBALS['xoopsDB'], wp_prefix());
-	$GLOBALS['wpOptionHandler'][wp_prefix()] =& new WordPressOptionHandler($GLOBALS['xoopsDB'], wp_prefix());
+	$GLOBALS['wpPostHandler'][wp_prefix()] =& new WordPressPostHandler($GLOBALS['xoopsDB'], wp_prefix(), wp_mod());
+	$GLOBALS['wpPost2CatHandler'][wp_prefix()] =& new WordPressPost2CatHandler($GLOBALS['xoopsDB'], wp_prefix(), wp_mod());
+	$GLOBALS['wpPostMetaHandler'][wp_prefix()] =& new WordPressPostMetaHandler($GLOBALS['xoopsDB'], wp_prefix(), wp_mod());
+	$GLOBALS['wpCommentHandler'][wp_prefix()] =& new WordPressCommentHandler($GLOBALS['xoopsDB'], wp_prefix(), wp_mod());
+	$GLOBALS['wpUserHandler'][wp_prefix()] =& new WordPressUserHandler($GLOBALS['xoopsDB'], wp_prefix(), wp_mod());
+	$GLOBALS['wpCategoryHandler'][wp_prefix()] =& new WordPressCategoryHandler($GLOBALS['xoopsDB'], wp_prefix(), wp_mod());
+	$GLOBALS['wpLinkHandler'][wp_prefix()] =& new WordPressLinkHandler($GLOBALS['xoopsDB'], wp_prefix(), wp_mod());
+	$GLOBALS['wpLinkCategoryHandler'][wp_prefix()] =& new WordPressLinkCategoryHandler($GLOBALS['xoopsDB'], wp_prefix(), wp_mod());
+	$GLOBALS['wpOptionGroup2OptionHandler'][wp_prefix()] =& new WordPressOptionGroup2OptionHandler($GLOBALS['xoopsDB'], wp_prefix(), wp_mod());
+	$GLOBALS['wpOptionHandler'][wp_prefix()] =& new WordPressOptionHandler($GLOBALS['xoopsDB'], wp_prefix(), wp_mod());
 }
 require_once (wp_base().'/wp-includes/wp-tickets.php');
 require_once (wp_base().'/wp-includes/functions-formatting.php');
