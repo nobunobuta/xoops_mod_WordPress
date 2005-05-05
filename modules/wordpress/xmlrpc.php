@@ -122,7 +122,7 @@ function wp_insert_post($postarr = array()) {
 	}
 	if ($postHandler->insert($postObject, true)) {
 		$post_ID = $postObject->getVar('ID');
-		$postObject->assignCategories($post_category);
+		$postObject->assignCategories($post_category, true);
 		do_action('publish_post', $post_ID);
 		return $post_ID;
 	} else {
@@ -219,7 +219,7 @@ function wp_update_post($postarr = array()) {
 	}
 	if ($postHandler->insert($postObject, true, true)) {
 		$post_ID = $postObject->getVar('ID');
-		$postObject->assignCategories($post_category);
+		$postObject->assignCategories($post_category, true);
 		do_action('publish_post', $post_ID);
 		return $post_ID;
 	} else {
@@ -275,9 +275,9 @@ function get_cat_name($cat_id) {
 
 // Get the ID of a category from its name
 function get_cat_ID($cat_name='General') {
-	global $wpdb, $wp_id;
+	global $wpdb;
 	
-	$cid = $wpdb->get_var("SELECT cat_ID FROM {$wpdb->categories[$wp_id]} WHERE cat_name='$cat_name'");
+	$cid = $wpdb->get_var("SELECT cat_ID FROM ".wp_table('categories')." WHERE cat_name='$cat_name'");
 
 	return $cid?$cid:1;	// default to cat 1
 }
@@ -472,7 +472,7 @@ $wp_getPostURL_sig = array(array($xmlrpcString, $xmlrpcString, $xmlrpcString, $x
 $wp_getPostURL_doc = 'Given a blog ID, username, password, and a post ID, returns the URL to that post.';
 
 function b2_getPostURL($m) {
-	global $wpdb, $wp_id;
+	global $wpdb;
 
 	$blog_ID  = $m->getParam(0);
 	$username = $m->getParam(2);
@@ -817,7 +817,7 @@ $bloggergetrecentposts_sig=array(array($xmlrpcString, $xmlrpcString, $xmlrpcStri
 $bloggergetrecentposts_doc='fetches X most recent posts, blogger-api like';
 
 function bloggergetrecentposts($m) {
-	global $wpdb, $wp_id;
+	global $wpdb;
 	error_reporting(0);
 
 	$blog_ID  = $m->getParam(1);
@@ -838,7 +838,7 @@ function bloggergetrecentposts($m) {
 
 	if (user_pass_ok($username,$password)) {
 
-		$sql = "SELECT * FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC".$limit;
+		$sql = "SELECT * FROM ".wp_table('posts')." ORDER BY post_date DESC".$limit;
 		$result = $wpdb->get_results($sql);
 		if (!$result) {
 			return new xmlrpcresp(0, $GLOBALS['xmlrpcerruser']+2, // user error 2
@@ -1349,11 +1349,11 @@ $mwgetcats_sig =  array(array($xmlrpcArray,$xmlrpcString,$xmlrpcString,$xmlrpcSt
 $mwgetcats_doc = 'Get a post, MetaWeblog API-style';
 
 function mwgetcats ($params) {	// ($blogid, $user, $pass) 
-	global $wpdb, $wp_id;
+	global $wpdb;
 	
 	$blog_URL = wp_siteurl() . '/index.php';
 //	logIO('O',$blog_URL);
-	if ($cats = $wpdb->get_results("SELECT cat_ID,cat_name FROM {$wpdb->categories[$wp_id]}",ARRAY_A)) {
+	if ($cats = $wpdb->get_results("SELECT cat_ID,cat_name FROM ".wp_table('categories'), ARRAY_A)) {
 		foreach ($cats as $cat) {
 			$struct['categoryId'] = $cat['cat_ID'];
 			$struct['description'] = mb_conv($cat['cat_name'],'UTF-8',$GLOBALS['blog_charset']);
@@ -1601,7 +1601,7 @@ $mt_getRecentPostTitles_sig = array(array($xmlrpcArray,$xmlrpcString,$xmlrpcStri
 $mt_getRecentPostTitles_doc = 'Returns a bandwidth-friendly list of the most recent posts in the system.';
 
 function mt_getRecentPostTitles($params) {
-	global $xmlrpcusererr, $wpdb, $wp_id;
+	global $xmlrpcusererr, $wpdb;
 
 	$xblogid = $params->getParam(0);
 	$xuser = $params->getParam(1);
@@ -1614,7 +1614,7 @@ function mt_getRecentPostTitles($params) {
 	$numposts = intval($xnumposts->scalarval());
 
 	if (user_pass_ok($username,$password)) {
-		$sql = "SELECT post_date, post_author, ID, post_title FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC LIMIT $numposts";
+		$sql = "SELECT post_date, post_author, ID, post_title FROM ".wp_table('posts')." ORDER BY post_date DESC LIMIT $numposts";
 		$posts = $wpdb->get_results($sql,ARRAY_A);
 		$result = array();
 		foreach($posts as $post) {
@@ -1737,7 +1737,7 @@ $pingback_ping_doc = 'Gets a pingback and registers it as a comment prefixed by 
 
 function pingback_ping($m) { // original code by Mort
 	// (http://mort.mine.nu:8080)
-	global	 $wpdb, $wp_id, $blog_charset; 
+	global	 $wpdb; 
 	global $wp_version; 
 
 	if (!get_settings('use_pingback')) {
@@ -1795,7 +1795,7 @@ function pingback_ping($m) { // original code by Mort
 			} elseif (is_string($urltest['fragment'])) {
 				// ...or a string #title, a little more complicated
 				$title = preg_replace('/[^a-zA-Z0-9]/', '.', $urltest['fragment']);
-				$sql = "SELECT ID FROM {$wpdb->posts[$wp_id]} WHERE post_title RLIKE '$title'";
+				$sql = "SELECT ID FROM ".wp_table('posts')." WHERE post_title RLIKE '$title'";
 				$post_ID = $wpdb->get_var($sql) or die("Query: $sql\n\nError: ");
 				$way = 'from the fragment (title)';
 			}
@@ -1807,12 +1807,12 @@ function pingback_ping($m) { // original code by Mort
 
 		logIO('O',"(PB) URI='$pagelinkedto' ID='$post_ID' Found='$way'");
 
-		$sql = "SELECT post_author FROM {$wpdb->posts[$wp_id]} WHERE ID = $post_ID";
+		$sql = "SELECT post_author FROM ".wp_table('posts')." WHERE ID = $post_ID";
 		$result = $wpdb->get_results($sql);
 
 		if ($wpdb->num_rows) {
 			// Let's check that the remote site didn't already pingback this entry
-			$sql = 'SELECT * FROM '.$wpdb->comments[$wp_id].' 
+			$sql = 'SELECT * FROM '.wp_table('comments').' 
 				WHERE comment_post_ID = '.$post_ID.' 
 					AND comment_author_url = \''.$pagelinkedfrom.'\' 
 					AND comment_content LIKE \'%<pingback />%\'';
@@ -1829,8 +1829,8 @@ function pingback_ping($m) { // original code by Mort
 				} else {
 					$linea = '';
 				}
-				logIO('O',"(PB) CHARSET='$blog_charset");
-				$linea = mb_conv($linea, $blog_charset, 'auto');
+				logIO('O',"(PB) CHARSET='".$GLOBALS['blog_charset']);
+				$linea = mb_conv($linea, $GLOBALS['blog_charset'], 'auto');
 				
 				// Work around bug in strip_tags():
 				$linea = str_replace('<!DOCTYPE','<DOCTYPE',$linea);
@@ -1848,7 +1848,7 @@ function pingback_ping($m) { // original code by Mort
 					$pos4 = (is_integer($pos2)) ? $pos2 : $pos3;
 					$start = $pos4-50;
 					if (function_exists('mb_convert_encoding')) {
-						$tmp1 = mb_strcut($linea,0,$start,$blog_charset);
+						$tmp1 = mb_strcut($linea,0,$start,$GLOBALS['blog_charset']);
 					} else {
 						$tmp1 = substr($linea,0,$start);
 					}
@@ -1859,7 +1859,7 @@ function pingback_ping($m) { // original code by Mort
 						$offset = 0;
 					}
 					if (function_exists('mb_convert_encoding')) {
-						$context = mb_strcut($linea, $start-$offset, 150+$offset, $blog_charset);
+						$context = mb_strcut($linea, $start-$offset, 150+$offset, $GLOBALS['blog_charset']);
 					} else {
 						$context = substr($linea, $star-$offsett, 150+$offset);
 					}
@@ -1873,7 +1873,7 @@ function pingback_ping($m) { // original code by Mort
 //				fclose($fp);
 				if (!empty($context)) {
 					// Check if pings are on, inelegant exit
-					$pingstatus = $wpdb->get_var("SELECT ping_status FROM {$wpdb->posts[$wp_id]} WHERE ID = $post_ID");
+					$pingstatus = $wpdb->get_var("SELECT ping_status FROM ".wp_table('posts')." WHERE ID = $post_ID");
 					if ('closed' == $pingstatus) {
 						logIO('O','(PB) Sorry, pings are turned off for this post.');
 						exit();
@@ -1888,7 +1888,7 @@ function pingback_ping($m) { // original code by Mort
 					$original_title = $title;
 					$title = addslashes(strip_tags(trim($title)));
 					$now = current_time('mysql');
-					$consulta = $wpdb->query("INSERT INTO {$wpdb->comments[$wp_id]} 
+					$consulta = $wpdb->query("INSERT INTO ".wp_table('comments')." 
 						(comment_post_ID, comment_author, comment_author_url, comment_date, comment_content) 
 						VALUES 
 						($post_ID, '$title', '$pagelinkedfrom', '$now', '$context')
