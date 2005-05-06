@@ -358,11 +358,11 @@ function user_can_edit($post_author) {
 function url_to_postid($url = '') {
 	// Take a link like 'http://example.com/blog/something'
 	// and extract just the '/something':
-	$uri = preg_replace("#{$GLOBALS['siteurl']}#i", '', $url);
+	$uri = preg_replace('#'.wp_siteurl().'#i', '', $url);
 
 	// on failure, preg_replace just returns the subject string
 	// so if $uri and $siteurl are the same, they didn't match:
-	if ($uri == $GLOBALS['siteurl'])
+	if ($uri ==wp_siteurl())
 		return 0;
 
 	// First, check to see if there is a 'p=N' to match against:

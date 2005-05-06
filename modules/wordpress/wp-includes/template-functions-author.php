@@ -94,7 +94,7 @@ function get_author_link($echo = false, $author_id, $author_name="") {
 
 function get_author_rss_link($echo = false, $author_id, $author_name="") {
 	if (get_settings('permalink_structure') == '') {
-	   $file = get_settings('siteurl') . '/wp-rss2.php';
+	   $file = wp_siteurl() . '/wp-rss2.php';
 	   $link = $file . '?author=' . $author_id;
 	} else {
 	   $link = get_author_link(0, $author_id, $author_name);

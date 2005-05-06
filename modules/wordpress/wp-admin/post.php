@@ -490,7 +490,7 @@ switch(get_param('action')) {
 		} else {
 			$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&c=1#comments';
 		}
-		if ( ! $xoopsWPTicket->check(false) ) {
+		if ( ! $xoopsWPTicket->check() ) {
 			redirect_header($location,3,$xoopsWPTicket->getErrors());
 		}
 		if (!($commentObject =& $commentHandler->get($comment))) {
@@ -562,7 +562,7 @@ switch(get_param('action')) {
 			$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&c=1#comments';
 		}
 
-		if ( ! $xoopsWPTicket->check(false) ) {
+		if ( ! $xoopsWPTicket->check() ) {
 			redirect_header($location,3,$xoopsWPTicket->getErrors());
 		}
 		if (!($commentObject =& $commentHandler->get($comment))) {

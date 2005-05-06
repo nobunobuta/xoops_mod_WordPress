@@ -147,7 +147,7 @@ function get_day_link($year, $month, $day) {
 
 function get_feed_link($feed='rss2') {
     $do_perma = 0;
-    $feed_url = get_settings('siteurl');
+    $feed_url = wp_siteurl();
     $comment_feed_url = $feed_url;
 
     $permalink = get_settings('permalink_structure');

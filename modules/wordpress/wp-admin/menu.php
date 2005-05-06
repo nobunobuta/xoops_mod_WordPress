@@ -11,7 +11,7 @@ $menu[25] = array(_LANG_ADMIN_MENU_LINK, 5, 'link-manager.php');
 $menu[30] = array(_LANG_ADMIN_MENU_USER, 3, 'users.php');
 $menu[35] = array(_LANG_ADMIN_MENU_OPTION, 6, 'options.php');
 $menu[40] = array(_LANG_ADMIN_MENU_PLUG, 8, 'plugins.php');
-$menu[45] = array(_LANG_ADMIN_MENU_PROFILE, 0, 'profile.php');
+$menu[45] = array(_LANG_ADMIN_MENU_PROFILE, 1, 'profile.php');
 ksort($menu); // So other files can plugin
 
 $submenu['edit.php'][5] = array(_LANG_E_LATEST_POSTS, 1, 'edit.php');

@@ -502,20 +502,6 @@ function convert_bbcode($content) {
     return $content;
 }
 
-function convert_bbcode_email($content) {
-	$bbcode_email["in"] = array(
-		'#\[email](.+?)\[/email]#eis',
-		'#\[email=(.+?)](.+?)\[/email]#eis'
-	);
-	$bbcode_email["out"] = array(
-		"'<a href=\"mailto:'.antispambot('\\1').'\">'.antispambot('\\1').'</a>'",		// E-mail
-		"'<a href=\"mailto:'.antispambot('\\1').'\">\\2</a>'"
-	);
-
-	$content = preg_replace($bbcode_email['in'], $bbcode_email['out'], $content);
-	return $content;
-}
-
 function convert_gmcode($content) {
 	if (get_settings('use_gmcode')) {
 		$content = preg_replace($GLOBALS['wp_gmcode']['in'], $GLOBALS['wp_gmcode']['out'], $content);
