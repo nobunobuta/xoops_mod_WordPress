@@ -10,7 +10,7 @@ init_param('', 'action', 'string', '');
 switch (get_param('action')) {
 	case 'promote':
 		//Check Ticket
-		if (!$GLOBALS['xoopsWPTicket']->check(false)) {
+		if (!$GLOBALS['xoopsWPTicket']->check()) {
 			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $GLOBALS['xoopsWPTicket']->getErrors());
 		}
 		//Check User_Level

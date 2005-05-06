@@ -14,7 +14,7 @@ init_param('', 'action','string', '');
 
 switch(get_param('action')) {
 	case 'activate':
-		if ( ! $xoopsWPTicket->check(false) ) {
+		if ( ! $xoopsWPTicket->check() ) {
 			redirect_header($siteurl.'/wp-admin/plugins.php',3,$xoopsWPTicket->getErrors());
 		}
 		init_param('GET', 'plugin','string',NO_DEFAULT_PARAM, true);
@@ -28,7 +28,7 @@ switch(get_param('action')) {
 		break;
 	
 	case 'deactivate':
-		if ( ! $xoopsWPTicket->check(false) ) {
+		if ( ! $xoopsWPTicket->check() ) {
 			redirect_header($siteurl.'/wp-admin/plugins.php',3,$xoopsWPTicket->getErrors());
 		}
 		init_param('GET', 'plugin','string',NO_DEFAULT_PARAM, true);
