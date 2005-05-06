@@ -171,11 +171,9 @@ INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (5, 
 INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (5, 45, 8);
 INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (5, 46, 9);
 INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (5, 47, 10);
-INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 1, 1);
-INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 2, 2);
-INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 3, 3);
-INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 4, 4);
-INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 54, 8);
+INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 3, 1);
+INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 4, 2);
+INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 54, 3);
 INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (7, 55, 1);
 INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (7, 56, 2);
 INSERT INTO wp7_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (7, 57, 3);
@@ -255,7 +253,7 @@ CREATE TABLE wp7_options (
   `option_name` varchar(64) NOT NULL default '',
   `option_can_override` enum('Y','N') NOT NULL default 'Y',
   `option_type` int(11) NOT NULL default '1',
-  `option_value` varchar(255) NOT NULL default '',
+  `option_value` longtext NOT NULL default '',
   `option_width` int(11) NOT NULL default '20',
   `option_height` int(11) NOT NULL default '8',
   `option_description` tinytext NOT NULL,

@@ -28,6 +28,17 @@ if (!function_exists('upgrade_wp_tables')){
 			$GLOBALS['msgs'][] = "TABLE ".wp_table('comments')." is modified.";
 		}
 		
+		$sql1 = "ALTER TABLE ".wp_table('options')." CHANGE 
+					option_value option_value longtext NOT NULL default ''
+				";
+		$xoopsDB->query($sql1);
+		$GLOBALS['msgs'][] = "TABLE ".wp_table('options')." is modified.";
+
+		$xoopsDB->query("DELETE FROM ".wp_table('optiongroup_options')." WHERE group_id=6 AND option_id=1");
+		$xoopsDB->query("DELETE FROM ".wp_table('optiongroup_options')." WHERE group_id=6 AND option_id=2");
+		$xoopsDB->query("UPDATE ".wp_table('optiongroup_options')." SET seq=1 WHERE group_id=6 AND option_id=3");
+		$xoopsDB->query("UPDATE ".wp_table('optiongroup_options')." SET seq=2 WHERE group_id=6 AND option_id=4");
+		$xoopsDB->query("UPDATE ".wp_table('optiongroup_options')." SET seq=3 WHERE group_id=6 AND option_id=54");
 		# --------------------------------------------------------
 		if ($xoopsDB->query("DELETE FROM ".wp_table('options')." WHERE option_id =7 AND option_name ='new_users_can_blog'")) {
 			$xoopsDB->query("DELETE FROM ".wp_table('optiongroup_options')." WHERE group_id=6 AND option_id =7");
