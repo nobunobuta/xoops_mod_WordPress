@@ -67,23 +67,22 @@ if (empty($GLOBALS['cache_categories'][wp_id()])||(count($GLOBALS['cache_categor
 // get_settings() wherever these are needed OR
 // accessing a single global $all_settings var
 
-if (!strstr($_SERVER['REQUEST_URI'], 'install.php')) {
-	if (get_xoops_option(wp_mod(),'wp_use_xoops_smilies')) {
-		$GLOBALS['smilies_directory'] = XOOPS_URL."/uploads";
-	} else {
-		$GLOBALS['smilies_directory'] = get_settings('smilies_directory');
-	}
-	//WordPressプラグイン互換性確保用
-	$GLOBALS['siteurl'] = wp_siteurl();
-    $GLOBALS['querystring_start'] = '?';
-    $GLOBALS['querystring_equal'] = '=';
-    $GLOBALS['querystring_separator'] = '&amp;';
+if (get_xoops_option(wp_mod(),'wp_use_xoops_smilies')) {
+	$GLOBALS['smilies_directory'] = XOOPS_URL."/uploads";
+} else {
+	$GLOBALS['smilies_directory'] = get_settings('smilies_directory');
 }
+//WordPressプラグイン互換性確保用
+$GLOBALS['siteurl'] = wp_siteurl();
+update_option('siteurl',$GLOBALS['siteurl'],true);
+$GLOBALS['querystring_start'] = '?';
+$GLOBALS['querystring_equal'] = '=';
+$GLOBALS['querystring_separator'] = '&amp;';
 $GLOBALS['dateformat'] = stripslashes(get_settings('date_format'));
 $GLOBALS['timeformat'] = stripslashes(get_settings('time_format'));
 
 // Used to guarantee unique cookies
-$GLOBALS['cookiehash'] = md5($GLOBALS['siteurl']);
+$GLOBALS['cookiehash'] = md5(wp_siteurl());
 
 require(wp_base().'/wp-includes/vars.php');
 require(wp_base().'/wp-includes/wp-filter-setup.php');
@@ -93,10 +92,22 @@ if (empty($GLOBALS['wp_inblock']) || $GLOBALS['wp_inblock'] != 1) {
 		if (get_settings('active_plugins')) {
 			$check_plugins = explode("\n", (get_settings('active_plugins')));
 			foreach ($check_plugins as $check_plugin) {
-				if( ! defined( 'WP_PLUGIN_'.strtoupper($check_plugin).'_INCLUDED' ) ) {
-					define( 'WP_PLUGIN_'.strtoupper($check_plugin).'_INCLUDED' , 1 ) ;
-					if (file_exists(wp_base() . '/wp-content/plugins/'. $check_plugin)) {
+				if (file_exists(wp_base() . '/wp-content/plugins/'. $check_plugin)) {
+					if( ! defined( md5('WP_PLUGIN_'.strtoupper($check_plugin).'_INCLUDED') ) ) {
+						define( md5('WP_PLUGIN_'.strtoupper($check_plugin).'_INCLUDED') , 1 ) ;
 						require_once(wp_base(). '/wp-content/plugins/'. $check_plugin);
+					} else {
+						// It is very tricky!!
+						if( ! defined( md5('WP_PLUGIN_'.strtoupper($check_plugin).wp_base().'_DEFINED') ) ) {
+							define( md5('WP_PLUGIN_'.strtoupper($check_plugin).wp_base().'_DEFINED') , 1 ) ;
+							if (preg_match_all('/(add|remove)_(action|filter)\s*\([^\)]+\)\s*\;/',
+											implode('',file(wp_base(). '/wp-content/plugins/'. $check_plugin)),
+											$matches,PREG_SET_ORDER)) {
+								foreach($matches as $match) {
+									eval($match[0]);
+								}
+							}
+						}
 					}
 				}
 			}
