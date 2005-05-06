@@ -223,7 +223,6 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 		var $useFullCache;
 		var $_entityClassName;
 		var $_keyClassName;
-		var $_recordCache;
 		var $_errors;
 		var $_fullCached;
 		var $_sql;
@@ -307,8 +306,9 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 					return false;
 				}
 			}
-			if (!empty($this->_recordCache[serialize($cacheKey)])) {
-				$record->assignVars($this->_recordCache[serialize($cacheKey)]);
+			$cacheKey = serialize($cacheKey);
+			if (!empty($GLOBALS['_xoopsTableCache'][$this->tableName][$cacheKey])) {
+				$record->assignVars($GLOBALS['_xoopsTableCache'][$this->tableName][$cacheKey]);
 				return $record;
 			}
 			$sql = sprintf("SELECT * FROM %s WHERE %s",$this->tableName, $whereStr);
@@ -321,7 +321,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 			if ( $numrows == 1 ) {
 				$row = $this->db->fetchArray($result);
 				$record->assignVars($row);
-				$this->_recordCache[serialize($cacheKey)] = $row;
+				$GLOBALS['_xoopsTableCache'][$this->tableName][$cacheKey] = $row;
 				return $record;
 			}
 			unset($record);
@@ -437,9 +437,9 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 				$cacheRow[$idField] = $idValue;
 			}
 			if (!$updateOnlyChanged) {
-				$this->_recordCache[$record->cacheKey()] = $cacheRow;
+				$GLOBALS['_xoopsTableCache'][$this->tableName][$record->cacheKey()] = $cacheRow;
 			} else {
-				unset($this->_recordCache[$record->cacheKey()]);
+				unset($GLOBALS['_xoopsTableCache'][$this->tableName][$record->cacheKey()]);
 				$this->_fullCached = false;
 			}
 			$record->resetChenged();
@@ -487,7 +487,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 			if (!$result =& $this->query($sql, $force)) {
 				return false;
 			}
-			unset($this->_recordCache[$record->cacheKey()]);
+			unset($GLOBALS['_xoopsTableCache'][$this->tableName][$record->cacheKey()]);
 			return true;
 		}
 
@@ -544,7 +544,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 			//今のところは、非常に限定された条件でしかキャッシュを使えない
 			if (($this->useFullCache) && ($this->_fullCached) && (!$whereStr) && (!$orderStr) && ($limit==0) && ($start==0) && (!$fieldlist)) {
 				$records = array();
-				foreach ($this->_recordCache as $myrow) {
+				foreach ($GLOBALS['_xoopsTableCache'][$this->tableName] as $myrow) {
 					$record =& $this->create(false);
 					$record->assignVars($myrow);
 					if (!$id_as_key) {
@@ -552,8 +552,9 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 					} else {
 						$ids = $record->getKeyFields();
 						$r =& $records;
-						for ($i=0; $i<count($ids); $i++) {
-							if ($i == count($ids)-1) {
+						$count_ids = count($ids);
+						for ($i=0; $i<$count_ids; $i++) {
+							if ($i == $count_ids-1) {
 								$r[$myrow[$ids[$i]]] =& $record;
 							} else {
 								$r[$myrow[$ids[$i]]] = array();
@@ -581,8 +582,9 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 					} else {
 						$ids = $record->getKeyFields();
 						$r =& $records;
-						for ($i=0; $i<count($ids); $i++) {
-							if ($i == count($ids)-1) {
+						$count_ids = count($ids);
+						for ($i=0; $i<$count_ids; $i++) {
+							if ($i == $count_ids-1) {
 								$r[$myrow[$ids[$i]]] =& $record;
 							} else {
 								$r[$myrow[$ids[$i]]] = array();
@@ -591,7 +593,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 						}
 					}
 					if (!$fieldlist) {
-						$this->_recordCache[$record->cacheKey()] = $myrow;
+						$GLOBALS['_xoopsTableCache'][$this->tableName][$record->cacheKey()] = $myrow;
 					}
 					unset($record);
 				}
@@ -652,7 +654,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 				return false;
 			}
 	        //キャッシュのクリア(更新されたレコード再取得の方がコストが高そうなので)
-	        $this->_recordCache=array();
+	        $GLOBALS['_xoopsTableCache'][$this->tableName]=array();
 			$this->_fullCached = false;
 	        return true;
 	    }
@@ -675,7 +677,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 				return false;
 			}
 	        //キャッシュのクリア(削除されたレコード再取得の方がコストが高そうなので)
-	        $this->_recordCache=array();
+	        $GLOBALS['_xoopsTableCache'][$this->tableName]=array();
 			$this->_fullCached = false;
 	        return true;
 	    }
@@ -686,10 +688,10 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 		}
 
 		function &query($sql, $force=false, $limit=0, $start=0) {
-			if (empty($GLOBALS['xp_query_counter'])) {
-				$GLOBALS['xp_query_counter'] = 1;
+			if (empty($GLOBALS['_xoopsTableQueryCount'])) {
+				$GLOBALS['_xoopsTableQueryCount'] = 1;
 			} else {
-				$GLOBALS['xp_query_counter']++;
+				$GLOBALS['_xoopsTableQueryCount']++;
 			}
 			if (!empty($GLOBALS['wpdb'])) {
 				$GLOBALS['wpdb']->querycount++;
