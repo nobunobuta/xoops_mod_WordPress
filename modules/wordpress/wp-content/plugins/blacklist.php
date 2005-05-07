@@ -189,7 +189,7 @@ function blacklist($commentID) {
             }
         }
     }
-	if (!$held || in_array('deltbsp', $wpbl_options)) {
+	if (($wpbl_comment['comment_type']=='trackback') && (!$held || in_array('deltbsp', $wpbl_options))) {
 		// Let's check the remote site
 		require_once(XOOPS_ROOT_PATH.'/class/snoopy.php');
 		$snoopy = New Snoopy;
