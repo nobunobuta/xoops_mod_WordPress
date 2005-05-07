@@ -1,6 +1,5 @@
 <?php
-include_once (dirname(__FILE__)."/../../mainfile.php");
-require(dirname(__FILE__) . '/wp-config.php');
+require_once(dirname(__FILE__) . '/wp-config.php');
 
 // trackback is done by a POST
 $_tb_id = explode('/', $_SERVER['REQUEST_URI']);
@@ -15,7 +14,7 @@ init_param('', 'p','integer','');
 init_param('', 'name','string','');
 init_param('', '__mode','string','');
 
-require('wp-blog-header.php');
+require_once('wp-blog-header.php');
 
 //Anti Trackback SPAM
 $ref = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : (isset($_ENV['HTTP_REFERER']) ? $_ENV['HTTP_REFERER'] : '');

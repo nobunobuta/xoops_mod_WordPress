@@ -1,11 +1,11 @@
 <?php
 $GLOBALS['blog'] = 1;
 $GLOBALS['doing_rss'] = 1;
-require(dirname(__FILE__).'/wp-config.php');
+require_once(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
 init_param('GET', 'num','integer');
 if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
-require('wp-blog-header.php');
+require_once('wp-blog-header.php');
 header('Content-type: application/xml');
 ?>
 <?php echo '<?xml version="1.0" encoding="'.wp_get_rss_charset().'"?'.'>'; ?>

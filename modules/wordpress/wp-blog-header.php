@@ -51,6 +51,8 @@ init_param('', 'withcomments','integer', 0); //With Comment (=1:yes)
 init_param('', 'preview','integer',NO_DEFAULT_PARAM); //Preview Flag
 init_param('', 'debug','integer',NO_DEFAULT_PARAM); //Debug Flag
 init_param('', 'more','integer',NO_DEFAULT_PARAM); // Display More Content;
+init_param('', 'feed','string',NO_DEFAULT_PARAM);
+init_param('', 'tb','integer',NO_DEFAULT_PARAM);
 
 /* Getting settings from db */
 if (!empty($GLOBALS['doing_rss'])) {
@@ -436,4 +438,13 @@ if ($GLOBALS['posts']) {
 	}
 
 }
+//redirect feed and trackback
+if (test_param('feed')) {
+	require_once('wp-feed.php');
+	exit();
+} else if (test_param('tb')) {
+	require_once('wp-trackback.php');
+	exit();
+}
+
 ?>

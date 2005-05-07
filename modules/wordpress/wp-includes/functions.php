@@ -616,7 +616,7 @@ function get_commentdata($comment_ID, $no_cache=0, $include_unapproved=false) { 
 	if ($no_cache) {
 		$criteria = null;
 		$commentHandler =& wp_handler('Comment');
-		$commentObject =& $commentHandler->get('comment_ID');
+		$commentObject =& $commentHandler->get($comment_ID);
 		if (!$include_unapproved) {
 			if ($commentObject->getVar('comment_approved') != 1) {
 				return false;
@@ -1526,19 +1526,18 @@ function rewrite_rules($matches = '', $permalink_structure = '') {
     $feedquery = 'wp-feed.php?';
     $trackbackquery = 'wp-trackback.php?';
     for ($i = 0; $i < count($tokens[0]); ++$i) {
-             if (0 < $i) {
-                 $query .= '&';
-                 $feedquery .= '&';
-                 $trackbackquery .= '&';
-             }
-             
-             $query_token = str_replace($rewritecode, $queryreplace, $tokens[0][$i]) . preg_index($i+1, $matches);
-             $query .= $query_token;
-             $feedquery .= $query_token;
-             $trackbackquery .= $query_token;
-             }
+		if (0 < $i) {
+			 $query .= '&';
+			 $feedquery .= '&';
+			 $trackbackquery .= '&';
+		}
+		$query_token = str_replace($rewritecode, $queryreplace, $tokens[0][$i]) . preg_index($i+1, $matches);
+		$query .= $query_token;
+		$feedquery .= $query_token;
+		$trackbackquery .= $query_token;
+    }
     ++$i;
-
+	$trackbackquery .= '&tb=1';
     // Add post paged stuff
     $match .= '([0-9]+)?/?$';
     $query .= '&page=' . preg_index($i, $matches);

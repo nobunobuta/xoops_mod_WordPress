@@ -1,11 +1,11 @@
 <?php /* RDF 1.0 generator, original version by garym@teledyn.com */
 $GLOBALS['blog'] = 1;
 $GLOBALS['doing_rss'] = 1;
-require(dirname(__FILE__).'/wp-config.php');
+require_once(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
 init_param('GET', 'num','integer');
 if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
-require('wp-blog-header.php');
+require_once('wp-blog-header.php');
 add_filter('the_content', 'trim');
 $_rss_charset = wp_get_rss_charset();
 header('Content-type: application/xml');

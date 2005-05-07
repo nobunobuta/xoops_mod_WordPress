@@ -4,7 +4,7 @@ $GLOBALS['blog'] = 1;
 $GLOBALS['doing_rss'] = 1;
 $GLOBALS['wp_inblock'] = 0;
 
-require('wp-config.php');
+require_once('wp-config.php');
 
 init_param('GET', 'feed','string','rss2');
 init_param('GET', 'p','string','');
