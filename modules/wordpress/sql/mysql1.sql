@@ -170,7 +170,7 @@ INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (5, 
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (5, 44, 7);
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (5, 45, 8);
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (5, 46, 9);
-INSERT INTO wp_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (5, 47, 10);
+INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (5, 47, 10);
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 3, 1);
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 4, 2);
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (6, 54, 3);
