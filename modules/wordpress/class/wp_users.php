@@ -245,6 +245,7 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 				$user_level = 10;
 			}
 			$record->setVar('user_login', $member->getVar('uname'));
+			$record->setVar('user_nickname', $member->getVar('uname'));
 			$record->setVar('user_email', $member->getVar('email'));
 			$record->setVar('user_url', $member->getVar('url'));
 			$record->setVar('user_level', $user_level);
@@ -252,9 +253,13 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 			$record->setVar('user_aim', $member->getVar('user_aim'));
 			$record->setVar('user_yim', $member->getVar('user_yim'));
 			$record->setVar('user_msn', $member->getVar('user_msnm'));
+			$record->setVar('user_idmode', 'nickname');
 		} else {
 			if ($member->getVar('uname') != $record->getVar('user_login')) {
 				$record->setVar('user_login', $member->getVar('uname'));
+			}
+			if (trim($record->getVar('user_nickname')) == '') {
+				$record->setVar('user_nickname', $member->getVar('uname'));
 			}
 		}
 		return parent::insert($record,$force,$updateOnlyChanged);
