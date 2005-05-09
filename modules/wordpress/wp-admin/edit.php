@@ -10,19 +10,6 @@ init_param('GET', 'showposts',      'integer', 10);
 init_param('GET', 'posts_per_page', 'integer', get_param('showposts'));
 init_param('GET', 'mode',           'string',  '');
 
-//init_param('GET', 'poststart',      'integer', 0);
-//init_param('GET', 'postend',        'integer', 0);
-//init_param('GET', 'order',          'string',  'DESC');
-//init_param('GET', 'm','integer',NO_DEFAULT_PARAM);  //Month Param   (YYYY[MM[DD[hh[mm[ss]]]]])
-//init_param('GET', 'w','integer',NO_DEFAULT_PARAM);  //WeekNum Param
-//init_param('GET', 'p','string',NO_DEFAULT_PARAM);  //PostID Param ("All" for All);
-//init_param('GET', 'cat','string', '');  // Category ID (Start with "-" means Exclude this.).
-//init_param('GET', 's','html',NO_DEFAULT_PARAM);    //Search String
-//init_param('GET', 'c',              'integer', 0);
-//init_param('GET', 'withcomments',   'integer', 0);
-//$exact = 0;
-//$sentence = 0;
-
 $ticket=$GLOBALS['xoopsWPTicket']->getTicketParamString('plugins');
 include(dirname(__FILE__)."/../wp-blog-header.php");
 
