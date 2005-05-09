@@ -36,7 +36,7 @@ foreach($GLOBALS['wpsmiliestrans'][wp_id()] as $smiley => $img) {
 }
 
 if ($use_spaw) {
-	include_once $spaw_root."spaw/spaw_control.class.php";
+	include_once $spaw_root."spaw_control.class.php";
 	$trans_tbl = get_html_translation_table (HTML_SPECIALCHARS);
 	$trans_tbl = array_flip ($trans_tbl);
 	$content = strtr ($content, $trans_tbl);
