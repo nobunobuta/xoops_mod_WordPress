@@ -112,7 +112,7 @@ function wp_title($sep = '&raquo;', $echo = true) {
 		}
 	} elseif(!empty($GLOBALS['m'])) {
 		$my_year = substr($GLOBALS['m'], 0, 4);
-		$my_month = $GLOBALS['month'][substr($m, 4, 2)];
+		$my_month = $GLOBALS['month'][substr($GLOBALS['m'], 4, 2)];
 		if (strlen($GLOBALS['m']) == 6) {
 			$my_month = substr($GLOBALS['m'], 4, 2);
 			$my_day = substr($GLOBALS['m'], 6, 2);
