@@ -73,6 +73,9 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 		$sorting_order = ($options[3])?$options[3]:'asc';
 		
 		if (current_wp()) {
+			if ( !empty( $_SERVER['PATH_INFO'] ) ) {
+				permlink_to_param();
+			}
 			init_param('GET', 'cat','string','');
 			init_param('GET', 'category_name','string','');
 			if (!empty($GLOBALS['category_name']) && empty($GLOBALS['cat'])) {

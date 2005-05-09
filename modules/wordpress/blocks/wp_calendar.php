@@ -13,6 +13,9 @@ if( ! defined( 'WP_CALENDAR_BLOCK_INCLUDED' ) ) {
 	function _b_wp_calendar_show($option, $wp_num = "")
 	{
 		if (current_wp()) {
+			if ( !empty( $_SERVER['PATH_INFO'] ) ) {
+				permlink_to_param();
+			}
 			init_param('GET', 'm','integer','');
 			init_param('GET', 'w','integer','');
 			init_param('GET', 'monthnum','integer','');

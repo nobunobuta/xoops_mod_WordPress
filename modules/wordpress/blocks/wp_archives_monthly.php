@@ -43,6 +43,9 @@ if( ! defined( 'WP_ARCHIVES_MONTHLY_BLOCK_INCLUDED' ) ) {
 
 		$sel_value = '';
 		if (current_wp()) {
+			if ( !empty( $_SERVER['PATH_INFO'] ) ) {
+				permlink_to_param();
+			}
 			init_param('GET', 'm','string','');
 			init_param('GET', 'year','integer', '');
 			init_param('GET', 'monthnum','integer','');
