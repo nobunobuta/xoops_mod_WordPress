@@ -1452,18 +1452,17 @@ function permlink_to_param() {
  *           If empty, $1, $2, $3, etc. are used.
  * Returns an associate array of matches and queries.
  */
+function preg_index($number, $matches = '') {
+    $match_prefix = '$';
+    $match_suffix = '';
+
+    if (! empty($matches)) {
+        $match_prefix = '$' . $matches . '['; 
+                         $match_suffix = ']';
+    }        
+    return "$match_prefix$number$match_suffix";        
+}
 function rewrite_rules($matches = '', $permalink_structure = '') {
-    function preg_index($number, $matches = '') {
-        $match_prefix = '$';
-        $match_suffix = '';
-        
-        if (! empty($matches)) {
-            $match_prefix = '$' . $matches . '['; 
-                                               $match_suffix = ']';
-        }        
-        return "$match_prefix$number$match_suffix";        
-    }
-    
     $rewrite = array();
 
     if (empty($permalink_structure)) {
