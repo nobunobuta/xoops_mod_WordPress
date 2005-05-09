@@ -382,7 +382,7 @@ function list_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_orde
 		$child_list = '';
 		if ((!$hierarchical || $category->category_parent == $child_of) && ($children || $category->category_parent == 0)) {
 			if ($hierarchical && $children) {
-				$child_list = list_cats($optionall, $all, $sort_column, $sort_order, $file, $list, $optiondates, $optioncount, $hide_empty, $use_desc_for_title, $hierarchical, $category->cat_ID, $categories, 1, $feed, $feed_image, $exclude, $hierarchical);
+				$child_list = list_cats($optionall, $all, $sort_column, $sort_order, $file, $list, $optiondates, $optioncount, $hide_empty, $use_desc_for_title, $hierarchical, $category->cat_ID, $categoryObjects, 1, $feed, $feed_image, $exclude, $hierarchical);
 			}
 			if (intval($hide_empty) == 0 || isset($GLOBALS['category_posts']["$category->cat_ID"]) || $child_list) {
 				$num_found++;

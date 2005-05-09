@@ -22,7 +22,7 @@ if (get_xoops_option(wp_mod(), 'wp_use_xoops_comments') == 0) {
 } else {
 	xcomments_popup_link(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS);
 	echo " | ";
-	comments_popup_link(_WP_TPL_TRACKBACK0, _WP_TPL_TRACKBACK1, _WP_TPL_TRACKBACKS);
+	comments_popup_link(_WP_TPL_TRACKBACK0, _WP_TPL_TRACKBACK1, _WP_TPL_TRACKBACKS,'', 'Trackback Off');
 }
 ?>
 	</div>
