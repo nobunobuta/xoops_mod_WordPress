@@ -44,6 +44,7 @@ if (empty($GLOBALS['wpPostHandler'][wp_prefix()])) {
 require_once (wp_base().'/wp-includes/wp-tickets.php');
 require_once (wp_base().'/wp-includes/functions-formatting.php');
 require_once (wp_base().'/wp-includes/functions-filter.php');
+require_once (wp_base().'/wp-includes/kses.php');
 if (get_settings('hack_file')) {
 	include_once(wp_base().'/my-hacks.php');
 }
@@ -52,7 +53,6 @@ require_once (wp_base().'/wp-includes/template-functions.php');
 require_once (wp_base().'/wp-includes/class-xmlrpc.php');
 require_once (wp_base().'/wp-includes/class-xmlrpcs.php');
 require_once (wp_base().'/wp-includes/links.php');
-require_once (wp_base().'/wp-includes/kses.php');
 
 if (empty($GLOBALS['cache_categories'][wp_id()])||(count($GLOBALS['cache_categories'][wp_id()])==0)) {
 	$GLOBALS['cache_categories'][wp_id()] = array();
