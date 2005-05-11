@@ -156,7 +156,9 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 		if ($userObject =& parent::get($key)) {
 			$member_handler =& xoops_gethandler('member');
 			$member =& $member_handler->getUser($userObject->getVar('ID'));
-			$userObject->assignVar('user_pass', $member->getVar('pass'));
+            if ($member) {
+                $userObject->assignVar('user_pass', $member->getVar('pass'));
+            }
 			return $userObject;
 		} else {
 			if ($sync_xoops) {
