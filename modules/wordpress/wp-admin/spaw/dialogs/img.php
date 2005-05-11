@@ -17,7 +17,7 @@ include '../config/spaw_control.config.php';
 include $spaw_root.'class/util.class.php';
 include $spaw_root.'class/lang.class.php';
 
-$theme = htmlspcialchars(empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'],ENT_QUOTES);
+$theme = htmlspecialchars(empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'],ENT_QUOTES);
 $theme_path = $spaw_dir.'lib/themes/'.$theme.'/';
 
 $l = new SPAW_Lang(htmlspecialchars($_GET['lang'],ENT_QUOTES));

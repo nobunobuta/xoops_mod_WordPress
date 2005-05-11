@@ -62,13 +62,13 @@ $spaw_dropdown_data['fontsize']['4'] = '4';
 $spaw_dropdown_data['fontsize']['5'] = '5';
 $spaw_dropdown_data['fontsize']['6'] = '6';
 
-$spaw_dropdown_data['paragraph']['Normal'] = 'Normal';
-$spaw_dropdown_data['paragraph']['Heading 1'] = 'Heading 1';
-$spaw_dropdown_data['paragraph']['Heading 2'] = 'Heading 2';
-$spaw_dropdown_data['paragraph']['Heading 3'] = 'Heading 3';
-$spaw_dropdown_data['paragraph']['Heading 4'] = 'Heading 4';
-$spaw_dropdown_data['paragraph']['Heading 5'] = 'Heading 5';
-$spaw_dropdown_data['paragraph']['Heading 6'] = 'Heading 6';
+$spaw_dropdown_data['paragraph']['p'] = 'Normal';
+$spaw_dropdown_data['paragraph']['h1'] = 'Heading 1';
+$spaw_dropdown_data['paragraph']['h2'] = 'Heading 2';
+$spaw_dropdown_data['paragraph']['h3'] = 'Heading 3';
+$spaw_dropdown_data['paragraph']['h4'] = 'Heading 4';
+$spaw_dropdown_data['paragraph']['h5'] = 'Heading 5';
+$spaw_dropdown_data['paragraph']['h6'] = 'Heading 6';
 
 // image library related config
 
