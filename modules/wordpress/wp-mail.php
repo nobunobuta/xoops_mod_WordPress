@@ -175,7 +175,7 @@ function wp_mail_receive() {
 						$charset = $mailParts['body'][0]['charset'];
 					}
 					$content = preg_replace('/(\<.*?\>)/es' ,'str_replace(array("\n","\r"), array(" ", " "), "\\1")', $content);
-					$content = strip_tags($content, '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td>');
+					$content = strip_tags($content, '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td><category><title>');
 					for ($i = 1; $i < count($mailParts['body']) ; $i++) {
 						$attaches[] = array(
 										'type' => 'relate',
@@ -200,7 +200,7 @@ function wp_mail_receive() {
 						$charset = $mailParts['body'][1]['charset'];
 					}
 					$content = preg_replace('/(\<.*?\>)/es' ,'str_replace(array("\n","\r"), array(" ", " "), "\\1")', $content);
-					$content = strip_tags($content, '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td>');
+					$content = strip_tags($content, '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td><category><title>');
 				}
 			} else {
 				$content = $mailParts['body'];
@@ -294,6 +294,7 @@ function wp_mail_receive() {
 				$post_category = get_settings('default_category');
 				if (preg_match('/<category>(.+?)<\/category>/is', $content, $matchcat)) {
 					$post_category = xmlrpc_getpostcategory($content);
+					$content = xmlrpc_removepostdata($content);
 				} 
 				if (empty($post_category)) {
 					$post_category = get_settings('default_post_category');
@@ -351,7 +352,7 @@ function wp_mail_receive() {
 					}
 					$post_ID = $postObject->getVar('ID');
 					echo "Post ID = $post_ID<br />\n";
-					$postObject->assignCategories($post_category);
+					$postObject->assignCategories($post_category,true);
 					do_action('publish_post', $post_ID);
 					do_action('publish_phone', $post_ID);
 					if ($flat < 500) {
