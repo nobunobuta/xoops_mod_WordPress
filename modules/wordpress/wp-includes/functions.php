@@ -754,41 +754,6 @@ function pingWeblogs($blog_ID = 1) {
 	}
 }
 
-// pings Weblogs.com/rssUpdates
-function pingWeblogsRss($blog_ID = 1, $rss_url='') {
-	if (get_settings('blogname') != 'my weblog' && $rss_url != '' && $GLOBALS['use_weblogsrssping']) {
-		$client = new xmlrpc_client('/RPC2', 'rssrpc.weblogs.com', 80);
-		$message = new xmlrpcmsg('rssUpdate', array(new xmlrpcval(get_settings('blogname')), new xmlrpcval($rss_url)));
-		$result = $client->send($message);
-		if (!$result || $result->faultCode()) {
-			return false;
-		}
-		return true;
-	} else {
-		return false;
-	}
-}
-
-// pings Blogs
-function pingBlogs($blog_ID="1") {
-	if ((!((get_settings('blogname')=='my weblog') && (wp_siteurl()=='http://example.com'))) && (!preg_match('/localhost\//',wp_siteurl())) && (get_settings('use_blodotgsping'))) {
-		$url = (get_settings('blodotgsping_url') == 'http://example.com') ? wp_siteurl().'/index.php' : get_settings('blodotgsping_url');
-		$client = new xmlrpc_client('/', 'ping.blo.gs', 80);
-		if ($GLOBALS['use_rss']) {
-			$message = new xmlrpcmsg('weblogUpdates.extendedPing', array(new xmlrpcval(get_settings('blogname')), new xmlrpcval($url), new xmlrpcval($url), new xmlrpcval(wp_siteurl().'/b2rss.xml')));
-		} else {
-			$message = new xmlrpcmsg('weblogUpdates.ping', array(new xmlrpcval(get_settings('blogname')), new xmlrpcval($url)));
-		}
-		$result = $client->send($message);
-		if (!$result || $result->faultCode()) {
-			return false;
-		}
-		return true;
-	} else {
-		return false;
-	}
-}
-
 function trackback($trackback_url, $title, $excerpt, $ID, $charset = "", $force=true) {
 	require_once(XOOPS_ROOT_PATH.'/class/snoopy.php');
 	$ID=intval($ID);
@@ -1227,9 +1192,9 @@ function wp_notify_postauthor($comment_id, $comment_type='comment') {
 	if (!($userObject =& $userHandler->get($post->post_author))) {
 		return false;
 	}
-    $user = $userObject->exportWpObject;
+    $user = $userObject->exportWpObject();
     if ($user->user_email == '') return false; // If there's no email to send the comment to
-
+	
 	$comment_author_domain = gethostbyaddr($comment->comment_author_IP);
 
 	$blogname = get_settings('blogname');
@@ -1314,7 +1279,7 @@ function wp_notify_moderator($comment_id) {
 	if (!($userObject =& $userHandler->get($post->post_author))) {
 		return false;
 	}
-    $user = $userObject->exportWpObject;
+    $user = $userObject->exportWpObject();
 
     $comment_author_domain = gethostbyaddr($comment->comment_author_IP);
     

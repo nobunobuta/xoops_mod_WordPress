@@ -360,7 +360,6 @@ function wp_mail_receive() {
 					} 
 					$blog_ID = 1;
 					pingWeblogs($blog_ID);
-					pingBlogs($blog_ID);
 					pingback($content, $post_ID);
 				} 
 				echo "\n<p><b>Posted title:</b> $post_title<br />\n";

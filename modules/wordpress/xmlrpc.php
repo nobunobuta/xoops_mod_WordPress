@@ -410,7 +410,6 @@ function b2newpost($m) {
 			$GLOBALS['blog_ID'] = 1;
 		}
 		pingWeblogs($GLOBALS['blog_ID']);
-		pingBlogs($GLOBALS['blog_ID']);
 		pingback($postarr['post_content'], $post_ID);
 
 		return new xmlrpcresp(new xmlrpcval("$post_ID"));
@@ -584,7 +583,6 @@ function bloggernewpost($m) {
 			$GLOBALS['blog_ID'] = 1;
 		}
 		pingWeblogs($GLOBALS['blog_ID']);
-		pingBlogs($GLOBALS['blog_ID']);
 		pingback($postarr['post_content'], $post_ID);
 
 		logIO('O',"Posted ! ID: $post_ID");
@@ -1078,7 +1076,6 @@ function mwnewpost($params) {
 			$GLOBALS['blog_ID'] = 1;
 		}
 		pingWeblogs($GLOBALS['blog_ID']);
-		pingBlogs($GLOBALS['blog_ID']);
 		pingback($postarr['post_content'], $post_ID);
 		if (array_key_exists('mt_tb_ping_urls',$contentstruct)) {
 			trackback_url_list($content_struct['mt_tb_ping_urls'],$post_ID);
@@ -1177,7 +1174,6 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 			$GLOBALS['blog_ID'] = 1;
 		}
 		pingWeblogs($GLOBALS['blog_ID']);
-		pingBlogs($GLOBALS['blog_ID']);
 		pingback($postarr['post_content'], $post_ID);
 		if (array_key_exists('mt_tb_ping_urls',$contentstruct)) {
 			trackback_url_list($content_struct['mt_tb_ping_urls'],$post_ID);

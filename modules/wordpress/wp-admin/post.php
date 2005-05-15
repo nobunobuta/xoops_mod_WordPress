@@ -114,7 +114,6 @@ switch(get_param('action')) {
 				pingGeoUrl();
 			}
 			pingWeblogs();
-			pingBlogs();
 			if ($post_pingback) {
 				pingback($postObject->getVar('post_content','e'), $post_ID);
 			}
@@ -247,7 +246,7 @@ switch(get_param('action')) {
 		if (!empty($saveasdraft)) $post_status = 'draft';
 		if (!empty($saveasprivate)) $post_status = 'private';
 		if (!empty($publish)) $post_status = 'publish';
-		if (!empty($save)) $post_status = 'draft';
+		if (!empty($save)) $post_status = 'publish';
 		$postObject->setVar('post_status', $post_status);
 
 		if(!$postHandler->insert($postObject, false, true)) {
@@ -275,7 +274,6 @@ switch(get_param('action')) {
 				pingGeoUrl();
 			}
 			pingWeblogs();
-			pingBlogs();
 		} // end if moving from draft/private to published
 		
 		if ($post_status == 'publish') {
