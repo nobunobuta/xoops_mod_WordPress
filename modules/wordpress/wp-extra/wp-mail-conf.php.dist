@@ -1,4 +1,0 @@
-<?php
-/* Don't remove this line */ $_my_ext_=pathinfo(__FILE__);if ($_my_ext_['extension']!="php") exit;
-$exec_key = '';
-?>
