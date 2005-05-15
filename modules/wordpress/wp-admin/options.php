@@ -11,21 +11,8 @@ if (!get_magic_quotes_gpc()) {
 	$_COOKIE = add_magic_quotes($_COOKIE);
 }
 
-$wpvarstoreset = array('action','standalone', 'option_group_id');
-for ($i=0; $i<count($wpvarstoreset); $i += 1) {
-	$wpvar = $wpvarstoreset[$i];
-	if (!isset($$wpvar)) {
-		if (empty($_POST["$wpvar"])) {
-			if (empty($_GET["$wpvar"])) {
-				$$wpvar = '';
-			} else {
-				$$wpvar = $_GET["$wpvar"];
-			}
-		} else {
-			$$wpvar = $_POST["$wpvar"];
-		}
-	}
-}
+init_param(array('POST','GET'), 'action', 'string', '');
+init_param(array('POST','GET'), 'option_group_id', 'integer', '');
 
 require_once("optionhandler.php");
 $non_was_selected = 0;
@@ -37,7 +24,7 @@ if ($option_group_id == '') {
 }
 $message = "";
 
-switch($action) {
+switch(get_param('action')) {
 
 case "update":
 	$standalone = 0;
@@ -128,10 +115,14 @@ if ($non_was_selected) { // no group pre-selected, display opening page
 
 ?>
 <br clear="all" />
-<?php if($messase) { ?>
+<?php if($message) { ?>
 <div class="wrap"><?php echo $message; ?></div>
 <?php } ?>
 <?php
+    $option_groups = $wpdb->get_results("SELECT group_id, group_name, group_desc, group_longdesc FROM ".wp_table('optiongroups')." WHERE  group_id = $option_group_id ");
+    $current_long_desc = $option_groups[0]->group_longdesc;
+    $current_desc = $option_groups[0]->group_desc;
+    if (defined($current_desc)) $current_desc = constant($current_desc);
 	include XOOPS_ROOT_PATH."/class/xoopsformloader.php";
 	$form = new XoopsThemeForm($current_desc, "form", $this_file);
     //Now display all the options for the selected group.
