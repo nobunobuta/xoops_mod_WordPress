@@ -222,8 +222,8 @@ function dropdown_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_
 	    $criteria->setGroupBy('cat_ID');
 	    $criteria->setSort('cat_'.$sort_column);
 	    $criteria->setOrder($sort_order);
-		$joinCriteria =& new XoopsJoinCriteria(wp_table('post2cat'), 'cat_ID', 'category_id');
-		$joinCriteria->cascade(new XoopsJoinCriteria(wp_table('posts'), 'post_id', 'ID'));
+		$joinCriteria =& new XoopsJoinCriteria(wp_table('post2cat'), 'cat_ID', 'category_id', 'INNER');
+		$joinCriteria->cascade(new XoopsJoinCriteria(wp_table('posts'), 'post_id', 'ID', 'INNER'));
 		$categoryHandler =& wp_handler('Category');
 		$categoryObjects =& $categoryHandler->getObjects($criteria, false,
 					 'cat_ID, cat_name, category_nicename,category_parent, category_description cat_description,
