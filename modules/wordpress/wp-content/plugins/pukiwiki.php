@@ -28,11 +28,11 @@ function pukiwiki_com($text) {
 }
 }
 if (class_exists('PukiiWikiRender')) {
-	if (file_exists(dirname(__FILE__).'/modPukiWiki/PukiWiki.php') {
+	if (file_exists(dirname(__FILE__).'/modPukiWiki/PukiWiki.php')) {
 		include_once (dirname(__FILE__).'/modPukiWiki/PukiWiki.php') ;
-	} else if (file_exists(XOOPS_ROOT_PATH.'/common/modPukiWiki/PukiWiki.php') {
+	} else if (file_exists(XOOPS_ROOT_PATH.'/common/modPukiWiki/PukiWiki.php')) {
 		include_once(XOOPS_ROOT_PATH.'/common/modPukiWiki/PukiWiki.php');
-	} else if (file_exists(XOOPS_ROOT_PATH.'/class/modPukiWiki/PukiWiki.php') {
+	} else if (file_exists(XOOPS_ROOT_PATH.'/class/modPukiWiki/PukiWiki.php')) {
 		include_once(XOOPS_ROOT_PATH.'/class/modPukiWiki/PukiWiki.php');
 	}
 }
