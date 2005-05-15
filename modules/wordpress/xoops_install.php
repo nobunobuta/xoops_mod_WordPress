@@ -62,7 +62,7 @@ function _xoops_module_install_wordpress($dirname, $prefix)
 
 eval ('
 	function xoops_module_install_'.$_wp_my_dirname.'(&$module) {
-		return (_xoops_module_install_wordpress('.$_wp_my_dirname.', '.$_wp_my_prefix.'));
+		return (_xoops_module_install_wordpress("'.$_wp_my_dirname.'", "'.$_wp_my_prefix.'"));
 	}
 ');
 ?>
