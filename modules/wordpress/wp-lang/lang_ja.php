@@ -467,7 +467,7 @@ define('_LANG_WUS_AU_THOR','Authors');
 define('_LANG_WUS_AU_LOGIN','ログイン名');
 define('_LANG_WUS_AU_NICK','ニックネーム');
 define('_LANG_WUS_AU_NAME','氏名');
-define('_LANG_WUS_AU_MAIL','メールアドレス(必須)');
+define('_LANG_WUS_AU_MAIL','メールアドレス');
 define('_LANG_WUS_AU_URI','ホームページURL');
 define('_LANG_WUS_AU_LEVEL','レベル');
 define('_LANG_WUS_AU_POSTS','投稿数');

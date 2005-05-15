@@ -1,5 +1,4 @@
 <?php
-require_once('../wp-config.php');
 /**
 ** get_option_widget()
 ** parameters:
@@ -94,5 +93,4 @@ function replace_constant($constant) {
           return $constant;
      }
 }
-    
 ?>

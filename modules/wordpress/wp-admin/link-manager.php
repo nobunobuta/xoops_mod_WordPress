@@ -13,10 +13,10 @@ $this_file = 'link-manager.php';
 $parent_file = 'link-manager.php';
 
 init_param(array('POST','GET'), 'action2', 'string', '');
-init_param(array('POST','GET'), 'action', 'string', $action2);
+init_param(array('POST','GET'), 'action', 'string', get_param('action2'));
 
 
-switch ($action) {
+switch (get_param('action')) {
 	case _LANG_WLM_ASSIGN_TEXT:
 		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {

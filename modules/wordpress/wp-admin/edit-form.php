@@ -20,6 +20,8 @@ if ($GLOBALS['wp_use_spaw']) {
 			$use_spaw = false;
 		}
 	}
+} else {
+	$use_spaw = false;
 }
 // $use_koivi = $GLOBALS['wp_use_koivi'];
 

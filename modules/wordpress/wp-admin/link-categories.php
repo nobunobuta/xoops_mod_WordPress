@@ -10,7 +10,7 @@ $parent_file = 'link-manager.php';
 
 init_param(array('POST','GET'), 'action', 'string', '');
 
-switch ($action) {
+switch (get_param('action')) {
   case 'addcat':
 		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {

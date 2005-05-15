@@ -8,8 +8,8 @@ $parent_file = 'options.php';
 init_param('POST', 'submit','string', '');
 if ($submit) {
 	wp_refcheck("/wp-admin");
-	init_param('POST', 'permalink_structure','string');
-	update_option('permalink_structure', $permalink_structure);
+	init_param('POST', 'permalink_structure','string', ' ');
+	update_option('permalink_structure', get_param('permalink_structure'));
 } else {
 	$permalink_structure = get_settings('permalink_structure');
 	if ($user_level < 9) {

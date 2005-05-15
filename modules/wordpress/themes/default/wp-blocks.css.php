@@ -210,7 +210,7 @@ li span.post-title {
 }
 EOD;
 /* Don't remove this line */ }
-/* Don't remove this line */ if ((@in_array('pukiwiki', $GLOBALS['wp_filter'][wp_id()]['the_content']["6"])) and
+/* Don't remove this line */ if ((@in_array('pukiwiki', $GLOBALS['wp_filter'][wp_id()]['the_content']["6"])) &&
 /* Don't remove this line */ (!preg_match("/^".preg_quote(wp_base()."/","/")."/i",$cur_PATH))){/* Don't remove this line */ if (!defined("WP_BLOCK_WIKI_READ")) {
 /* Don't remove this line */ define("WP_BLOCK_WIKI_READ","1");$wp_block_style .= <<<EOD
 /*

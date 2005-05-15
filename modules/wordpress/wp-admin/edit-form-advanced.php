@@ -24,6 +24,8 @@ if ($GLOBALS['wp_use_spaw']) {
 			$use_spaw = false;
 		}
 	}
+} else {
+	$use_spaw = false;
 }
 // $use_koivi = $GLOBALS['wp_use_koivi'];
 
@@ -99,8 +101,12 @@ $criteria->setSort(array('meta_key','meta_id'));
 $postmetaObjects =& $postmetaHandler->getObjects($criteria);
 $postmetaRows = array();
 if ($postmetaObjects) {
+	$_style = "";
 	foreach($postmetaObjects as $postmetaObject) {
-		$postmetaRows[] =& $postmetaObject->getVarArray("e");
+		$_style = ('class="odd"' == $_style) ? 'class="even"' : 'class="odd"';
+		$postmetaRow =& $postmetaObject->getVarArray("e");
+		$postmetaRow['style'] = $_style;
+		$postmetaRows[] =& $postmetaRow;
 	}
 }
 $criteria = new Criteria(1,1);
@@ -111,7 +117,7 @@ $postmetaKeys = array();
 $postmetakeyObjects =& $postmetaHandler->getObjects($criteria, false);
 if ($postmetakeyObjects) {
 	foreach($postmetakeyObjects as $postmetakeyObject) {
-		$postmetaKeys[] = $postmetakeyObject->getVar('meta_key');
+		$postmetaKeys[] =  $postmetakeyObject->getVar('meta_key');
 	}
 }
 $wpTpl =& new XoopsTpl;
