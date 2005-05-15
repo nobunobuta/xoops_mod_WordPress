@@ -10,7 +10,7 @@ $_wp_my_prefix = $_wp_base_prefix.$_wp_my_dirnumber.'_';
 if( ! defined( 'WP_XOOPS_SEARCH_INCLUDED' ) ) {
 	define( 'WP_XOOPS_SEARCH_INCLUDED' , 1 ) ;
 
-	function _wp_xoops_search($queryarray, $andor, $limit, $offset, $userid, $wp_num=''){
+	function _wp_xoops_search($queryarray, $andor, $limit, $offset, $userid){
 		$now = date('Y-m-d H:i:s',(time() + (get_settings('time_difference') * 3600)));
 		$where = '(post_status = \'publish\') AND (post_date <= \''.$now.'\')';
 		
@@ -56,14 +56,11 @@ if( ! defined( 'WP_XOOPS_SEARCH_INCLUDED' ) ) {
 	}
 }
 eval ('
-	function b_'.$_wp_my_prefix.'xoops_search($queryarray, $andor, $limit, $offset, $userid) {
-		$GLOBALS["use_cache"] = 1;
-		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
+	function '.$_wp_my_prefix.'xoops_search($queryarray, $andor, $limit, $offset, $userid) {
 		$GLOBALS["wp_inblock"] = 1;
-		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
 		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
 		$GLOBALS["wp_inblock"] = 0;
-		return (_wp_xoops_search($queryarray, $andor, $limit, $offset, $userid, '.$_wp_my_dirnumber.'));
+		return _wp_xoops_search($queryarray, $andor, $limit, $offset, $userid);
 	}
 ');
 ?>
