@@ -16,13 +16,19 @@ if( ! defined( 'WP_CALENDAR_BLOCK_INCLUDED' ) ) {
 			if ( !empty( $_SERVER['PATH_INFO'] ) ) {
 				permlink_to_param();
 			}
+			init_param('GET', 'p','integer','');
 			init_param('GET', 'm','integer','');
 			init_param('GET', 'w','integer','');
 			init_param('GET', 'monthnum','integer','');
 			init_param('GET', 'year','integer','');
+			if (test_param('p') && !(test_param('m') || test_param('monthnum') || test_param('w'))) {
+				$postHandler =& wp_handler('Post');
+				$postObject =& $postHandler->get(get_param('p'));
+				$GLOBALS['m'] = mysql2date('Ym', $postObject->getVar('post_date'));
+			}
 		}
 		ob_start();
-		block_style_get($wp_num);
+		block_style_get();
 		get_calendar(1);
 		$block['content'] = ob_get_contents();
 		ob_end_clean();
@@ -32,10 +38,7 @@ if( ! defined( 'WP_CALENDAR_BLOCK_INCLUDED' ) ) {
 
 eval ('
 	function b_'.$_wp_my_prefix.'calendar_show($options) {
-		$GLOBALS["use_cache"] = 1;
-		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
 		$GLOBALS["wp_inblock"] = 1;
-		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
 		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
 		$GLOBALS["wp_inblock"] = 0;
 		return (_b_wp_calendar_show($options,"'.$_wp_my_dirnumber.'"));
