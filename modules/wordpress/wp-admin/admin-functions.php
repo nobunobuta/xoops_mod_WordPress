@@ -301,7 +301,11 @@ function update_meta($mid, $mkey, $mvalue) {
 
 function draft_list($user_ID) {
 	global $wpdb;
-	$drafts = $wpdb->get_results("SELECT ID, post_title FROM ".wp_table('posts')." WHERE post_status = 'draft' AND post_author = $user_ID");
+	if ($GLOBALS['user_level'] == 10) {
+		$drafts = $wpdb->get_results("SELECT ID, post_title FROM ".wp_table('posts')." WHERE post_status = 'draft'");
+	} else {
+		$drafts = $wpdb->get_results("SELECT ID, post_title FROM ".wp_table('posts')." WHERE post_status = 'draft' AND post_author = $user_ID");
+	}
 	if ($drafts) {
 ?>
 <div class="wrap">
