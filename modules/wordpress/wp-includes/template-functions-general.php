@@ -127,8 +127,8 @@ function wp_title($sep = '&raquo;', $echo = true) {
 
 	// If there's a post
 	if ((!empty($GLOBALS['p']) && intval($GLOBALS['p'])) || (!empty($GLOBALS['name']) && $GLOBALS['name'] != '')) {
-		$criteria = new CriteriaCompo(new Criteria('post_name',$GLOBALS['name']));
 		if (empty($GLOBALS['p'])) {
+			$criteria = new CriteriaCompo(new Criteria('post_name',$GLOBALS['name']));
 			if (!empty($GLOBALS['year'])) {
 				$criteria->add(new Criteria('YEAR(post_date)', $GLOBALS['year']));
 			}
@@ -445,7 +445,7 @@ function get_calendar($daylength = 1, $echo=true) {
     // Quick check. If we have no posts at all, abort!
     if (empty($GLOBALS['posts'])) {
     	$criteria =& new Criteria('post_status', 'publish');
-    	if (!$postHandler->getObjects($criteria)) {
+    	if (!$postHandler->getCount($criteria)) {
     		return _echo('', $echo);
     	}
     }
