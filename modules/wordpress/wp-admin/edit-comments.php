@@ -15,13 +15,13 @@ init_param('GET', 'commentstart', 'integer', 0);
 init_param('GET', 'commentend', 'integer', 0);
 init_param('GET', 'commentorder', 'string', 'DESC');
 
-if ($commentstart && $commentend) {
+if (test_param('commentstart') && test_param('commentend')) {
 	$showcomments = $commentend - $commentstart+ 1;
 } else {
-	if (!$commentstart) {
+	if (!test_param('$commentstart')) {
 		$commentstart = 1;
 	}
-	if (!$commentend) {
+	if (!test_param('$commentend')) {
 		$commentend = $commentstart + $showcomments -1;
 	}
 }
@@ -61,9 +61,11 @@ if ($commentObjects) {
 		}
 		if ($postObject) {
 			$row['post_title'] = $postObject->getVar('post_title');
+			$row['canEdit'] = user_can_edit($postObject->getVar('post_author'));
+		} else {
+			$row['post_title'] = 'No Post exists!!';
+			$row['canEdit'] = ($user_level == 10);
 		}
-		$row['canEdit'] = user_can_edit($postObject->getVar('post_author'));
-//		($author->getVar('user_level') < $user_level) || ($author->getVar('user_login') == $user_login);
 		$row['post_title']  = ($row['post_title'] == '') ? "# $commentObject->getVar('comment_post_ID')" : $row['post_title'];
 		$row['comment_author'] = comment_author(false);
 		$row['comment_author_email'] = comment_author_email_link('','','',false);
