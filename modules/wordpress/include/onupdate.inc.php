@@ -51,6 +51,12 @@ if (!function_exists('upgrade_wp_tables')){
 		if ($xoopsDB->query("DELETE FROM ".wp_table('options')." WHERE option_id =91 AND option_name ='gzipcompression'")) {
 			$xoopsDB->query("DELETE FROM ".wp_table('optiongroup_options')." WHERE group_id=6 AND option_id =91");
 		}
+		if ($xoopsDB->query("DELETE FROM ".wp_table('options')." WHERE option_id =27 AND option_name ='use_blodotgsping'")) {
+			$xoopsDB->query("DELETE FROM ".wp_table('optiongroup_options')." WHERE group_id=3 AND option_id =27");
+		}
+		if ($xoopsDB->query("DELETE FROM ".wp_table('options')." WHERE option_id =28 AND option_name ='blodotgsping_url'")) {
+			$xoopsDB->query("DELETE FROM ".wp_table('optiongroup_options')." WHERE group_id=3 AND option_id =28");
+		}
 		if(!get_settings('use_comment_preview')) {
 			add_option('use_comment_preview','0', 2, "Display Preview Screen after comment posting.", 2, 8);
 		}
@@ -59,6 +65,9 @@ if (!function_exists('upgrade_wp_tables')){
 		}
 		if(!get_settings('check_trackback_content')) {
 			add_option('check_trackback_content','0', 3, '_LANG_INST_BASE_VALUE95', 2, 8);
+		}
+		if(!get_settings('trackback_filename')) {
+			add_option('trackback_filename','wp-trackback.php', 3, 'TrackBack File Name (default wp-trackback.php)', 3, 8);
 		}
 	}
 }

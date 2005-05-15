@@ -150,8 +150,6 @@ INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 24, 4);
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 25, 5);
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 26, 6);
-INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 27, 7);
-INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 28, 8);
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 29, 9);
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 30, 10);
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (4, 31, 1);
@@ -212,6 +210,7 @@ INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 92, 5);
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 93, 15);
 INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 95, 11);
+INSERT INTO wp1_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 96, 12);
 
 # --------------------------------------------------------
 
@@ -286,8 +285,6 @@ INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_over
 INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (24, 0, 'rss_excerpt_length', 'Y', 1, '50', 20, 8, '_LANG_INST_BASE_VALUE24', 8);
 INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (25, 0, 'rss_use_excerpt', 'Y', 2, '1', 20, 8, '_LANG_INST_BASE_VALUE25', 8);
 INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (26, 0, 'use_weblogsping', 'Y', 2, '0', 20, 8, '_LANG_INST_BASE_VALUE26', 8);
-INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (27, 0, 'use_blodotgsping', 'Y', 2, '0', 20, 8, '_LANG_INST_BASE_VALUE27', 8);
-INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (28, 0, 'blodotgsping_url', 'Y', 3, 'http://www.kowa.org/modules/wp', 30, 8, '_LANG_INST_BASE_VALUE28', 8);
 INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (29, 0, 'use_trackback', 'Y', 2, '1', 20, 8, '_LANG_INST_BASE_VALUE29', 8);
 INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (30, 0, 'use_pingback', 'Y', 2, '1', 20, 8, '_LANG_INST_BASE_VALUE30', 8);
 INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (31, 0, 'use_fileupload', 'Y', 2, '0', 20, 8, '_LANG_INST_BASE_VALUE31', 8);
@@ -351,6 +348,7 @@ INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_over
 INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (93, 0, 'use_comment_preview', 'Y', 2, 0, 20, 8, 'Display Preview Screen after comment posting.', 8);
 INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (94, 0, 'active_plugins', 'Y', 1, '', 20, 8, 'Plugin List', 8);
 INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (95, 0, 'check_trackback_content', 'Y', 2, '0', 20, 8, '_LANG_INST_BASE_VALUE95', 8);
+INSERT INTO wp1_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (96, 0, 'trackback_filename', 'Y', 3, '0', 20, 8, 'TrackBack File Name (default wp-trackback.php)', 8);
 
 # --------------------------------------------------------
 
