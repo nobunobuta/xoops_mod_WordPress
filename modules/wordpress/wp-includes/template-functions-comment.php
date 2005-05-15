@@ -284,7 +284,8 @@ function permalink_comments_rss($echo = true) {
 }
 
 function trackback_url($echo = true) {
-	$tb_url = wp_siteurl() . '/wp-trackback.php/' . $GLOBALS['wp_post_id'];
+    $trackback_filename = get_settings('trackback_filename') ? get_settings('trackback_filename') : 'wp-trackback.php';
+	$tb_url = wp_siteurl() . '/'.$trackback_filename.'/'. $GLOBALS['wp_post_id'];
 	
 	if ('' != get_settings('permalink_structure')) {
 		$tb_url = trailingslashit(get_permalink()) . 'trackback/';
