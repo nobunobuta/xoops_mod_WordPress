@@ -7,7 +7,7 @@ if (file_exists(dirname(__FILE__).'/xoops_version.php')) {
 	}
 }
 $trackback_filename = get_settings('trackback_filename') ? get_settings('trackback_filename') : 'wp-trackback.php';
-if ($wp_base().'/'.$trackback_filename != __FILE__ ) {
+if (wp_base().'/'.$trackback_filename != __FILE__ ) {
 	trackback_response(1, 'Sorry, Invalid Request.');
 }
 
