@@ -27,16 +27,16 @@ function pukiwiki_com($text) {
 	return pukiwiki($text);
 }
 }
-if (class_exists('PukiiWikiRender')) {
+if (!class_exists('PukiWikiRender')) {
 	if (file_exists(dirname(__FILE__).'/modPukiWiki/PukiWiki.php')) {
-		include_once (dirname(__FILE__).'/modPukiWiki/PukiWiki.php') ;
+		include_once (dirname(__FILE__).'/modPukiWiki/PukiWiki.php');
 	} else if (file_exists(XOOPS_ROOT_PATH.'/common/modPukiWiki/PukiWiki.php')) {
 		include_once(XOOPS_ROOT_PATH.'/common/modPukiWiki/PukiWiki.php');
 	} else if (file_exists(XOOPS_ROOT_PATH.'/class/modPukiWiki/PukiWiki.php')) {
 		include_once(XOOPS_ROOT_PATH.'/class/modPukiWiki/PukiWiki.php');
 	}
 }
-if (class_exists('PukiiWikiRender')) {
+if (class_exists('PukiWikiRender')) {
 	remove_filter('the_content', 'wpautop');
 	remove_filter('the_content', 'wptexturize');
 	remove_filter('the_content', 'convert_bbcode');
