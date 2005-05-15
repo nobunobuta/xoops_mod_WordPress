@@ -2,7 +2,7 @@
 /*
 Plugin Name: Blacklist
 Plugin URI: http://www.farook.org
-Description: Checks each entered comment against a standard blacklist and either approves or holds the comment for later approval or automatically deletes it. Also allows you to work with comments in the moderation queue so that you can harvest information to add to the blacklist while mass-deleting held comments. If it's your first time you can use the <a href="../blacklist-install.php">Blacklist Installer</a> or you can simply go to the <a href="wpblacklist.php">Blacklist Configuration</a> screen.
+Description: Checks each entered comment against a standard blacklist and either approves or holds the comment for later approval or automatically deletes it. Also allows you to work with comments in the moderation queue so that you can harvest information to add to the blacklist while mass-deleting held comments. If it's your first time you can use the <a href="wpblacklist.php?action=install">Blacklist Installer</a> or you can simply go to the <a href="wpblacklist.php">Blacklist Configuration</a> screen.
 Version: 2.9
 Author: Fahim Farook
 Author URI: http://www.farook.org
