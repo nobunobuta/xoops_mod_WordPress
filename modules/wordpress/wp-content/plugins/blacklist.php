@@ -16,7 +16,7 @@ $tableblacklist = $GLOBALS['xoopsDB']->prefix("wp_blacklist");
    always returns true
  */
 function wpbl_notify($comment_id, $reason, $harvest) {
-    global $wbbl_comment;
+    global $wpbl_comment;
 	
 	$tableposts = wp_table('posts');
     $sql = "SELECT * FROM $tableposts WHERE ID='{$wbbl_comment['comment_post_ID']}' LIMIT 1";
@@ -197,7 +197,7 @@ function blacklist($commentID) {
 			$orig_contents = $snoopy->results;
 		}
 
-		if (!strpos($orig_contents, $siteurl)) {
+		if (!strpos($orig_contents, wp_siteurl())) {
 			$approved = 'deleted';
 			mail_and_del($commentID, "TrackBack URL does not contain my site URL");
 		}
