@@ -78,7 +78,7 @@ if( ! defined( 'WP_CONTENTS_BLOCK_INCLUDED' ) ) {
 		$block = array();
 		$block['use_theme_template'] = get_xoops_option(wp_mod(),'use_theme_template');
 		
-		$block['style'] =block_style_get($wp_num,false);
+		$block['style'] =block_style_get(false);
 		$block['divid'] = 'wpBlockContent'.$wp_num;
 		$block['template_content'] = "";
 		$i = 0;
@@ -125,12 +125,8 @@ eval ('
 		return (_b_wp_contents_edit($options,"'.$_wp_my_dirnumber.'"));
 	}
 	function b_'.$_wp_my_prefix.'contents_show($options) {
-		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
-		$GLOBALS["wp_inblock"] = 2;
-		$GLOBALS["use_cache"] = 1;
 		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
 		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
-		$GLOBALS["wp_inblock"] = 0;
 		return (_b_wp_contents_show($options,"'.$_wp_my_dirnumber.'"));
 	}
 ');

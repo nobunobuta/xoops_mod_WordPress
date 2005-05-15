@@ -86,7 +86,7 @@ $GLOBALS['cookiehash'] = md5(wp_siteurl());
 
 require(wp_base().'/wp-includes/vars.php');
 require(wp_base().'/wp-includes/wp-filter-setup.php');
-if (empty($GLOBALS['wp_inblock']) || $GLOBALS['wp_inblock'] != 1) {
+if (empty($GLOBALS['wp_inblock'])) {
 	if (!defined('XOOPS_PULUGIN'.wp_id())) {
 		define('XOOPS_PULUGIN'.wp_id(), 1);
 		if (get_settings('active_plugins')) {

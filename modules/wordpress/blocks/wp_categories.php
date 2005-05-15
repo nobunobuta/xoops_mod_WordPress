@@ -96,7 +96,7 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 		if ($block_style == 0) {
 			// Simple Listing
 			ob_start();
-			block_style_get($wp_num);
+			block_style_get();
 			echo '<ul class="wpBlockList">'."\n";
 			wp_list_cats("hide_empty=0&sort_column=$sorting_key&sorting_order=$sorting_order&optioncount=$with_count");
 			echo '</ul>'."\n";
@@ -107,7 +107,7 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 			$file = wp_siteurl().'/index.php';
 			$link = $file.'?cat=';
 			ob_start();
-			block_style_get($wp_num);
+			block_style_get();
 			echo '<form name="listcatform'.$wp_num.'" id="listcatform'.$wp_num.'" action="#">';
 			$select_str = '<select name="cat" onchange="window.location = (document.forms.listcatform'.$wp_num.'.cat[document.forms.listcatform'.$wp_num.'.cat.selectedIndex].value);"> ';
 			dropdown_cats(1,_WP_LIST_CAT_ALL,$sorting_key,$sorting_order,0,$with_count,0,false,0,0,true,0,true,0);
@@ -125,10 +125,7 @@ eval ('
 		return (_b_wp_categories_edit($options));
 	}
 	function b_'.$_wp_my_prefix.'categories_show($options) {
-		$GLOBALS["use_cache"] = 1;
-		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
 		$GLOBALS["wp_inblock"] = 1;
-		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
 		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
 		$GLOBALS["wp_inblock"] = 0;
 		return (_b_wp_categories_show($options,"'.$_wp_my_dirnumber.'"));

@@ -13,7 +13,7 @@ if( ! defined( 'WP_LINKS_BLOCK_INCLUDED' ) ) {
 	function _b_wp_links_show($option,$wp_num="")
 	{
 		ob_start();
-		block_style_get($wp_num);
+		block_style_get();
 		echo "<ul class='wpBlockList'>\n";
 		get_links_list();
 		echo "</ul>\n";
@@ -25,10 +25,7 @@ if( ! defined( 'WP_LINKS_BLOCK_INCLUDED' ) ) {
 
 eval ('
 	function b_'.$_wp_my_prefix.'links_show($options) {
-		$GLOBALS["use_cache"] = 1;
-		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
 		$GLOBALS["wp_inblock"] = 1;
-		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
 		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
 		$GLOBALS["wp_inblock"] = 0;
 		return (_b_wp_links_show($options,"'.$_wp_my_dirnumber.'"));

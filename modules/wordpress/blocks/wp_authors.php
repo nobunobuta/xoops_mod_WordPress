@@ -59,7 +59,7 @@ if( ! defined( 'WP_AUTHORS_BLOCK_INCLUDED' ) ) {
 		$feed = ($show_rss2_icon == 1) ? 'rss2' : '' ;
 		$feed_image = ($show_rss2_icon == 1) ? wp_siteurl().'/wp-images/rss-mini.gif' : '';
 		ob_start();
-		block_style_get($wp_num);
+		block_style_get();
 		echo "<ul class='wpBlockList'>\n";
 		list_authors2($optioncount,$exclude_admin,$idmode, $hide_empty,$feed,$feed_image);
 		echo "</ul>\n";
@@ -74,10 +74,7 @@ eval ('
 		return (_b_wp_authors_edit($options));
 	}
 	function b_'.$_wp_my_prefix.'authors_show($options) {
-		$GLOBALS["use_cache"] = 1;
-		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
 		$GLOBALS["wp_inblock"] = 1;
-		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
 		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
 		$GLOBALS["wp_inblock"] = 0;
 		return (_b_wp_authors_show($options,"'.$_wp_my_dirnumber.'"));

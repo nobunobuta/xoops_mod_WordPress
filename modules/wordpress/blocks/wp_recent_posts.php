@@ -101,7 +101,7 @@ if( ! defined( 'WP_RECENT_POSTS_BLOCK_INCLUDED' ) ) {
 		$date = "";
 		$pdate = "";
 		ob_start();
-		block_style_get($wp_num);
+		block_style_get();
 		$output = ob_get_contents();
 		ob_end_clean();
 		$output .= '<div class="wpRecentPost">';
@@ -195,10 +195,7 @@ eval ('
 		return (_b_wp_recent_posts_edit($options,"'.$_wp_my_dirnumber.'"));
 	}
 	function b_'.$_wp_my_prefix.'recent_posts_show($options) {
-		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
-		$GLOBALS["wp_inblock"] = 1;
 		$GLOBALS["use_cache"] = 1;
-		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
 		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
 		$GLOBALS["wp_inblock"] = 0;
 		return (_b_wp_recent_posts_show($options,"'.$_wp_my_dirnumber.'"));

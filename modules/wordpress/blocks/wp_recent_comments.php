@@ -114,7 +114,7 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 			$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('comments_rss2_url').'"><img src="'.wp_siteurl().'/wp-images/rss_comment.gif" /></a></div>';
 		}
 		ob_start();
-		block_style_get($wp_num);
+		block_style_get();
 		echo $output;
 		$block['content'] = ob_get_contents();
 		ob_end_clean();
@@ -232,10 +232,7 @@ eval ('
 		return (_b_wp_recent_comments_edit($options));
 	}
 	function b_'.$_wp_my_prefix.'recent_comments_show($options) {
-		$GLOBALS["use_cache"] = 1;
-		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
 		$GLOBALS["wp_inblock"] = 1;
-		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
 		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
 		$GLOBALS["wp_inblock"] = 0;
 		return (_b_wp_recent_comments_show($options,"'.$_wp_my_dirnumber.'"));

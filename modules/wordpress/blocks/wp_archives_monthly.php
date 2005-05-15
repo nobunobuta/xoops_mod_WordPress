@@ -56,7 +56,7 @@ if( ! defined( 'WP_ARCHIVES_MONTHLY_BLOCK_INCLUDED' ) ) {
 			}
 		}
 		ob_start();
-		block_style_get($wp_num);
+		block_style_get();
 		if ($block_style == 0) {
 		// Simple Listing
 			echo '<ul class="wpBlockList">'."\n";
@@ -82,10 +82,7 @@ eval ('
 		return (_b_wp_archives_monthly_edit($options));
 	}
 	function b_'.$_wp_my_prefix.'archives_monthly_show($options) {
-		$GLOBALS["use_cache"] = 1;
-		$GLOBALS["wp_id"] = "'.(($_wp_my_dirnumber!=='') ? $_wp_my_dirnumber : '-').'";
 		$GLOBALS["wp_inblock"] = 1;
-		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
 		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
 		$GLOBALS["wp_inblock"] = 0;
 		return (_b_wp_archives_monthly_show($options,"'.$_wp_my_dirnumber.'"));
