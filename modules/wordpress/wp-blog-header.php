@@ -174,10 +174,12 @@ if (test_param('cat') && (get_param('cat') != 'all')) {
     for ($_i = 0; $_i < (count($_cat_array)); $_i++) {
 		$_wCriteria->add(new Criteria('category_id', intval($_cat_array[$_i]), $_eq), $_andor);
 		$_catc = trim(get_category_children($_cat_array[$_i], '', ' '));
-		$_catc_array = explode(' ',$_catc);
-	    for ($_j = 0; $_j < (count($_catc_array)); $_j++) {
-			$_wCriteria->add(new Criteria('category_id', intval($_catc_array[$_j]), $_eq), $_andor);
-	    }
+		if ($_catc!=="") {
+			$_catc_array = explode(' ',$_catc);
+		    for ($_j = 0; $_j < (count($_catc_array)); $_j++) {
+				$_wCriteria->add(new Criteria('category_id', intval($_catc_array[$_j]), $_eq), $_andor);
+		    }
+		}
 	}
 	$_criteria->add($_wCriteria);
 	unset($_wCriteria);
@@ -377,7 +379,7 @@ if ($GLOBALS['posts']) {
 			$GLOBALS['single'] = 1;
 		}
 //		if (!empty($s) && empty($paged) && !strstr($_SERVER['PHP_SELF'], 'wp-admin/')) { // If they were doing a search and got one result
-		if (empty($GLOBALS['p']) && empty($paged) && !strstr($_SERVER['PHP_SELF'], 'wp-admin/')) { // If they were doing a search and got one result
+		if (empty($GLOBALS['p']) && empty($paged) && preg_match('#/modules/'.wp_mod().'(/|/index.php)?$#',$_SERVER['PHP_SELF'])) { // If they were doing a search and got one result
 			header('Location: ' . get_permalink($GLOBALS['posts'][0]->ID));
 		}
 	}
@@ -438,13 +440,16 @@ if ($GLOBALS['posts']) {
 	}
 
 }
-//redirect feed and trackback
-if (test_param('feed')) {
-	require_once('wp-feed.php');
-	exit();
-} else if (test_param('tb')) {
-	require_once('wp-trackback.php');
-	exit();
+if (preg_match('#/modules/'.wp_mod().'(/|/index.php)?$#',$_SERVER['PHP_SELF'])) {
+	//redirect feed and trackback
+	if (test_param('feed')) {
+		require_once('wp-feed.php');
+		exit();
+	} else if (test_param('tb')) {
+	    $trackback_filename = get_settings('trackback_filename') ? get_settings('trackback_filename') : 'wp-trackback.php';
+		require_once($trackback_filename);
+		exit();
+	}
 }
 
 ?>
