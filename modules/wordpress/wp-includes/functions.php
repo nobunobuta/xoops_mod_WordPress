@@ -455,11 +455,13 @@ function get_alloptions() {
 function update_option($option_name, $newvalue, $force=false) {
 	$optionHandler =& wp_handler('Option');
 	$optionObject =& $optionHandler->getByName($option_name);
-	$optionObject->setVar('option_value', $newvalue);
-	if (!$optionHandler->insert($optionObject,$force, true)) {
-		return false;
+	if ($optionObject->getVar('option_value','n')!=$newvalue) {
+		$optionObject->setVar('option_value', $newvalue);
+		if (!$optionHandler->insert($optionObject,$force, true)) {
+			return false;
+		}
+		$GLOBALS['cache_settings'][wp_id()] = get_alloptions(); // Re cache settings
 	}
-	$GLOBALS['cache_settings'][wp_id()] = get_alloptions(); // Re cache settings
 	return true;
 }
 
@@ -1435,7 +1437,7 @@ function permlink_to_param() {
 					$query = preg_replace("!^.+\?!", '', $query);
 
 					// Substitute the substring matches into the query.
-					eval("\$query = \"$query\";");
+					@eval("\$query = \"$query\";");
 
 					// Parse the query.
 					parse_str($query, $_GET);
@@ -1523,7 +1525,8 @@ function rewrite_rules($matches = '', $permalink_structure = '') {
 
     $query = 'index.php?';
     $feedquery = 'wp-feed.php?';
-    $trackbackquery = 'wp-trackback.php?';
+    $trackbackquery = get_settings('trackback_filename') ? get_settings('trackback_filename') : 'wp-trackback.php';
+    $trackbackquery = $trackbackquery.'?';
     for ($i = 0; $i < count($tokens[0]); ++$i) {
 		if (0 < $i) {
 			 $query .= '&';
@@ -1674,7 +1677,8 @@ function get_xoops_option($dirname,$conf_name) {
 	
 	return($value);
 }
-function block_style_get($wp_num, $echo = true, $with_tpl = true) {
+function block_style_get($echo = true, $with_tpl = true) {
+	$wp_num= (wp_id()=='-' ? '' : wp_id());
 	if ($with_tpl) {
 		if (get_xoops_option(wp_mod(),'wp_use_blockcssheader')) {
 			$tplVars =& $GLOBALS['xoopsTpl']->get_template_vars();
@@ -1685,6 +1689,12 @@ function block_style_get($wp_num, $echo = true, $with_tpl = true) {
 				}
 			} else {
 				$GLOBALS['xoopsTpl']->assign('xoops_block_header',$csslink);
+			}
+			return;
+		} else {
+			if (!defined('WP_BLOCKSTYLE_READ'.$wp_num)) {
+				define('WP_BLOCKSTYLE_READ'.$wp_num, 1);
+				echo '<style type="text/css" midia="screen">@import url('.wp_siteurl() .'/wp-blockstyle.php);</style>'."\n";
 			}
 			return;
 		}
