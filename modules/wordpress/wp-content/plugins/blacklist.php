@@ -19,7 +19,7 @@ function wpbl_notify($comment_id, $reason, $harvest) {
     global $wpbl_comment;
 	
 	$tableposts = wp_table('posts');
-    $sql = "SELECT * FROM $tableposts WHERE ID='{$wbbl_comment['comment_post_ID']}' LIMIT 1";
+    $sql = "SELECT * FROM $tableposts WHERE ID='{$wpbl_comment['comment_post_ID']}' LIMIT 1";
     $post = $GLOBALS['wpdb']->get_row($sql);
     if (!empty($wpbl_comment['comment_author_IP'])) {
         $comment_author_domain = gethostbyaddr($wpbl_comment['comment_author_IP']);
@@ -35,7 +35,7 @@ function wpbl_notify($comment_id, $reason, $harvest) {
     } else if ($wpbl_comment['comment_type'] == 'pingback') {
         $notify_message .= "PingBack";
     }
-    $notify_message .= " on post #{$wbbl_comment['comment_post_ID']} \"".stripslashes($post->post_title)."\" has been automatically deleted by the WPBlacklist plugin.\r\n\r\n";
+    $notify_message .= " on post #{$wpbl_comment['comment_post_ID']} \"".stripslashes($post->post_title)."\" has been automatically deleted by the WPBlacklist plugin.\r\n\r\n";
     $notify_message .= "Author : {$wpbl_comment['comment_author']} (IP: {$wpbl_comment['comment_author_IP']} , $comment_author_domain)\r\n";
     $notify_message .= "E-mail : {$wpbl_comment['comment_author_email']}\r\n";
     $notify_message .= "URL    : {$wpbl_comment['comment_author_url']}\r\n";
@@ -94,7 +94,7 @@ function mail_and_del($commentID, $reason) {
   the main function which approves/holds/deletes comments based on the internal blacklist
  */
 function blacklist($commentID) {
-    global $wpbl_options, $wbbl_comment, $tableblacklist, $approved;
+    global $wpbl_options, $wpbl_comment, $tableblacklist, $approved;
 
 	$wpbl_comment=get_commentdata($commentID,1,false);
     // first check the comment status based on WP core moderation
