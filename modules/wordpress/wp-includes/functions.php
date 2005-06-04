@@ -1659,7 +1659,11 @@ function block_style_get($echo = true, $with_tpl = true) {
 		} else {
 			if (!defined('WP_BLOCKSTYLE_READ'.$wp_num)) {
 				define('WP_BLOCKSTYLE_READ'.$wp_num, 1);
-				echo '<style type="text/css" midia="screen">@import url('.wp_siteurl() .'/wp-blockstyle.php);</style>'."\n";
+				if ($echo) {
+					echo '<style type="text/css" midia="screen">@import url('.wp_siteurl() .'/wp-blockstyle.php);</style>'."\n";
+				} else {
+					return '@import url('.wp_siteurl() .'/wp-blockstyle.php);';
+				}
 			}
 			return;
 		}
