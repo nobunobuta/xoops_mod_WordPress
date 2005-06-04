@@ -107,18 +107,18 @@ if( ! defined( 'WP_RECENT_POSTS_BLOCK_INCLUDED' ) ) {
 		$output .= '<div class="wpRecentPost">';
 		if ($lposts) {
 			if (!$cat_date) {
-				$output .= '<ul class="wpBlockList">'."\n";
+				$output .= '<ul class="wpBlockList">';
 			} else {
-				$output .= '<ul class="wpBlockDateList">'."\n";
+				$output .= '<ul class="wpBlockDateList">';
 			}
 			foreach ($lposts as $lpost) {
 				if ($cat_date) {
 					$date=mysql2date('Y-n-j', $lpost->post_date);
 					if ($date <> $pdate) {
 						if ($pdate <> "") {
-							$output .= '</ul></li>'."\n";
+							$output .= '</ul></li>';
 						}
-						$output .= '<li><span class="postDate">'.$date.'</span>'."\n".'<ul class="children">'."\n";
+						$output .= '<li><span class="postDate">'.$date.'</span><ul class="children">';
 						$pdate = $date;
 					}
 				}
@@ -138,12 +138,11 @@ if( ! defined( 'WP_RECENT_POSTS_BLOCK_INCLUDED' ) ) {
 				if (trim($post_title)=="")
 					$post_title = _WP_POST_NOTITLE;
 				$permalink = get_permalink($lpost->ID);
-				$output .= '<li><span class="post-title"><a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '">' . $post_title . '</a></span>'.$newstr.'<br />';
-				$output .= '</li>'."\n";
+				$output .= '<li><span class="post-title"><a href="' . $permalink . '" rel="bookmark" title="Permanent Link: ' . $post_title . '" style="display: inline;">' . $post_title . '</a></span>'.$newstr.'</li>';
 			}
-			$output .= '</ul>'."\n";
+			$output .= '</ul>';
 			if ($cat_date) {
-				$output .= '</li></ul>'."\n";
+				$output .= '</li></ul>';
 			}
 		}
 		if ($show_rss_icon || $show_rdf_icon || $show_rss2_icon || $show_atom_icon) {

@@ -65,18 +65,18 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 			$pdate = "";
 			if ($lcomments) {
 				if (!$cat_date) {
-					$output .= "<ul class='wpBlockList'>\n";
+					$output .= '<ul class="wpBlockList">';
 				} else {
-					$output .= "<ul class='wpBlockDateList'>\n";
+					$output .= '<ul class="wpBlockDateList">';
 				}
 				foreach ($lcomments as $lcomment) {
 					if ($cat_date) {
 						$date=mysql2date("Y-n-j", $lcomment->comment_date);
 						if ($date <> $pdate) {
 							if ($pdate <> "") {
-								$output .= "</ul></li>\n";
+								$output .= '</ul></li>';
 							}
-							$output .= "<li><span class=\"postDate\">".$date."</span>\n<ul class=\"children\">\n";
+							$output .= '<li><span class="postDate">'.$date.'</span><ul class="children">';
 							$pdate = $date;
 						}
 					}
@@ -93,18 +93,18 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 					} else {
 						$comment_excerpt = substr($comment_content,0,$comment_lenth);
 					}
-					$permalink = get_permalink($lcomment->ID)."#comment-".$lcomment->comment_ID;
+					$permalink = get_permalink($lcomment->ID).'#comment-'.$lcomment->comment_ID;
 					$output .= '<li><span class="comment-author">' . $comment_author . ':</span> <a href="' . $permalink;
-					$output .= '" title="View the entire comment by ' . $comment_author.'">' . $comment_excerpt . '...</a>';
+					$output .= '" title="View the entire comment by ' . $comment_author.'" style="display: inline;">' . $comment_excerpt . '...</a>';
 					if ($show_type) {
 						$output .= '<span style="font-size:70%">- '.$type.'</span>';
 					}
-					$output .= "</li>\n";
+					$output .= '</li>';
 				}
 			}
-			$output .= "</ul>\n";
+			$output .= '</ul>';
 			if ($cat_date) {
-				$output .= "</li></ul>\n";
+				$output .= '</li></ul>';
 			}
 		} else {
 			$output = tkzy_get_recent_comments($num_of_list, $cat_date, $show_type);
@@ -123,24 +123,24 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 
 	function tkzy_get_recent_comments($limit = 10, $cat_date=1, $show_type = 1) { 
 		$comment_lenth = 30;
-		$request = "SELECT ID, post_title, post_date, 
+		$request = 'SELECT ID, post_title, post_date, 
 		comment_ID, comment_author, comment_author_url, comment_author_email, comment_date, comment_content 
-		FROM ".wp_table('posts').", ".wp_table('comments')." WHERE ".wp_table('posts').".ID=".wp_table('comments').".comment_post_ID AND ".wp_table('comments').".comment_approved='1'";
+		FROM '.wp_table('posts').', '.wp_table('comments').' WHERE '.wp_table('posts').'.ID='.wp_table('comments').'.comment_post_ID AND '.wp_table('comments').'.comment_approved=\'1\'';
 		if (get_xoops_option(wp_mod(), 'wp_use_xoops_comments') == 1) {
-			$request .= "AND (comment_content like '<trackback />%' OR comment_content like '<pingkback />%') ";
+			$request .= ' AND (comment_content like \'<trackback />%\' OR comment_content like \'<pingkback />%\') ';
 		}
-		$request .= " ORDER BY ".wp_table('comments').".comment_date DESC LIMIT $limit";
+		$request .= ' ORDER BY '.wp_table('comments').'.comment_date DESC LIMIT '.$limit;
 		$lcomments = $GLOBALS['wpdb']->get_results($request);
 		$output = ''; 
 		if($lcomments){ 
-			usort($lcomments, "sort_comment_by_date"); 
+			usort($lcomments, 'sort_comment_by_date'); 
 		} 
 		$new_post_ID = -1;
 		if ($lcomments) {
-			$output .= "<ul class='wpBlockList'>";
+			$output .= '<ul class="wpBlockList">';
 			foreach ($lcomments as $lcomment) { 
 				if ($lcomment->ID != $new_post_ID) { // next post 
-					if ($new_post_ID != -1) { $output .= "\t</ul>\n</li>\n"; } 
+					if ($new_post_ID != -1) { $output .= '</ul></li>'; } 
 					$post_title = stripslashes($lcomment->post_title); 
 					if (trim($post_title)=="")
 						$post_title = _WP_POST_NOTITLE;
@@ -151,10 +151,10 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 					} else {
 						$comment_excerpt = substr($comment_content,0,$comment_lenth);
 					}
-					$permalink = wp_siteurl()."/index.php?p=$lcomment->ID&amp;c=1"; 
-					$output .= "<li>"; 
-					$output .= "<span class='comment-title'><a href=\"$permalink\">$post_title</a></span>\n"; 
-					$output .= "\t<ul class=\"children\" style=\"list-style-type: none;\">\n"; 
+					$permalink = wp_siteurl().'/index.php?p='.$lcomment->ID.'&amp;c=1'; 
+					$output .= '<li>'; 
+					$output .= '<span class="comment-title"><a href="'.$permalink.'">'.$post_title.'</a></span>'; 
+					$output .= '<ul class="children" style="list-style-type: none;">'; 
 					$new_post_ID = $lcomment->ID; 
 				} 
 				$output .= "\t\t<li>";
@@ -165,18 +165,18 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 					} else { 
 					   $comment_date = mysql2date('m/d', $comment_date); 
 					}
-					$output .= "<span class=\"post-date\">$comment_date</span> : "; 
+					$output .= '<span class="post-date">'.$comment_date.'</span> : '; 
 				}
-				$output .= "<span class=\"comment_author\">".tkzy_get_comment_author_link($lcomment,25)."</span></li>\n"; 
+				$output .= '<span class="comment_author">'.tkzy_get_comment_author_link($lcomment,25).'</span></li>'; 
 				if (preg_match('|<trackback />|', $lcomment->comment_content)) $type='[TrackBack]';
 				elseif (preg_match('|<pingback />|', $lcomment->comment_content)) $type='[Ping]';
 				else  $type='[Comment]';
 				if ($show_type) {
-					$output .= "<span style=\"font-size:90%\"> - $type</span>";
+					$output .= '<span style="font-size:90%"> - '.$type.'</span>';
 				}
 			} 
 		}
-		$output .= "\t</ul>\n</li>\n</ul>\n"; 
+		$output .= '</ul></li></ul>'; 
 		return $output; 
 	} 
 
