@@ -9,7 +9,7 @@ $category_select = categories_nested_select(array($default_post_cat));
 $use_quicktags = (get_settings('use_quicktags')&&(!(($is_macIE) || ($is_lynx)))&&($mode != 'bookmarklet')) ;
 if ($GLOBALS['wp_use_spaw']) {
 	if ($is_gecko || $is_winIE) {
-		if (file_exists('spaw/spaw_control.class.php')) {
+		if (file_exists(dirname(__FILE__).'/spaw/spaw_control.class.php')) {
 			$use_spaw = true;
 			$spaw_root = dirname(__FILE__).'/spaw/';
 		} else if (file_exists(XOOPS_ROOT_PATH.'/common/spaw/spaw_control.class.php')) {
