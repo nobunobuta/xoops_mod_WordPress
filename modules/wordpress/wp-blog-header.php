@@ -379,7 +379,7 @@ if ($GLOBALS['posts']) {
 			$GLOBALS['single'] = 1;
 		}
 //		if (!empty($s) && empty($paged) && !strstr($_SERVER['PHP_SELF'], 'wp-admin/')) { // If they were doing a search and got one result
-		if (empty($GLOBALS['p']) && empty($paged) && preg_match('#/modules/'.wp_mod().'(/|/index.php)?$#',$_SERVER['PHP_SELF'])) { // If they were doing a search and got one result
+		if (empty($GLOBALS['p']) && empty($GLOBALS['name']) && empty($paged) && preg_match('#/modules/'.wp_mod().'(/|/index.php)?$#',$_SERVER['PHP_SELF'])) { // If they were doing a search and got one result
 			header('Location: ' . get_permalink($GLOBALS['posts'][0]->ID));
 		}
 	}
