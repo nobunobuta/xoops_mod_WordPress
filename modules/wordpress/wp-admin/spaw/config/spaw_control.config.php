@@ -11,20 +11,22 @@
 // ================================================
 // v.1.0, 2003-03-27
 // ================================================
-$spaw_root = dirname(dirname(__FILE__)) . '/';
 if( ! defined( 'XOOPS_ROOT_PATH' ) ) {
+	$__file__ = str_replace( '\\' , '/' , __FILE__ ) ;
 	$conf_pattern_module = '/modules/.+/config/'.basename(__FILE__);
 	$conf_pattern_common = '/common/[^/]+/config/'.basename(__FILE__);
-	if (preg_match('|'.$conf_pattern_module.'$|',__FILE__)) {
-		$root_dir = preg_replace('|'.$conf_pattern_module.'$|', '', __FILE__);
+	if (preg_match('|'.$conf_pattern_module.'$|',$__file__)) {
+		$root_dir = preg_replace('|'.$conf_pattern_module.'$|', '', $__file__);
 	}
-	if (preg_match('|'.$conf_pattern_common.'$|',__FILE__)) {
-		$root_dir = preg_replace('|'.$conf_pattern_common.'$|', '', __FILE__);
+	if (preg_match('|'.$conf_pattern_common.'$|',$__file__)) {
+		$root_dir = preg_replace('|'.$conf_pattern_common.'$|', '', $__file__);
 	}
 	include_once( $root_dir. '/mainfile.php' ) ;
 }
 error_reporting(E_ERROR);
 // directory where spaw files are located
+
+$spaw_root = dirname(dirname($__file__)) . '/';
 $spaw_dir = preg_replace('|^'.XOOPS_ROOT_PATH.'|', XOOPS_URL , $spaw_root);
 
 // base url for images
@@ -54,6 +56,11 @@ $spaw_dropdown_data['font']['Courier'] = 'Courier';
 $spaw_dropdown_data['font']['Tahoma'] = 'Tahoma';
 $spaw_dropdown_data['font']['Times New Roman'] = 'Times';
 $spaw_dropdown_data['font']['Verdana'] = 'Verdana';
+//$spaw_dropdown_data['font']['Serif'] = 'Serif';
+//$spaw_dropdown_data['font']['Sans-serif'] = 'Sans-serif';
+$spaw_dropdown_data['font']['Comic Sans MS'] = 'Cursive';
+//$spaw_dropdown_data['font']['Fantasy'] = 'Fantasy';
+$spaw_dropdown_data['font']['Courier New'] = 'Monospace'; // GIJ Patch
 
 $spaw_dropdown_data['fontsize']['1'] = '1';
 $spaw_dropdown_data['fontsize']['2'] = '2';

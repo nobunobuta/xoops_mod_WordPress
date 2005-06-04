@@ -119,7 +119,7 @@ $spaw_lang_data = array(
     'css_class' => 'CSS クラス',
     'no_wrap' => '折り返さない',
     'bg_color' => '背景色',
-    'background' => 'Background image', // <=== new 1.0.6
+    'background' => '背景イメージ', // <=== new 1.0.6
     'ok' => '    OK    ',
     'cancel' => 'キャンセル',
     'left' => '左',
@@ -212,7 +212,7 @@ $spaw_lang_data = array(
     'title' => 'HTML (コード) モードへ'
   ),
   'colorpicker' => array(
-    'title' => 'Color picker',
+    'title' => '色選択',
     'ok' => '    OK   ',
     'cancel' => 'キャンセル',
   ),
@@ -231,19 +231,19 @@ $spaw_lang_data = array(
     'name' => 'サイト名',
     'target' => 'ターゲット',
     'title_attr' => 'タイトル',
-	'a_type' => 'Type', // <=== new 1.0.6
-	'type_link' => 'Link', // <=== new 1.0.6
-	'type_anchor' => 'Anchor', // <=== new 1.0.6
-	'type_link2anchor' => 'Link to anchor', // <=== new 1.0.6
-	'anchors' => 'Anchors', // <=== new 1.0.6
+	'a_type' => 'タイプ', // <=== new 1.0.6
+	'type_link' => 'リンク', // <=== new 1.0.6
+	'type_anchor' => 'アンカー', // <=== new 1.0.6
+	'type_link2anchor' => 'アンカーへのリンク', // <=== new 1.0.6
+	'anchors' => 'アンカー選択', // <=== new 1.0.6
     'ok' => '    OK    ',
     'cancel' => 'キャンセル',
   ),
   'hyperlink_targets' => array( // <=== new 1.0.5
-  	'_self' => 'same frame (_self)',
-	'_blank' => 'new empty window (_blank)',
-	'_top' => 'top frame (_top)',
-	'_parent' => 'parent frame (_parent)'
+  	'_self' => '同一ウインドウ (_self)',
+	'_blank' => '新規ウインドウ (_blank)',
+	'_top' => 'トップフレーム (_top)',
+	'_parent' => '親フレーム (_parent)'
   ),
   'table_row_prop' => array(
     'title' => '行のプロパティ',
@@ -296,10 +296,10 @@ $spaw_lang_data = array(
     'title' => '拡大',
   ),
   'subscript' => array( // <=== new 1.0.7
-    'title' => 'Subscript',
+    'title' => '上付文字',
   ),
   'superscript' => array( // <=== new 1.0.7
-    'title' => 'Superscript',
+    'title' => '下付文字',
   ),
 );
 ?>

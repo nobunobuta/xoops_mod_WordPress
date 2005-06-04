@@ -728,8 +728,9 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
     
     window.frames[editor+'_rEdit'].focus();     
 
-    /* this[editor+'_rEdit'].document.execCommand('formatBlock', false, format); GIJ */
+   /* this[editor+'_rEdit'].document.execCommand('formatBlock', false, format); GIJ */
     this[editor+'_rEdit'].document.execCommand('formatBlock', false, '<' + format + '>');
+
     sender.selectedIndex = 0;
 
     SPAW_update_toolbar(editor, true);    

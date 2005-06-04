@@ -12,8 +12,9 @@
 // v.1.0, 2003-03-25
 // ================================================
 
-$spaw_root = dirname( __FILE__ ) . '/' ;	// GIJ Security Patched
-include $spaw_root.'config/spaw_control.config.php';
+// $spaw_root = dirname( __FILE__ ) . '/' ;	// GIJ Security Patched
+
+include dirname( __FILE__ ) . '/config/spaw_control.config.php';
 include $spaw_root.'class/util.class.php';
 include $spaw_root.'class/toolbars.class.php';
 include $spaw_root.'class/lang.class.php';
