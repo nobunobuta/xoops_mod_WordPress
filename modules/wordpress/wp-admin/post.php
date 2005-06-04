@@ -586,13 +586,13 @@ switch(get_param('action')) {
 		}
 
 		init_param('POST', 'comment_ID', 'integer', NO_DEFAULT_PARAM, true);
-		init_param('POST', 'newcomment_author', 'string', '', true);
-		init_param('POST', 'newcomment_author_email', 'string', '', true);
-		init_param('POST', 'newcomment_author_url', 'string', '', true);
+		init_param('POST', 'newcomment_author', 'string', ' ', true);
+		init_param('POST', 'newcomment_author_email', 'string', ' ', true);
+		init_param('POST', 'newcomment_author_url', 'string', ' ', true);
 		init_param('POST', 'comment_post_ID', 'integer', NO_DEFAULT_PARAM, true);
 		init_param('POST', 'edit_date','integer', 0);
 		init_param('POST', 'wp_content','html', '', true);
-		init_param('POST', 'referredby', 'string', $this_file."?p=$comment_post_ID&c=1#comments", true);
+		init_param('POST', 'referredby', 'string', urlencode($this_file."?p=$comment_post_ID&c=1#comments"), true);
 
 		if (($user_level > 4) && $edit_date) {
 			init_param('POST', 'aa','integer');
@@ -609,8 +609,7 @@ switch(get_param('action')) {
 		} else {
 			$datemodif = '';
 		}
-
-		$commentObject =& $commentHandler->create(false);
+		$commentObject =& $commentHandler->get($comment_ID);
 
 		$commentObject->setVar('comment_ID',$comment_ID);
 		$commentObject->setVar('comment_content',apply_filters('comment_save_pre', $wp_content));
@@ -621,16 +620,16 @@ switch(get_param('action')) {
 			$commentObject->setVar('comment_date',$datemodif);
 		}
 
-		if ($_SERVER['HTTP_REFERER'] != "") {
+		if (!test_param('referredby') && $_SERVER['HTTP_REFERER'] != "") {
 			$location = $_SERVER['HTTP_REFERER'];
 		} else {
-			$location = $referredby;
+			$location = urldecode($referredby);
 		}
 
-		if (!$commentHandler->insert($commentObject,false,true)) {
+		if (!$commentHandler->insert($commentObject,false,false)) {
 			redirect_header($location, 3, $commentHandler->getErrors());
 		}
-		header('Location: ' . $referredby);
+		header('Location: ' . $location);
 		do_action('edit_comment', $comment_ID);
 		exit();
 		break;
