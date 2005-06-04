@@ -112,6 +112,7 @@ if (empty($GLOBALS['wp_inblock'])) {
 				}
 			}
 		}
+		/* shutdouwn action hook is temporaly disabled
 		if (!defined('SHUTDOWN_ACTION_HOOK')) {
 			define('SHUTDOWN_ACTION_HOOK','1');
 			function wp_shutdown_action_hook() {
@@ -119,6 +120,7 @@ if (empty($GLOBALS['wp_inblock'])) {
 			}
 			register_shutdown_function('wp_shutdown_action_hook');
 		}
+		*/
 	}
 }
 ?>
