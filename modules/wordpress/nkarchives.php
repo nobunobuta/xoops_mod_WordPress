@@ -27,28 +27,28 @@ $defaultorder = 'DESC';
 define('NL', "\n");
 
 function show_year_select() {
-    global $wpdb, $tableposts, $m;
-    $m = substr($m,0,4);
-    $years = $wpdb->get_col("SELECT DISTINCT YEAR(post_date) as year FROM ".wp_table('posts')." ORDER BY year ASC");
-    $output .= '<option value="">Á´´ü´Ö</option>'.NL;
+	if (!empty($GLOBALS['m'])) {
+    	$GLOBALS['m'] = substr($GLOBALS['m'],0,4);
+    }
+    $years = $GLOBALS['wpdb']->get_col("SELECT DISTINCT YEAR(post_date) as year FROM ".wp_table('posts')." ORDER BY year ASC");
+    $output = '<option value="">'._LANG_NKA_ALL_YEAR.'</option>'.NL;
     foreach ($years as $year) {
         $output .= '<option value="'.$year.'"';
-        if ($year == $m) {
+        if (!empty($GLOBALS['m']) && ($year == $GLOBALS['m'])) {
             $output .= ' selected="selected"';
         }
-        $output .= '>'.$year.'Ç¯</option>';
+        $output .= '>'.$year._LANG_NKA_YEAR_SUFFIX.'</option>';
     }
     $output  = '<select name="m">'.NL.$output.'</select>'.NL;
     echo $output;
 }
 
 function show_author_select() {
-    global $wpdb, $tableusers, $author;
-    $users = $wpdb->get_results("SELECT * FROM ".wp_table('users')." WHERE user_level > 0", ARRAY_A);
-    $output .= '<option value="">Á´Åê¹Æ¼Ô</option>'.NL;
+    $users = $GLOBALS['wpdb']->get_results("SELECT * FROM ".wp_table('users')." WHERE user_level > 0", ARRAY_A);
+    $output = '<option value="">'._LANG_NKA_ALL_AUTHOR.'</option>'.NL;
     foreach ($users as $user) {
         $output .= '<option value="'.$user['ID'].'"';
-        if ($user['ID'] == $author) {
+        if ($user['ID'] == $GLOBALS['author']) {
             $output .= 'selected="selected"';
         }
         $output .= '>'.$user['user_nickname'].'</option>'.NL;
@@ -58,70 +58,73 @@ function show_author_select() {
 }
 
 function show_orderby_select() {
-    global $orderby;
-    $orderby = explode(' ', $orderby);
-    $orderby = $orderby[0];
-    if ($orderby == 'date') {
-       $output .= '<option value="date" selected="selected">ÆüÉÕ</option>'.NL;
+    $GLOBALS['orderby'] = explode(' ', $GLOBALS['orderby']);
+    $GLOBALS['orderby'] = $GLOBALS['orderby'][0];
+    if ($GLOBALS['orderby'] == 'date') {
+       $output = '<option value="date" selected="selected">'._LANG_NKA_ORDER_DATE.'</option>'.NL;
     } else {
-       $output .= '<option value="date">ÆüÉÕ</option>'.NL;
+       $output = '<option value="date">'._LANG_NKA_ORDER_DATE.'</option>'.NL;
     }
-    if ($orderby == 'title') {
-       $output .= '<option value="title" selected="selected">¥¿¥¤¥È¥ë</option>'.NL;
+    if ($GLOBALS['orderby'] == 'title') {
+       $output .= '<option value="title" selected="selected">'._LANG_NKA_ORDER_TITLE.'</option>'.NL;
     } else {
-       $output .= '<option value="title">¥¿¥¤¥È¥ë</option>'.NL;
+       $output .= '<option value="title">'._LANG_NKA_ORDER_TITLE.'</option>'.NL;
     }
-    if ($orderby == 'category') {
-       $output .= '<option value="category" selected="selected">¥«¥Æ¥´¥ê</option>'.NL;
+    if ($GLOBALS['orderby'] == 'category') {
+       $output .= '<option value="category" selected="selected">'._LANG_NKA_ORDER_CATEGORY.'</option>'.NL;
     } else {
-       $output .= '<option value="category">¥«¥Æ¥´¥ê</option>'.NL;
+       $output .= '<option value="category">'._LANG_NKA_ORDER_CATEGORY.'</option>'.NL;
     }
     $output = '<select name="orderby" onchange="Choose(this)">'.NL.$output.'</select>'.NL;
     echo $output;
 }
 
 function show_order_select() {
-    global $order;
-    if ($order == 'ASC') {
-       $output .= '<option value="ASC" selected="selected">¾º½ç</option>'.NL;
+    if ($GLOBALS['order'] == 'ASC') {
+       $output = '<option value="ASC" selected="selected">'._LANG_NKA_SORT_ASC.'</option>'.NL;
     } else {
-       $output .= '<option value="ASC">¾º½ç</option>'.NL;
+       $output = '<option value="ASC">'._LANG_NKA_SORT_ASC.'</option>'.NL;
     }
-    if ($order == 'DESC') {
-       $output .= '<option value="DESC" selected="selected">¹ß½ç</option>'.NL;
+    if ($GLOBALS['order'] == 'DESC') {
+       $output .= '<option value="DESC" selected="selected">'._LANG_NKA_SORT_DSC.'</option>'.NL;
     } else {
-       $output .= '<option value="DESC">¹ß½ç</option>'.NL;
+       $output .= '<option value="DESC">'._LANG_NKA_SORT_DSC.'</option>'.NL;
    }
    $output = '<select name="order" id="asc_desc">'.NL.$output.'</select>'.NL;
    echo $output;
 }
 
 function archive_header($before='', $after='') {
-    global $post, $orderby, $month, $previous, $siteurl, $blogfilename, $archiveheadstart, $archiveheadend, $category_name;
-    $orderby = explode(' ', $orderby);
-    $orderby = $orderby[0];
-    if ('date' == $orderby || empty($orderby)) {
-        $thismonth = mysql2date('m', $post->post_date);
-        $thisyear = mysql2date('Y', $post->post_date);
+    $GLOBALS['orderby'] = explode(' ', $GLOBALS['orderby']);
+    $GLOBALS['orderby'] = $GLOBALS['orderby'][0];
+    if ('date' == $GLOBALS['orderby'] || empty($GLOBALS['orderby'])) {
+        $thismonth = mysql2date('m', $GLOBALS['post']->post_date);
+        $thisyear = mysql2date('Y', $GLOBALS['post']->post_date);
         $thisdate = $thisyear.$thismonth;
-        if ($thisdate != $previous) {
-            $thismonth = mysql2date('m', $post->post_date);
-            $output .= '<strong><br/><a href="'.get_month_link($thisyear,$thismonth).'">'.$thisyear.'Ç¯'.$month[$thismonth].'</a></strong>';
+        if ($thisdate != $GLOBALS['previous']) {
+            $thismonth = mysql2date('m', $GLOBALS['post']->post_date);
+            $monthstr = ereg_replace('%MONTH',$GLOBALS['month'][zeroise($thismonth,2)],$GLOBALS['wp_month_format']);
+            $monthstr = ereg_replace('%YEAR',sprintf("%d",$thisyear),$monthstr);
+            $output = '<strong><br/><a href="'.get_month_link($thisyear,$thismonth).'">'.$monthstr.'</a></strong>';
         }
-        $previous = $thisdate;
-    } elseif ('title' == $orderby) {
-    	$thisletter = ucfirst(mb_substr($post->yomi,0,1,$GLOBALS['blog_charset']));
-    	if ($thisletter > "¤ó") $thisletter = "´Á»ú";
-        if ($thisletter != $previous) {
-            $output .= "<br/>".$thisletter;
+        $GLOBALS['previous'] = $thisdate;
+    } elseif ('title' == $GLOBALS['orderby']) {
+    	if (_LANGCODE == 'ja') {
+	    	$thisletter = ucfirst(mb_substr($GLOBALS['post']->yomi,0,1,$GLOBALS['blog_charset']));
+    		if ($thisletter > "¤ó") $thisletter = "´Á»ú";
+    	} else {
+    		$thisletter = ucfirst(substr($GLOBALS['post']->yomi,0,1));
+    	}
+        if (empty($GLOBALS['previous']) || $thisletter != $GLOBALS['previous']) {
+            $output = "<br/>".$thisletter;
         }
-        $previous = $thisletter;
-    } elseif ('category' == $orderby) {
-        $thiscategory = $category_name;
-        if ($thiscategory != $previous) {
-            $output .= '<br/><strong><a href="'.get_category_link(false,$thiscategory).'">'.get_catname($thiscategory).'</a></strong>';
+        $GLOBALS['previous'] = $thisletter;
+    } elseif ('category' == $GLOBALS['orderby']) {
+        $thiscategory = $GLOBALS['category_name'];
+        if ($thiscategory != $GLOBALS['previous']) {
+            $output = '<br/><strong><a href="'.get_category_link(false,$thiscategory).'">'.get_catname($thiscategory).'</a></strong>';
         }
-        $previous = $thiscategory;
+        $GLOBALS['previous'] = $thiscategory;
     }
     if (!empty($output)) {
         $output = $before.$output.$after.NL;
@@ -130,13 +133,11 @@ function archive_header($before='', $after='') {
 }
 
 function archive_date($format='Y-m-d H:i:s') {
-    global $post;
-    echo mysql2date($format, $post->post_date);
+    echo mysql2date($format, $GLOBALS['post']->post_date);
 }
 
 function cmp($a, $b) {
-	global $order;
-    if ($order == 'ASC') {
+    if ($GLOBALS['order'] == 'ASC') {
 		return strcasecmp($a->yomi, $b->yomi);
 	} else {
 		return strcasecmp($b->yomi, $a->yomi);
@@ -211,7 +212,7 @@ if ($_GET["orderby"] == 'category') {
     <?php show_order_select() ?>
     <?php show_year_select() ?>
     <?php if ($display_authors) show_author_select(); ?>
-    <input type="submit" name="submit" value="ÊÂ¤ÓÂØ¤¨¤ë" />
+    <input type="submit" name="submit" value="<?php echo _LANG_NKA_ACTION_SORT ?>" />
     </form>
     <?php
     $dogs = $wpdb->get_results("SELECT * FROM ".wp_table('categories')." WHERE 1=1 ORDER BY cat_name $order");
@@ -246,30 +247,36 @@ else {
     <?php show_order_select() ?>
     <?php show_year_select() ?>
     <?php if ($display_authors) show_author_select(); ?>
-    <input type="submit" name="submit" value="ÊÂ¤ÓÂØ¤¨¤ë" />
+    <input type="submit" name="submit" value="<?php echo _LANG_NKA_ACTION_SORT ?>" />
     </form>
     <?php
 	if ($_GET["orderby"] == 'title') {
-		if ($enable_kakasi) {
-			$descriptorspec = array(
-				0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
-				1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
-			);
-			$process = proc_open($kakasi." -kH -KH -JH", $descriptorspec, $pipes);
-			if (is_resource($process)) {
-		    	for($i = 0; $i < count($posts); $i++) {
-					fputs($pipes[0], mb_convert_encoding($posts[$i]->post_title."\n", $kakasi_encode, $GLOBALS['blog_charset']));
+    	if (_LANGCODE == 'ja') {
+			if ($enable_kakasi) {
+				$descriptorspec = array(
+					0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+					1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+				);
+				$process = proc_open($kakasi." -kH -KH -JH", $descriptorspec, $pipes);
+				if (is_resource($process)) {
+			    	for($i = 0; $i < count($posts); $i++) {
+						fputs($pipes[0], mb_conv($posts[$i]->post_title."\n", $kakasi_encode, $GLOBALS['blog_charset']));
+					}
+					fclose($pipes[0]);
+			    	for($i = 0; $i < count($posts); $i++) {
+						$posts[$i]->yomi = mb_conv(fgets ($pipes[1]), $GLOBALS['blog_charset'], $kakasi_encode);
+			    	}
+					fclose($pipes[1]);
+					$return_value = proc_close($process);
 				}
-				fclose($pipes[0]);
+			} else {
 		    	for($i = 0; $i < count($posts); $i++) {
-					$posts[$i]->yomi = mb_convert_encoding(fgets ($pipes[1]), $GLOBALS['blog_charset'], $kakasi_encode);
-		    	}
-				fclose($pipes[1]);
-				$return_value = proc_close($process);
+					$posts[$i]->yomi = mb_convert_kana($posts[$i]->post_title,"KcV", $GLOBALS['blog_charset']);
+				}
 			}
 		} else {
 	    	for($i = 0; $i < count($posts); $i++) {
-				$posts[$i]->yomi = mb_convert_kana($posts[$i]->post_title,"KcV", $GLOBALS['blog_charset']);
+				$posts[$i]->yomi = $posts[$i]->post_title;
 			}
 		}
     	usort($posts, "cmp");
