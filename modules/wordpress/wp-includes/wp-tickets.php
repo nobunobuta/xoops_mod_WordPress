@@ -2,42 +2,42 @@
 // GIJOE's Ticket Class (based on Marijuana's Oreteki XOOPS)
 // nobunobu's suggestions are applied
 
-if( ! class_exists( '_XoopsTicket' ) ) {
-class _XoopsTicket {
+if( ! class_exists( '_XoopsNTicket' ) ) {
+class _XoopsNTicket {
 
 	var $_errors = array() ;
 	var $_latest_token = '' ; //for Debug purpose
-	var $_post_param_name = 'XOOPS_TICKET';
-	var $_session_param_name = 'XOOPS_STUBS';
+	var $_post_param_name = 'XOOPS_N_TICKET';
+	var $_session_param_name = 'XOOPS_N_STUBS';
 	var $_max_stub_size = 10;
 	var $_default_timeout = 1800;
 	
 	// render form as plain html
-	function getTicketHtml( $salt = '' , $timeout = -1 )
+	function getTicketHtml( $salt = '' , $timeout = -1 , $area = '' )
 	{
-		return '<input type="hidden" name="'.$this->_post_param_name.'" value="'.$this->issue( $salt , $timeout ).'" />' ;
+		return '<input type="hidden" name="'.$this->_post_param_name.'" value="'.$this->issue( $salt , $timeout , $area).'" />' ;
 	}
 
 	// returns an object of XoopsFormHidden including theh ticket
-	function getTicketXoopsForm( $salt = '' , $timeout = -1 )
+	function getTicketXoopsForm( $salt = '' , $timeout = -1 , $area = '' )
 	{
-		return new XoopsFormHidden( $this->_post_param_name , $this->issue( $salt , $timeout ) ) ;
+		return new XoopsFormHidden( $this->_post_param_name , $this->issue( $salt , $timeout , $area) ) ;
 	}
 
 	// returns an array for xoops_confirm() ;
-	function getTicketArray( $salt = '' , $timeout = -1 )
+	function getTicketArray( $salt = '' , $timeout = -1 , $area = '' )
 	{
-		return array( $this->_post_param_name => $this->issue( $salt , $timeout ) ) ;
+		return array( $this->_post_param_name => $this->issue( $salt , $timeout , $area) ) ;
 	}
 
 	// return GET parameter string.
-	function getTicketParamString( $salt = '' , $noamp = false , $timeout = -1 )
+	function getTicketParamString( $salt = '' , $noamp = false , $timeout = -1 , $area = '' )
 	{
-	    return ( $noamp ? '' : '&amp;' ) . $this->_post_param_name .'=' . $this->issue( $salt, $timeout ) ;
+	    return ( $noamp ? '' : '&amp;' ) . $this->_post_param_name .'=' . $this->issue( $salt, $timeout , $area) ;
 	}
 
 	// issue a ticket
-	function issue( $salt = '' , $timeout = -1 )
+	function issue( $salt = '' , $timeout = -1 , $area = '' )
 	{
 		if ($timeout==-1) $timeout = $this->_default_timeout;
 		$param_name = $this->_session_param_name;
@@ -57,9 +57,19 @@ class _XoopsTicket {
 			$_SESSION[$param_name] = array_slice( $_SESSION[$param_name], -$this->_max_stub_size ) ;
 		}
 
+		// record referer if browser send it
+		$referer = empty( $_SERVER['HTTP_REFERER'] ) ? '' : $_SERVER['REQUEST_URI'] ;
+
+		// area as module's dirname
+		if( ! $area && is_object( @$xoopsModule ) ) {
+			$area = $xoopsModule->getVar('dirname') ;
+		}
+
 		// store stub
 		$_SESSION[$param_name][] = array(
 			'expire' => time() + $timeout ,
+			'referer' => $referer ,
+			'area' => $area ,
 			'token' => $token
 		) ;
 
@@ -68,7 +78,7 @@ class _XoopsTicket {
 	}
 
 	// check a ticket
-	function check($reqtype='BOTH')
+	function check($reqtype='BOTH', $area = '' )
 	{
 		$this->_errors = array() ;
 		$param_name = $this->_session_param_name;
@@ -119,11 +129,28 @@ class _XoopsTicket {
 		}
 		$_SESSION[$param_name] = $stubs_tmp;
 
-		// CHECK: no right stub found
+		// CHECK: the right stub found or not
 		if( empty( $found_stub ) ) {
 //			$this->clear() ;
 			if( empty( $timeout_flag ) ) $this->_errors[] = 'Invalid Session' ;
 			else $this->_errors[] = 'Time out' ;
+			return false ;
+		}
+
+		// set area if necessary
+		// area as module's dirname
+		if( ! $area && is_object( @$xoopsModule ) ) {
+			$area = $xoopsModule->getVar('dirname') ;
+		}
+
+		// check area or referer
+		if( @$found_stub['area'] == $area ) $area_check = true ;
+		if( ! empty( $found_stub['referer'] ) && strstr( @$_SERVER['HTTP_REFERER'] , $found_stub['referer'] ) ) $referer_check = true ;
+
+		// if( empty( $area_check ) || empty( $referer_check ) ) { // restrict
+		if( empty( $area_check ) && empty( $referer_check ) ) { // loose
+				$this->clear() ;
+			$this->_errors[] = 'Invalid area or referer' ;
 			return false ;
 		}
 
@@ -171,7 +198,7 @@ class _XoopsTicket {
 
 if( ! class_exists( 'XoopsWPTicket' ) ) {
 
-class XoopsWPTicket extends _XoopsTicket {
+class XoopsWPTicket extends _XoopsNTicket {
 	// intialize parameter names
 	function XoopsWPTicket()
 	{
