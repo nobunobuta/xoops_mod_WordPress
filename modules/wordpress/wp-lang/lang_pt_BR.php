@@ -725,5 +725,16 @@ define('_LANG_PG_MARK_DOWN','Markdown ôþum conversor de texto para HTML para pro
 define('_LANG_PG_TEXTILE_2','Este ôþum wrapper simples para o Humane Web Text Generator de <a href="http://textism.com/?wp">Dean Allen</a>, tambôþ conhecido como <a href="http://www.textism.com/tools/textile/">Textile</a>. A versôþ 2 dôþmuita flexibilidade, o que faz dele quase um HTML meta-linguagem, porôþ ôþmais lento. Se vocôþativar este plug-in, deve desativar o Textile 1 e Markdown, pois eles nôþ funcionam bem juntos.');
 define('_LANG_PG_HELLO_DOLLY','Este nôþ ôþapenas um plug-in, ele simboliza a esperanôþ e o entusiasmo de uma geração inteira somada em 2 palavras cantadas por Louis Armstrong. Este ôþo primeiro plug-in oficial do WordPress no mundo inteiro. Quando ativado, ele mostra randonomicamente uma frase de <cite>Hello, Dolly</cite> em todas as pôþinas da Administração, exceto nas configurações de plug-ins.');
 define('_LANG_PG_TEXTILE_1','Este ôþum wrapper simples para o Humane Web Text Generator de <a href="http://textism.com/?wp">Dean Allen</a>, tambôþ conhecido como <a href="http://www.textism.com/tools/textile/">Textile</a>. Se vocôþativar este plug-in, deve desativar o Textile 2 e Markdown, pois eles nôþ funcionam muito bem juntos.');
+
+/* File Name nkarchives.php */
+define('_LANG_NKA_ALL_YEAR', 'All Years');
+define('_LANG_NKA_ALL_AUTHOR', 'All Authors');
+define('_LANG_NKA_ORDER_DATE', 'Date');
+define('_LANG_NKA_ORDER_TITLE', 'Title');
+define('_LANG_NKA_ORDER_CATEGORY', 'Category');
+define('_LANG_NKA_SORT_ASC', 'ASC');
+define('_LANG_NKA_SORT_DSC', 'DESC');
+define('_LANG_NKA_ACTION_SORT', 'Sort');
+define('_LANG_NKA_YEAR_SUFFIX', '');
 }
 ?>

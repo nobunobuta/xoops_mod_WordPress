@@ -726,5 +726,16 @@ define('_LANG_PG_MARK_DOWN','Markdown is a text-to-HTML conversion tool for web 
 define('_LANG_PG_TEXTILE_2','This is a simple wrapper for <a href="http://textism.com/?wp">Dean Allen\'s</a> Humane Web Text Generator, also known as <a href="http://www.textism.com/tools/textile/">Textile</a>. Version 2 adds a lot of flexibility that makes it almost a HTML meta-language. As a cost, it\'s slower. If you use this plugin you should disable Textile 1 and Markdown, as they don\'t play well together.');
 define('_LANG_PG_HELLO_DOLLY','This is not just a plugin, it symbolizes the hope and enthusiasm of an entire generation summed up in two words sung most famously by Louis Armstrong. Hello, Dolly. This is, by the way, the world\'s first official WordPress plugin. When enabled you will randomly see a lyric from <cite>Hello, Dolly</cite> in the upper right of your admin screen on every page but the plugins page.');
 define('_LANG_PG_TEXTILE_1','This is a simple wrapper for <a href="http://textism.com/?wp">Dean Allen\'s</a> Humane Web Text Generator, also known as <a href="http://www.textism.com/tools/textile/">Textile</a>. If you use this plugin you should disable Textile 2 and Markdown, as they don\'t play well together.');
+
+/* File Name nkarchives.php */
+define('_LANG_NKA_ALL_YEAR', 'All Years');
+define('_LANG_NKA_ALL_AUTHOR', 'All Authors');
+define('_LANG_NKA_ORDER_DATE', 'Date');
+define('_LANG_NKA_ORDER_TITLE', 'Title');
+define('_LANG_NKA_ORDER_CATEGORY', 'Category');
+define('_LANG_NKA_SORT_ASC', 'ASC');
+define('_LANG_NKA_SORT_DSC', 'DESC');
+define('_LANG_NKA_ACTION_SORT', 'Sort');
+define('_LANG_NKA_YEAR_SUFFIX', '');
 }
 ?>

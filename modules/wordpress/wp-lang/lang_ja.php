@@ -739,6 +739,15 @@ define('_LANG_PG_TEXTILE_2','これは Textile として知られる <a href="http://texti
 define('_LANG_PG_HELLO_DOLLY','これはただのプラグインではありません。Louis Armstrong によって歌われた最も有名な二つの単語に要約される、同一世代のすべての人々の希望と情熱を象徴するものです。ところで、これは世界で最初の WordPress 公式プラグインです。このプラグインが有効にされると、プラグイン管理画面以外の Admin 画面の右上に "Hello, Dolly" からの歌詞がランダムに表示されます。');
 define('_LANG_PG_TEXTILE_1','これは <a href="http://www.textism.com/tools/textile/">Textile</a> として知られる <a href="http://textism.com/?wp">Dean Allen</a> の Humane Web Text Generator の単純なラッパーです。このプラグインを使用する場合は、一緒にはうまく作動しないので Textile 2 と Markdown を無効にしてください。');
 
-
+/* File Name nkarchives.php */
+define('_LANG_NKA_ALL_YEAR', '全期間');
+define('_LANG_NKA_ALL_AUTHOR', '全投稿者');
+define('_LANG_NKA_ORDER_DATE', '日付');
+define('_LANG_NKA_ORDER_TITLE', 'タイトル');
+define('_LANG_NKA_ORDER_CATEGORY', 'カテゴリ');
+define('_LANG_NKA_SORT_ASC', '昇順');
+define('_LANG_NKA_SORT_DSC', '降順');
+define('_LANG_NKA_ACTION_SORT', '並び替える');
+define('_LANG_NKA_YEAR_SUFFIX', '年');
 }
 ?>

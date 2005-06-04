@@ -720,5 +720,16 @@ define('_LANG_PG_MARK_DOWN','Markdown è un sistema di conversione testo a codice
 define('_LANG_PG_TEXTILE_2','Questo è un semplice wrapper per <a href="http://textism.com/?wp">Dean Allen\'s</a> Generatore di testo web umano anche conosciuto come <a href="http://www.textism.com/tools/textile/">Textile</a>.  La Version 2 aggiunge nuove funzionalità che la rendono quasi un meta linguaggio  HTML. In compenso è più lento. Se usi questo plugin dovresti disabilitare Textile 1 and Markdown, perchè non funzionano correttamente insieme.');
 define('_LANG_PG_HELLO_DOLLY','Questo non è un plugin, ma simbolizza la speranza e l entusiasmo di un intera generazione. Ciao, Dolly. Questo è il primo plugin ufficiale per WordPress. Una volta abilitato ti consentirà di vedere una lirica da <cite>Ciao, Dolly</cite> nella parte alta a destra dello schermo di admin.');
 define('_LANG_PG_TEXTILE_1','Questo è un semplice wrapper per <a href="http://textism.com/?wp">Dean Allen\'s</a> Generatore di Testo Web Umano, anche conosciuto come <a href="http://www.textism.com/tools/textile/">Textile</a>. Se usi questo plugin dovresti disabilitare Textile 2 e Markdown, perchè non funzionano bene insieme.');
+
+/* File Name nkarchives.php */
+define('_LANG_NKA_ALL_YEAR', 'All Years');
+define('_LANG_NKA_ALL_AUTHOR', 'All Authors');
+define('_LANG_NKA_ORDER_DATE', 'Date');
+define('_LANG_NKA_ORDER_TITLE', 'Title');
+define('_LANG_NKA_ORDER_CATEGORY', 'Category');
+define('_LANG_NKA_SORT_ASC', 'ASC');
+define('_LANG_NKA_SORT_DSC', 'DESC');
+define('_LANG_NKA_ACTION_SORT', 'Sort');
+define('_LANG_NKA_YEAR_SUFFIX', '');
 }
 ?>
