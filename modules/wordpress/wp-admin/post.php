@@ -360,7 +360,7 @@ switch(get_param('action')) {
 		exit();
 		break;
    case 'editcomment':
-		if ($user_level == 0) {
+		if ($user_level <= 0) {
 			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		//Check Paramaters
@@ -382,7 +382,7 @@ switch(get_param('action')) {
 		include('admin-footer.php');
 		break;
 	case 'confirmdeletecomment':
-		if ($user_level == 0) {
+		if ($user_level <= 0) {
 			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		$parent_file = 'edit.php';
@@ -421,7 +421,7 @@ switch(get_param('action')) {
 		include('admin-footer.php');
 		break;
 	case 'deletecomment':
-		if ($user_level == 0) {
+		if ($user_level <= 0) {
 			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		init_param('POST', 'comment', 'integer', NO_DEFAULT_PARAM, true);
@@ -471,7 +471,7 @@ switch(get_param('action')) {
 		break;
 	case 'unapprovecomment':
 		wp_refcheck("/wp-admin");
-		if ($user_level == 0) {
+		if ($user_level <= 0) {
 			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 	
@@ -502,7 +502,7 @@ switch(get_param('action')) {
 		exit();
 		break;
 	case 'mailapprovecomment':
-		if ($user_level == 0) {
+		if ($user_level <= 0) {
 			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		$parent_file = 'edit.php';
@@ -540,7 +540,7 @@ switch(get_param('action')) {
 	case 'approvecomment':
 		$standalone = 1;
 		wp_refcheck("/wp-admin");
-		if ($user_level == 0) {
+		if ($user_level <= 0) {
 			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 			exit();
 		}
@@ -581,7 +581,7 @@ switch(get_param('action')) {
 		if ( ! $xoopsWPTicket->check() ) {
 			redirect_header(wp_siteurl().'/wp-admin/',3,$xoopsWPTicket->getErrors());
 		}
-		if ($user_level == 0) {
+		if ($user_level <= 0) {
 			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 

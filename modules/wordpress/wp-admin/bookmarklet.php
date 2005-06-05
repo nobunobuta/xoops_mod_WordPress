@@ -8,7 +8,7 @@ $GLOBALS['title'] = 'WordPress Bookmarklet';
 require_once('admin-header.php');
 require_once(XOOPS_ROOT_PATH.'/class/template.php');
 
-if ($GLOBALS['user_level'] == 0) {
+if ($GLOBALS['user_level'] <= 0) {
 	redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 	exit();
 }

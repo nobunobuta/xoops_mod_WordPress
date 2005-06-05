@@ -27,7 +27,7 @@ function targetopener(blah, closeme, closeonly) {
 <body>
 <h1 id="wphead"><a href="http://wordpress.xwd.jp/" rel="external" target="_blank"><span>WordPress Japan</span></a></h1>
 <?php
-if ($user_level == 0) {
+if ($user_level <= 0) {
 	die(_LANG_P_CHEATING_ERROR);
 	exit();
 }

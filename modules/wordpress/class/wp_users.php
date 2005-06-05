@@ -113,12 +113,27 @@ class WordPressUser  extends XoopsTableObject
         	return false;
         }
 	}
+	
+	function syncXoops() {
+		if ($this->getVar('user_pass') !== 'X_DELETED_X') {
+			$member =& $this->_handler->member_handler->getUser($this->getVar('ID'));
+	        if ($member) {
+	            $this->assignVar('user_pass', $member->getVar('pass'));
+	        } else {
+	    		$this->setVar('user_level',0);
+	    		$this->setVar('user_login','X_'.$this->getVar('user_login').'_X');
+	    		$this->setVar('user_pass','X_DELETED_X');
+	    		$this->_handler->insert($this,true,true);
+	        }
+		}
+	}
 }
 
 class WordPressUserHandler  extends XoopsTableObjectHandler
 {
 	var $prefix;
 	var $module;
+	var $member_handler;
 	/**
 	 * コンストラクタ
 	 */
@@ -138,6 +153,7 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 		$this->prefix = $prefix;
 		$this->module = $module;
 		$this->tableName = $this->db->prefix($prefix.'users');
+		$this->member_handler =& xoops_gethandler('member');
 		if (empty($GLOBALS['__'.$prefix.'usersync'])) {
 			$this->syncXoopsUsers();
 			$GLOBALS['__'.$prefix.'usersync'] = true;
@@ -154,16 +170,13 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 	function &get($key, $sync_xoops=true)
 	{
 		if ($userObject =& parent::get($key)) {
-			$member_handler =& xoops_gethandler('member');
-			$member =& $member_handler->getUser($userObject->getVar('ID'));
-            if ($member) {
-                $userObject->assignVar('user_pass', $member->getVar('pass'));
-            }
+			if ($sync_xoops) {
+				$userObject->syncXOOPS();
+			}
 			return $userObject;
 		} else {
 			if ($sync_xoops) {
-				$member_handler =& xoops_gethandler('member');
-				$member =& $member_handler->getUser($key);
+				$member =& $this->member_handler->getUser($key);
 				if ($member) {
 					$userObject =& $this->create();
 					$userObject->setVar('ID', $key);
@@ -195,15 +208,11 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 		$userObjects =& $this->getObjects($criteria);
 		if (count($userObjects) == 1) {
 			$userObject =& $userObjects[0];
-			$member_handler =& xoops_gethandler('member');
-			$member =& $member_handler->getUser($userObject->getVar('ID'));
-			$userObject->assignVar('user_pass', $member->getVar('pass'));
 			return $userObject;
 		} else {
 			if ($sync_xoops) {
-				$member_handler =& xoops_gethandler('member');
 				$criteria =& new Criteria('uname', $login);
-				$members =& $member_handler->getUsers($criteria);
+				$members =& $this->member_handler->getUsers($criteria);
 				if (count($members)) {
 					$member = $members[0];
 					$userObject =& $this->create();
@@ -233,35 +242,40 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
      */
 	function insert(&$record, $force=false, $updateOnlyChanged=false)
 	{
-		$member_handler =& xoops_gethandler('member');
-		$member =& $member_handler->getUser($record->getVar('ID'));
+		$member =& $this->member_handler->getUser($record->getVar('ID'));
 		if ($record->isNew()) {
-			$user_level = 0;
-			$group = $member->getGroups();
-			$edit_groups = get_xoops_option($this->module, 'wp_edit_authgrp');
-			$admin_groups = get_xoops_option($this->module, 'wp_admin_authgrp');
-			if (count(array_intersect($group,$edit_groups)) > 0) {
-				$user_level = 1;
-			}
-			if (count(array_intersect($group,$admin_groups)) > 0) {
-				$user_level = 10;
-			}
-			$record->setVar('user_login', $member->getVar('uname'));
-			$record->setVar('user_nickname', $member->getVar('uname'));
-			$record->setVar('user_email', $member->getVar('email'));
-			$record->setVar('user_url', $member->getVar('url'));
-			$record->setVar('user_level', $user_level);
-			$record->setVar('user_icq', intval($member->getVar('user_icq')));
-			$record->setVar('user_aim', $member->getVar('user_aim'));
-			$record->setVar('user_yim', $member->getVar('user_yim'));
-			$record->setVar('user_msn', $member->getVar('user_msnm'));
-			$record->setVar('user_idmode', 'nickname');
-		} else {
-			if ($member->getVar('uname') != $record->getVar('user_login')) {
+			if ($member) {
+				$user_level = 0;
+				$group = $member->getGroups();
+				$edit_groups = get_xoops_option($this->module, 'wp_edit_authgrp');
+				$admin_groups = get_xoops_option($this->module, 'wp_admin_authgrp');
+				if (count(array_intersect($group,$edit_groups)) > 0) {
+					$user_level = 1;
+				}
+				if (count(array_intersect($group,$admin_groups)) > 0) {
+					$user_level = 10;
+				}
 				$record->setVar('user_login', $member->getVar('uname'));
-			}
-			if (trim($record->getVar('user_nickname')) == '') {
 				$record->setVar('user_nickname', $member->getVar('uname'));
+				$record->assignVar('user_email', $member->getVar('email'));
+				$record->assignVar('user_url', $member->getVar('url'));
+				$record->setVar('user_level', $user_level);
+				$record->setVar('user_icq', intval($member->getVar('user_icq')));
+				$record->setVar('user_aim', $member->getVar('user_aim'));
+				$record->setVar('user_yim', $member->getVar('user_yim'));
+				$record->setVar('user_msn', $member->getVar('user_msnm'));
+				$record->setVar('user_idmode', 'nickname');
+			} else {
+				return false;
+			}
+		} else {
+			if ($member) {
+				if ($member->getVar('uname') != $record->getVar('user_login')) {
+					$record->setVar('user_login', $member->getVar('uname'));
+				}
+				if (trim($record->getVar('user_nickname')) == '') {
+					$record->setVar('user_nickname', $member->getVar('uname'));
+				}
 			}
 		}
 		return parent::insert($record,$force,$updateOnlyChanged);
@@ -302,12 +316,14 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 	 * @param	bool $id_as_key		プライマリーキーを、戻り配列のキーにする場合はtrue
 	 * @return	mixed Array			検索結果レコードの配列
 	 */
-/*テーブルに固有のデータ処理が必要な時以外は不要
 	function &getObjects($criteria = null, $id_as_key = false, $fieldlist="")
 	{
-		return parent::getObjects($criteria, $id_as_key, $fieldlist);
+		$userObjects =& parent::getObjects($criteria, $id_as_key, $fieldlist);
+		for ($i=0; $i < count($userObjects); $i++ ) {
+			$userObjects[$i]->syncXoops();
+		}
+		return $userObjects;
 	}
-*/
 	/**
 	 * リンクカテゴリの選択リスト用配列取得
 	 * 
@@ -331,8 +347,7 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 	}
 	function syncXoopsUsers()
 	{
-		$member_handler =& xoops_gethandler('member');
-		$members =& $member_handler->getUsers();
+		$members =& $this->member_handler->getUsers();
 		$this->getObjects();
 		foreach($members as $member) {
 			$this->get($member->getVar('uid'));

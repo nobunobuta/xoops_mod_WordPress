@@ -65,7 +65,7 @@ switch (get_param('action')) {
 		init_param('POST', 'id', 'integer', NO_DEFAULT_PARAM, true);
 		//Compare User_Level with target user's level.
 		$userObject =& $userHandler->get(get_param('id'));
-		if ($userObject->getVar('user_level') !=0 ){
+		if ($userObject->getVar('user_level') > 0 ){
 			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, _LANG_WUS_CANNOT_DELU);
 		}
 		
@@ -89,7 +89,7 @@ switch (get_param('action')) {
 		$userObjects =& $userHandler->getObjects($_criteria);
 		$_user_rows =& _wpGetUserRows($userObjects, $_ticket, $_this_file);
 
-		$_criteria = new Criteria('user_level',0);
+		$_criteria = new Criteria('user_level',1, '<');
 		$_criteria->setSort('ID');
 		$userObjects =& $userHandler->getObjects($_criteria);
 		$_user0_rows =& _wpGetUserRows($userObjects, $_ticket, $_this_file);
@@ -130,13 +130,13 @@ function &_wpGetUserRows(&$records, $ticket, $this_file) {
 			if ($row['user_numposts'] > 0 ) {
 				$row['user_numposts'] = "<a href='edit.php?author={$row['ID']}' title='View posts'>{$row['user_numposts']}</a>";
 			}
-			if ($GLOBALS['user_level'] >= 3) {
+			if (($GLOBALS['user_level'] >= 3) && ($row['user_level'] < 1) && ($row['user_pass']==='X_DELETED_X')) {
 				$row['user_del'] = "<a href='$this_file?action=confirmdelete&id={$row['ID']}' style='color:red;font-weight:bold;'>X</a>";
 			} else {
 				$row['user_del'] = "&nbsp;";
 			}
 			if ((($GLOBALS['user_level'] >= 2) && ($GLOBALS['user_level'] > $row['user_level']) && ($row['user_level'] > 0)) ||
-			    (($GLOBALS['user_level'] == 10) && ($GLOBALS['user_ID'] != 1))) {
+			    (($GLOBALS['user_level'] == 10) && ($GLOBALS['user_ID'] == 1))) {
 				$row['level_down'] = "<a href='$this_file?action=promote&id={$row['ID']}&prom=down$ticket'>-</a>";
 			} else {
 				$row['level_down'] = "&nbsp;";
