@@ -150,7 +150,7 @@ function plugin_isbn_get_caption($data)
 	if ($data[5]) $alt .= "{$br}発売日: $data[5]";
 	if ($data[6]) $alt .= "{$br}発売元: $data[6]";
 	if ($data[7]) $alt .= "{$br}発送状況: $data[7]";
-	return $alt;
+	return htmlspecialchars($alt);
 }
 
 function plugin_isbn_get_info($data,$isbn)
@@ -232,7 +232,7 @@ EOD;
 		 if ($header != "header"){
 return <<<EOD
 <div style="float:$align;padding:.5em 1.5em .5em 1.5em;text-align:center">
- {$amazon_a}<img src="$url" alt="$alt" /></a><br/>
+ {$amazon_a}<img src="$url" alt="$alt" /></a><br />
  <table style="width:{$img_size[0]}px;border:0"><tr>
 	<td style="text-align:left">{$amazon_a}$title</a></td>
  </tr></table>
