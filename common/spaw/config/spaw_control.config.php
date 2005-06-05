@@ -11,8 +11,8 @@
 // ================================================
 // v.1.0, 2003-03-27
 // ================================================
+$__file__ = str_replace( '\\' , '/' , __FILE__ ) ;
 if( ! defined( 'XOOPS_ROOT_PATH' ) ) {
-	$__file__ = str_replace( '\\' , '/' , __FILE__ ) ;
 	$conf_pattern_module = '/modules/.+/config/'.basename(__FILE__);
 	$conf_pattern_common = '/common/[^/]+/config/'.basename(__FILE__);
 	if (preg_match('|'.$conf_pattern_module.'$|',$__file__)) {

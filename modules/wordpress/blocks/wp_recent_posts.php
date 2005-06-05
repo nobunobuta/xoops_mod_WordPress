@@ -194,7 +194,7 @@ eval ('
 		return (_b_wp_recent_posts_edit($options,"'.$_wp_my_dirnumber.'"));
 	}
 	function b_'.$_wp_my_prefix.'recent_posts_show($options) {
-		$GLOBALS["use_cache"] = 1;
+		$GLOBALS["wp_inblock"] = 1;
 		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
 		$GLOBALS["wp_inblock"] = 0;
 		return (_b_wp_recent_posts_show($options,"'.$_wp_my_dirnumber.'"));
