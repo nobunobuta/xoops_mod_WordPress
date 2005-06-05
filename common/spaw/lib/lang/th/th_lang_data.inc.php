@@ -49,7 +49,7 @@ $spaw_lang_data = array(
     'error_no_image' => 'โปรดทำการเลือกภาพ',
     'error_uploading' => 'การความผิดพลาดขึ้นระหว่างทำการอัพโหลดไฟล์. ลองใหม่อีกครั้ง',
     'error_wrong_type' => 'รูปแบบไฟล์ผิด',
-    'error_no_dir' => 'ไม่พบไลบรารี'
+    'error_no_dir' => 'ไม่พบไลบรารี',
 	'error_cant_delete' => 'การลบล้มเหลว', // new 1.0.5
   ),
   'image_prop' => array(
@@ -276,7 +276,7 @@ $spaw_lang_data = array(
     'background' => 'ภาพพื้นหลัง',
     'bgcolor' => 'สีพื้นหลัง',
     'text' => 'สีข้อความ',
-    'link' => 'สีลิงค์'
+    'link' => 'สีลิงค์',
     'vlink' => 'สีลิงค์เยี่ยม',
     'alink' => 'สีลิงค์แอคทิฟ',
     'leftmargin' => 'ระยะขอบซ้าย',

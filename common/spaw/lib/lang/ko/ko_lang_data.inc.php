@@ -53,7 +53,7 @@ $spaw_lang_data = array(
 	'error_cant_delete' => '삭제 실패', // new 1.0.5
   ),
   'image_prop' => array(
-    'title' => '이미지 속성,
+    'title' => '이미지 속성',
     'ok' => '   확인   ',
     'cancel' => '취소',
     'source' => '소스',
