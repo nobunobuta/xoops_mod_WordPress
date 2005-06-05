@@ -453,9 +453,9 @@ function get_alloptions() {
 }
 
 function update_option($option_name, $newvalue, $force=false) {
-	$optionHandler =& wp_handler('Option');
-	$optionObject =& $optionHandler->getByName($option_name);
-	if ($optionObject->getVar('option_value','n')!=$newvalue) {
+	if (get_settings($option_name) != $newvalue) {
+		$optionHandler =& wp_handler('Option');
+		$optionObject =& $optionHandler->getByName($option_name);
 		$optionObject->setVar('option_value', $newvalue);
 		if (!$optionHandler->insert($optionObject,$force, true)) {
 			return false;
@@ -1617,30 +1617,13 @@ function get_xoops_option($dirname,$conf_name) {
 	$module_handler =& xoops_gethandler('module');
 	$module=$module_handler->getByDirname($dirname);
 	$mid=$module->getVar('mid');
+	if (empty($GLOBALS['wp_xoops_config'])) {
+		$GLOBALS['wp_xoops_config'] =& xoops_gethandler('config');
+	}
     
-	$query = "SELECT conf_value,conf_valuetype FROM ".$GLOBALS['xoopsDB']->prefix('config')." WHERE conf_modid=".$mid." AND conf_name='".$conf_name."' ";
-	$result = $GLOBALS['xoopsDB']->query($query);
-	$record= $GLOBALS['xoopsDB']->fetcharray($result);
-	$value = $record['conf_value'];
-	$valuetype = $record['conf_valuetype'];
-	
-    switch ($valuetype) {
-    case 'int':
-        return intval($value);
-        break;
-    case 'array':
-        return unserialize($value);
-    case 'float':
-        return (float)$value;
-        break;
-    case 'textarea':
-        return $value;
-    default:
-        return $value;
-        break;
-    }
-	
-	return($value);
+    $records =& $GLOBALS['wp_xoops_config']->getConfigList($mid);
+    $value = $records[$conf_name];
+    return ($value);
 }
 function block_style_get($echo = true, $with_tpl = true) {
 	$wp_num= (wp_id()=='-' ? '' : wp_id());
