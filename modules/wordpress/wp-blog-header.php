@@ -407,6 +407,7 @@ if ($GLOBALS['posts']) {
     	unset($_cat);
     }
     // Do the same for comment numbers
+	$_post_id_criteria =& new Criteria('comment_post_ID', '('.$_post_id_list.')', 'IN');
     $_criteria =&new CriteriaCompo(new Criteria('post_status', 'publish'));
     $_criteria->add(new Criteria('comment_approved', '1 '));
     $_criteria->add($_post_id_criteria);
