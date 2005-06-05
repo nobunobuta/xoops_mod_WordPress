@@ -180,6 +180,23 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 	        }
 	    }
 
+	    /**
+	    * returns a specific variable for the object in a proper format
+	    * 
+	    * @access public
+	    * @param string $key key of the object's variable to be returned
+	    * @param string $format format to use for the output
+	    * @return mixed formatted value of the variable
+	    */
+	    function &getVar($key, $format = 's')
+	    {
+			$ret =& parent::getVar($key, $format);
+			if ($this->vars[$key]['data_type'] == XOBJ_DTYPE_TXTAREA && ($format=='e' || $format=='edit')) {
+				$ret = preg_replace("/&amp;(#[0-9]+;)/i", '&$1', $ret);
+			}
+			return $ret;
+		}
+
 		function cleanVars() {
 			$iret =parent::cleanVars();
 			foreach ($this->vars as $k => $v) {
