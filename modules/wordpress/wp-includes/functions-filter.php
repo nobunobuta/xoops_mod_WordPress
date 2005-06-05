@@ -3,17 +3,17 @@ if( ! defined( 'WP_FUNCTION_FILTER_INCLUDED' ) ) {
 	define( 'WP_FUNCTION_FILTER_INCLUDED' , 1 ) ;
 // Filters: these are the core of WP's plugin architecture
 function add_filter($tag, $function_to_add, $priority = 10) {
-//	if ($tag=='comment_text') {echo "Add filter - $tag, $function_to_add<br>";}
+//	if ($tag=='the_content') {echo "Add filter(".wp_id().") - $tag, $function_to_add<br>";}
 	// So the format is GLOBALS['wp_filter'][wp_id()]['tag']['array of priorities']['array of functions']
 	if (!@in_array($function_to_add, $GLOBALS['wp_filter'][wp_id()][$tag]["$priority"])) {
 		$GLOBALS['wp_filter'][wp_id()][$tag]["$priority"][] = $function_to_add;
 	}
-//	if ($tag=='comment_text') {var_dump($GLOBALS['wp_filter'][wp_id()]['comment_text']); echo "<br>";}
+//	if ($tag=='the_content') {var_dump($GLOBALS['wp_filter'][wp_id()]['the_content']); echo "<br>";}
 	return true;
 }
 
 function remove_filter($tag, $function_to_remove, $priority = 10) {
-//	echo "Remove filter - $tag, $function_to_remove<br>";
+//	if ($tag=='the_content') {echo "Remove filter(".wp_id().") - $tag, $function_to_remove<br>";}
 	if (@in_array($function_to_remove, $GLOBALS['wp_filter'][wp_id()][$tag]["$priority"])) {
 		$new_function_list = array();
 		foreach ($GLOBALS['wp_filter'][wp_id()][$tag]["$priority"] as $function) {
@@ -56,7 +56,7 @@ function apply_filters($tag, $string) {
 		}
 		foreach ($GLOBALS['wp_filter'][wp_id()][$tag] as $priority => $functions) {
 			foreach($functions as $function) {
-//				echo "<br/>$tag - $function  <br>";
+//				if ($tag == 'the_content') {echo "<br/>$tag - $function  <br>";}
 				$string = $function($string);
 //				echo $string;
 			}
