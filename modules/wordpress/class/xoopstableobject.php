@@ -258,15 +258,13 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 		var $useFullCache;
 		var $cacheLimit;
 		var $_entityClassName;
-		var $_keyClassName;
 		var $_errors;
 		var $_fullCached;
 		var $_sql;
 		
 		function XoopsTableObjectHandler($db)
 		{
-			$this->_entityClassName = preg_replace("/handler$/","", get_class($this));
-			$this->_keyClassName = $this->_entityClassName .'key';
+			$this->_entityClassName = preg_replace("/handler$/i","", get_class($this));
 			$this->XoopsObjectHandler($db);
 			$this->_errors = array();
 			$this->useFullCache = true;
