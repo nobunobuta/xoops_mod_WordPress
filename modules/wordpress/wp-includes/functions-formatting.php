@@ -343,6 +343,9 @@ function mysql2date($dateformatstring, $mysqlstring, $use_b2configmonthsdays = 1
 		$dateformatstring = preg_replace("/([^\\\])M/", "\\1".backslashit(mb_substring($datemonth, 0, $GLOBALS['s_month_length'], $charset)), $dateformatstring);
 		$dateformatstring = substr($dateformatstring, 1, strlen($dateformatstring)-1);
 	}
+	$timezone=date('O',$i);
+	$rdf_timezone = substr($timezone,0,3).':'.substr($timezone,3,2);
+	$dateformatstring = preg_replace("/([^\\\])o/", "\\1".backslashit($rdf_timezone), $dateformatstring);
 	$j = @date($dateformatstring, $i);
 	return $j;
 }
