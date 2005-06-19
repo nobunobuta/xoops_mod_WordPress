@@ -4,36 +4,6 @@
 # WordPress version
 $GLOBALS['wp_version'] = 'ME for XOOPS '.get_version();
 
-# BBcode search and replace arrays
-$GLOBALS['wp_bbcode']['in'] = array(
-	'#\[b](.+?)\[/b]#is',		// Formatting tags
-	'#\[i](.+?)\[/i]#is',
-	'#\[u](.+?)\[/u]#is',
-	'#\[s](.+?)\[/s]#is',
-	'#\[color=(.+?)](.+?)\[/color]#is',
-	'#\[size=(.+?)](.+?)\[/size]#is',
-	'#\[font=(.+?)](.+?)\[/font]#is',
-	'#\[img](.+?)\[/img]#is',		// Image
-	'#\[url](.+?)\[/url]#is',		// URL
-	'#\[url=(.+?)](.+?)\[/url]#is',
-#	'#\[email](.+?)\[/email]#eis',		// E-mail
-#	'#\[email=(.+?)](.+?)\[/email]#eis'
-);
-$GLOBALS['wp_bbcode']['out'] = array(
-	'<strong>$1</strong>',		// Formatting tags
-	'<em>$1</em>',
-	'<span style="text-decoration:underline">$1</span>',
-	'<span style="text-decoration:line-through">$1</span>',
-	'<span style="color:$1">$2</span>',
-	'<span style="font-size:$1px">$2</span>',
-	'<span style="font-family:$1">$2</span>',
-	'<img src="$1" alt="" />',		// Image
-	'<a href="$1">$1</a>',		// URL
-	'<a href="$1" title="$2">$2</a>',
-#	"'<a href=\"mailto:'.antispambot('\\1').'\">'.antispambot('\\1').'</a>'",		// E-mail
-#	'<a href="mailto:$1">$2</a>'
-);
-
 # GreyMatter formatting search and replace arrays
 $GLOBALS['wp_gmcode']['in'] = array(
 	'#\\*\*(.+?)\\*\*#is',		// **bold**
@@ -50,15 +20,16 @@ $GLOBALS['wp_gmcode']['out'] = array(
 $GLOBALS['wp_htmltrans'] = array_flip(get_html_translation_table(HTML_ENTITIES));
 $GLOBALS['wp_htmltrans']['<'] = '<';	# preserve HTML
 $GLOBALS['wp_htmltrans']['>'] = '>';	# preserve HTML
+
 $wp_htmltransbis = array(
-	'–' => '&#8211;',
-	'—' => '&#8212;',
-	'‘' => '&#8216;',
-	'’' => '&#8217;',
-	'“' => '&#8220;',
-	'”' => '&#8221;',
-	'•' => '&#8226;',
-	'€' => '&#8364;',
+	chr(226).chr(128).chr(147) => '&#8211;',
+	chr(226).chr(128).chr(148) => '&#8212;',
+	chr(226).chr(128).chr(152) => '&#8216;',
+	chr(226).chr(128).chr(153) => '&#8217;',
+	chr(226).chr(128).chr(156) => '&#8220;',
+	chr(226).chr(128).chr(157) => '&#8221;',
+	chr(226).chr(128).chr(162) => '&#8226;',
+	chr(226).chr(130).chr(172) => '&#8364;',
 	'&lt;' => '&#60;',	# preserve fake HTML
 	'&gt;' => '&#62;',	# preserve fake HTML
 	'&amp;' => '&#038;',	# preserve fake HTML
@@ -189,12 +160,25 @@ $GLOBALS['wp_macIE_correction']['out'] = array(
 	'&pi;', '&prime;', '&Prime;', '&ang;',
 	'&euro;'
 );
+
 $GLOBALS['wp_gecko_correction']['in'] = array(
-	'/\‘/', '/\’/', '/\“/', '/\”/',
-	'/\•/', '/\–/', '/\—/', '/\Ω/',
-	'/\β/', '/\γ/', '/\θ/', '/\λ/',
-	'/\π/', '/\′/', '/\″/', '/\∠/',
-	'/\€/'
+	'/'.chr(226).chr(128).chr(152).'/',
+	'/'.chr(226).chr(128).chr(153).'/',
+	'/'.chr(226).chr(128).chr(156).'/',
+	'/'.chr(226).chr(128).chr(157).'/',
+	'/'.chr(226).chr(128).chr(162).'/',
+	'/'.chr(226).chr(128).chr(147).'/',
+	'/'.chr(226).chr(128).chr(148).'/',
+	'/'.chr(206).chr(169).'/',
+	'/'.chr(206).chr(178).'/',
+	'/'.chr(206).chr(179).'/',
+	'/'.chr(206).chr(184).'/',
+	'/'.chr(206).chr(187).'/',
+	'/'.chr(207).chr(128).'/',
+	'/'.chr(226).chr(128).chr(178).'/',
+	'/'.chr(226).chr(128).chr(179).'/',
+	'/'.chr(226).chr(136).chr(160).'/',
+	'/'.chr(226).chr(130).chr(172).'/',
 );
 $GLOBALS['wp_gecko_correction']['out'] = array(
 	'&8216;', '&rsquo;', '&ldquo;', '&rdquo;',
