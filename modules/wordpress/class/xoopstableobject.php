@@ -356,7 +356,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 			if ( $numrows == 1 ) {
 				$row = $this->db->fetchArray($result);
 				$record->assignVars($row);
-				$GLOBALS['_xoopsTableCache']->set($this->tableName, $cacheKey, $row);
+				$GLOBALS['_xoopsTableCache']->set($this->tableName, $cacheKey, $row, $this->cacheLimit);
 				return $record;
 			}
 			unset($record);
@@ -472,7 +472,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 				$cacheRow[$idField] = $idValue;
 			}
 			if (!$updateOnlyChanged) {
-				$GLOBALS['_xoopsTableCache']->set($this->tableName, $record->cacheKey() ,$cacheRow);
+				$GLOBALS['_xoopsTableCache']->set($this->tableName, $record->cacheKey() ,$cacheRow, $this->cacheLimit);
 			} else {
 				$GLOBALS['_xoopsTableCache']->reset($this->tableName, $record->cacheKey());
 				$this->_fullCached = false;
@@ -605,7 +605,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 				if (!$result) {
 					return $ret;
 				}
-				if ((!$whereStr) && ($limit==0) && ($start ==0) && ($this->useFullCache)) {
+				if ((!$whereStr) && ($limit==0) && ($start ==0) && ($this->useFullCache) && ($this->cacheLimit==0)) {
 					$this->_fullCached = true;
 				}
 				$records = array();
@@ -628,7 +628,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 						}
 					}
 					if (!$fieldlist) {
-						$GLOBALS['_xoopsTableCache']->set($this->tableName, $record->cacheKey(), $myrow);
+						$GLOBALS['_xoopsTableCache']->set($this->tableName, $record->cacheKey(), $myrow, $this->cacheLimit);
 					}
 					unset($record);
 				}
@@ -791,7 +791,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 		function set($table, $key, $row, $limit=0) {
 			$this->cache[$table][$key] = $row;
 			$cache_size = count($this->cache[$table]);
-			if ($limit && $cache_size >$limit) {
+			if (($limit != 0) && $cache_size >$limit) {
 				array_splice($this->cache[$table],1, $cache_size-$limit);
 			}
 		}
@@ -813,3 +813,4 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 	}
 	$GLOBALS['_xoopsTableCache'] = new XoopsTableCache;
 }
+?>
