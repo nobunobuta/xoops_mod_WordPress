@@ -42,7 +42,7 @@ define("_MI_WP_USE_THEME_TEMPLATE","Scegli il Template per visualizzare i blocch
 define("_MI_WP_USE_THEME_TEMPLATE_DESC","Scegli il Template per visualizzare i contenuti.");
 
 define("_MI_WP_USE_BLOCKCSSHEADER","Use CSS link Tag for Wordpress Style");
-define("_MI_WP_USE_BLOCKCSSHEADER_DESC","Use CSS link Tag for Wordpress Style in the HTML &lt;HEAD&gt; section.<br/>You must insert <b>&lt;{&amp;xoops_block_header}&gt;</b> line at next line <b>&lt;{&amp;xoops_module_header}&gt;</b> in theme.html of your XOOPS Theme.");
+define("_MI_WP_USE_BLOCKCSSHEADER_DESC",'Use CSS link Tag for Wordpress Style in the HTML &lt;HEAD&gt; section.<br/>You must insert <b>&lt;{$xoops_block_header}&gt;</b> line at next line <b>&lt;{$xoops_module_header}&gt;</b> in theme.html of your XOOPS Theme.');
 
 define("_MI_WP_USE_XOOPS_COMM","Using XOOPS Comment System");
 define("_MI_WP_USE_XOOPS_COMM_DESC","Using XOOPS Comment System");
