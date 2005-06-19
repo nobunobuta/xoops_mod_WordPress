@@ -154,7 +154,7 @@ function list_authors($optioncount = false, $exclude_admin = true, $show_fullnam
                 }
                 $link .= '>';
                 if (! empty($feed_image)) {
-                    $link .= "<img src=\"$feed_image\" border=\"0\" align=\"absbottom\"$alt$title" . ' />';
+                    $link .= "<img src=\"$feed_image\" border=\"0\" align=\"bottom\"$alt$title" . ' />';
                 } else {
                     $link .= $name;
                 }
@@ -217,7 +217,7 @@ function list_authors2($optioncount = false, $exclude_admin = true, $idmode = ''
                 }
                 $link .= '>';
                 if (! empty($feed_image)) {
-                    $link .= "<img src=\"$feed_image\" border=\"0\" align=\"absbottom\"$alt$title" . ' />';
+                    $link .= "<img src=\"$feed_image\" border=\"0\" align=\"bottom\"$alt$title" . ' />';
                 } else {
                     $link .= $name;
                 }
