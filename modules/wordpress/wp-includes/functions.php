@@ -774,21 +774,22 @@ function trackback($trackback_url, $title, $excerpt, $ID, $charset = "", $force=
 	
 	$result = $snoopy->submit($trackback_url, $formvars);
 	$fp = debug_fopen(wp_base().'/log/trackback.log', 'a');
-	debug_fwrite($fp, "\n*****\nRequest:\n\nResponse:\n\n");
+	debug_fwrite($fp, "\n*****\nRequest:\n\n");
 	debug_fwrite($fp, "CHARSET:$charset\n");
 	debug_fwrite($fp, "TITLE:$title\n");
 	debug_fwrite($fp, "EXCERPT:$excerpt\n");
 	debug_fwrite($fp, "\n\nResponse:\n\n");
 	debug_fwrite($fp, $snoopy->results);
 	debug_fwrite($fp, "\n\n");
-	debug_fclose($fp);
-	
 	$postHandler =& wp_handler('Post');
-	$postObject =& $postHandler->create(false);
-	$postObject->setVar('ID', $ID);
+	$postObject =& $postHandler->get($ID);
 	$postObject->setVar('pinged', "__MySqlFunc__CONCAT(pinged, '\n', '$trackback_url')");
 	$postObject->setVar('to_ping', "__MySqlFunc__REPLACE(to_ping, '$trackback_url', '')");
-	$postObject->insert($postObject, $force, true);
+	if( !$postHandler->insert($postObject, $force, true)) {
+		debug_fwrite($fp, $postHandler->getErrors());
+	}
+	debug_fwrite($fp, $postHandler->getLastSQL());
+	debug_fclose($fp);
 	return $result;
 }
 
@@ -860,7 +861,7 @@ function xmlrpc_removepostdata($content) {
 	return $content;
 }
 
-function debug_fopen($filename, $mode) {
+function &debug_fopen($filename, $mode) {
 	if ($GLOBALS['wp_debug'] == 1) {
 		$fp = fopen($filename, $mode);
 		return $fp;
@@ -869,7 +870,7 @@ function debug_fopen($filename, $mode) {
 	}
 }
 
-function debug_fwrite($fp, $string) {
+function debug_fwrite(&$fp, $string) {
 	if ($GLOBALS['wp_debug'] == 1) {
 		fwrite($fp, $string);
 	}
@@ -1630,7 +1631,7 @@ function block_style_get($echo = true, $with_tpl = true) {
 	if ($with_tpl) {
 		if (get_xoops_option(wp_mod(),'wp_use_blockcssheader')) {
 			$tplVars =& $GLOBALS['xoopsTpl']->get_template_vars();
-			$csslink = "\n<link rel='stylesheet' type='text/css' media='screen' href='".wp_siteurl() ."/wp-blockstyle.php' />";
+			$csslink = "\n".'<link rel="stylesheet" type="text/css" media="screen" href="'.wp_siteurl() .'/wp-blockstyle.php" />';
 			if(array_key_exists('xoops_block_header', $tplVars)) {
 				if (!strstr($tplVars['xoops_block_header'],$csslink)) {
 					$GLOBALS['xoopsTpl']->assign('xoops_block_header',$tplVars['xoops_block_header'].$csslink);
@@ -1643,7 +1644,7 @@ function block_style_get($echo = true, $with_tpl = true) {
 			if (!defined('WP_BLOCKSTYLE_READ'.$wp_num)) {
 				define('WP_BLOCKSTYLE_READ'.$wp_num, 1);
 				if ($echo) {
-					echo '<style type="text/css" midia="screen">@import url('.wp_siteurl() .'/wp-blockstyle.php);</style>'."\n";
+					echo '<style type="text/css" media="screen">@import url('.wp_siteurl() .'/wp-blockstyle.php);</style>'."\n";
 				} else {
 					return '@import url('.wp_siteurl() .'/wp-blockstyle.php);';
 				}
