@@ -30,7 +30,7 @@ foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp();
 	<dc:creator><?php echo antispambot(get_settings('admin_email')) ?></dc:creator>
 	<dc:rights>Copyright <?php echo mysql2date('Y', get_lastpostdate()); ?></dc:rights>
 	<dc:date><?php echo gmdate('Y-m-d\TH:i:s'); ?></dc:date>
-	<admin:generatorAgent rdf:resource="http://wordpress.xwd.jp/?v=<?php echo $GLOBALS['wp_version'] ?>"/>
+	<admin:generatorAgent rdf:resource="http://www.kowa.org/?v=<?php echo $GLOBALS['wp_version_str'] ?>"/>
 	<admin:errorReportsTo rdf:resource="mailto:<?php echo antispambot(get_settings('admin_email')) ?>"/>
 	<sy:updatePeriod>hourly</sy:updatePeriod>
 	<sy:updateFrequency>1</sy:updateFrequency>

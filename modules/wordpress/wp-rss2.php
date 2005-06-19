@@ -20,7 +20,7 @@ header('Content-type: application/xml');
 	<language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></language>
 	<copyright>Copyright <?php echo mysql2date('Y', get_lastpostdate()); ?></copyright>
 	<pubDate><?php echo gmdate('r'); ?></pubDate>
-	<generator>http://wordpress.xwd.jp/?v=<?php echo $GLOBALS['wp_version'] ?></generator>
+	<generator>http://www.kowa.org/?v=<?php echo $GLOBALS['wp_version_str'] ?></generator>
 
 	<?php if ($GLOBALS['posts']) { foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp(); ?>
 	<item>

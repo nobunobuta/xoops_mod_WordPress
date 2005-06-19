@@ -9,7 +9,7 @@ require_once('wp-blog-header.php');
 header('Content-type: application/xml');
 ?>
 <?php echo '<?xml version="1.0" encoding="'.wp_get_rss_charset().'"?'.'>'; ?>
-<!-- generator="wordpress/<?php echo $GLOBALS['wp_version'] ?>" -->
+<!-- generator="wordpress/<?php echo $GLOBALS['wp_version_str'] ?>" -->
 <rss version="0.92">
     <channel>
         <title><?php bloginfo_rss("name") ?></title>

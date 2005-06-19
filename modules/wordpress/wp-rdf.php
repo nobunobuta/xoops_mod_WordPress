@@ -25,9 +25,9 @@ header('Content-type: application/xml');
 	<link><?php bloginfo_rss('url') ?></link>
 	<description><?php bloginfo_rss('description') ?></description>
 	<dc:language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></dc:language>
-	<dc:date><?php echo gmdate('Y-m-d\TH:i:s'); ?></dc:date>
+	<dc:date><?php echo the_time('Y-m-d\TH:i:so',time()); ?></dc:date>
 	<dc:creator><?php echo antispambot(mb_conv(get_settings('admin_email'),$_rss_charset,$GLOBALS['blog_charset'])) ?></dc:creator>
-	<admin:generatorAgent rdf:resource="http://wordpress.xwd.jp/?v=<?php echo $GLOBALS['wp_version'] ?>"/>
+	<admin:generatorAgent rdf:resource="http://www.kowa.org/?v=<?php echo $GLOBALS['wp_version_str'] ?>"/>
 	<admin:errorReportsTo rdf:resource="mailto:<?php echo antispambot(get_settings('admin_email')) ?>"/>
 	<sy:updatePeriod>hourly</sy:updatePeriod>
 	<sy:updateFrequency>1</sy:updateFrequency>

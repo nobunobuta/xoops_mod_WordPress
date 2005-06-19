@@ -16,9 +16,9 @@ header('Content-type: application/xml');
 	<title><?php bloginfo_rss('name') ?></title>
 	<link rel="alternate" type="text/html" href="<?php bloginfo_rss('url') ?>" />
 	<tagline><?php bloginfo_rss("description") ?></tagline>
-	<modified><?php echo gmdate('Y-m-d\TH:i:s\Z'); ?></modified>
+	<modified><?php echo the_time('Y-m-d\TH:i:so',time()); ?></modified>
 	<copyright>Copyright <?php echo mysql2date('Y', get_lastpostdate()); ?></copyright>
-	<generator url="http://wordpress.xwd.jp/" version="<?php echo $GLOBALS['wp_version'] ?>">WordPress</generator>
+	<generator url="http://www.kowa.org/" version="<?php echo $GLOBALS['wp_version_str'] ?>">WordPress</generator>
 	
 	<?php if ($GLOBALS['posts']) { foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp(); ?>
 	<entry>
@@ -28,8 +28,8 @@ header('Content-type: application/xml');
 		<title><?php the_title_rss() ?></title>
 		<link rel="alternate" type="text/html" href="<?php permalink_single_rss() ?>" />
 		<id><?php bloginfo_rss('url') ?>?p=<?php echo $GLOBALS['wp_post_id']; ?></id>
-		<modified><?php the_time('Y-m-d\TH:i:s\Z'); ?></modified>
-		<issued><?php the_time('Y-m-d\TH:i:s\Z'); ?></issued>
+		<modified><?php the_time('Y-m-d\TH:i:so'); ?></modified>
+		<issued><?php the_time('Y-m-d\TH:i:so'); ?></issued>
 		<?php the_category_rss('rdf') ?>
 <?php $GLOBALS['more'] = 1; if (get_settings('rss_use_excerpt')) {
 ?>
