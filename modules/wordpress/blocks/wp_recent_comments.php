@@ -111,7 +111,7 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 		}
 		if ($show_rss_icon) {
 			$output .= '<hr width="100%" />';
-			$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('comments_rss2_url').'"><img src="'.wp_siteurl().'/wp-images/rss_comment.gif" /></a></div>';
+			$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('comments_rss2_url').'"><img src="'.wp_siteurl().'/wp-images/rss_comment.gif" alt="Comment RSS" /></a></div>';
 		}
 		ob_start();
 		block_style_get();
