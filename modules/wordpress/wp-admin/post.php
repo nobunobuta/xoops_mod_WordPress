@@ -49,7 +49,7 @@ switch(get_param('action')) {
 		$postObject->setVar('ping_status', $ping_status);
 		$postObject->setVar('post_password', $post_password);
 		$postObject->setVar('post_name', sanitize_title($post_title));
-		$postObject->setVar('to_ping', preg_replace('|\s+|', '\n', $trackback_url));
+		$postObject->setVar('to_ping', preg_replace('|\s+|', "\n", $trackback_url));
 
 		if(get_settings('use_geo_positions')) {
 			init_param('POST', 'post_latf', 'float', get_settings('default_geourl_lat'));
@@ -215,7 +215,7 @@ switch(get_param('action')) {
 		$postObject->setVar('ping_status', $ping_status);
 		$postObject->setVar('post_password', $post_password);
 		$postObject->setVar('post_name', $post_name);
-		$postObject->setVar('to_ping', preg_replace('|\s+|', '\n', $trackback_url));
+		$postObject->setVar('to_ping', preg_replace('|\s+|', "\n", $trackback_url));
 
 		if(get_settings('use_geo_positions')) {
 			init_param('POST', 'post_latf', 'float', get_settings('default_geourl_lat'));
