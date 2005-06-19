@@ -66,7 +66,7 @@ switch($action) {
 		init_param('GET', 'deleted','integer',0);
 		init_param('GET', 'approved','integer',0);
 		
-		$criteria = new Criteria('comment_approved', '0 '); //数字のみの文字列は少々癖がある。
+		$criteria = new Criteria('comment_approved', '0 '); // Trick for numeric chars only string compare
 		$commentObjects =& $commentHandler->getObjects($criteria);
 		$comment_rows = array();
 		foreach($commentObjects as $commentObject) {

@@ -72,7 +72,7 @@ if (get_xoops_option(wp_mod(),'wp_use_xoops_smilies')) {
 } else {
 	$GLOBALS['smilies_directory'] = get_settings('smilies_directory');
 }
-//WordPressプラグイン互換性確保用
+//Keep compatibility with WordPress Plugin
 $GLOBALS['siteurl'] = wp_siteurl();
 update_option('siteurl',$GLOBALS['siteurl'],true);
 $GLOBALS['querystring_start'] = '?';

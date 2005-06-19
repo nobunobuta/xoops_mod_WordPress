@@ -11,7 +11,7 @@ if (!defined('WP_PLUGIN_PUKIWIKI')) {
 define('WP_PLUGIN_PUKIWIKI',1);
 function pukiwiki($text) {
 	$text = stripslashes($text);
-	//<!--more-->‚Ö‚Ì‘Î‰ž
+	//Re-conver <!--more-->
 	$text = preg_replace("/\s*<a href='(.*?)#more-(.*?)'>(.*?)<\/a>/","\n\nRIGHT:[[\\3:\\1#more-\\2]]",$text);
 	$text = preg_replace("/\s*<a id=\"more-(.*?)\"><\/a>/","\n\n&aname(more-\\1);",$text);
 	

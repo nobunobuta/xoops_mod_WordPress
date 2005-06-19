@@ -13,7 +13,7 @@ function clean_url($url) {
 function comments_number($zero='No Comments', $one='1 Comment', $more='% Comments', $number='', $echo = true) {
 	if ('' == $number) {
 		$criteria =& new CriteriaCompo(new Criteria('comment_post_ID', $GLOBALS['wp_post_id']));
-		$criteria->add(new Criteria('comment_approved', '1 '));//数字のみの文字列は少々癖がある。
+		$criteria->add(new Criteria('comment_approved', '1 '));// Trick for numeric chars only string compare
 		$commentHandler =& wp_handler('Comment');
 		$number = $commentHandler->getCount($criteria);
 	}
@@ -44,7 +44,7 @@ function comments_popup_link($zero='No Comments', $one='1 Comment', $more='% Com
 	if (get_xoops_option(wp_mod(),'wp_use_xoops_comments') == 0) {
 		if (empty($GLOBALS['comment_count_cache'][wp_id()]["{$GLOBALS['wp_post_id']}"])) {
 			$criteria =& new CriteriaCompo(new Criteria('comment_post_ID', $GLOBALS['wp_post_id']));
-			$criteria->add(new Criteria('comment_approved', '1 '));//数字のみの文字列は少々癖がある。
+			$criteria->add(new Criteria('comment_approved', '1 '));// Trick for numeric chars only string compare
 			$commentHandler =& wp_handler('Comment');
 			$number = $commentHandler->getCount($criteria);
 		} else {
@@ -52,7 +52,7 @@ function comments_popup_link($zero='No Comments', $one='1 Comment', $more='% Com
 		}
 	} else {
 		$criteria =& new CriteriaCompo(new Criteria('comment_post_ID', $GLOBALS['wp_post_id']));
-		$criteria->add(new Criteria('comment_approved', '1 '));//数字のみの文字列は少々癖がある。
+		$criteria->add(new Criteria('comment_approved', '1 '));// Trick for numeric chars only string compare
 		$criteria_c =& new CriteriaCompo(new Criteria('comment_content', "<trackback />%", 'like'));
 		$criteria_c->add(new Criteria('comment_content', "<pingback />%", 'like'), 'OR');
 		$criteria->add($criteria_c);
