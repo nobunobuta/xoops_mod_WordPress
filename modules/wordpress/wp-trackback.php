@@ -54,7 +54,7 @@ if (!empty($_tb_id) && !test_param('__mode') && test_param('url')) {
 	$_blog_name = get_param('blog_name');
 	$_charset = get_param('charset');
 	if ($GLOBALS['wp_debug']) {
-		$_debug_file = $wp_base().'/log/trackback_r.log';
+		$_debug_file = wp_base().'/log/trackback_r.log';
 		$_fp = fopen($_debug_file, 'a');
 		fwrite($_fp, "Title(Orig) =$_title\n");
 		fwrite($_fp, "Excerpt(Orig) =$_excerpt\n");
