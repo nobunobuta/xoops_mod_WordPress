@@ -131,19 +131,19 @@ function &_wpGetUserRows(&$records, $ticket, $this_file) {
 				$row['user_numposts'] = "<a href='edit.php?author={$row['ID']}' title='View posts'>{$row['user_numposts']}</a>";
 			}
 			if (($GLOBALS['user_level'] >= 3) && ($row['user_level'] < 1) && ($row['user_pass']==='X_DELETED_X')) {
-				$row['user_del'] = "<a href='$this_file?action=confirmdelete&id={$row['ID']}' style='color:red;font-weight:bold;'>X</a>";
+				$row['user_del'] = "<a href='$this_file?action=confirmdelete&amp;id={$row['ID']}' style='color:red;font-weight:bold;'>X</a>";
 			} else {
 				$row['user_del'] = "&nbsp;";
 			}
 			if ((($GLOBALS['user_level'] >= 2) && ($GLOBALS['user_level'] > $row['user_level']) && ($row['user_level'] > 0)) ||
 			    (($GLOBALS['user_level'] == 10) && ($GLOBALS['user_ID'] == 1))) {
-				$row['level_down'] = "<a href='$this_file?action=promote&id={$row['ID']}&prom=down$ticket'>-</a>";
+				$row['level_down'] = "<a href='$this_file?action=promote&amp;id={$row['ID']}&prom=down$ticket'>-</a>";
 			} else {
 				$row['level_down'] = "&nbsp;";
 			}
 			if ((($GLOBALS['user_level'] >= 2) && ($GLOBALS['user_level'] > ($row['user_level'] + 1))) ||
 			    (($GLOBALS['user_level'] == 10) && ($row['user_level'] < 10))) {
-				$row['level_up'] = "<a href='$this_file?action=promote&id={$row['ID']}&prom=up$ticket'>+</a>";
+				$row['level_up'] = "<a href='$this_file?action=promote&amp;id={$row['ID']}&prom=up$ticket'>+</a>";
 			} else {
 				$row['level_up'] = "&nbsp;";
 			}

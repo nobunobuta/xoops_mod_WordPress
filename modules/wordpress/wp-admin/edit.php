@@ -97,7 +97,7 @@ if ($GLOBALS['posts']) {
 <p>
 	<strong><?php the_time('Y/m/d H:i:s'); ?></strong> [ <a href="edit.php?p=<?php echo $GLOBALS['wp_post_id'] ?>&c=1"><?php comments_number(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS) ?></a>
 <?php if (($user_level > $authordata->user_level) or ($user_level == 10) or ($user_login == $authordata->user_login)) { ?>
-	- <a href='post.php?action=edit&amp;post=<?php echo $wp_post_id?><?php echo (isset($m) && $m)? "&m=$m":""?>'><?php echo _LANG_C_NAME_EDIT ?></a>
+	- <a href='post.php?action=edit&amp;post=<?php echo $wp_post_id?><?php echo (isset($m) && $m)? "&amp;m=$m":""?>'><?php echo _LANG_C_NAME_EDIT ?></a>
 	- <a href='post.php?action=confirmdelete&amp;post=<?php echo $wp_post_id?>'><?php echo _LANG_C_NAME_DELETE ?></a>
 <?php } ?>
 <?php if ('private' == $post->post_status) { ?>

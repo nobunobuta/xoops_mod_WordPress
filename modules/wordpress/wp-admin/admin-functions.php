@@ -365,12 +365,12 @@ function show_bookmarklet_link() {
 	<p>
 <?php
 	$bookmarklet_height= (get_settings('use_trackback')) ? 540 : 480;
-	$bookmarklet_tbpb  = (get_settings('use_trackback')) ? '&trackback=1' : '';
-	$bookmarklet_tbpb .= (get_settings('use_pingback'))  ? '&pingback=1'  : '';
+	$bookmarklet_tbpb  = (get_settings('use_trackback')) ? '&amp;trackback=1' : '';
+	$bookmarklet_tbpb .= (get_settings('use_pingback'))  ? '&amp;pingback=1'  : '';
 
 	if ($is_NS4 || $is_gecko) {
 ?>
-		<a href="javascript:if(navigator.userAgent.indexOf('Safari') >= 0){Q=getSelection();}else{Q=document.selection?document.selection.createRange().text:document.getSelection();}void(window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?text='+escape(Q)+'<?php echo $bookmarklet_tbpb ?>&popupurl='+escape(location.href)+'&popuptitle='+escape(document.title),'WordPress bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));">Press It - <?php echo get_settings('blogname') ?></a>
+		<a href="javascript:if(navigator.userAgent.indexOf('Safari') >= 0){Q=getSelection();}else{Q=document.selection?document.selection.createRange().text:document.getSelection();}void(window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?text='+escape(Q)+'<?php echo $bookmarklet_tbpb ?>&amp;popupurl='+escape(location.href)+'&amp;popuptitle='+escape(document.title),'WordPress bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));">Press It - <?php echo get_settings('blogname') ?></a>
 <?php
 	} else if ($is_winIE) {
 		if ($wp_use_spaw) {
@@ -379,7 +379,7 @@ function show_bookmarklet_link() {
 			$range_text = "text";
 		}
 ?>
-		<a href="javascript:Q='';if(top.frames.length==0)Q=document.selection.createRange().<?php echo $range_text ?>;void(btw=window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?text='+escape(Q)+'<?php echo $bookmarklet_tbpb ?>&popupurl='+escape(location.href)+'&popuptitle='+escape(document.title),'bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=50,status=yes'));btw.focus();">Press it - <?php echo get_settings('blogname') ?></a>
+		<a href="javascript:Q='';if(top.frames.length==0)Q=document.selection.createRange().<?php echo $range_text ?>;void(btw=window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?text='+escape(Q)+'<?php echo $bookmarklet_tbpb ?>&amp;popupurl='+escape(location.href)+'&amp;popuptitle='+escape(document.title),'bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=50,status=yes'));btw.focus();">Press it - <?php echo get_settings('blogname') ?></a>
 		<script type="text/javascript" language="JavaScript">
 		<!--
 		function oneclickbookmarklet(blah) {
@@ -392,11 +392,11 @@ function show_bookmarklet_link() {
 <?php
 	} else if ($is_opera) {
 ?>
-		<a href="javascript:void(window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?popupurl='+escape(location.href)+'&popuptitle='+escape(document.title)+'<?php echo $bookmarklet_tbpb ?>','bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));">Press it - <?php echo get_settings('blogname') ?></a> 
+		<a href="javascript:void(window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?popupurl='+escape(location.href)+'&amp;popuptitle='+escape(document.title)+'<?php echo $bookmarklet_tbpb ?>','bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));">Press it - <?php echo get_settings('blogname') ?></a> 
 <?php
 	} else if ($is_macIE) {
 ?>
-		<a href="javascript:Q='';if(top.frames.length==0);void(btw=window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?text='+escape(document.getSelection())+'&popupurl='+escape(location.href)+'&popuptitle='+escape(document.title)+'<?php echo $bookmarklet_tbpb ?>','bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));btw.focus();">Press it - <?php echo get_settings('blogname') ?></a>
+		<a href="javascript:Q='';if(top.frames.length==0);void(btw=window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?text='+escape(document.getSelection())+'&amp;popupurl='+escape(location.href)+'&amp;popuptitle='+escape(document.title)+'<?php echo $bookmarklet_tbpb ?>','bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));btw.focus();">Press it - <?php echo get_settings('blogname') ?></a>
 <?php
 	}
 ?>
