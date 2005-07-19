@@ -118,7 +118,7 @@ function remove_magic_quotes( $mixed ) {
  * - array-int
  * - object
  * - null
- * - clean-html (does nothing)
+ * - clean-html (clean html strin with kses)
  * - html (does nothing)
  * @param mixed Default value or TRUE if user input required
  * @param boolean Override if variable already set
@@ -177,7 +177,7 @@ function init_param($para_types, $var, $type = '', $default = NO_DEFAULT_PARAM, 
 		if ($para_found) break;
 	}
 	if ($must_exist && !$para_found) {
-		redirect_header("", 5, "Required parameter isn't set. [".$var."]");
+		redirect_header('', 5, 'Required parameter['.$var.'] should not be empty.');
 	}
 	if (!$para_found) {
 		if ($default !== NO_DEFAULT_PARAM) {
@@ -222,7 +222,7 @@ function init_param($para_types, $var, $type = '', $default = NO_DEFAULT_PARAM, 
 			if (!empty($GLOBALS[$var])) {
 				unset($GLOBALS[$var]);
 			}
-			if (!empty($para_value)) {
+			if (isset($para_value)) {
 				$GLOBALS[$var] = $para_value;
 			}
 		}
@@ -234,8 +234,8 @@ function init_param($para_types, $var, $type = '', $default = NO_DEFAULT_PARAM, 
 	}
 }
 function test_param($var) {
-	if (!empty($GLOBALS['wpParams'])) {
-		return (!empty($GLOBALS['wpParams'][$var]));
+	if (isset($GLOBALS['wpParams'])) {
+		return (array_key_exists($var, $GLOBALS['wpParams']) && !empty($GLOBALS['wpParams'][$var]));
 	} else {
 		return false;
 	}
@@ -267,6 +267,28 @@ function get_lastpostdate() {
 		$lastpostdate = $GLOBALS['cache_lastpostdate'][wp_id()];
 	}
 	return $lastpostdate;
+}
+
+function get_lastpostmodified() {
+	if ((!isset($GLOBALS['lastpostmodified'][wp_id()])) || (!$GLOBALS['use_cache'])) {
+		$criteria =& new CriteriaCompo(new Criteria('post_date', current_time('mysql'), "<="));
+		$criteria->add(new Criteria('post_status', 'publish'));
+		$criteria->setSort('post_modified');
+		$criteria->setOrder('DESC');
+		$criteria->setLimit(1);
+		$postHandler =& wp_handler('Post');
+		$postObjects =& $postHandler->getObjects($criteria, false, 'post_modified');
+		$lastpostmodified = $postObjects[0]->getVar('post_modified');
+		$lastpostdate =get_lastpostdate();
+		if ($lastpostmodified < $lastpostdate) {
+			$GLOBALS['lastpostmodified'][wp_id()] = $lastpostmodified = $lastpostdate;
+		} else {
+			$GLOBALS['lastpostmodified'][wp_id()] = $lastpostmodified;
+		}
+	} else {
+		$lastpostmodified = $GLOBALS['lastpostmodified'][wp_id()];
+	}
+	return $lastpostmodified;
 }
 
 function user_pass_ok($user_login,$user_pass) {
@@ -672,7 +694,7 @@ function touch_time($edit = 1, $echo=true) {
 	
 	$output = '<p><input type="checkbox" class="checkbox" name="edit_date" value="1" id="timestamp" '.$checked.'/> <label for="timestamp">'._LANG_F_TIMESTAMP.'</label> : <a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#timestamp" title="Help on changing the timestamp">Help</a><br />';
 
-	$time_adj = time() + (get_settings('time_difference') * 3600);
+	$time_adj = current_time('timestamp');
 	$jj = ($edit) ? mysql2date('d', $GLOBALS['postdata']['post_date']) : date('d', $time_adj);
 	$mm = ($edit) ? mysql2date('m', $GLOBALS['postdata']['post_date']) : date('m', $time_adj);
 	$aa = ($edit) ? mysql2date('Y', $GLOBALS['postdata']['post_date']) : date('Y', $time_adj);
@@ -1348,25 +1370,17 @@ function start_wp() {
 		if ($GLOBALS['page'] > 1)
 			$GLOBALS['more'] = 1;
 		$GLOBALS['multipage'] = 1;
-		$content = stripslashes($GLOBALS['post']->post_content);
+		$content = $GLOBALS['post']->post_content;
 		$content = str_replace("\n<!--nextpage-->\n", '<!--nextpage-->', $content);
 		$content = str_replace("\n<!--nextpage-->", '<!--nextpage-->', $content);
 		$content = str_replace("<!--nextpage-->\n", '<!--nextpage-->', $content);
 		$GLOBALS['pages'] = explode('<!--nextpage-->', $content);
 		$GLOBALS['numpages'] = count($GLOBALS['pages']);
 	} else {
-		$GLOBALS['pages'][0] = stripslashes($GLOBALS['post']->post_content);
+		$GLOBALS['pages'][0] = $GLOBALS['post']->post_content;
 		$GLOBALS['multipage'] = 0;
 	}
 	return true;
-}
-
-function is_new_day() {
-	if ($GLOBALS['day'] != $GLOBALS['previousday']) {
-		return(1);
-	} else {
-		return(0);
-	}
 }
 
 function wp_head() {
@@ -1384,6 +1398,8 @@ function permlink_to_param() {
 		if (! empty($rewrite)) {
 			// Get the name of the file requesting path info.
 			$req_uri = $_SERVER['REQUEST_URI'];
+			$req_uri = explode('?', $req_uri);
+			$req_uri = $req_uri[0];
 			$req_uri = str_replace($pathinfo, '', $req_uri);
 			$req_uri = preg_replace("!/+$!", '', $req_uri);
 			$req_uri = explode('/', $req_uri);
@@ -1406,11 +1422,12 @@ function permlink_to_param() {
 					@eval("\$query = \"$query\";");
 
 					// Parse the query.
-					parse_str($query, $_GET);
+					parse_str($query, $get);
 					break;
 				}
 			}
-		}	 
+			$_GET += $get;
+		}
 	}
 }
 
@@ -1519,12 +1536,13 @@ function rewrite_rules($matches = '', $permalink_structure = '') {
     $trackbackregex = 'trackback/?$';
     $trackbackmatch .= $trackbackregex;
 
+	$front = preg_match('#^/index.php/#' ,$permalink_structure) ? 'index.php/' : '';
     // Site feed
-    $sitefeedmatch = 'feed/?([_0-9a-z-]+)?/?$';
+    $sitefeedmatch = $front.'feed/?([_0-9a-z-]+)?/?$';
     $sitefeedquery = 'wp-feed.php?feed=' . preg_index(1, $matches);
 
     // Site comment feed
-    $sitecommentfeedmatch = 'comments/feed/?([_0-9a-z-]+)?/?$';
+    $sitecommentfeedmatch = $front.'comments/feed/?([_0-9a-z-]+)?/?$';
     $sitecommentfeedquery = 'wp-feed.php?feed=' . preg_index(1, $matches) . '&withcomments=1';
 
     // Code for nice categories and authors, currently not very flexible
@@ -1646,19 +1664,14 @@ function block_style_get($echo = true, $with_tpl = true) {
 				if ($echo) {
 					echo '<style type="text/css" media="screen">@import url('.wp_siteurl() .'/wp-blockstyle.php);</style>'."\n";
 				} else {
-					return '@import url('.wp_siteurl() .'/wp-blockstyle.php);';
+					return '<style type="text/css" media="screen">@import url('.wp_siteurl() .'/wp-blockstyle.php);</style>';
 				}
 			}
-			return;
+			return '';
 		}
 	}
-	if (file_exists(wp_base().'/themes/'.$GLOBALS['xoopsConfig']['theme_set'].'/wp-blocks.css.php')) {
-		$themes = $GLOBALS['xoopsConfig']['theme_set'];
-	} else {
-		$themes = 'default';
-	}
 	$wp_block_style='';
-	include_once(wp_base().'/themes/'.$themes.'/wp-blocks.css.php');
+	include_once(get_custom_path('wp-blocks.css.php'));
 	if ($echo) {
 		if (trim($wp_block_style) != "") {
 		echo <<< EOD
@@ -1679,7 +1692,7 @@ function wp_refcheck($offset = "", $redirect = true) {
 	if ($ref == '') {
 		if ($redirect) {
 			if (defined('XOOPS_URL')) { //XOOPS Module mode
-				redirect_header(wp_siteurl(), 1, "You cannot update Database contents.(Could not detect HTTP_REFERER)");
+				redirect_header(wp_siteurl(), 1, 'You cannot update Database contents.(Could not detect HTTP_REFERER)');
 			} else {
 				header("Location: ".wp_siteurl());
 			}
@@ -1689,7 +1702,7 @@ function wp_refcheck($offset = "", $redirect = true) {
 	if (strpos($ref, wp_siteurl().$offset) !== 0 ) {
 		if ($redirect) {
 			if (defined('XOOPS_URL')) { //XOOPS Module mode
-				redirect_header(wp_siteurl(), 1, "You cannot update Database contents.(HTTP_REFERER is not valid site.)");
+				redirect_header(wp_siteurl(), 1, 'You cannot update Database contents.(HTTP_REFERER is not valid site.)');
 			} else {
 				header("Location: ".wp_siteurl());
 			}
@@ -1762,86 +1775,51 @@ function trailingslashit($string) {
     return $string;
 }
 
+/*
+ remove trailing slash on a URL
+ */
+function remove_trailingslash($url) {
+	$len = strlen($url)-1;
+	$last = $url[$len];
+	if ($last == '/') {
+		$url = substr($url, 0, $len);
+	}
+	return $url;
+}
+
 function get_version() {
 	return $GLOBALS['wp_version_str'];
 }
 
 function get_custom_path($filename) {
-	if (file_exists(wp_base().'/themes/'.$GLOBALS['xoopsConfig']['theme_set'].'/'. $filename)) {
+	if (($GLOBALS['xoopsConfig']['theme_set'] != 'default') && (file_exists(wp_base().'/themes/'.$GLOBALS['xoopsConfig']['theme_set'].'/'. $filename))) {
 		$themes = $GLOBALS['xoopsConfig']['theme_set'];
+	} else if (file_exists(wp_base().'/themes/_custom_/'. $filename)) {
+		$themes = '_custom_';
 	} else {
-		$themes = "default";
+		$themes = 'default';
 	}
 	return wp_base().'/themes/'.$themes.'/'. $filename;
 }
 
 function get_custom_url($filename) {
-	if (file_exists(wp_base().'/themes/'.$GLOBALS['xoopsConfig']['theme_set'].'/'. $filename)) {
+	if (($GLOBALS['xoopsConfig']['theme_set'] != 'default') && (file_exists(wp_base().'/themes/'.$GLOBALS['xoopsConfig']['theme_set'].'/'. $filename))) {
 		$themes = $GLOBALS['xoopsConfig']['theme_set'];
+	} else if (file_exists(wp_base().'/themes/_custom_/'. $filename)) {
+		$themes = '_custom_';
 	} else {
-		$themes = "default";
+		$themes = 'default';
 	}
 	return wp_siteurl().'/themes/'.$themes.'/'. $filename;
 }
 
 function current_wp() {
 	$cur_PATH = $_SERVER['SCRIPT_FILENAME'];
-	if (preg_match("/^".preg_quote(wp_base()."/","/")."/i",$cur_PATH)) {
+	if (preg_match('/^'.preg_quote(wp_base().'/','/').'/i',$cur_PATH)) {
 		return true;
 	} else {
 		return false;
 	}
-}
-
-//May not Used now, but keeping for compatiblity
-function alert_error($msg) { // displays a warning box with an error message (original by KYank)
-	?>
-	<html>
-	<head>
-	<script language="JavaScript">
-	<!--
-	alert("<?php echo $msg ?>");
-	history.back();
-	//-->
-	</script>
-	</head>
-	<body>
-	<!-- this is for non-JS browsers (actually we should never reach that code, but hey, just in case...) -->
-	<?php echo $msg; ?><br />
-	<a href="<?php echo $_SERVER["HTTP_REFERER"]; ?>">go back</a>
-	</body>
-	</html>
-	<?php
-	exit;
-}
-
-function alert_confirm($msg) { // asks a question - if the user clicks Cancel then it brings them back one page
-	?>
-	<script language="JavaScript">
-	<!--
-	if (!confirm("<?php echo $msg ?>")) {
-	history.back();
-	}
-	//-->
-	</script>
-	<?php
-}
-
-function redirect_js($url,$title="...") {
-	?>
-	<script language="JavaScript">
-	<!--
-	function redirect() {
-	window.location = "<?php echo $url; ?>";
-	}
-	setTimeout("redirect();", 100);
-	//-->
-	</script>
-	<p>Redirecting you : <b><?php echo $title; ?></b><br />
-	<br />
-	If nothing happens, click <a href="<?php echo $url; ?>">here</a>.</p>
-	<?php
-	exit();
 }
 
 function wp_create_thumbnail($file, $max_side, $effect = '') { 
@@ -1892,7 +1870,7 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
 			} 
             if (function_exists('gd_info')) {
 	            $gdver=gd_info();
-	            if(strstr($gdver["GD Version"],"1.")!=false){
+	            if(strstr($gdver['GD Version'],'1.')!=false){
 	            	//For GD
 	                $thumbnail = imagecreate($image_new_width, $image_new_height);
 	            }else{
@@ -1916,15 +1894,15 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
 
 			if ($type[2] == 1) {
 				if (!imagegif($thumbnail, $thumbpath)) {
-					$error = "Thumbnail path invalid";
+					$error = 'Thumbnail path invalid';
 				} 
 			} elseif ($type[2] == 2) {
 				if (!imagejpeg($thumbnail, $thumbpath)) {
-					$error = "Thumbnail path invalid";
+					$error = 'Thumbnail path invalid';
 				} 
 			} elseif ($type[2] == 3) {
 				if (!imagepng($thumbnail, $thumbpath)) {
-					$error = "Thumbnail path invalid";
+					$error = 'Thumbnail path invalid';
 				} 
 			} 
 		} 
@@ -1935,6 +1913,85 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
 	} else {
 		return 1;
 	} 
+}
+function str2time( $str ) {
+    $str = preg_replace( '/;.*$/', '', $str );
+    if ( strpos( $str, ',' ) === false )
+        $str .= ' GMT';
+    return strtotime( $str );
+}
+
+function static_content_header($mod_timestamp) {
+	$etag = md5( $_SERVER["REQUEST_URI"] . $mod_timestamp );
+	header('Pragma:');
+	header('Etag: "'.$etag.'"' );
+	header('Cache-Control: max-age=866400');
+	header('Expires:'.gmdate('D, d M Y H:i:s',$mod_timestamp+866400).' GMT');
+	if((!empty($_SERVER['HTTP_IF_MODIFIED_SINCE'])&&($mod_timestamp==str2time($_SERVER['HTTP_IF_MODIFIED_SINCE'])))||
+	   (!empty($_SERVER['HTTP_IF_NONE_MATCH'])&&($etag==$_SERVER['HTTP_IF_NONE_MATCH']))){
+        header('HTTP/1.1 304 Not Modified');
+        exit();
+	}
+	header('Last-Modified: '.gmdate('D, d M Y H:i:s',$mod_timestamp).' GMT');
+}
+
+//May not Used now, but keeping for compatiblity
+function is_new_day() {
+	if ($GLOBALS['day'] != $GLOBALS['previousday']) {
+		return(1);
+	} else {
+		return(0);
+	}
+}
+
+function alert_error($msg) { // displays a warning box with an error message (original by KYank)
+	?>
+	<html>
+	<head>
+	<script language="JavaScript">
+	<!--
+	alert("<?php echo $msg ?>");
+	history.back();
+	//-->
+	</script>
+	</head>
+	<body>
+	<!-- this is for non-JS browsers (actually we should never reach that code, but hey, just in case...) -->
+	<?php echo $msg; ?><br />
+	<a href="<?php echo $_SERVER["HTTP_REFERER"]; ?>">go back</a>
+	</body>
+	</html>
+	<?php
+	exit;
+}
+
+function alert_confirm($msg) { // asks a question - if the user clicks Cancel then it brings them back one page
+	?>
+	<script language="JavaScript">
+	<!--
+	if (!confirm("<?php echo $msg ?>")) {
+	history.back();
+	}
+	//-->
+	</script>
+	<?php
+}
+
+function redirect_js($url,$title="...") {
+	?>
+	<script language="JavaScript">
+	<!--
+	function redirect() {
+	window.location = "<?php echo $url; ?>";
+	}
+	setTimeout("redirect();", 100);
+	//-->
+	</script>
+	<p>Redirecting you : <b><?php echo $title; ?></b><br />
+	<br />
+	If nothing happens, click <a href="<?php echo $url; ?>">here</a>.</p>
+	<?php
+	exit();
 }
 }
 ?>
