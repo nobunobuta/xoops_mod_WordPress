@@ -164,7 +164,7 @@ function get_category_parents($id, $link = FALSE, $separator = '/', $nicename = 
 
 function get_category_children($id, $before = '/', $after = '') {
     $c_cache = $GLOBALS['cache_categories'][wp_id()]; // Can't do recursive foreach on a global, have to make a copy
-    $chain = '';
+	$chain = '';
     foreach ($c_cache as $category){
         if ($category->category_parent == $id){
             $chain .= $before.$category->cat_ID.$after;
@@ -293,7 +293,7 @@ function wp_list_cats($args = '', $echo=true) {
 	if (!isset($r['exclude'])) $r['exclude'] = '';
 	if (!isset($r['hierarchical'])) $r['hierarchical'] = true;
 
-	list_cats($r['optionall'], $r['all'], $r['sort_column'], $r['sort_order'], $r['file'],	$r['list'], $r['optiondates'], $r['optioncount'], $r['hide_empty'], $r['use_desc_for_title'], $r['children'], $r['child_of'], $r['categories'], $r['recurse'], $r['feed'], $r['feed_image'], $r['exclude'], $r['hierarchical'], $echo);
+	return list_cats($r['optionall'], $r['all'], $r['sort_column'], $r['sort_order'], $r['file'],	$r['list'], $r['optiondates'], $r['optioncount'], $r['hide_empty'], $r['use_desc_for_title'], $r['children'], $r['child_of'], $r['categories'], $r['recurse'], $r['feed'], $r['feed_image'], $r['exclude'], $r['hierarchical'], $echo);
 }
 
 function list_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_order = 'asc', $file = '', $list = true, $optiondates = 0, $optioncount = 0, $hide_empty = 1, $use_desc_for_title = 1, $children=FALSE, $child_of=0, $categoryObjects=null, $recurse=0, $feed = '', $feed_image = '', $exclude = '', $hierarchical=FALSE, $echo=true) {
@@ -396,37 +396,28 @@ function list_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_orde
 				$link .= apply_filters('list_cats', $category->cat_name).'</a>';
 
 				if ( (! empty($feed_image)) || (! empty($feed)) ) {
-					
 					$link .= ' ';
-
 					if (empty($feed_image)) {
 						$link .= '(';
 					}
-
 					$link .= '<a href="' . get_category_rss_link(0, $category->cat_ID, $category->category_nicename)  . '"';
-
 					if ( !empty($feed) ) {
 						$title =  ' title="' . $feed . '"';
 						$alt = ' alt="' . $feed . '"';
 						$name = $feed;
 						$link .= $title;
 					}
-
 					$link .= '>';
-
 					if (! empty($feed_image)) {
 						$link .= "<img src=\"$feed_image\" border=\"0\"$alt$title" . ' />';
 					} else {
 						$link .= $name;
 					}
-					
 					$link .= '</a>';
-
 					if (empty($feed_image)) {
 						$link .= ')';
 					}
 				}
-
 				if (intval($optioncount) == 1) {
 					$link .= ' ('.intval($GLOBALS['category_posts']["$category->cat_ID"]).')';
 				}
