@@ -112,6 +112,7 @@ function get_links($category = -1, $before = '', $after = '<br />',
                    $limit = -1, $show_updated = 1, $echo = true) {
     $direction = ' ASC';
     $category_query = "";
+    $links = '';
     if ($category != -1) {
         $category_query = " AND link_category = $category ";
     }
@@ -161,19 +162,19 @@ function get_links($category = -1, $before = '', $after = '<br />',
         return;
     }
     foreach ($results as $row) {
-        echo($before);
+        $links .= $before;
         if ($show_updated && $row->recently_updated) {
-            echo get_settings('links_recently_updated_prepend');
+            $links .= get_settings('links_recently_updated_prepend');
         }
         $the_link = '#';
         if (($row->link_url != null) && ($row->link_url != '')) {
-            $the_link = htmlspecialchars(stripslashes($row->link_url));
+            $the_link = htmlspecialchars($row->link_url);
         }
-        $rel = stripslashes($row->link_rel);
+        $rel = $row->link_rel;
         if ($rel != '') {
             $rel = " rel='$rel'";
         }
-        $desc = htmlspecialchars(stripslashes($row->link_description), ENT_QUOTES);
+        $desc = htmlspecialchars($row->link_description, ENT_QUOTES);
         if ($show_updated) {
            if (substr($row->link_updated_f,0,2) != '00') {
                 $desc .= ' (Last updated ' . date(get_settings('links_updated_date_format'), $row->link_updated_f + (get_settings('time_difference') * 3600)) .')';
@@ -187,23 +188,23 @@ function get_links($category = -1, $before = '', $after = '<br />',
         if ('' != $target) {
             $target = " target='$target'";
         }
-        echo("<a href='$the_link'");
-        echo($rel . $desc . $target);
-        echo('>');
+        $links .= "<a href='$the_link'";
+        $links .= $rel . $desc . $target;
+        $links .= '>';
         if (($row->link_image != null) && $show_images) {
-            echo("<img src=\"$row->link_image\" border=\"0\" alt=\"" .
-                 stripslashes($row->link_name) . "\" title=\"" .
-                 stripslashes($row->link_description) . "\" />");
+            $links .= "<img src=\"$row->link_image\" border=\"0\" alt=\"" .
+                 $row->link_name . "\" title=\"" .
+                 $row->link_description . "\" />";
         } else {
-            echo(stripslashes($row->link_name));
+            $links .= $row->link_name;
         }
-        echo('</a>');
+        $links .= '</a>';
         if ($show_updated && $row->recently_updated) {
-            echo get_settings('links_recently_updated_append');
+            $links .= get_settings('links_recently_updated_append');
         }
 
         if ($show_description && ($row->link_description != '')) {
-            echo($between.stripslashes($row->link_description));
+            $links .= $between.$row->link_description;
         }
 
         // now do the rating
@@ -211,32 +212,33 @@ function get_links($category = -1, $before = '', $after = '<br />',
             
             if (get_settings('links_rating_type') == 'number') {
                 if (($row->link_rating != 0) || (get_settings('links_rating_ignore_zero') != 1)) {
-                    echo($between." $row->link_rating\n");
+                    $links .= $between." $row->link_rating\n";
                 }
             } else if (get_settings('links_rating_type') == 'char') {
-                echo($between);
+                $links .= $between;
                 for ($r = $row->link_rating; $r > 0; $r--) {
-                    echo(get_settings('links_rating_char'));
+                    $links .= get_settings('links_rating_char');
                 }
             } else if (get_settings('links_rating_type') == 'image') {
-                echo($between);
+                $links .= $between;
                 if (get_settings('links_rating_single_image')) {
                     for ($r = $row->link_rating; $r > 0; $r--) {
-                        echo(' <img src="'.get_settings('links_rating_image0').'" alt="' .
-                             $row->link_rating.'" />'."\n");
+                        $links .= ' <img src="'.get_settings('links_rating_image0').'" alt="' .
+                             $row->link_rating.'" />'."\n";
                     }
                 } else {
                     if (($row->link_rating != 0) || (get_settings('links_rating_ignore_zero') != 1)) {
                         $b = 'links_rating_image'.$row->link_rating;
-                        echo(' <img src="' .
+                        $links .= ' <img src="' .
                              get_settings($b).'" alt="' .
-                             $row->link_rating.'" />'."\n");
+                             $row->link_rating.'" />'."\n";
                     }
                 }
             } // end if image
         } // end if show_rating
-        echo("$after\n");
+        $links .= "$after\n";
     } // end while
+    return _echo($links, $echo);
 }
 
 
@@ -256,7 +258,7 @@ function get_links($category = -1, $before = '', $after = '<br />',
  ** Use this like:
  ** $links = get_linkobjectsbyname('fred');
  ** foreach ($links as $link) {
- **   echo '<li>'.stripslashes($link->link_name).'</li>';
+ **   echo '<li>'.$link->link_name.'</li>';
  ** }
  **/
 function get_linkobjectsbyname($cat_name = "noname" , $orderby = 'name', $limit = -1) {
@@ -330,10 +332,6 @@ function get_linkobjects($category = -1, $orderby = 'name', $limit = -1) {
     $results = $GLOBALS['wpdb']->get_results($sql);
     if ($results) {
         foreach ($results as $result) {
-            $result->link_url         = stripslashes($result->link_url);
-            $result->link_name        = stripslashes($result->link_name);
-            $result->link_description = stripslashes($result->link_description);
-            $result->link_notes       = stripslashes($result->link_notes);
             $newresults[] = $result;
         }
     }
@@ -444,7 +442,7 @@ function get_linkcatname($id = 0) {
     if ('' != $id) {
         $cat_name = $GLOBALS['wpdb']->get_var("SELECT cat_name FROM ".wp_table('linkcategories')." WHERE cat_id=$id");
     }
-    return stripslashes($cat_name);
+    return $cat_name;
 }
 
 /** function get_get_autotoggle()
@@ -504,7 +502,7 @@ function links_popup_script($text = 'Links', $width=400, $height=400,
  *   order (default 'name')  - Sort link categories by 'name' or 'id'
  *   hide_if_empty (default true)  - Supress listing empty link categories
  */
-function get_links_list($order = 'name', $hide_if_empty = 'obsolete') {
+function get_links_list($order = 'name', $hide_if_empty = 'obsolete', $echo=true) {
 	$order = strtolower($order);
 	$direction = '';
 	// Handle link category sorting
@@ -523,7 +521,7 @@ function get_links_list($order = 'name', $hide_if_empty = 'obsolete') {
 FROM `".wp_table('links')."` LEFT JOIN `".wp_table('linkcategories')."` ON (link_category = cat_id)
 WHERE link_visible =  'Y'
 		ORDER BY $cat_order $direction ", ARRAY_A);
-
+	$links = '';
 	// Display each category
 	if ($cats) {
 		foreach ($cats as $cat) {
@@ -535,21 +533,22 @@ WHERE link_visible =  'Y'
 			// Display the category name
 			$cat_id = sanitize_title($cat['cat_name']);
 			if ($cat_id == "") $cat_id = "lcat-".$cat['link_category'];
-			echo '	<li id="'.sanitize_title($cat['cat_name']).'">' . stripslashes($cat['cat_name']) . "\n\t<ul>\n";
+			$links .= '	<li id="'.sanitize_title($cat['cat_name']).'">' . $cat['cat_name'] . "\n\t<ul>\n";
 			// Call get_links() with all the appropriate params
-			get_links($cat['link_category'],
+			$links .= get_links($cat['link_category'],
 				'<li>',"</li>","\n",
 				bool_from_yn($cat['show_images']),
 				$orderby,
 				bool_from_yn($cat['show_description']),
 				bool_from_yn($cat['show_rating']),
 				$cat['list_limit'],
-				bool_from_yn($cat['show_updated']));
+				bool_from_yn($cat['show_updated']), false);
 
 			// Close the last category
-			echo "\n\t</ul>\n</li>\n";
+			$links .= "\n\t</ul>\n</li>\n";
 		}
 	}
+	return _echo($links, $echo);
 }
 }
 ?>

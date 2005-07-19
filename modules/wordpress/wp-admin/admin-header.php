@@ -41,8 +41,8 @@ $GLOBALS['posts_per_page'] = get_settings('posts_per_page');
 $GLOBALS['what_to_show'] = get_settings('what_to_show');
 $GLOBALS['archive_mode'] = get_settings('archive_mode');
 $GLOBALS['time_difference'] = get_settings('time_difference');
-$GLOBALS['date_format'] = stripslashes(get_settings('date_format'));
-$GLOBALS['time_format'] = stripslashes(get_settings('time_format'));
+$GLOBALS['date_format'] = get_settings('date_format');
+$GLOBALS['time_format'] = get_settings('time_format');
 
 $GLOBALS['admin_area_charset'] = $blog_charset;
 

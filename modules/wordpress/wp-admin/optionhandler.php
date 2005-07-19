@@ -22,7 +22,7 @@ function &get_option_formElement($option_result, $editable=true, $between="") {
 			} else {
 				$width = 50;
 			}
-			$elem = new XoopsFormText($option_result->option_name, $option_result->option_name, $width, 150, $option_result->option_value);
+			$elem = new XoopsFormText($option_result->option_name, $option_result->option_name, $width, 150, htmlspecialchars($option_result->option_value, ENT_QUOTES));
 
 			break;
         case 2: // boolean

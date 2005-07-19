@@ -70,11 +70,11 @@ function the_author_posts($echo=true) {
 }
 
 function the_author_posts_link($idmode='', $echo=true) {
-    return _echo('<a href="' . get_author_link(0, $GLOBALS['authordata']->ID, $GLOBALS['authordata']->user_login) . '" title="' . sprintf("Posts by %s", htmlspecialchars(the_author($idmode, false))) . '">' . stripslashes(the_author($idmode, false)) . '</a>', $echo);
+    return _echo('<a href="' . get_author_link(0, $GLOBALS['authordata']->ID, $GLOBALS['authordata']->user_login) . '" title="' . sprintf("Posts by %s", htmlspecialchars(the_author($idmode, false))) . '">' . the_author($idmode, false) . '</a>', $echo);
 }
 
 function the_author_info_link($idmode='', $echo=true) {
-    return _echo('<a href="' . XOOPS_URL . '/userinfo.php?uid=' .the_author('ID',false) . '" title="' . sprintf("Posts by %s", htmlspecialchars(the_author($idmode, false))) . '">' . stripslashes(the_author($idmode, false)) . '</a>', $echo);
+    return _echo('<a href="' . XOOPS_URL . '/userinfo.php?uid=' .the_author('ID',false) . '" title="' . sprintf("Posts by %s", htmlspecialchars(the_author($idmode, false))) . '">' . the_author($idmode, false) . '</a>', $echo);
 }
 
 function get_author_link($echo = false, $author_id, $author_name="") {
@@ -138,7 +138,7 @@ function list_authors($optioncount = false, $exclude_admin = true, $show_fullnam
         if ($posts == 0) {
             if (! $hide_empty) $list_authors .= $name;
         } else {
-            $link = '<a href="' . get_author_link(0, $author->ID, $author->user_login) . '" title="' . sprintf("Posts by %s", htmlspecialchars($author->user_nickname)) . '">' . stripslashes($name) . '</a>';
+            $link = '<a href="' . get_author_link(0, $author->ID, $author->user_login) . '" title="' . sprintf("Posts by %s", htmlspecialchars($author->user_nickname)) . '">' . $name . '</a>';
 
             if ( (! empty($feed_image)) || (! empty($feed)) ) {
                 $link .= ' ';
@@ -147,9 +147,9 @@ function list_authors($optioncount = false, $exclude_admin = true, $show_fullnam
                 }
                 $link .= '<a href="' . get_author_rss_link(0, $author->ID, $author->user_login)  . '"';
                 if (! empty($feed)) {
-                    $title =  ' title="' . stripslashes($feed) . '"';
-                    $alt = ' alt="' . stripslashes($feed) . '"';
-                    $name = stripslashes($feed);
+                    $title =  ' title="' . $feed . '"';
+                    $alt = ' alt="' . $feed . '"';
+                    $name = $feed;
                     $link .= $title;
                 }
                 $link .= '>';
@@ -201,7 +201,7 @@ function list_authors2($optioncount = false, $exclude_admin = true, $idmode = ''
         if ($posts == 0) {
             if (! $hide_empty) $list_authors2 .= $name;
         } else {
-            $link = '<a href="' . get_author_link(0, $author->ID, $author->user_login) . '" title="' . sprintf("Posts by %s", htmlspecialchars($author->user_nickname)) . '">' . stripslashes($name) . '</a>';
+            $link = '<a href="' . get_author_link(0, $author->ID, $author->user_login) . '" title="' . sprintf("Posts by %s", htmlspecialchars($author->user_nickname)) . '">' . $name . '</a>';
 
             if ( (! empty($feed_image)) || (! empty($feed)) ) {
                 $link .= ' ';
@@ -210,9 +210,9 @@ function list_authors2($optioncount = false, $exclude_admin = true, $idmode = ''
                 }
                 $link .= '<a href="' . get_author_rss_link(0, $author->ID, $author->user_login)  . '"';
                 if (! empty($feed)) {
-                    $title =  ' title="' . stripslashes($feed) . '"';
-                    $alt = ' alt="' . stripslashes($feed) . '"';
-                    $name = stripslashes($feed);
+                    $title =  ' title="' . $feed . '"';
+                    $alt = ' alt="' . $feed . '"';
+                    $name = $feed;
                     $link .= $title;
                 }
                 $link .= '>';

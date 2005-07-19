@@ -30,7 +30,7 @@ function the_title_rss($echo=true) {
 }
 
 function get_the_title() {
-	$output = stripslashes($GLOBALS['post']->post_title);
+	$output = $GLOBALS['post']->post_title;
 	if (trim($output)=="")
 		$output = _WP_POST_NOTITLE;
 	if (!empty($GLOBALS['post']->post_password)) { // if there's a password
@@ -168,7 +168,7 @@ function the_excerpt_rss($cut = 0, $encode_html = 0, $echo=true) {
 
 function get_the_excerpt($fakeit = false) {
 	$output = '';
-	$output = stripslashes($GLOBALS['post']->post_excerpt);
+	$output = $GLOBALS['post']->post_excerpt;
 	if (!empty($GLOBALS['post']->post_password)) { // if there's a password
 		if ($_COOKIE['wp-postpass_'.$GLOBALS['cookiehash']] != $GLOBALS['post']->post_password) {  // and it doesn't match the cookie
 			$output = "There is no excerpt because this is a protected post.";

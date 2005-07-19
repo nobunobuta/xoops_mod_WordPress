@@ -69,6 +69,9 @@ if (!function_exists('upgrade_wp_tables')){
 		if(!get_settings('trackback_filename')) {
 			add_option('trackback_filename','wp-trackback.php', 3, 'TrackBack File Name (default wp-trackback.php)', 3, 8);
 		}
+		$date_format = get_settings('date_format');
+		$date_format = str_replace('\\\d', '\d', $date_format);
+		update_option('date_format', $date_format);
 	}
 }
 

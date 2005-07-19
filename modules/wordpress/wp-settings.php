@@ -78,8 +78,8 @@ update_option('siteurl',$GLOBALS['siteurl'],true);
 $GLOBALS['querystring_start'] = '?';
 $GLOBALS['querystring_equal'] = '=';
 $GLOBALS['querystring_separator'] = '&amp;';
-$GLOBALS['dateformat'] = stripslashes(get_settings('date_format'));
-$GLOBALS['timeformat'] = stripslashes(get_settings('time_format'));
+$GLOBALS['dateformat'] = get_settings('date_format');
+$GLOBALS['timeformat'] = get_settings('time_format');
 
 // Used to guarantee unique cookies
 $GLOBALS['cookiehash'] = md5(wp_siteurl());

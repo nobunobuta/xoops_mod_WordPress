@@ -150,6 +150,7 @@ function comment_author_link($echo = true) {
 	$author = apply_filters('comment_author', $GLOBALS['comment']->comment_author);
 	if (!$author) $author = 'Anonymous';
 
+	if ($url == 'http://') $url = '';
 	if (empty($url)) {
 		$url = $author;
 	} else {
@@ -200,14 +201,14 @@ function comment_author_IP($echo=true) {
 function comment_text($echo=true) {
 	$comment_text = str_replace('<trackback />', '', $GLOBALS['comment']->comment_content);
 	$comment_text = str_replace('<pingback />', '', $comment_text);
-	$comment_text =  apply_filters('comment_text', stripslashes($comment_text));
+	$comment_text =  apply_filters('comment_text', $comment_text);
 	return _echo($comment_text, $echo);
 }
 
 function comment_excerpt($echo=true) {
 	$comment_text = str_replace('<trackback />', '', $GLOBALS['comment']->comment_content);
 	$comment_text = str_replace('<pingback />', '', $comment_text);
-	$comment_text = strip_tags(stripslashes($comment_text));
+	$comment_text = strip_tags($comment_text);
 	$blah = explode(' ', $comment_text);
 	if (count($blah) > 20) {
 		$k = 20;

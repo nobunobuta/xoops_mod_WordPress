@@ -35,19 +35,19 @@ function wpbl_notify($comment_id, $reason, $harvest) {
     } else if ($wpbl_comment['comment_type'] == 'pingback') {
         $notify_message .= "PingBack";
     }
-    $notify_message .= " on post #{$wpbl_comment['comment_post_ID']} \"".stripslashes($post->post_title)."\" has been automatically deleted by the WPBlacklist plugin.\r\n\r\n";
+    $notify_message .= " on post #{$wpbl_comment['comment_post_ID']} \"".$post->post_title."\" has been automatically deleted by the WPBlacklist plugin.\r\n\r\n";
     $notify_message .= "Author : {$wpbl_comment['comment_author']} (IP: {$wpbl_comment['comment_author_IP']} , $comment_author_domain)\r\n";
     $notify_message .= "E-mail : {$wpbl_comment['comment_author_email']}\r\n";
     $notify_message .= "URL    : {$wpbl_comment['comment_author_url']}\r\n";
     $notify_message .= "Whois  : http://ws.arin.net/cgi-bin/whois.pl?queryinput={$wpbl_comment['comment_author_IP']}\r\n";
-    $notify_message .= "Comment:\r\n".stripslashes($wpbl_comment['comment_content'])."\r\n\r\n";
+    $notify_message .= "Comment:\r\n".$wpbl_comment['comment_content']."\r\n\r\n";
     $notify_message .= "Triggered by : $reason\r\n\r\n";
     // add harvested info - if there is any
     if (!empty($harvest)) {
-        $notify_message .= "Harvested the following information:\r\n". stripslashes($harvest);
+        $notify_message .= "Harvested the following information:\r\n". $harvest;
     }
     // e-mail header
-    $subject = '[' . stripslashes(get_settings('blogname')) . '] Automatically deleted: "' .stripslashes($post->post_title).'"';
+    $subject = '[' . get_settings('blogname') . '] Automatically deleted: "' .$post->post_title.'"';
     $admin_email = get_settings("admin_email");
     $from  = "From: $admin_email";
 	if (strtolower(get_settings('blog_charset'))=="euc-jp") {
