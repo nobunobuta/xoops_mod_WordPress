@@ -348,7 +348,7 @@ function trackback_url_list($tb_list, $post_id) {
 		$trackback_urls = explode(',', $tb_list);
 		foreach($trackback_urls as $tb_url) {
 			$tb_url = trim($tb_url);
-			trackback($tb_url, stripslashes($postdata['post_title']), $excerpt, $post_id);
+			trackback($tb_url, $postdata['post_title'], $excerpt, $post_id);
 		}
 	}
 }
@@ -394,7 +394,7 @@ function b2newpost($m) {
 		if ($postdate != '') {
 			$postarr['post_date'] = $postdate;
 		} else {
-			$postarr['post_date'] = date('Y-m-d H:i:s',(time() + (get_settings('time_difference') * 3600)));
+			$postarr['post_date'] = current_time('mysql');
 		}
 		if ($category) {
 			$postarr['post_category'] = array($category);
@@ -571,7 +571,7 @@ function bloggernewpost($m) {
 		$postarr['post_title'] = xmlrpc_getposttitle($content);
 		$postarr['post_category'] = array(xmlrpc_getpostcategory($content));
 		$postarr['post_content'] = format_to_post(xmlrpc_removepostdata($content));
-		$postarr['post_date'] = date('Y-m-d H:i:s',(time() + (get_settings('time_difference') * 3600)));
+		$postarr['post_date'] = current_time('mysql');
 
 		$post_ID = wp_insert_post($postarr);
 		if (!$post_ID) {
@@ -789,9 +789,9 @@ function bloggergetpost($m) {
 			$post_date = strtotime($postdata['Date']);
 			$post_date = date('Ymd', $post_date).'T'.date('H:i:s', $post_date);
 
-			$content  = '<title>'.mb_conv(stripslashes($postdata['Title']),'UTF-8',$GLOBALS['blog_charset']).'</title>';
+			$content  = '<title>'.mb_conv($postdata['Title'],'UTF-8',$GLOBALS['blog_charset']).'</title>';
 			$content .= '<category>'.$postdata['Category'].'</category>';
-			$content .= mb_conv(stripslashes($postdata['Content']),'UTF-8',$GLOBALS['blog_charset']);
+			$content .= mb_conv($postdata['Content'],'UTF-8',$GLOBALS['blog_charset']);
 
 			$struct = new xmlrpcval(array('userid' => new xmlrpcval($postdata['Author_ID']),
 										  'dateCreated' => new xmlrpcval($post_date,'dateTime.iso8601'),
@@ -861,9 +861,9 @@ function bloggergetrecentposts($m) {
 			$post_date = strtotime($postdata['Date']);
 			$post_date = date('Ymd', $post_date).'T'.date('H:i:s', $post_date);
 
-			$content  = '<title>'.mb_conv(stripslashes($postdata['Title']),'UTF-8',$GLOBALS['blog_charset']).'</title>';
+			$content  = '<title>'.mb_conv($postdata['Title'],'UTF-8',$GLOBALS['blog_charset']).'</title>';
 			$content .= '<category>'.mb_conv(get_cat_name($postdata['Category']),'UTF-8',$GLOBALS['blog_charset']).'</category>';
-			$content .= mb_conv(stripslashes($postdata['Content']),'UTF-8',$GLOBALS['blog_charset']);
+			$content .= mb_conv($postdata['Content'],'UTF-8',$GLOBALS['blog_charset']);
 
 			$category = new xmlrpcval($postdata['Category']);
 
@@ -1054,7 +1054,7 @@ function mwnewpost($params) {
 		if (!empty($contentstruct['dateCreated'])) {
 			$dateCreated = iso8601_decode($contentstruct['dateCreated']);
 		} else {
-			$dateCreated = time()+(get_settings('time_difference') * 3600);
+			$dateCreated = current_time('timestamp');
 		}
 		$postarr['post_date'] = date('Y-m-d H:i:s', $dateCreated);
 		$postarr['post_category'] = array();
@@ -1152,7 +1152,7 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 		if (!empty($contentstruct['dateCreated'])) {
 			$dateCreated = iso8601_decode($contentstruct['dateCreated']);
 		} else {
-			$dateCreated = time()+(get_settings('time_difference') * 3600);
+			$dateCreated = current_time('timestamp');
 		}
 		$postarr['post_date'] = date('Y-m-d H:i:s', $dateCreated);
 		$postarr['post_category'] = array();
@@ -1164,7 +1164,7 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 			$postarr['post_category'][] = $GLOBALS['post_default_category'];
 		}
 
-		$post_ID = wp_update_post($newpost);
+		$post_ID = wp_update_post($postarr);
 		if (!$post_ID) {
 			return new xmlrpcresp(0, $GLOBALS['xmlrpcerruser']+2,
 			'For some strange yet very annoying reason, your entry could not be posted.');
@@ -1223,7 +1223,7 @@ function mwgetpost ($params) {	// ($postid, $user, $pass)
 				$catnameenc = new xmlrpcval(mb_conv($catname,'UTF-8',$GLOBALS['blog_charset']));
 				$catlist[] = $catnameenc;
 			}			
-			$post = get_extended(stripslashes($postdata['Content']));
+			$post = get_extended($postdata['Content']);
 			$allow_comments = ('open' == $postdata['comment_status'])?1:0;
 			$allow_pings = ('open' == $postdata['ping_status'])?1:0;
 
@@ -1285,10 +1285,10 @@ function mwrecentposts ($params) {	// ($blogid, $user, $pass, $num)
 			$isoString = date('Ymd',$mdate).'T'.date('H:i:s',$mdate);
 			$date = new xmlrpcval($isoString,'dateTime.iso8601');
 			$userid = new xmlrpcval($entry['post_author']);
-			$content = new xmlrpcval(stripslashes($entry['post_content']));
-			$excerpt = new xmlrpcval(mb_conv(stripslashes($entry['post_excerpt']),'UTF-8',$GLOBALS['blog_charset']));
+			$content = new xmlrpcval($entry['post_content']);
+			$excerpt = new xmlrpcval(mb_conv($entry['post_excerpt'],'UTF-8',$GLOBALS['blog_charset']));
 			
-			$pcat = stripslashes(get_cat_name($entry['post_category']));
+			$pcat = get_cat_name($entry['post_category']);
 			
 			// For multiple cats, we might do something like
 			// this in the future:
@@ -1301,7 +1301,7 @@ function mwrecentposts ($params) {	// ($blogid, $user, $pass, $num)
 			
 			$categories = new xmlrpcval(array(new xmlrpcval($pcat)),'array');
 
-			$post = get_extended(mb_conv(stripslashes($entry['post_content']),'UTF-8',$GLOBALS['blog_charset']));
+			$post = get_extended(mb_conv($entry['post_content'],'UTF-8',$GLOBALS['blog_charset']));
 			logIO('O','blog_charset='.$GLOBALS['blog_charset']);
 
 			$postid = new xmlrpcval($entry['ID']);
@@ -1748,7 +1748,7 @@ function pingback_ping($m) { // original code by Mort
 	$pagelinkedto = $m->getParam(1);
 	$pagelinkedto = $pagelinkedto->scalarval();
 
-	$pagelinkedfrom = str_replace('&amp;', '&', $pagelinkedfrom);
+	$pagelinkedfrom = addslashes(str_replace('&amp;', '&', $pagelinkedfrom));
 	$pagelinkedto = preg_replace('#&([^amp\;])#is', '&amp;$1', $pagelinkedto);
 
 	$messages = array(
