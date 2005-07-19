@@ -11,7 +11,7 @@ if( ! defined( 'WP_XOOPS_SEARCH_INCLUDED' ) ) {
 	define( 'WP_XOOPS_SEARCH_INCLUDED' , 1 ) ;
 
 	function _wp_xoops_search($queryarray, $andor, $limit, $offset, $userid){
-		$now = date('Y-m-d H:i:s',(time() + (get_settings('time_difference') * 3600)));
+		$now = current_time('mysql');
 		$where = '(post_status = \'publish\') AND (post_date <= \''.$now.'\')';
 		
 		if ( is_array($queryarray) && $count = count($queryarray) ) {
