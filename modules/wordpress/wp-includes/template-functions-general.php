@@ -20,9 +20,11 @@ function bloginfo_unicode($show='', $echo=true) {
 function get_bloginfo($show='') {
     if (get_settings('permalink_structure') != '') {
         $do_perma = 1;
+		// Get any static stuff from the front
+		$front = preg_match('#^/index.php/#' ,get_settings('permalink_structure')) ? '/index.php' : '';
 	    $site_url = wp_siteurl();
-        $feed_url = wp_siteurl().'/feed';
-        $comment_feed_url = wp_siteurl().'/comments/feed';
+        $feed_url = wp_siteurl().$front.'/feed';
+        $comment_feed_url = wp_siteurl().$front.'/comments/feed';
     } else {
 	    $do_perma = 0;
 	    $site_url = wp_siteurl();
@@ -94,7 +96,7 @@ function wp_title($sep = '&raquo;', $echo = true) {
    $title = '';
    if(!empty($GLOBALS['cat'])) {
         if (!stristr($GLOBALS['cat'],'-')) { // category excluded
-            $title = stripslashes(get_the_category_by_ID($GLOBALS['cat']));
+            $title = get_the_category_by_ID($GLOBALS['cat']);
         }
     }
 	if (!empty($GLOBALS['category_name'])) {
@@ -246,7 +248,7 @@ function single_cat_title($prefix = '', $echo = true ) {
 	$title = '';
 	if ($GLOBALS['cat']) {
 		if (!stristr($GLOBALS['cat'], '-')) { // category excluded
-		    $title = stripslashes(get_the_category_by_ID($GLOBALS['cat']));
+		    $title = get_the_category_by_ID($GLOBALS['cat']);
 		}
 	}
 	if ($GLOBALS['category_name']) {
@@ -314,7 +316,8 @@ function wp_get_archives($args = '', $echo=true) {
 	if (!isset($r['before'])) $r['before'] = '';
 	if (!isset($r['after'])) $r['after'] = '';
 	if (!isset($r['show_post_count'])) $r['show_post_count'] = false;
-	get_archives($r['type'], $r['limit'], $r['format'], $r['before'], $r['after'], $r['show_post_count'], $echo);
+	if (!isset($r['selvalue'])) $r['selvalue'] = '';
+	get_archives($r['type'], $r['limit'], $r['format'], $r['before'], $r['after'], $r['show_post_count'],$r['selvalue'], $echo);
 }
 
 function get_archives($type='', $limit='', $format='html', $before = "", $after = "", $show_post_count = false, $selvalue='', $echo=true) {	$get_archives = '';
@@ -345,7 +348,7 @@ function get_archives($type='', $limit='', $format='html', $before = "", $after 
         $archive_week_end_date_format = $GLOBALS['dateformat'];
     }
 
-	$now = date('Y-m-d H:i:s',(time() + (get_settings('time_difference') * 3600)));
+	$now = current_time('mysql');
 
 	$postHandler =& wp_handler('Post');
 	if ('monthly' == $type) {
@@ -449,8 +452,6 @@ function get_calendar($daylength = 1, $echo=true) {
     		return _echo('', $echo);
     	}
     }
-	$time_difference = get_settings('time_difference');
-
 	// Let's figure out when we are
 	if (!empty($GLOBALS['monthnum']) && !empty($GLOBALS['year'])) {
 		$thismonth = ''.intval($GLOBALS['monthnum']);
@@ -469,8 +470,8 @@ function get_calendar($daylength = 1, $echo=true) {
 			$thismonth = ''.intval(substr($GLOBALS['m'], 4, 2));
 		}
 	} else {
-		$thisyear = intval(date('Y', time()+($time_difference * 3600)));
-		$thismonth = intval(date('m', time()+($time_difference * 3600)));
+		$thisyear = intval(date('Y', current_time('timestamp')));
+		$thismonth = intval(date('m', current_time('timestamp')));
 	}
 
 	$unixmonth = mktime(0, 0 , 0, $thismonth, 1, $thisyear);
@@ -551,7 +552,7 @@ function get_calendar($daylength = 1, $echo=true) {
 	// Get days with posts
 	$criteria =& new CriteriaCompo(new Criteria('MONTH(post_date)', $thismonth));
 	$criteria->add(new Criteria('YEAR(post_date)', $thisyear));
-	$criteria->add(new Criteria('post_date', date("Y-m-d H:i:s", (time() + ($time_difference * 3600))), '<'));
+	$criteria->add(new Criteria('post_date', current_time('mysql'), '<'));
 	$criteria->add(new Criteria('post_status', 'publish'));
 	$monthlyPostObjects =& $postHandler->getObjects($criteria, false, 'post_title, post_date');
 
@@ -563,7 +564,7 @@ function get_calendar($daylength = 1, $echo=true) {
 				$ak_titles_for_day["day_".$d] = '';
 			}
 			if (empty($ak_titles_for_day["$d"])) { // first one
-				$ak_titles_for_day["$d"] = htmlspecialchars(stripslashes($postObject->getVar('post_title')));
+				$ak_titles_for_day["$d"] = htmlspecialchars($postObject->getVar('post_title'));
 			} else {
 				$ak_titles_for_day["$d"] .= $ak_title_separator . htmlspecialchars($postObject->getVar('post_title'));
 			}
@@ -584,7 +585,7 @@ function get_calendar($daylength = 1, $echo=true) {
 		}
 		$newrow = false;
 
-		if ($day == date('j', (time() + ($time_difference * 3600))) && $thismonth == date('m', time()+($time_difference * 3600)))
+		if ($day == date('j', current_time('timestamp')) && $thismonth == date('m', current_time('timestamp')))
 			$get_calendar .= '<td id="today">';
 		else
 			$get_calendar .= "<td>";
@@ -651,6 +652,21 @@ function the_time($d='', $echo = true) {
 	}
 	$the_time = apply_filters('the_time', $the_time);
 	return _echo($the_time, $echo);
+}
+
+function the_modtime($d='', $echo = true) {
+	if ($GLOBALS['post']->post_modified == '0000-00-00 00:00:00') {
+		$modified = $GLOBALS['post']->post_date;
+	} else {
+		$modified = $GLOBALS['post']->post_modified;
+	}
+	if ($d=='') {
+		$the_modtime = mysql2date($GLOBALS['timeformat'], $modified);
+	} else {
+		$the_modtime = mysql2date($d, $modified);
+	}
+	$the_modtime = apply_filters('the_time', $the_modtime);
+	return _echo($the_modtime, $echo);
 }
 
 function the_weekday($echo=true) {
