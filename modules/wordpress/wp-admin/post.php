@@ -41,49 +41,52 @@ switch(get_param('action')) {
 
 		//Set PostObject Variable for Insert
 		$postObject =& $postHandler->create();
-		$postObject->setVar('post_author', $user_ID);
-		$postObject->setVar('post_content', apply_filters('content_save_pre', $wp_content));
-		$postObject->setVar('post_title', $post_title);
-		$postObject->setVar('post_excerpt', apply_filters('excerpt_save_pre',$excerpt));
-		$postObject->setVar('comment_status', $comment_status);
-		$postObject->setVar('ping_status', $ping_status);
-		$postObject->setVar('post_password', $post_password);
-		$postObject->setVar('post_name', sanitize_title($post_title));
-		$postObject->setVar('to_ping', preg_replace('|\s+|', "\n", $trackback_url));
+		$postObject->setVar('post_author', $GLOBALS['user_ID']);
+		$postObject->setVar('post_content', apply_filters('content_save_pre', get_param('wp_content')));
+		$postObject->setVar('post_title', get_param('post_title'));
+		$postObject->setVar('post_excerpt', apply_filters('excerpt_save_pre',get_param('excerpt')));
+		$postObject->setVar('comment_status', get_param('comment_status'));
+		$postObject->setVar('ping_status', get_param('ping_status'));
+		$postObject->setVar('post_password', get_param('post_password'));
+		$postObject->setVar('post_name', sanitize_title(get_param('post_title')));
+		$postObject->setVar('to_ping', preg_replace('|\s+|', "\n", get_param('trackback_url')));
 
 		if(get_settings('use_geo_positions')) {
 			init_param('POST', 'post_latf', 'float', get_settings('default_geourl_lat'));
 			init_param('POST', 'post_lonf', 'float', get_settings('default_geourl_lon'));
+			$post_latf = get_param('post_latf');
 			if (($post_latf <= 90 ) && ($post_lonf >= -90)) {
 				$postObject->setVar('post_lat', $post_latf);
 			}
+			$post_lonf = get_param('post_lonf');
 			if (($post_lonf <= 360 ) && ($post_lonf >=-360)) {
 				$postObject->setVar('post_lon', $post_lonf);
 			}
 		}
 
-		if (($user_level > 4) && $edit_date) {
-			init_param('POST', 'aa','integer');
-			init_param('POST', 'mm','integer');
-			init_param('POST', 'jj','integer');
-			init_param('POST', 'hh','integer');
-			init_param('POST', 'mn','integer');
-			init_param('POST', 'ss','integer');
+		if (($GLOBALS['user_level'] > 4) && get_param('edit_date')) {
+			$aa = init_param('POST', 'aa', 'integer');
+			$mm = init_param('POST', 'mm', 'integer');
+			$jj = init_param('POST', 'jj', 'integer');
+			$hh = init_param('POST', 'hh', 'integer');
+			$mn = init_param('POST', 'mn', 'integer');
+			$ss = init_param('POST', 'ss', 'integer');
 			$jj = ($jj > 31) ? 31 : $jj;
 			$hh = ($hh > 23) ? $hh - 24 : $hh;
 			$mn = ($mn > 59) ? $mn - 60 : $mn;
 			$ss = ($ss > 59) ? $ss - 60 : $ss;
 			$now = "$aa-$mm-$jj $hh:$mn:$ss";
 		} else {
-			$now = date('Y-m-d H:i:s', (time() + (get_settings('time_difference') * 3600)));
+			$now = current_time('mysql');
 		}
 		$postObject->setVar('post_date', $now);
 
+		$post_status = get_param('post_status');
 		// What to do based on which button they pressed
-		if (!empty($saveasdraft)) $post_status = 'draft';
-		if (!empty($saveasprivate)) $post_status = 'private';
-		if (!empty($publish)) $post_status = 'publish';
-		if (!empty($advanced)) $post_status = 'draft';
+		if (test_param('saveasdraft')) $post_status = 'draft';
+		if (test_param('saveasprivate')) $post_status = 'private';
+		if (test_param('publish')) $post_status = 'publish';
+		if (test_param('advanced')) $post_status = 'draft';
 		$postObject->setVar('post_status', $post_status);
 
 		if(!$postHandler->insert($postObject)) {
@@ -91,7 +94,7 @@ switch(get_param('action')) {
 		}
 
 		$post_ID = $postObject->getVar('ID');
-		switch($mode) {
+		switch(get_param('mode')) {
 			case 'bookmarklet':
 				$location = 'bookmarklet.php?action=done';
 				break;
@@ -102,24 +105,23 @@ switch(get_param('action')) {
 				$location = 'post.php';
 				break;
 		}
-		if (!empty($advanced)) {
-			$location = "post.php?action=edit&amp;post=$post_ID";
+		if (test_param('advanced')) {
+			$location = "post.php?action=edit&post=$post_ID";
 		}
 		header("Location: $location");
-		$postObject->assignCategories($post_category);
-//	 	add_meta($post_ID);
+		$postObject->assignCategories(get_param(post_category));
 		do_action('save_post', $post_ID);       
 		if ($post_status == 'publish') {
 			if((get_settings('use_geo_positions')) && ($postObject->getVar('post_latf') != null) && ($postObject->getVar('post_lonf') != null)) {
 				pingGeoUrl();
 			}
 			pingWeblogs();
-			if ($post_pingback) {
+			if (get_param('post_pingback')) {
 				pingback($postObject->getVar('post_content','e'), $post_ID);
 			}
 			do_action('publish_post', $post_ID);
 			$postdata = $postObject->getVarArray();
-			do_trackback($postObject, $useutf8, $target_charset);
+			do_trackback($postObject, get_param('useutf8'), get_param('target_charset'));
 		} // end if publish
 		exit();
 		break;
@@ -133,7 +135,7 @@ switch(get_param('action')) {
 		$standalone = 0;
 		require_once('admin-header.php');
 		//Check Paramaters
-		init_param('GET', 'post','integer', NO_DEFAULT_PARAM, true);
+		init_param('GET', 'post', 'integer', NO_DEFAULT_PARAM, true);
 		
 		$post_ID = $p = $post;
 		if (!($postObject =& $postHandler->get($post_ID))) {
@@ -145,9 +147,9 @@ switch(get_param('action')) {
 		}
 		$postdata = $postObject->getVarArray('e');
 		$mode = "";
-		$content = stripslashes(apply_filters('content_edit_pre', $postdata['post_content']));
-		$excerpt = stripslashes(apply_filters('excerpt_edit_pre', $postdata['post_excerpt']));
-		$edited_post_title = stripslashes(apply_filters('title_edit_pre', $postdata['post_title']));
+		$content = apply_filters('content_edit_pre', $postdata['post_content']);
+		$excerpt = apply_filters('excerpt_edit_pre', $postdata['post_excerpt']);
+		$edited_post_title = apply_filters('title_edit_pre', $postdata['post_title']);
 		$edited_lat = $postdata['post_lat'];
 		$edited_lon = $postdata['post_lon'];
 		$post_status = $postdata['post_status'];
@@ -196,7 +198,7 @@ switch(get_param('action')) {
 		init_param('POST', 'meta','array');
 		init_param('POST', 'deletemeta','array');
 
-		if (!($postObject =& $postHandler->get($post_ID))) {
+		if (!($postObject =& $postHandler->get(get_param('post_ID')))) {
 			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 5, _LANG_P_OOPS_IDPOS);
 		}
 		$authorObject = $userHandler->get($postObject->getVar('post_author'));
@@ -204,37 +206,39 @@ switch(get_param('action')) {
 			redirect_header(wp_siteurl().'/wp-admin/',5, _LANG_P_DATARIGHT_EDIT.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
 		}
 		$prev_status = $postObject->getVar('post_status');
-		$post_name = sanitize_title($post_title);
+		$post_name = sanitize_title(get_param('post_title'));
 		if ($post_name == "") {
-			$post_name = "post-".$post_ID;
+			$post_name = "post-".get_param('post_ID');
 		}
-		$postObject->setVar('post_content', apply_filters('content_save_pre', $wp_content));
-		$postObject->setVar('post_title', $post_title);
-		$postObject->setVar('post_excerpt', apply_filters('excerpt_save_pre',$excerpt));
-		$postObject->setVar('comment_status', $comment_status);
-		$postObject->setVar('ping_status', $ping_status);
-		$postObject->setVar('post_password', $post_password);
+		$postObject->setVar('post_content', apply_filters('content_save_pre', get_param('wp_content')));
+		$postObject->setVar('post_title', get_param('post_title'));
+		$postObject->setVar('post_excerpt', apply_filters('excerpt_save_pre',get_param('excerpt')));
+		$postObject->setVar('comment_status', get_param('comment_status'));
+		$postObject->setVar('ping_status', get_param('ping_status'));
+		$postObject->setVar('post_password', get_param('post_password'));
 		$postObject->setVar('post_name', $post_name);
-		$postObject->setVar('to_ping', preg_replace('|\s+|', "\n", $trackback_url));
+		$postObject->setVar('to_ping', preg_replace('|\s+|', "\n", get_param('trackback_url')));
 
 		if(get_settings('use_geo_positions')) {
 			init_param('POST', 'post_latf', 'float', get_settings('default_geourl_lat'));
 			init_param('POST', 'post_lonf', 'float', get_settings('default_geourl_lon'));
+			$post_latf = get_param('post_latf');
 			if (($post_latf <= 90 ) && ($post_lonf >= -90)) {
 				$postObject->setVar('post_lat', $post_latf);
 			}
+			$post_lonf = get_param('post_lonf');
 			if (($post_lonf <= 360 ) && ($post_lonf >=-360)) {
 				$postObject->setVar('post_lon', $post_lonf);
 			}
 		}
 
-		if (($user_level > 4) && $edit_date) {
-			init_param('POST', 'aa','integer');
-			init_param('POST', 'mm','integer');
-			init_param('POST', 'jj','integer');
-			init_param('POST', 'hh','integer');
-			init_param('POST', 'mn','integer');
-			init_param('POST', 'ss','integer');
+		if (($GLOBALS['user_level'] > 4) && get_param('edit_date')) {
+			$aa = init_param('POST', 'aa','integer');
+			$mm = init_param('POST', 'mm','integer');
+			$jj = init_param('POST', 'jj','integer');
+			$hh = init_param('POST', 'hh','integer');
+			$mn = init_param('POST', 'mn','integer');
+			$ss = init_param('POST', 'ss','integer');
 			$jj = ($jj > 31) ? 31 : $jj;
 			$hh = ($hh > 23) ? $hh - 24 : $hh;
 			$mn = ($mn > 59) ? $mn - 60 : $mn;
@@ -242,11 +246,12 @@ switch(get_param('action')) {
 			$postObject->setVar('post_date', "$aa-$mm-$jj $hh:$mn:$ss");
 		}
 
+		$post_status = get_param('post_status');
 		// What to do based on which button they pressed
-		if (!empty($saveasdraft)) $post_status = 'draft';
-		if (!empty($saveasprivate)) $post_status = 'private';
-		if (!empty($publish)) $post_status = 'publish';
-		if (!empty($save)) $post_status = 'publish';
+		if (test_param('saveasdraft')) $post_status = 'draft';
+		if (test_param('saveasprivate')) $post_status = 'private';
+		if (test_param('publish')) $post_status = 'publish';
+		if (test_param('save')) $post_status = 'publish';
 		$postObject->setVar('post_status', $post_status);
 
 		if(!$postHandler->insert($postObject, false, true)) {
@@ -255,19 +260,19 @@ switch(get_param('action')) {
 
 		$post_ID = $postObject->getVar('ID');
 
-		if (!empty($save)) {
+		if (test_param('save')) {
 			$location = $_SERVER['HTTP_REFERER'];
-		} elseif (!empty($updatemeta)) {
-			$location = $_SERVER['HTTP_REFERER'] . '&amp;message=2#postcustom';
-		} elseif (!empty($deletemeta)) {
-			$location = $_SERVER['HTTP_REFERER'] . '&amp;message=3#postcustom';
-		} elseif (!empty($referredby)) {
-			$location = urldecode($referredby);
+		} elseif (test_param('updatemeta')) {
+			$location = $_SERVER['HTTP_REFERER'] . '&message=2#postcustom';
+		} elseif (test_param('deletemeta')) {
+			$location = $_SERVER['HTTP_REFERER'] . '&message=3#postcustom';
+		} elseif (test_param('referredby')) {
+			$location = urldecode(get_param('referredby'));
 		} else {
 			$location = 'post.php';
 		}
 		header ('Location: ' . $location);
-		$postObject->assignCategories($post_category);
+		$postObject->assignCategories(get_param('post_category'));
 		// are we going from draft/private to published?
 		if ((($prev_status == 'draft') || ($prev_status == 'private')) && ($post_status == 'publish')) {
 			if((get_settings('use_geo_positions')) && ($post_latf != null) && ($post_lonf != null)) {
@@ -281,16 +286,16 @@ switch(get_param('action')) {
 				pingback($postObject->getVar('post_content','e'), $post_ID);
 			}
 			do_action('publish_post',$post_ID);
-			do_trackback($postObject, $useutf8);
+			do_trackback($postObject, get_param('useutf8'));
 		}
 		// Meta Stuff
-		if ($meta) {
-			foreach ($meta as $key => $value) {
+		if (test_param('meta')) {
+			foreach (get_param('meta') as $key => $value) {
 				update_meta($key, $value['key'], $value['value']);
 			}
 		}
-		if ($deletemeta) {
-			foreach ($deletemeta as $key => $value) {
+		if (test_param('deletemeta')) {
+			foreach (get_param('deletemeta') as $key => $value) {
 				delete_meta($key);
 			}
 		}
@@ -430,7 +435,7 @@ switch(get_param('action')) {
 
 		switch($referredby) {
 			case 'edit':
-				$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&amp;c=1#comments';
+				$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&c=1#comments';
 				break;
 			case 'edit-comments':
 				$location = wp_siteurl().'/wp-admin/edit-comments.php';
@@ -486,7 +491,7 @@ switch(get_param('action')) {
 		if (($_SERVER['HTTP_REFERER'] != "") && (false == $noredir)) {
 			$location = $_SERVER['HTTP_REFERER'];
 		} else {
-			$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&amp;c=1#comments';
+			$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&c=1#comments';
 		}
 		if ( ! $xoopsWPTicket->check() ) {
 			redirect_header($location,3,$xoopsWPTicket->getErrors());
@@ -557,7 +562,7 @@ switch(get_param('action')) {
 		if (($_SERVER['HTTP_REFERER'] != "") && (false == $noredir)) {
 			$location = $_SERVER['HTTP_REFERER'];
 		} else {
-			$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&amp;c=1#comments';
+			$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&c=1#comments';
 		}
 
 		if ( ! $xoopsWPTicket->check() ) {
@@ -592,7 +597,7 @@ switch(get_param('action')) {
 		init_param('POST', 'comment_post_ID', 'integer', NO_DEFAULT_PARAM, true);
 		init_param('POST', 'edit_date','integer', 0);
 		init_param('POST', 'wp_content','html', '', true);
-		init_param('POST', 'referredby', 'string', urlencode($this_file."?p=$comment_post_ID&amp;c=1#comments"), true);
+		init_param('POST', 'referredby', 'string', urlencode($this_file."?p=$comment_post_ID&c=1#comments"), true);
 
 		if (($user_level > 4) && $edit_date) {
 			init_param('POST', 'aa','integer');

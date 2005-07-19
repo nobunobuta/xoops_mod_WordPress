@@ -5,12 +5,6 @@ $title = 'Options';
 $this_file = 'options.php';
 $parent_file = 'options.php';
 
-if (!get_magic_quotes_gpc()) {
-	$_GET    = add_magic_quotes($_GET);
-	$_POST   = add_magic_quotes($_POST);
-	$_COOKIE = add_magic_quotes($_COOKIE);
-}
-
 init_param(array('POST','GET'), 'action', 'string', '');
 init_param(array('POST','GET'), 'option_group_id', 'integer', '');
 
@@ -45,15 +39,15 @@ case "update":
             // should we even bother checking?
             if ($user_level >= $option->option_admin_level) {
                 $this_name = $option->option_name;
-                $old_val = stripslashes($option->option_value);
-                $new_val = $_POST[$this_name];
+                $old_val = $option->option_value;
+                $new_val = remove_magic_quotes($_POST[$this_name]);
 
                 if ($new_val != $old_val) {
                     // get type and validate
                     $msg = validate_option($option, $this_name, $new_val);
                     if ($msg == '') {
                         //no error message
-                        $result = $wpdb->query("UPDATE ".wp_table('options')." SET option_value = '$new_val' WHERE option_id = $option->option_id");
+                        $result = $wpdb->query("UPDATE ".wp_table('options')." SET option_value = '".addslashes($new_val)."' WHERE option_id = $option->option_id");
                         if (!$result) {
                             $db_errors .= " SQL error while saving $this_name. ";
                         } else {
