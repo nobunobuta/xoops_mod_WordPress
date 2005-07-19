@@ -1,0 +1,16 @@
+<{$block.style}>
+<div class="wpRecentComment" id="<{$block.divid}>">
+<{if $block.block_style == 0}>
+<{if $block.cat_date }>
+<{include file="wp_recent_comments0_d.html" }>
+<{else}>
+<{include file="wp_recent_comments0_n.html" }>
+<{/if}>
+<{else}>
+<{include file="wp_recent_comments1.html" }>
+<{/if}>
+<{if $block.feed_icon }>
+<hr width="100%" />
+<div style="text-align:right">&nbsp;<a href="<{$block.feed_icon.url}>"><img src="<{$block.feed_icon.icon}>" alt="<{$block.feed_icon.alt}>" /></a></div>
+<{/if}>
+</div>

@@ -1,0 +1,8 @@
+<form name="archiveform<{$block.wp_num}>" id="archiveform<{$block.wp_num}>" action="#">
+<select name="archive_chrono" onchange="window.location = (document.forms.archiveform<{$block.wp_num}>.archive_chrono[document.forms.archiveform<{$block.wp_num}>.archive_chrono.selectedIndex].value);">
+  <option value="<{$block.siteurl}>"><{$smarty.const._WP_BY_MONTHLY}></option>
+<{foreach item=record from=$block.records}>
+  <option value="<{$record.url}>" <{$record.select}> ><{$record.text}><{$record.count}></option>
+<{/foreach}>
+</select>
+</form>

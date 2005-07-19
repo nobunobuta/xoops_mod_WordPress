@@ -1,0 +1,24 @@
+<ul class="wpBlockDateList">
+<{foreach item=record from=$block.records}>
+<{if $record.date != ""}>
+<{if $record.pdate != "" }>
+    </ul>
+  </li>
+<{/if}>
+  <li><span class="postDate"><{$record.date}></span>
+    <ul class="children">
+<{/if}>
+    <li>
+      <span class="post-title">
+        <a href="<{$record.permalink}>" rel="bookmark" title="Permanent Link: <{$record.post_title}>" style="display: inline;"><{$record.post_title}></a>
+      </span>
+<{if $record.new == 1 }>
+     <span class="new1">New!</span>
+<{elseif $record.new == 2 }>
+     <span class="new2">New</span>
+<{/if}>
+    </li>
+<{/foreach}>
+    </ul>
+  </li>
+</ul>

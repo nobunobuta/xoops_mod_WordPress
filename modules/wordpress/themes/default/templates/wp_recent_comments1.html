@@ -1,0 +1,24 @@
+<ul class="wpBlockList">
+<{foreach item=record from=$block.records}>
+<{if $record.ID != $record.new_post_ID}>
+<{if $record.new_post_ID != -1 }>
+    </ul>
+  </li>
+<{/if}>
+  <li>
+    <span class="comment-title"><a href="<{$record.permalink}>"><{$record.post_title}></a></span>
+    <ul class="children" style="list-style-type: none;">
+<{/if}>
+      <li>
+<{if $block.cat_date }>
+        <span class="post-date"><{$record.comment_date}></span> : 
+<{/if}>
+        <span class="comment_author"><{$record.comment_author}></span>
+<{if $block.show_type }>
+        <span style="font-size:90%"> - <{$record.type}></span>
+<{/if}>
+      </li>
+<{/foreach}>
+    </ul>
+  </li>
+</ul>

@@ -1,0 +1,6 @@
+  <ul class="wpBlockChildList">
+<{foreach item=record from=$records}>
+    <li><a href="<{$record.url}>" title="<{$record.title}>"><{$record.name}></a><{$record.count}></li>
+<{if $record.children }><{include file="wp_categories0_c.html" records = $record.children}><{/if}>
+<{/foreach}>
+  </ul>

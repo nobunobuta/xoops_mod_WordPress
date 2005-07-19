@@ -1,0 +1,14 @@
+<{$block.style}>
+<div class="wpRecentPost" id="<{$block.divid}>">
+<{if $block.cat_date }>
+  <{include file="wp_recent_posts_d.html"}>
+<{else}>
+  <{include file="wp_recent_posts_n.html"}>
+<{/if}>
+<{if $block.feed_icons }>
+<hr width="100%" />
+<{/if}>
+<{foreach item=feed_icon from=$block.feed_icons}>
+<div style="text-align:right">&nbsp;<a href="<{$feed_icon.url}>"><img src="<{$feed_icon.icon}>" alt="<{$feed_icon.alt}>" /></a></div>
+<{/foreach}>
+</div>

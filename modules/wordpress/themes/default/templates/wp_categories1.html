@@ -1,0 +1,8 @@
+<form name="listcatform<{$block.wp_num}>" id="listcatform<{$block.wp_num}>" action="#">
+<select name="cat" onchange="window.location = (document.forms.listcatform<{$block.wp_num}>.cat[document.forms.listcatform<{$block.wp_num}>.cat.selectedIndex].value);">
+  <option value="<{$block.siteurl}>"><{$smarty.const._WP_LIST_CAT_ALL}></option>
+<{foreach item=record from=$block.records}>
+  <option value="<{$record.url}>" <{$record.select}> ><{$record.name}><{$record.count}></option>
+<{/foreach}>
+</select>
+</form>

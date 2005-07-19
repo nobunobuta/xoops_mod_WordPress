@@ -1,0 +1,10 @@
+<ul class="wpBlockList">
+<{foreach item=record from=$block.records}>
+  <li>
+    <span class="post-title">
+      <a href="<{$record.permalink}>" rel="bookmark" title="Permanent Link: <{$record.post_title}>" style="display: inline;"><{$record.post_title}></a>
+    </span>
+    <{$record.newstr}>
+  </li>
+<{/foreach}>
+</ul>
