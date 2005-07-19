@@ -63,7 +63,7 @@ function harvest($commentID) {
 			} else {
 				$buf = $matches[3] . $matches[4];
 			}
-			$buf = remove_trailer($buf);
+			$buf = remove_trailingslash($buf);
 			$buf = sanctify($buf);
 			$request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$buf'");
 			if (!$request) {
@@ -84,7 +84,7 @@ function harvest($commentID) {
 			if ($ps) {
 				$buf = substr($buf, 0, $ps);
 			}
-			$buf = remove_trailer($buf);
+			$buf = remove_trailingslash($buf);
 			$buf = sanctify($buf);
 			$request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$buf'");
 			if (!$request) {
@@ -94,42 +94,6 @@ function harvest($commentID) {
 		} // for
 	}
 	return $info;
-}
-
-/*
- remove trailing slash on a URL
- */
-function remove_trailer($url) {
-	$len = strlen($url)-1;
-	$last = $url[$len];
-	if ($last == '/') {
-		$url = substr($url, 0, $len);
-	}
-	return $url;
-}
-
-if (!function_exists('_e')) {
-	function _e($string) {
-		echo $string;
-	}
-}
-if (!function_exists('__')) {
-	function __($string) {
-		return $string;
-	}
-}
-
-if (!function_exists('add_magic_quotes')) {
-	function add_magic_quotes($array) {
-	    foreach ($array as $k => $v) {
-	        if (is_array($v)) {
-	            $array[$k] = add_magic_quotes($v);
-	        } else {
-	            $array[$k] = addslashes($v);
-	        }
-	    }
-	    return $array;
-	}
 }
 }
 ?>
