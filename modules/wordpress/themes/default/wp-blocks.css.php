@@ -3,6 +3,7 @@
 /* Don't remove this line */ if (!defined('XOOPS_ROOT_PATH')) { exit; }
 /* Don't remove this line */ $wp_block_style = <<<EOD
 /* 美乳 */
+@charset "EUC-JP";
 #wpBlockContent$wp_num {
 	padding-left: 5px;
 	padding-right: 5px;
@@ -91,24 +92,8 @@
 EOD;
 /* Don't remove this line */ if (!defined("WP_BLOCK_CSS_READ")) { define("WP_BLOCK_CSS_READ","1");$wp_block_style .= <<<EOD
 
-.wpRecentPost {
+.wpRecentPost .wpRecentComment {
 	word-break: break-all;
-}
-.wpRecentPost .postDate {
-	font-weight: bold;
-	font-size:110%;
-}
-
-.wpRecentPost .new1 {
-	font-size: 90%;
-	font-weight: bold;
-	color: #EE0000;
-}
-
-.wpRecentPost .new2 {
-	font-size: 90%;
-	font-weight: bold;
-	color: #00BB00;
 }
 
 ul.wpBlockList ,ul.wpBlockList li{
@@ -120,21 +105,12 @@ ul.wpBlockDateList ,ul.wpBlockDateList li{
 	list-style-type:none;
 	margin-left:1px;
 }
-ul.wpBlockDateList .postDate{
-	font-weight: bold;
-	font-size:110%;
-}
-.blockContent ul.children,.blockContent ul.children li {
+
+ul.wpBlockDateList li ul.children, ul.wpBlockDateList li ul.children li {
 	list-style-position:outside;
 	list-style-type:disc;
-	margin:1px;
-	margin-left:5px;
-	font-size: 90%;
-}
-ul.wpBlockDateList ul.children,ul.wpBlockDateList ul.children li {
-	list-style-position:outside;
-	list-style-type:disc;
-	margin-left:12px;
+	margin-left:10px;
+	font-size: 100%;
 }
 
 li span.comment-author {
@@ -142,13 +118,25 @@ li span.comment-author {
 	margin-left:1px;
 }
 
-li span.post-date {
-	font-weight:bold;
-	margin-left:1px;
+span.new1 {
+	font-size: 80%;
+	font-weight: bold;
+	color: #EE0000;
 }
 
-li span.post-title {
-	margin-left:1px;
+span.new2 {
+	font-size: 80%;
+	font-weight: bold;
+	color: #00BB00;
+}
+
+span.postDate {
+	font-weight:bold;
+	font-size:110%;
+}
+
+span.post-title {
+	font-size:100%;
 }
 
 #wp-calendar {
@@ -211,7 +199,8 @@ li span.post-title {
 EOD;
 /* Don't remove this line */ }
 /* Don't remove this line */ if ((@in_array('pukiwiki', $GLOBALS['wp_filter'][wp_id()]['the_content']["6"])) &&
-/* Don't remove this line */ (!preg_match("/^".preg_quote(wp_base()."/","/")."/i",$cur_PATH))){/* Don't remove this line */ if (!defined("WP_BLOCK_WIKI_READ")) {
+/* Don't remove this line */ (!preg_match("/^".preg_quote(wp_base()."/","/")."/i",$cur_PATH))){
+/* Don't remove this line */ if (!defined("WP_BLOCK_WIKI_READ")) {
 /* Don't remove this line */ define("WP_BLOCK_WIKI_READ","1");$wp_block_style .= <<<EOD
 /*
  * modPukiWiki用のスタイルシートサンプル
