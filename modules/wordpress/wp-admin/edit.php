@@ -133,7 +133,7 @@ if ($GLOBALS['posts']) {
 <?php if ('approved' == wp_get_comment_status($comment->comment_ID)) { ?>
 	- <a href="post.php?action=unapprovecomment&amp;p=<?php echo $post->ID ?>&amp;comment=<?php echo $comment->comment_ID ?><?php echo $ticket?>"><?php echo _LANG_WPM_DO_NOTHING?></a>
 <?php } else { ?>
-    - <a href="post.php?action=approvecomment&amp;p=<?php echo $post->ID ?>&amp;comment=<? echo $comment->comment_ID ?><?php echo $ticket?>"><?php echo _LANG_WPM_DO_APPROVE?></a>
+    - <a href="post.php?action=approvecomment&amp;p=<?php echo $post->ID ?>&amp;comment=<?php echo $comment->comment_ID ?><?php echo $ticket?>"><?php echo _LANG_WPM_DO_APPROVE?></a>
 <?php } ?>
 <?php } ?>
 	]
