@@ -170,7 +170,7 @@ $modversion['blocks'][6]['name'] = sprintf( _MI_WORDPRESS_BNAME6 , $_wp_my_dirnu
 $modversion['blocks'][6]['description'] = _MI_WORDPRESS_BDESC6;
 $modversion['blocks'][6]['show_func'] = "b_{$_wp_my_prefix}recent_posts_show";
 $modversion['blocks'][6]['edit_func'] = "b_{$_wp_my_prefix}recent_posts_edit";
-$modversion['blocks'][6]['options'] = "10|1|0|0|0|0||all|0";
+$modversion['blocks'][6]['options'] = "10|1|0|0|0|0||all|0|wp_recent_posts.html";
 $modversion['blocks'][6]['can_clone'] = true ;
 
 $modversion['blocks'][7]['file'] = "wp_recent_comments.php";
@@ -178,7 +178,7 @@ $modversion['blocks'][7]['name'] = sprintf( _MI_WORDPRESS_BNAME7 , $_wp_my_dirnu
 $modversion['blocks'][7]['description'] = _MI_WORDPRESS_BDESC7;
 $modversion['blocks'][7]['show_func'] = "b_{$_wp_my_prefix}recent_comments_show";
 $modversion['blocks'][7]['edit_func'] = "b_{$_wp_my_prefix}recent_comments_edit";
-$modversion['blocks'][7]['options'] = "0|10|0|0|1";
+$modversion['blocks'][7]['options'] = "0|10|0|0|1|wp_recent_comments.html";
 $modversion['blocks'][7]['can_clone'] = true ;
 
 $modversion['blocks'][8]['file'] = "wp_contents.php";
@@ -186,8 +186,7 @@ $modversion['blocks'][8]['name'] = sprintf( _MI_WORDPRESS_BNAME8 , $_wp_my_dirnu
 $modversion['blocks'][8]['description'] = _MI_WORDPRESS_BDESC8;
 $modversion['blocks'][8]['show_func'] = "b_{$_wp_my_prefix}contents_show";
 $modversion['blocks'][8]['edit_func'] = "b_{$_wp_my_prefix}contents_edit";
-$modversion['blocks'][8]['options'] = "5";
-$modversion['blocks'][8]['template'] = "wp_block_contents.html";
+$modversion['blocks'][8]['options'] = "5|wp_contents.html";
 $modversion['blocks'][8]['can_clone'] = true ;
 
 $modversion['blocks'][9]['file'] = "wp_authors.php";
