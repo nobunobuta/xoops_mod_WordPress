@@ -21,7 +21,7 @@ if (!is_email($_email)) {
 	$_email = '';
 }
 $_url_struct = parse_url($_url);
-if (!$_url_struct) {
+if (!$_url_struct['path']) {
 	$_url = '';
 } elseif (!isset($_url_struct['scheme'])) {
 	$_url = 'http://'.$_url;
