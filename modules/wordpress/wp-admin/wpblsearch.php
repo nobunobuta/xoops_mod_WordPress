@@ -3,49 +3,24 @@ require_once('../wp-config.php');
 require_once('auth.php');
 
 require_once('../wp-includes/wpblfunctions.php');
-$title = __('WPBlacklist - Search');
+$title = _('WPBlacklist - Search');
 $parent_file = 'wpblacklist.php';
+
+init_param('', 'action', 'string', '');
+init_param('POST', 'rb_search', 'integer', 0);
+init_param('POST', 'search', 'string', '');
+init_param('POST', 'delete_comments', 'array', '');
+init_param('POST', 'deladd', 'string', '');
+
+$GLOBALS['standalone'] = 0;
 require_once('admin-header.php');
-
-if (!get_magic_quotes_gpc()) {
-	$_GET    = add_magic_quotes($_GET);
-	$_POST   = add_magic_quotes($_POST);
-	$_COOKIE = add_magic_quotes($_COOKIE);
-}
-
-$rb_search = 0;
-$wpvarstoreset = array('action','rb_search','search','delete_comments', 'deladd');
-for ($i=0; $i<count($wpvarstoreset); $i += 1) {
-	$wpvar = $wpvarstoreset[$i];
-	if (empty($_POST["$wpvar"])) {
-		if (empty($_GET["$wpvar"])) {
-			if (!isset($$wpvar)) {
-				$$wpvar = '';
-			}
-		} else {
-			$$wpvar = $_GET["$wpvar"];
-		}
-	} else {
-		$$wpvar = $_POST["$wpvar"];
-	}
-}
 
 $tableblacklist = $xoopsDB->prefix("wp_blacklist");
 $tablecomments = wp_table('comments');
 $tableposts =  wp_table('posts');
 
-if ($user_level < 4) {
-?>
-	<div class="wrap">
-		<p>
-			You don&#8217;t have sufficient rights to work with comments, you&#8217;ll have to wait for an admin to raise your level to 3, in order to be authorized to work with comments.<br />
-			You can also <a href="mailto:<?php echo $admin_email ?>?subject=Plugin permission">e-mail the admin</a> to ask for a promotion.<br />
-			When you&#8217;re promoted, just reload this page to work on the comment searching in WPBlacklist. :)
-		</p>
-	</div>
-<?php
-	exit();
-} // $user_level < 4
+//Check User_Level
+user_level_check();
 ?>
 <script type="text/javascript">
 <!--
@@ -108,7 +83,7 @@ if (($action == 'delete') && !empty($delete_comments)) {
 			++$i;
 		}
 	}
-	echo "<p><strong>" . sprintf(__('%s comments deleted.'), $i);
+	echo "<p><strong>" . sprintf(_('%s comments deleted.'), $i);
 	// was this an add & delete operation - if so, add search item & harvested items to blacklist
 	if ($deladd <> '') {
 		// the search item is only added for IP or regex searches
@@ -289,12 +264,13 @@ if (($action == 'search') || ($action == 'delete')) {
 					<table width="100%" cellpadding="3" cellspacing="3">
 						<tr>
 						  <th scope="col">*</th>
-						  <th scope="col">' .  __('Name') . '</th>
-						  <th scope="col">' .  __('Email') . '</th>
-						  <th scope="col">' . __('IP') . '</th>
-						  <th scope="col">' . __('Comment Excerpt') . '</th>
-						  <th scope="col" colspan="3">' .  __('Actions') . '</th>
+						  <th scope="col">' .  _('Name') . '</th>
+						  <th scope="col">' .  _('Email') . '</th>
+						  <th scope="col">' . _('IP') . '</th>
+						  <th scope="col">' . _('Comment Excerpt') . '</th>
+						  <th scope="col" colspan="3">' .  _('Actions') . '</th>
 						</tr>';
+			$bgcolor = 'none';
 			foreach ($comments as $comment) {
 				$authordata = get_userdata($wpdb->get_var("SELECT post_author FROM $tableposts WHERE ID = $comment->comment_post_ID"));
 				$bgcolor = ('#eee' == $bgcolor) ? 'none' : '#eee';
@@ -307,9 +283,9 @@ if (($action == 'search') || ($action == 'delete')) {
 				  <td><?php comment_excerpt(); ?></td>
 				  <td><a href="<?php echo get_permalink($comment->comment_post_ID); ?>#comment-<?php comment_ID() ?>" class="edit"><?php _e('View') ?></a></td>
 				  <td><?php if (($user_level > $authordata->user_level) or ($user_login == $authordata->user_login)) {
-				  echo "<a href='post.php?action=editcomment&amp;comment=$comment->comment_ID' class='edit'>" .  __('Edit') . "</a>"; } ?></td>
+				  echo "<a href='post.php?action=editcomment&amp;comment=$comment->comment_ID' class='edit'>" .  _('Edit') . "</a>"; } ?></td>
 				  <td><?php if (($user_level > $authordata->user_level) or ($user_login == $authordata->user_login)) {
-						  echo "<a href=\"post.php?action=deletecomment&amp;p=".$comment->comment_post_ID."&amp;comment=".$comment->comment_ID."\" onclick=\"return confirm('" . sprintf(__("You are about to delete this comment by \'%s\'\\n  \'Cancel\' to stop, \'OK\' to delete."), $comment->comment_author) . "')\"    class='delete'>" . __('Delete') . "</a>"; } ?></td>
+						  echo "<a href=\"post.php?action=deletecomment&amp;p=".$comment->comment_post_ID."&amp;comment=".$comment->comment_ID."\" onclick=\"return confirm('" . sprintf(_("You are about to delete this comment by \'%s\'\\n  \'Cancel\' to stop, \'OK\' to delete."), $comment->comment_author) . "')\"    class='delete'>" . _('Delete') . "</a>"; } ?></td>
 				</tr>
 <?php
 			} // end foreach

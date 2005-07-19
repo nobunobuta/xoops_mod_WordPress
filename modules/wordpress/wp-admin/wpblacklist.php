@@ -5,37 +5,16 @@ require_once('auth.php');
 require_once('../wp-includes/wpblfunctions.php');
 $parent_file = 'wpblacklist.php';
 
-if (!get_magic_quotes_gpc()) {
-    $_GET    = add_magic_quotes($_GET);
-    $_POST   = add_magic_quotes($_POST);
-    $_COOKIE = add_magic_quotes($_COOKIE);
-}
-
-$wpvarstoreset = array('action', 'blfilename', 'regextype', 'domain', 'search', 'delete_regexs', 'options' );
-for ($i=0; $i<count($wpvarstoreset); $i += 1) {
-	$wpvar = $wpvarstoreset[$i];
-	if (empty($_POST["$wpvar"])) {
-		if (empty($_GET["$wpvar"])) {
-			if (!isset($$wpvar)) {
-				$$wpvar = '';
-			}
-		} else {
-			$$wpvar = $_GET["$wpvar"];
-		}
-	} else {
-		$$wpvar = $_POST["$wpvar"];
-	}
-}
+init_param('', 'action', 'string', '');
+init_param('POST', 'blfilename', 'string', 'http://www.jayallen.org/comment_spam/blacklist.txt');
+init_param('POST', 'regextype', 'string', 'url');
+init_param('POST', 'domain', 'string', '');
+init_param('POST', 'search', 'string', '');
+init_param('POST', 'delete_regexs', 'array', '');
+init_param('POST', 'options', 'array', array());
 
 $tableblacklist = $xoopsDB->prefix("wp_blacklist");
-if (!$blfilename) {
-	$blfilename = 'http://www.jayallen.org/comment_spam/blacklist.txt';
-}
 
-// if this is the first time, the options array will not be created
-if (!is_array($options)) {
-	$options = array();
-}
 $standalone = 0;
 switch($action) {
 	case 'install':
@@ -68,6 +47,9 @@ switch($action) {
 		require_once ('./admin-header.php');
 		wp_refcheck("/wp-admin/wpblacklist.php");
 
+		if ($user_level < 10) {
+			die("You have no right to edit the options for this blog.<br />Ask for a promotion from your <a href=\"mailto:".get_settings('admin_email')."\">blog admin</a> :)");
+		}
 ?>
 <p>All right sparky, here we go with the installation/upgrade! Do you feel lucky today? :p</p>
 <?php
@@ -136,6 +118,8 @@ switch($action) {
 
 	case 'export':
 		wp_refcheck("/wp-admin/wpblacklist.php");
+		//Check User_Level
+		user_level_check();
 
 		$postquery ="SELECT * FROM $tableblacklist WHERE regex_type='url'";
 		$exportfile = '';
@@ -171,29 +155,19 @@ switch($action) {
 
 	default:
 		$title = 'Manage WPBlacklist';
-		// load options from DB
-		$sql = "SELECT * FROM $tableblacklist WHERE regex_type = 'option'";
-		$results = $wpdb->get_results($sql);
-		if ($results) {
-			foreach ($results as $result) {
-				$options[] = $result->regex;
-			}
-		}
 		break;
 }
+// load options from DB
+$sql = "SELECT * FROM $tableblacklist WHERE regex_type = 'option'";
+$results = $wpdb->get_results($sql);
+if ($results) {
+	foreach ($results as $result) {
+		$options[] = $result->regex;
+	}
+}
 require_once ('./admin-header.php');
-if ($user_level < 4) {
-?>
-	<div class="wrap">
-		<p>
-			You don&#8217;t have sufficient rights to work with comments, you&#8217;ll have to wait for an admin to raise your level to 3, in order to be authorized to work with comments.<br />
-			You can also <a href="mailto:<?php echo $admin_email ?>?subject=Plugin permission">e-mail the admin</a> to ask for a promotion.<br />
-			When you&#8217;re promoted, just reload this page to play with the Blacklist. :)
-		</p>
-	</div>
-<?php
-	exit();
-} // $user_level < 4
+//Check User_Level
+user_level_check();
 ?>
 	<script type="text/javascript">
 	<!--
@@ -407,7 +381,7 @@ if ($action == 'delete') {
 		}
 		$sql = $sql . ')';
 		$i = $wpdb->query($sql);
-		echo "<p><b>" . sprintf(__('%s blacklist item(s) deleted.'), $i) . "</b></p>";
+		echo "<p><b>" . sprintf(_('%s blacklist item(s) deleted.'), $i) . "</b></p>";
 	} else {
 		echo "<p><b>" . _e('no blacklist items selected') . "</b></p>";
 	}
@@ -435,8 +409,9 @@ if (($action == 'search') || ($action == 'delete')) {
 					  <th scope="col"><?php _e('Type') ?></th>
 					</tr>
 <?php
+		$bgcolor = 'none';
 		foreach ($regexs as $regex) {
-			$bgcolor = ('#888' == $bgcolor) ? 'none' : '#888';
+			$bgcolor = ('#eee' == $bgcolor) ? 'none' : '#eee';
 ?>
 					<tr style='background-color: <?php echo $bgcolor; ?>'>
 						<td>
