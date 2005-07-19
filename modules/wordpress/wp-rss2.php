@@ -5,6 +5,9 @@ require_once(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
 init_param('GET', 'num','integer');
 if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
+$lastpostdate = mysql2date('Y-m-d H:i:s', get_lastpostmodified());
+$lastpostdate = mysql2date('U',$lastpostdate);
+static_content_header($lastpostdate);
 require_once('wp-blog-header.php');
 header('Content-type: application/xml');
 ?>
@@ -19,7 +22,7 @@ header('Content-type: application/xml');
 	<description><?php bloginfo_rss('description') ?></description>
 	<language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></language>
 	<copyright>Copyright <?php echo mysql2date('Y', get_lastpostdate()); ?></copyright>
-	<pubDate><?php echo gmdate('r'); ?></pubDate>
+	<pubDate><?php echo gmdate('r',$lastpostdate); ?></pubDate>
 	<generator>http://www.kowa.org/?v=<?php echo $GLOBALS['wp_version_str'] ?></generator>
 
 	<?php if ($GLOBALS['posts']) { foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp(); ?>

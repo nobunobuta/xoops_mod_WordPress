@@ -5,6 +5,9 @@ require_once(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
 init_param('GET', 'num','integer');
 if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
+$lastpostdate = mysql2date('Y-m-d H:i:s', get_lastpostmodified());
+$lastpostdate = mysql2date('U',$lastpostdate);
+static_content_header($lastpostdate);
 require_once('wp-blog-header.php');
 header('Content-type: application/xml');
 ?>
@@ -15,7 +18,7 @@ header('Content-type: application/xml');
         <title><?php bloginfo_rss("name") ?></title>
         <link><?php bloginfo_rss("url") ?></link>
         <description><?php bloginfo_rss("description") ?></description>
-        <lastBuildDate><?php echo gmdate("D, d M Y H:i:s"); ?> GMT</lastBuildDate>
+        <lastBuildDate><?php echo gmdate("D, d M Y H:i:s", $lastpostdate); ?> GMT</lastBuildDate>
         <docs>http://backend.userland.com/rss092</docs>
         <managingEditor><?php echo antispambot(get_settings('admin_email')) ?></managingEditor>
         <webMaster><?php echo antispambot(get_settings('admin_email')) ?></webMaster>

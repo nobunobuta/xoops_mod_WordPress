@@ -5,6 +5,9 @@ require_once(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
 init_param('GET', 'num','integer');
 if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
+$lastpostdate_s = mysql2date('Y-m-d H:i:s', get_lastpostmodified());
+$lastpostdate = mysql2date('U',$lastpostdate_s);
+static_content_header($lastpostdate);
 require_once('wp-blog-header.php');
 header('Content-type: application/xml');
 ?>
@@ -16,8 +19,8 @@ header('Content-type: application/xml');
 	<title><?php bloginfo_rss('name') ?></title>
 	<link rel="alternate" type="text/html" href="<?php bloginfo_rss('url') ?>" />
 	<tagline><?php bloginfo_rss("description") ?></tagline>
-	<modified><?php echo the_time('Y-m-d\TH:i:so',time()); ?></modified>
-	<copyright>Copyright <?php echo mysql2date('Y', get_lastpostdate()); ?></copyright>
+	<modified><?php echo mysql2date('Y-m-d\TH:i:so',$lastpostdate_s); ?></modified>
+	<copyright>Copyright <?php echo mysql2date('Y', $lastpostdate_s); ?></copyright>
 	<generator url="http://www.kowa.org/" version="<?php echo $GLOBALS['wp_version_str'] ?>">WordPress</generator>
 	
 	<?php if ($GLOBALS['posts']) { foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp(); ?>
@@ -28,7 +31,7 @@ header('Content-type: application/xml');
 		<title><?php the_title_rss() ?></title>
 		<link rel="alternate" type="text/html" href="<?php permalink_single_rss() ?>" />
 		<id><?php bloginfo_rss('url') ?>?p=<?php echo $GLOBALS['wp_post_id']; ?></id>
-		<modified><?php the_time('Y-m-d\TH:i:so'); ?></modified>
+		<modified><?php the_modtime('Y-m-d\TH:i:so'); ?></modified>
 		<issued><?php the_time('Y-m-d\TH:i:so'); ?></issued>
 		<?php the_category_rss('rdf') ?>
 <?php $GLOBALS['more'] = 1; if (get_settings('rss_use_excerpt')) {

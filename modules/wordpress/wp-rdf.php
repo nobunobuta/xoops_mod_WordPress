@@ -5,6 +5,9 @@ require_once(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
 init_param('GET', 'num','integer');
 if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
+$lastpostdate_s = mysql2date('Y-m-d H:i:s', get_lastpostmodified());
+$lastpostdate = mysql2date('U',$lastpostdate_s);
+static_content_header($lastpostdate);
 require_once('wp-blog-header.php');
 add_filter('the_content', 'trim');
 $_rss_charset = wp_get_rss_charset();
@@ -25,7 +28,7 @@ header('Content-type: application/xml');
 	<link><?php bloginfo_rss('url') ?></link>
 	<description><?php bloginfo_rss('description') ?></description>
 	<dc:language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></dc:language>
-	<dc:date><?php echo the_time('Y-m-d\TH:i:so',time()); ?></dc:date>
+	<dc:date><?php echo mysql2date('Y-m-d\TH:i:so',$lastpostdate_s); ?></dc:date>
 	<dc:creator><?php echo antispambot(mb_conv(get_settings('admin_email'),$_rss_charset,$GLOBALS['blog_charset'])) ?></dc:creator>
 	<admin:generatorAgent rdf:resource="http://www.kowa.org/?v=<?php echo $GLOBALS['wp_version_str'] ?>"/>
 	<admin:errorReportsTo rdf:resource="mailto:<?php echo antispambot(get_settings('admin_email')) ?>"/>
