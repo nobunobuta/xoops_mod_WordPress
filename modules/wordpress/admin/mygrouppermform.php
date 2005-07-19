@@ -29,6 +29,8 @@
 // Project: The XOOPS Project                                                //
 // ------------------------------------------------------------------------- //
 
+if( ! defined( 'XOOPS_ROOT_PATH' ) ) exit ;
+
 require_once XOOPS_ROOT_PATH.'/class/xoopsform/formelement.php';
 require_once XOOPS_ROOT_PATH.'/class/xoopsform/formhidden.php';
 require_once XOOPS_ROOT_PATH.'/class/xoopsform/formbutton.php';
@@ -199,7 +201,7 @@ class MyXoopsGroupPermForm extends XoopsForm
 				$ret .= $elements[$i]->render();
 			}
 		}
-		$ret .= "</table>".$xoopsGTicket->getTicketHtml(__LINE__)."</form>";
+		$ret .= "</table>".$xoopsGTicket->getTicketHtml(__LINE__ , 1800 , 'myblocksadmin' )."</form>";
 		return $ret;
 	}
 }

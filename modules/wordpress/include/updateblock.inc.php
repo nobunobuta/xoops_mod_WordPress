@@ -23,7 +23,7 @@ if( ! defined( 'XOOPS_ROOT_PATH' ) ) exit ;
 			$sql = "SELECT name,options FROM ".$xoopsDB->prefix('newblocks')." WHERE mid=".$mid." AND func_num=".$i." AND show_func='".addslashes($modversion['blocks'][$i]['show_func'])."' AND func_file='".addslashes($modversion['blocks'][$i]['file'])."'";
 			$fresult = $xoopsDB->query($sql);
 			$fblock = $xoopsDB->fetchArray($fresult);
-			if ($fblock['options']) {
+			if ( isset( $fblock['options'] ) ) {
 				$old_vals=explode("|",$fblock['options']);
 				$def_vals=explode("|",$modversion['blocks'][$i]['options']);
 				if (count($old_vals) == count($def_vals)) {

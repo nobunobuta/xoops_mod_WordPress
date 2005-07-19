@@ -25,8 +25,10 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA //
 //  ------------------------------------------------------------------------ //
 
-include_once XOOPS_ROOT_PATH."/class/xoopsformloader.php";
-$form = new XoopsThemeForm($block['form_title'], 'blockform', 'admin.php');
+if( ! defined( 'XOOPS_ROOT_PATH' ) ) exit ;
+
+require_once XOOPS_ROOT_PATH."/class/xoopsformloader.php";
+$form = new XoopsThemeForm($block['form_title'], 'blockform', "admin.php" ) ;
 if (isset($block['name'])) {
 	$form->addElement(new XoopsFormLabel(_AM_NAME, $block['name']));
 }
@@ -46,6 +48,7 @@ ksort($module_list);
 $mod_select->addOptionArray($module_list);
 $form->addElement($mod_select);
 $form->addElement(new XoopsFormText(_AM_TITLE, 'btitle', 50, 255, $block['title']), false);
+
 if ( $block['is_custom'] ) {
 	$textarea = new XoopsFormDhtmlTextArea(_AM_CONTENT, 'bcontent', $block['content'], 15, 70);
 	$textarea->setDescription('<span style="font-size:x-small;font-weight:bold;">'._AM_USEFULTAGS.'</span><br /><span style="font-size:x-small;font-weight:normal;">'.sprintf(_AM_BLOCKTAG1, '{X_SITEURL}', XOOPS_URL.'/').'</span>');
@@ -54,7 +57,7 @@ if ( $block['is_custom'] ) {
 	$ctype_select->addOptionArray(array('H' => _AM_HTML, 'P' => _AM_PHP, 'S' => _AM_AFWSMILE, 'T' => _AM_AFNOSMILE));
 	$form->addElement($ctype_select);
 } else {
-	if ($block['template'] != '') {
+	if ($block['template'] != '' && ! defined('XOOPS_ORETEKI') ) {
 		$tplfile_handler =& xoops_gethandler('tplfile');
 		$btemplate =& $tplfile_handler->find($GLOBALS['xoopsConfig']['template_set'], 'block', $block['bid']);
 		if (count($btemplate) > 0) {
