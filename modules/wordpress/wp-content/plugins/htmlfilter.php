@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: HTML Filter
+Plugin Name: Safer Content HTML Filter
 Version: 1.0
-Description:Content HTML Filter
+Description:HTML Filter for make content more safe.
 Author: Nobunobu
 Author URI: http://www.kowa.org
 */
