@@ -27,11 +27,13 @@ if( ! defined( 'WP_CALENDAR_BLOCK_INCLUDED' ) ) {
 				$GLOBALS['m'] = mysql2date('Ym', $postObject->getVar('post_date'));
 			}
 		}
-		ob_start();
-		block_style_get();
-		get_calendar(1);
-		$block['content'] = ob_get_contents();
-		ob_end_clean();
+		$block['wp_num'] = $wp_num;
+		$block['divid'] = 'wpCalendar'.$wp_num;
+		$block['style'] = block_style_get(false);
+		$block['calendar'] = get_calendar(1,false);
+		$_wpTpl =& new WordPresTpl('theme');
+		$_wpTpl->assign('block', $block);
+		$block['content'] = $_wpTpl->fetch('wp_calendar.html');
 		return $block;
 	}
 }

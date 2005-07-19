@@ -12,14 +12,13 @@ if( ! defined( 'WP_SEARCH_BLOCK_INCLUDED' ) ) {
 
 	function _b_wp_search_show($option,$wp_num="")
 	{
-		$act_url = wp_siteurl().'/';
-		$block['content'] = <<<EOD
-		<form name="searchform$wp_num" id="searchform$wp_num" method="get" action="$act_url">
-		<div>
-			<input type="text" name="s" size="12" /> <input type="submit" name="submit" value="search" />
-		</div>
-		</form>
-EOD;
+		$block['wp_num'] = $wp_num;
+		$block['divid'] = 'wpSearch'.$wp_num;
+		$block['style'] = block_style_get(false);
+		$block['act_url'] = wp_siteurl().'/';
+		$_wpTpl =& new WordPresTpl('theme');
+		$_wpTpl->assign('block', $block);
+		$block['content'] = $_wpTpl->fetch('wp_search.html');
 		return $block;
 	}
 }

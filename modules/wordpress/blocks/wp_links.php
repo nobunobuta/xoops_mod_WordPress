@@ -12,13 +12,13 @@ if( ! defined( 'WP_LINKS_BLOCK_INCLUDED' ) ) {
 
 	function _b_wp_links_show($option,$wp_num="")
 	{
-		ob_start();
-		block_style_get();
-		echo "<ul class='wpBlockList'>\n";
-		get_links_list();
-		echo "</ul>\n";
-		$block['content'] = ob_get_contents();
-		ob_end_clean();
+		$block['wp_num'] = $wp_num;
+		$block['divid'] = 'wpLink'.$wp_num;
+		$block['style'] = block_style_get(false);
+		$block['links'] = get_links_list('name', '', false);
+		$_wpTpl =& new WordPresTpl('theme');
+		$_wpTpl->assign('block', $block);
+		$block['content'] = $_wpTpl->fetch('wp_links.html');
 		return $block;
 	}
 }

@@ -12,17 +12,21 @@ if( ! defined( 'WP_CONTENTS_BLOCK_INCLUDED' ) ) {
 
 	function _b_wp_contents_edit($options)
 	{
-		$form = "";
-		$form .= "Number of posts to show: ";
-		$form .= "<input type='text' name='options[]' value='".$options[0]."' /><br />";
-		return $form;
+		require_once XOOPS_ROOT_PATH.'/class/xoopsformloader.php';
+		$optForm = new XoopsSimpleForm('Block Option Dummy Form', 'optionform', '');
+		$optForm->addElement(new XoopsFormText('Number of posts to show:', 'options[0]', 5, 5, $options[0]));
+		$optForm->addElement(new XoopsFormText('Custom Block Template File<br />(Default: wp_contents.html):', 'options[1]', 25, 50, $options[1]));
 
+		$_wpTpl =& new WordPresTpl('theme');
+		$optForm->assign($_wpTpl);
+		return $_wpTpl->fetch('wp_block_edit.html');
 	}
 	function _b_wp_contents_show($options,$wp_num="") {
 		$no_posts = (empty($options[0]))? 10 : $options[0];
+		$tpl_file = (empty($options[1]))? 'wp_contents.html' : $options[1];
 
-		$GLOBALS['dateformat'] = stripslashes(get_settings('date_format'));
-		$GLOBALS['timeformat'] = stripslashes(get_settings('time_format'));
+		$GLOBALS['dateformat'] = get_settings('date_format');
+		$GLOBALS['timeformat'] = get_settings('time_format');
 		
 		$_criteria = new CriteriaCompo(new Criteria('post_status', 'publish'));
 		$_criteria->add(new Criteria('post_date', current_time('mysql'), '<='));
@@ -114,6 +118,10 @@ if( ! defined( 'WP_CONTENTS_BLOCK_INCLUDED' ) ) {
 				ob_end_clean();
 			}
 		}
+		$_wpTpl =& new WordPresTpl('theme');
+		$_wpTpl->assign('block', $block);
+		if (!$_wpTpl->tpl_exists($tpl_file)) $tpl_file = 'wp_contents.html';
+		$block['content'] = $_wpTpl->fetch($tpl_file);
 		$GLOBALS['previousday'] = 0;
 		$GLOBALS['day'] = 0;
 		$GLOBALS['comment_count_cache'][wp_id()]=array();
@@ -123,10 +131,12 @@ if( ! defined( 'WP_CONTENTS_BLOCK_INCLUDED' ) ) {
 
 eval ('
 	function b_'.$_wp_my_prefix.'contents_edit($options) {
+		$GLOBALS["wp_inblock"] = 1;
+		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
+		$GLOBALS["wp_inblock"] = 0;
 		return (_b_wp_contents_edit($options,"'.$_wp_my_dirnumber.'"));
 	}
 	function b_'.$_wp_my_prefix.'contents_show($options) {
-		$GLOBALS["wp_mod"][$GLOBALS["wp_id"]] ="'.$_wp_my_dirname.'";
 		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
 		return (_b_wp_contents_show($options,"'.$_wp_my_dirnumber.'"));
 	}

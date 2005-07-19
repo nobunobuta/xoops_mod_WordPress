@@ -12,38 +12,22 @@ if( ! defined( 'WP_AUTHORS_BLOCK_INCLUDED' ) ) {
 
 	function _b_wp_authors_edit($options)
 	{
-		$form = "<table width='100%'>";
+		require_once XOOPS_ROOT_PATH.'/class/xoopsformloader.php';
+		$optForm = new XoopsSimpleForm('Block Option Dummy Form', 'optionform', '');
+		$optForm->addElement(new XoopsFormRadioYN('Listing with count:', 'options[0]', $options[0]));
+		$optFormNameType = new XoopsFormSelect('Name Option:',  'options[1]', $options[1]);
+		$optFormNameType->addOption('nickname', 'Nick Name');
+		$optFormNameType->addOption('login', 'Login Name');
+		$optFormNameType->addOption('firstname', 'First Name');
+		$optFormNameType->addOption('lastname', 'Last Name');
+		$optFormNameType->addOption('namefl', 'Full Name (First Last)');
+		$optFormNameType->addOption('namelf', 'Full Name (Last First)');
+		$optForm->addElement($optFormNameType);
+		$optForm->addElement(new XoopsFormRadioYN('Show RSS2 feed icon:', 'options[2]', $options[2]));
 
-		$form .= "<tr><td width='40%'>Listing with count:</td>";
-		$chk = ( $options[0] == 1 ) ? " checked='checked'" : "";
-		$form .= "<td><input type='radio' name='options[0]' value='1'".$chk." />&nbsp;"._YES."&nbsp;";
-		$chk = ( $options[0] == 0 ) ? " checked='checked'" : "";
-		$form .= "<input type='radio' name='options[0]' value='0'".$chk." />&nbsp;"._NO."</td></tr>";
-
-		$form .= "<tr><td>Name Option:</td>";
-		$form .= "<td><select name='options[1]'>";
-        $form .= "<option value='nickname'";
-		$form .= (($options[1] == 'nickname') ? " selected" : "") ."> Nick Name </option>";
-        $form .= "<option value='login'";
-		$form .= (($options[1] == 'login') ? " selected" : "") ."> Login Name </option>";
-        $form .= "<option value='firstname'";
-		$form .= (($options[1] == 'firstname') ? " selected" : "") ."> First Name </option>";
-        $form .= "<option value='lastname'";
-		$form .= (($options[1] == 'lastname') ? " selected" : "") ."> Last Name </option>";
-        $form .= "<option value='namefl'";
-		$form .= (($options[1] == 'namefl') ? " selected" : "") ."> Full Name (First Last) </option>";
-        $form .= "<option value='namelf'";
-		$form .= (($options[1] == 'namelf') ? " selected" : "") ."> Full Name (Last First)</option>";
-		$form .= "</select></td></tr>";
-
-		$form .= "<tr><td>Show RSS2 feed icon:</td>";
-		$chk = ( $options[2] == 1 ) ? " checked='checked'" : "";
-		$form .= "<td><input type='radio' name='options[2]' value='1'".$chk." />&nbsp;"._YES."&nbsp;";
-		$chk = ( $options[2] == 0 ) ? " checked='checked'" : "";
-		$form .= "<input type='radio' name='options[2]' value='0'".$chk." />&nbsp;"._NO."</td></tr>";
-		
-		$form .= "</table>";
-		return $form;
+		$_wpTpl =& new WordPresTpl('theme');
+		$optForm->assign($_wpTpl);
+		return $_wpTpl->fetch('wp_block_edit.html');
 	}
 
 	function _b_wp_authors_show($options, $wp_num="")
@@ -58,19 +42,20 @@ if( ! defined( 'WP_AUTHORS_BLOCK_INCLUDED' ) ) {
 		$hide_empty = true;
 		$feed = ($show_rss2_icon == 1) ? 'rss2' : '' ;
 		$feed_image = ($show_rss2_icon == 1) ? wp_siteurl().'/wp-images/rss-mini.gif' : '';
-		ob_start();
-		block_style_get();
-		echo "<ul class='wpBlockList'>\n";
-		list_authors2($optioncount,$exclude_admin,$idmode, $hide_empty,$feed,$feed_image);
-		echo "</ul>\n";
-		$block['content'] = ob_get_contents();
-		ob_end_clean();
+		$block['style'] = block_style_get(false);
+		$block['authors'] = list_authors2($optioncount,$exclude_admin,$idmode, $hide_empty,$feed,$feed_image,false);
+		$_wpTpl =& new WordPresTpl('theme');
+		$_wpTpl->assign('block', $block);
+		$block['content'] = $_wpTpl->fetch('wp_authors.html');
 		return $block;
 	}
 }
 
 eval ('
 	function b_'.$_wp_my_prefix.'authors_edit($options) {
+		$GLOBALS["wp_inblock"] = 1;
+		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
+		$GLOBALS["wp_inblock"] = 0;
 		return (_b_wp_authors_edit($options));
 	}
 	function b_'.$_wp_my_prefix.'authors_show($options) {

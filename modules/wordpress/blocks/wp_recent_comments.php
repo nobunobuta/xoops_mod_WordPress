@@ -12,34 +12,22 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 
 	function _b_wp_recent_comments_edit($options)
 	{
-		$form = "<table width='100%'>";
-		$form .= "<tr><td width='40%'>Comment List Style (=0 or 1):</td>";
-		$form .= "<td><input type='text' name='options[0]' value='".$options[0]."' /></td></tr>";
-		
-		$form .= "<tr><td>Comment List Count:</td>";
-		$form .= "<td><input type='text' name='options[1]' value='".$options[1]."' /></td></tr>";
-		
-		$form .= "<tr><td>Display RSS Icon:</td>";
-		$chk = ( $options[2] == 1 ) ? " checked='checked'" : "";
-		$form .= "<td><input type='radio' name='options[2]' value='1'".$chk." />&nbsp;"._YES."";
-		$chk = "";
-		$chk = ( $options[2] == 0 ) ? " checked='checked'" : "";
-		$form .= "&nbsp;<input type='radio' name='options[2]' value='0'".$chk." />"._NO."</td></tr>";
-		
-		$form .= "<tr><td>Display Posted Date:</td>";
-		$chk = ( $options[3] == 1 ) ? " checked='checked'" : "";
-		$form .= "<td><input type='radio' name='options[3]' value='1'".$chk." />&nbsp;"._YES."&nbsp;";
-		$chk = ( $options[3] == 0 ) ? " checked='checked'" : "";
-		$form .= "<input type='radio' name='options[3]' value='0'".$chk." />&nbsp;"._NO."</td></tr>";
-		
-		$form .= "<tr><td>Show Comment Type:</td>";
-		$chk = ( $options[4] == 1 ) ? " checked='checked'" : "";
-		$form .= "<td><input type='radio' name='options[4]' value='1'".$chk." />&nbsp;"._YES."&nbsp;";
-		$chk = ( $options[4] == 0 ) ? " checked='checked'" : "";
-		$form .= "<input type='radio' name='options[4]' value='0'".$chk." />&nbsp;"._NO."</td></tr>";
-		
-		$form .= "</table>";
-		return $form;
+		require_once XOOPS_ROOT_PATH.'/class/xoopsformloader.php';
+		$optForm = new XoopsSimpleForm('Block Option Dummy Form', 'optionform', '');
+
+		$optFormType = new XoopsFormRadio('Comment List Style:',  'options[0]', $options[0]);
+		$optFormType->addOption(0, 'Standard');
+		$optFormType->addOption(1, 'Grouped by Article');
+		$optForm->addElement($optFormType);
+		$optForm->addElement(new XoopsFormText('Comment List Count:', 'options[1]', 5, 5, $options[1]));
+		$optForm->addElement(new XoopsFormRadioYN('Display RSS Icon:', 'options[2]', $options[2]));
+		$optForm->addElement(new XoopsFormRadioYN('Display Posted Date:', 'options[3]', $options[3]));
+		$optForm->addElement(new XoopsFormRadioYN('Show Comment Type:', 'options[4]', $options[4]));
+		$optForm->addElement(new XoopsFormText('Custom Block Template File<br />(Default: wp_recent_comments.html):', 'options[5]', 25, 50, $options[5]));
+
+		$_wpTpl =& new WordPresTpl('theme');
+		$optForm->assign($_wpTpl);
+		return $_wpTpl->fetch('wp_block_edit.html');
 
 	}
 
@@ -50,34 +38,39 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 		$show_rss_icon = (!isset($options[2]))? 0 : $options[2];
 		$cat_date = (!isset($options[3]))? ($block_style ? 1 : 0) : $options[3];
 		$show_type = (!isset($options[4]))? 1 : $options[4];
+		$tpl_file = (empty($options[5]))? 'wp_recent_comments.html' : $options[5];
+
+		$block['style'] =block_style_get(false);
+		$block['divid'] = 'wpRecentComment'.$wp_num;
+		$block['block_style'] = $block_style;
+		$block['cat_date'] = $cat_date;
+		$block['show_type'] = $show_type;
+		$comment_lenth = 30;
 
 		if ($block_style==0) {
-			$no_comments = $num_of_list;
-			$comment_lenth = 30;
 			$skip_posts = 0;
-			$request = "SELECT ID, comment_ID, comment_content, comment_author,comment_date FROM ".wp_table('posts').", ".wp_table('comments')." WHERE ".wp_table('posts').".ID=".wp_table('comments').".comment_post_ID AND post_status = 'publish' AND comment_approved = '1' ";
+			$request = "SELECT ID, comment_ID, comment_content, comment_author, comment_author_url, comment_date
+						FROM ".wp_table('posts').", ".wp_table('comments')."
+						WHERE ".wp_table('posts').".ID=".wp_table('comments').".comment_post_ID
+						AND post_status = 'publish' AND comment_approved = '1' ";
 			if (get_xoops_option(wp_mod(), 'wp_use_xoops_comments') == 1) {
 				$request .= "AND (comment_content like '<trackback />%' OR comment_content like '<pingkback />%') ";
 			}
-			$request .= "ORDER BY ".wp_table('comments').".comment_date DESC LIMIT $no_comments";
+			$request .= "ORDER BY ".wp_table('comments').".comment_date DESC LIMIT $num_of_list";
 			$lcomments = $GLOBALS['wpdb']->get_results($request);
 			$output = '';
 			$pdate = "";
 			if ($lcomments) {
-				if (!$cat_date) {
-					$output .= '<ul class="wpBlockList">';
-				} else {
-					$output .= '<ul class="wpBlockDateList">';
-				}
+				$block['records'] = array();
 				foreach ($lcomments as $lcomment) {
 					if ($cat_date) {
 						$date=mysql2date("Y-n-j", $lcomment->comment_date);
 						if ($date <> $pdate) {
-							if ($pdate <> "") {
-								$output .= '</ul></li>';
-							}
-							$output .= '<li><span class="postDate">'.$date.'</span><ul class="children">';
+							$_record['date'] = $date;
+							$_record['pdate'] = $pdate;
 							$pdate = $date;
+						} else {
+							$_record['date'] = '';
 						}
 					}
 
@@ -85,100 +78,88 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 					elseif (preg_match('|<pingback />|', $lcomment->comment_content)) $type='[PingBack]';
 					else  $type='[Comment]';
 
-					$comment_author = stripslashes($lcomment->comment_author);
-					$comment_content = strip_tags($lcomment->comment_content);
-					$comment_content = stripslashes($comment_content);
+					$_record['comment_author'] = _get_comment_author_link($lcomment,25);
+					$_record['comment_content'] = strip_tags(apply_filters('comment_text',$lcomment->comment_content));
 					if (function_exists('mb_substr')) {
-						$comment_excerpt = mb_substr($comment_content,0,$comment_lenth);
+						$_record['comment_excerpt'] = mb_substr($_record['comment_content'],0,$comment_lenth);
 					} else {
-						$comment_excerpt = substr($comment_content,0,$comment_lenth);
+						$_record['comment_excerpt'] = substr($_record['comment_content'],0,$comment_lenth);
 					}
-					$permalink = get_permalink($lcomment->ID).'#comment-'.$lcomment->comment_ID;
-					$output .= '<li><span class="comment-author">' . $comment_author . ':</span> <a href="' . $permalink;
-					$output .= '" title="View the entire comment by ' . $comment_author.'" style="display: inline;">' . $comment_excerpt . '...</a>';
+					$_record['permalink'] = get_permalink($lcomment->ID).'#comment-'.$lcomment->comment_ID;
 					if ($show_type) {
-						$output .= '<span style="font-size:70%">- '.$type.'</span>';
+						$_record['type'] = $type;
 					}
-					$output .= '</li>';
+					$block['records'][] = $_record;
 				}
-			}
-			$output .= '</ul>';
-			if ($cat_date) {
-				$output .= '</li></ul>';
 			}
 		} else {
-			$output = tkzy_get_recent_comments($num_of_list, $cat_date, $show_type);
+			$request = 'SELECT ID, post_title, post_date, comment_ID, comment_author, comment_author_url,
+						comment_date, comment_content 
+						FROM '.wp_table('posts').', '.wp_table('comments').'
+						WHERE '.wp_table('posts').'.ID='.wp_table('comments').'.comment_post_ID
+						AND '.wp_table('comments').'.comment_approved=\'1\'';
+			if (get_xoops_option(wp_mod(), 'wp_use_xoops_comments') == 1) {
+				$request .= ' AND (comment_content like \'<trackback />%\' OR comment_content like \'<pingkback />%\') ';
+			}
+			$request .= ' ORDER BY '.wp_table('comments').'.comment_date DESC LIMIT '.$num_of_list;
+			$lcomments = $GLOBALS['wpdb']->get_results($request);
+			$output = ''; 
+			if($lcomments){ 
+				usort($lcomments, 'sort_comment_by_date'); 
+			} 
+			$new_post_ID = -1;
+			if ($lcomments) {
+				$block['records'] = array();
+				foreach ($lcomments as $lcomment) { 
+					$_record['new_post_ID'] = $new_post_ID;
+					$_record['ID'] = $lcomment->ID;
+					if ($lcomment->ID != $new_post_ID) { // next post 
+						$_record['post_title'] = $lcomment->post_title;
+						if (trim($_record['post_title'])=="")
+							$_record['post_title'] = _WP_POST_NOTITLE;
+						$_record['comment_content'] = strip_tags($lcomment->comment_content);
+						if (function_exists('mb_substr')) {
+							$_record['comment_excerpt'] = mb_substr($_record['comment_content'],0,$comment_lenth);
+						} else {
+							$_record['comment_excerpt'] = substr($_record['comment_content'],0,$comment_lenth);
+						}
+						$_record['permalink'] = wp_siteurl().'/index.php?p='.$lcomment->ID.'&amp;c=1'; 
+						$new_post_ID = $lcomment->ID; 
+					} 
+					if ($cat_date) {
+						$comment_date = $lcomment->comment_date; 
+						if ( time() - mysql2date('U', $comment_date) < 60*60*24 ) { # within 24 hours 
+						   $_record['comment_date'] = mysql2date('H:i', $comment_date); 
+						} else { 
+						   $_record['comment_date'] = mysql2date('m/d', $comment_date); 
+						}
+					}
+					$_record['comment_author'] = _get_comment_author_link($lcomment,25);
+					if (preg_match('|<trackback />|', $lcomment->comment_content)) $type='[TrackBack]';
+					elseif (preg_match('|<pingback />|', $lcomment->comment_content)) $type='[Ping]';
+					else  $type='[Comment]';
+					if ($show_type) {
+						$_record['type'] = $type;
+					}
+					$block['records'][] = $_record;
+				} 
+			}
 		}
 		if ($show_rss_icon) {
-			$output .= '<hr width="100%" />';
-			$output .= '<div style="text-align:right">&nbsp;<a href="'.get_bloginfo('comments_rss2_url').'"><img src="'.wp_siteurl().'/wp-images/rss_comment.gif" alt="Comment RSS" /></a></div>';
+			$block['feed_icon'] = array(
+				'url' => get_bloginfo('comments_rss2_url'),
+				'icon' => wp_siteurl().'/wp-images/rss_comment.gif', 'alt' => 'Comment RSS',
+			);
+		} else {
+			$block['feed_icon'] = array();
 		}
-		ob_start();
-		block_style_get();
-		echo $output;
-		$block['content'] = ob_get_contents();
-		ob_end_clean();
+
+		$_wpTpl =& new WordPresTpl('theme');
+		$_wpTpl->assign('block', $block);
+		if (!$_wpTpl->tpl_exists($tpl_file)) $tpl_file = 'wp_recent_comments.html';
+		$block['content'] = $_wpTpl->fetch($tpl_file);
 		return $block;
 	}
-
-	function tkzy_get_recent_comments($limit = 10, $cat_date=1, $show_type = 1) { 
-		$comment_lenth = 30;
-		$request = 'SELECT ID, post_title, post_date, 
-		comment_ID, comment_author, comment_author_url, comment_author_email, comment_date, comment_content 
-		FROM '.wp_table('posts').', '.wp_table('comments').' WHERE '.wp_table('posts').'.ID='.wp_table('comments').'.comment_post_ID AND '.wp_table('comments').'.comment_approved=\'1\'';
-		if (get_xoops_option(wp_mod(), 'wp_use_xoops_comments') == 1) {
-			$request .= ' AND (comment_content like \'<trackback />%\' OR comment_content like \'<pingkback />%\') ';
-		}
-		$request .= ' ORDER BY '.wp_table('comments').'.comment_date DESC LIMIT '.$limit;
-		$lcomments = $GLOBALS['wpdb']->get_results($request);
-		$output = ''; 
-		if($lcomments){ 
-			usort($lcomments, 'sort_comment_by_date'); 
-		} 
-		$new_post_ID = -1;
-		if ($lcomments) {
-			$output .= '<ul class="wpBlockList">';
-			foreach ($lcomments as $lcomment) { 
-				if ($lcomment->ID != $new_post_ID) { // next post 
-					if ($new_post_ID != -1) { $output .= '</ul></li>'; } 
-					$post_title = stripslashes($lcomment->post_title); 
-					if (trim($post_title)=="")
-						$post_title = _WP_POST_NOTITLE;
-					$comment_content = strip_tags($lcomment->comment_content);
-					$comment_content = stripslashes($comment_content);
-					if (function_exists('mb_substr')) {
-						$comment_excerpt = mb_substr($comment_content,0,$comment_lenth);
-					} else {
-						$comment_excerpt = substr($comment_content,0,$comment_lenth);
-					}
-					$permalink = wp_siteurl().'/index.php?p='.$lcomment->ID.'&amp;c=1'; 
-					$output .= '<li>'; 
-					$output .= '<span class="comment-title"><a href="'.$permalink.'">'.$post_title.'</a></span>'; 
-					$output .= '<ul class="children" style="list-style-type: none;">'; 
-					$new_post_ID = $lcomment->ID; 
-				} 
-				$output .= "\t\t<li>";
-				if ($cat_date) {
-					$comment_date = $lcomment->comment_date; 
-					if ( time() - mysql2date('U', $comment_date) < 60*60*24 ) { # within 24 hours 
-					   $comment_date = mysql2date('H:i', $comment_date); 
-					} else { 
-					   $comment_date = mysql2date('m/d', $comment_date); 
-					}
-					$output .= '<span class="post-date">'.$comment_date.'</span> : '; 
-				}
-				$output .= '<span class="comment_author">'.tkzy_get_comment_author_link($lcomment,25).'</span></li>'; 
-				if (preg_match('|<trackback />|', $lcomment->comment_content)) $type='[TrackBack]';
-				elseif (preg_match('|<pingback />|', $lcomment->comment_content)) $type='[Ping]';
-				else  $type='[Comment]';
-				if ($show_type) {
-					$output .= '<span style="font-size:90%"> - '.$type.'</span>';
-				}
-			} 
-		}
-		$output .= '</ul></li></ul>'; 
-		return $output; 
-	} 
 
     function sort_comment_by_date($a, $b){ 
 		if( $b->ID == $a->ID ){ 
@@ -187,12 +168,10 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 		return mysql2date('U',$b->post_date) - mysql2date('U',$a->post_date); 
     } 
 
-	function tkzy_get_comment_author_link($my_comment,$abbr=0) { 
-		// modified comment_author_link() 
+	function _get_comment_author_link($my_comment,$abbr=0) { 
 		$ret = ""; 
-		$url = trim(stripslashes($my_comment->comment_author_url)); 
-		$email = stripslashes($my_comment->comment_author_email); 
-		$author = stripslashes($my_comment->comment_author); 
+		$url = apply_filters('comment_url', $my_comment->comment_author_url);
+		$author = apply_filters('comment_author', $my_comment->comment_author);
 		if (empty($author)) { 
 			$author = "Anonymous"; 
 		}
@@ -207,28 +186,21 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 				$author .= ".."; 
 			}
 		}
-		$url = str_replace('http://url', '', $url); 
-		$url = preg_replace('|[^a-z0-9-_.?#=&;,/:~]|i', '', $url); 
-		if (empty($url) && empty($email)) { 
-			$ret .= $author; 
-		}else{ 
-			$ret .= '<a href="'; 
-			if ($url) { 
-				$url = str_replace(';//', '://', $url); 
-				$url = (!strstr($url, '://')) ? 'http://'.$url : $url; 
-				$url = preg_replace('/&([^#])(?![a-z]{2,8};)/', '&#038;$1', $url); 
-				$ret .= $url; 
-			} else { 
-				$ret .= 'mailto:'.antispambot($email); 
-			} 
-			$ret .= '" rel="external">' . $author . '</a>'; 
-		} 
+		if ($url == 'http://') $url = '';
+		if (empty($url)) {
+			$ret = $author;
+		} else {
+			$ret = "<a href='$url' rel='external'>$author</a>";
+		}
 		 return $ret; 
 	}
 }
 
 eval ('
 	function b_'.$_wp_my_prefix.'recent_comments_edit($options) {
+		$GLOBALS["wp_inblock"] = 1;
+		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
+		$GLOBALS["wp_inblock"] = 0;
 		return (_b_wp_recent_comments_edit($options));
 	}
 	function b_'.$_wp_my_prefix.'recent_comments_show($options) {

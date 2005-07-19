@@ -12,34 +12,26 @@ if( ! defined( 'WP_ARCHIVES_MONTHLY_BLOCK_INCLUDED' ) ) {
 
 	function _b_wp_archives_monthly_edit($options)
 	{
-		$form = '';
-		$form .= 'Month List Style:&nbsp;';
-		if ( $options[0] == 0 ) {
-			$chk = ' checked="checked"';
-		}
-		$form .= '<input type="radio" name="options[]" value="0"'.$chk.' />&nbsp;Simple List';
-		$chk = '';
-		if ( $options[0] == 1 ) {
-			$chk = ' checked="checked"';
-		}
-		$form .= '&nbsp;<input type="radio" name="options[]" value="1"'.$chk.' />&nbsp;Dropdown List';
-		$form .= '<br />Listing with count:&nbsp;';
-		if ( $options[1] == 1 ) {
-			$chk = ' checked="checked"';
-		}
-		$form .= '<input type="radio" name="options[1]" value="1"'.$chk.' />&nbsp;'._YES;
-		$chk = "";
-		if ( $options[1] == 0 ) {
-			$chk = ' checked="checked"';
-		}
-		$form .= '&nbsp;<input type="radio" name="options[1]" value="0"'.$chk.' />'._NO;
-		return $form;
+		require_once XOOPS_ROOT_PATH.'/class/xoopsformloader.php';
+		$optForm = new XoopsSimpleForm('Block Option Dummy Form', 'optionform', '');
+
+		$optFormType = new XoopsFormRadio('Month List Style:',  'options[0]', $options[0]);
+		$optFormType->addOption(0, 'Simple List');
+		$optFormType->addOption(1, 'Dropdown List');
+		$optForm->addElement($optFormType);
+		$optForm->addElement(new XoopsFormRadioYN('Listing with count:', 'options[1]', $options[1]));
+		$optForm->addElement(new XoopsFormText('Custom Block Template File<br />(Default: wp_archives_monthly.html):', 'options[2]', 25, 50, $options[2]));
+
+		$_wpTpl =& new WordPresTpl('theme');
+		$optForm->assign($_wpTpl);
+		return $_wpTpl->fetch('wp_block_edit.html');
 	}
 
 	function _b_wp_archives_monthly_show($options, $wp_num='')
 	{
-		$block_style =  ($options[0])?$options[0]:0;
-		$with_count =  ($options[1]==0)?false:true;
+		$block_style = ($options[0])?$options[0]:0;
+		$with_count = ($options[1]==0)?false:true;
+		$tpl_file = (empty($options[2]))? 'wp_archives_monthly.html' : $options[2];
 
 		$sel_value = '';
 		if (current_wp()) {
@@ -49,36 +41,56 @@ if( ! defined( 'WP_ARCHIVES_MONTHLY_BLOCK_INCLUDED' ) ) {
 			init_param('GET', 'm','string','');
 			init_param('GET', 'year','integer', '');
 			init_param('GET', 'monthnum','integer','');
+			init_param('GET', 'day','integer','');
 			if (strlen(get_param('m')) == 6 ) {
 				$sel_value = get_param('m');
-			} else if (test_param('year') && test_param('monthnum')) {
+			} else if (test_param('year') && test_param('monthnum') && !test_param('day')) {
 				$sel_value = get_param('year').zeroise(get_param('monthnum'),2);
 			}
 		}
-		ob_start();
-		block_style_get();
-		if ($block_style == 0) {
-		// Simple Listing
-			echo '<ul class="wpBlockList">'."\n";
-			get_archives('monthly','','html', '','',$with_count);
-			echo '</ul>'."\n";
-		} else {
-		// Dropdown Listing
-			echo '<form name="archiveform'.$wp_num.'" id="archiveform'.$wp_num.'" action="#">';
-			echo '<select name="archive_chrono" onchange="window.location = (document.forms.archiveform'.$wp_num.'.archive_chrono[document.forms.archiveform'.$wp_num.'.archive_chrono.selectedIndex].value);"> ';
-			echo '<option value="'.wp_siteurl().'">'._WP_BY_MONTHLY.'</option>';
-			get_archives('monthly','','option', '','',$with_count, $sel_value);
-			echo '</select>';
-			echo '</form>';
+		$block['wp_num'] = $wp_num;
+		$block['divid'] = 'wpArchive'.$wp_num;
+		$block['siteurl'] = wp_siteurl();
+		$block['style'] = block_style_get(false);
+		$block['block_style'] = $block_style;
+		$block['with_count'] = $with_count;
+		
+		$now = current_time('mysql');
+		$postHandler =& wp_handler('Post');
+		$criteria =& new CriteriaCompo(new Criteria('post_date', $now, '<'));
+		$criteria->add(new Criteria('post_status', 'publish'));
+		$criteria->setSort('post_date');
+		$criteria->setOrder('DESC');
+		$criteria->setGroupby('YEAR(post_date), MONTH(post_date)');
+		$postObjects =& $postHandler->getObjects($criteria, false, 'DISTINCT YEAR(post_date) AS `year`, MONTH(post_date) AS `month`, count(ID) as posts');
+		$block['records'] = array();
+		if ($postObjects) {
+			foreach($postObjects as $postObject) {
+				$this_year = $postObject->getExtraVar('year');
+				$this_month = $postObject->getExtraVar('month');
+				$_record['url'] = get_month_link($this_year, $this_month);
+				$_record['text'] = format_month($this_year, $GLOBALS['month'][zeroise($this_month, 2)]);
+				if ($with_count) {
+					$_record['count'] = '&nbsp;('.$postObject->getExtraVar('posts').')';
+				} else {
+					$_record['count'] = '';
+				}
+				$_record['select'] = ($sel_value == $this_year.zeroise($this_month,2)) ?  'selected="selected"' : '' ;
+				$block['records'][] = $_record;
+			}
 		}
-		$block['content'] = ob_get_contents();
-		ob_end_clean();
+		$_wpTpl =& new WordPresTpl('theme');
+		$_wpTpl->assign('block', $block);
+		if (!$_wpTpl->tpl_exists($tpl_file)) $tpl_file = 'wp_archives_monthly.html';
+		$block['content'] = $_wpTpl->fetch($tpl_file);
 		return $block;
 	}
 }
-
 eval ('
 	function b_'.$_wp_my_prefix.'archives_monthly_edit($options) {
+		$GLOBALS["wp_inblock"] = 1;
+		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
+		$GLOBALS["wp_inblock"] = 0;
 		return (_b_wp_archives_monthly_edit($options));
 	}
 	function b_'.$_wp_my_prefix.'archives_monthly_show($options) {

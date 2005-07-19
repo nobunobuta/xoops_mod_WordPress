@@ -12,57 +12,27 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 
 	function _b_wp_categories_edit($options)
 	{
-		$form = "";
-		$form .= "Category List Style:&nbsp;";
-		if ( $options[0] == 0 ) {
-			$chk = " checked='checked'";
-		}
-		$form .= "<input type='radio' name='options[]' value='0'".$chk." />&nbsp;Simple List";
-		$chk = "";
-		if ( $options[0] == 1 ) {
-			$chk = " checked=\"checked\"";
-		}
-		$form .= "&nbsp;<input type='radio' name='options[]' value='1'".$chk." />&nbsp;Dropdown List";
+		require_once XOOPS_ROOT_PATH.'/class/xoopsformloader.php';
+		$optForm = new XoopsSimpleForm('Block Option Dummy Form', 'optionform', '');
 
-		$form .= "<br />Listing with count:&nbsp;";
-		if ( $options[1] == 1 ) {
-			$chk = " checked='checked'";
-		}
-		$form .= "<input type='radio' name='options[1]' value='1'".$chk." />&nbsp;"._YES."";
-		$chk = "";
-		if ( $options[1] == 0 ) {
-			$chk = " checked=\"checked\"";
-		}
-		$form .= "&nbsp;<input type='radio' name='options[1]' value='0'".$chk." />"._NO."";
+		$optFormType = new XoopsFormRadio('Category List Style:',  'options[0]', $options[0]);
+		$optFormType->addOption(0, 'Simple List');
+		$optFormType->addOption(1, 'Dropdown List');
+		$optForm->addElement($optFormType);
+		$optForm->addElement(new XoopsFormRadioYN('Listing with count:', 'options[1]', $options[1]));
+		$optFormSort = new XoopsFormRadio('Sorting Key:',  'options[2]', $options[2]);
+		$optFormSort->addOption('ID', 'ID');
+		$optFormSort->addOption('name', 'Name');
+		$optFormSort->addOption('description', 'Description');
+		$optForm->addElement($optFormSort);
+		$optFormOrder = new XoopsFormRadio('Sorting Order:',  'options[3]', $options[3]);
+		$optFormOrder->addOption('asc', 'Ascending');
+		$optFormOrder->addOption('desc', 'Descending');
+		$optForm->addElement($optFormOrder);
 		
-		$form .= "<br />Sorting Key:&nbsp;";
-		if ( $options[2] == 'ID' ) {
-			$chk = " checked='checked'";
-		}
-		$form .= "<input type='radio' name='options[2]' value='ID'".$chk." />&nbsp;".ID."";
-		$chk = "";
-		if ( $options[2] == 'name' ) {
-			$chk = " checked=\"checked\"";
-		}
-		$form .= "&nbsp;<input type='radio' name='options[2]' value='name'".$chk." />".Name."";
-		$chk = "";
-		if ( $options[2] == 'description' ) {
-			$chk = " checked=\"checked\"";
-		}
-		$form .= "&nbsp;<input type='radio' name='options[2]' value='description'".$chk." />".Description."";
-
-		$form .= "<br />Sorting Order:&nbsp;";
-		if ( $options[3] == 'asc' ) {
-			$chk = " checked='checked'";
-		}
-		$form .= "<input type='radio' name='options[3]' value='asc'".$chk." />&nbsp;".Ascending."";
-		$chk = "";
-		if ( $options[3] == 'desc' ) {
-			$chk = " checked=\"checked\"";
-		}
-		$form .= "&nbsp;<input type='radio' name='options[3]' value='desc'".$chk." />".Descending."";
-
-		return $form;
+		$_wpTpl =& new WordPresTpl('theme');
+		$optForm->assign($_wpTpl);
+		return $_wpTpl->fetch('wp_block_edit.html');
 	}
 
 	function _b_wp_categories_show($options, $wp_num="")
@@ -93,28 +63,87 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 			}
 		}
 
+		$block['wp_num'] = $wp_num;
+		$block['divid'] = 'wpArchive'.$wp_num;
+		$block['siteurl'] = wp_siteurl();
+		$block['style'] = block_style_get(false);
+		$block['block_style'] = $block_style;
+		$block['with_count'] = $with_count;
+
 		if ($block_style == 0) {
-			// Simple Listing
-			ob_start();
-			block_style_get();
-			echo '<ul class="wpBlockList">'."\n";
-			wp_list_cats("hide_empty=0&sort_column=$sorting_key&sorting_order=$sorting_order&optioncount=$with_count");
-			echo '</ul>'."\n";
-			$block['content'] = ob_get_contents();
-			ob_end_clean();
+			$cat_block = _b_wp_categories_list($sorting_key, $sorting_order, $with_count, 0, null, true);
 		} else {
-			// Dropdown Listing
-			$file = wp_siteurl().'/index.php';
-			$link = $file.'?cat=';
-			ob_start();
-			block_style_get();
-			echo '<form name="listcatform'.$wp_num.'" id="listcatform'.$wp_num.'" action="#">';
-			$select_str = '<select name="cat" onchange="window.location = (document.forms.listcatform'.$wp_num.'.cat[document.forms.listcatform'.$wp_num.'.cat.selectedIndex].value);"> ';
-			dropdown_cats(1,_WP_LIST_CAT_ALL,$sorting_key,$sorting_order,0,$with_count,0,false,0,0,true,0,true,0);
-			echo '</form>';
-			$block_str = ob_get_contents();
-			ob_end_clean();
-			$block['content'] = ereg_replace('\<select name\=[^\>]*\>',$select_str,$block_str);
+			$cat_block = _b_wp_categories_list($sorting_key, $sorting_order, $with_count, 0, null, false,
+												'&#8211;', 0, $GLOBALS['cat']);
+		}
+		$block['records'] = $cat_block['records'];
+		$_wpTpl =& new WordPresTpl('theme');
+		$_wpTpl->assign('block', $block);
+		$block['content'] = $_wpTpl->fetch('wp_categories.html');
+		return $block;
+	}
+	
+	function _b_wp_categories_list($sort_column = 'ID', $sort_order = 'asc', $optioncount = 0, $child_of=0,
+									$categoryObjects=null, $arraytree = true, $padchar='&#8211;',
+									$level=0, $current=0) {
+		$categoryHandler =& wp_handler('Category');
+		if (!$categoryObjects){
+			$criteria =& new CriteriaCompo(new Criteria('cat_ID', 0, '>'));
+			$criteria->setSort('cat_'.$sort_column);
+			$criteria->setOrder($sort_order);
+			$categoryObjects =& $categoryHandler->getObjects($criteria,false, 
+				'cat_ID, cat_name, category_nicename, category_description cat_description, category_parent');
+		}
+		if (empty($GLOBALS['category_posts']) || !count($GLOBALS['category_posts'])) {
+			$criteria =& new CriteriaCompo('post_status', 'publish');
+		    $criteria->setGroupBy('category_id');
+			$joinCriteria =& new XoopsJoinCriteria(wp_table('post2cat'), 'cat_ID', 'category_id', 'INNER');
+			$joinCriteria->cascade(new XoopsJoinCriteria(wp_table('posts'), 'post_id', 'ID', 'INNER'));
+			$categoryPostsObjects =& $categoryHandler->getObjects($criteria, false, 'cat_ID, COUNT('.wp_table('post2cat').'.post_id) AS cat_count', false, $joinCriteria);
+	        if ($categoryPostsObjects) {
+				foreach ($categoryPostsObjects as $categoryObject) {
+					if ($categoryObject->getExtraVar('cat_count') > 0) {
+						$GLOBALS['category_posts'][$categoryObject->getVar('cat_ID')] = $categoryObject->getExtraVar('cat_count');
+					}
+				}
+			}
+		}
+		$pad = str_repeat($padchar, $level)." ";
+		$block['records'] = array();
+		foreach ($categoryObjects as $categoryObject) {
+			$category = $categoryObject->exportWpObject();
+			if (($category->category_parent == $child_of)) {
+				$chilid_block =& _b_wp_categories_list($sort_column, $sort_order, $optioncount, $category->cat_ID, $categoryObjects, $arraytree, $padchar, $level+1, $current);
+				if ($arraytree) {
+					$_record['children'] = $chilid_block['records'];
+				}
+				if (isset($GLOBALS['category_posts']["$category->cat_ID"]) || count($chilid_block['records'])) {
+					$_record['name'] = apply_filters('list_cats', $category->cat_name);
+					if (!$arraytree) {
+						$_record['name'] = $pad .$_record['name'];
+						if ($category->cat_ID == $current) {
+							$_record['select'] = 'selected="selected"';
+						} else {
+							$_record['select'] = '';
+						}
+					}
+					$_record['url'] = get_category_link(0, $category->cat_ID, $category->category_nicename);
+					if (empty($category->cat_description)) {
+						$_record['title'] = sprintf("View all posts filed under %s", htmlspecialchars($category->cat_name));
+					} else {
+						$_record['title'] = htmlspecialchars(strip_tags($category->cat_description));
+					}
+					if (intval($optioncount)) {
+						$_record['count'] = ' ('. intval($GLOBALS['category_posts']["$category->cat_ID"]).')';
+					}
+				}
+				$block['records'][] = $_record;
+				if (!$arraytree) {
+					foreach($chilid_block['records'] as $_record) {
+						$block['records'][] = $_record;
+					}
+				}
+			}
 		}
 		return $block;
 	}
@@ -122,6 +151,9 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 
 eval ('
 	function b_'.$_wp_my_prefix.'categories_edit($options) {
+		$GLOBALS["wp_inblock"] = 1;
+		require(XOOPS_ROOT_PATH."/modules/'.$_wp_my_dirname.'/wp-config.php");
+		$GLOBALS["wp_inblock"] = 0;
 		return (_b_wp_categories_edit($options));
 	}
 	function b_'.$_wp_my_prefix.'categories_show($options) {
