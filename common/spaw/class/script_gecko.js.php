@@ -1191,9 +1191,12 @@
   }
   
   function SPAW_getHtmlValue(editor, thefield)
-  {
-    // temporary simplified
-    return document.getElementById(editor+"_rEdit").contentDocument.body.innerHTML;
+  { // fixed bug by nobunobu 2005/07/05
+    if(document.getElementById('SPAW_'+editor+'_editor_mode').value == 'design') {
+      return document.getElementById(editor+"_rEdit").contentDocument.body.innerHTML;
+    } else {
+      return document.getElementById(editor).value;
+    }
   }
   
   function SPAW_updateField(editor, field)
