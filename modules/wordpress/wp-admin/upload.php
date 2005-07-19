@@ -119,7 +119,7 @@ switch ($action) {
 	    $img1_name = (strlen($imgalt)) ? $_POST['imgalt'] : $_FILES['img1']['name'];
 	    $img1_type = (strlen($imgalt)) ? $_POST['img1_type'] : $_FILES['img1']['type'];
 	    $imgdesc = str_replace('"', '&amp;quot;', $_POST['imgdesc']);
-
+		$img1_size = $_POST['img1_size'] ? intval($_POST['img1_size']) : intval($_FILES['img1']['size']);
 	    $imgtype = explode(".",$img1_name);
 	    $imgtype = strtolower($imgtype[count($imgtype)-1]);
 
