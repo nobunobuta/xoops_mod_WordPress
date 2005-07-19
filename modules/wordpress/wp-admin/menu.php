@@ -1,4 +1,6 @@
 <?php
+if ('menu.php' == basename($_SERVER['SCRIPT_FILENAME']))
+	die ();
 // This array constructs the admin menu bar.
 //
 // Menu item name
