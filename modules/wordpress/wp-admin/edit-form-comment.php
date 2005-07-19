@@ -16,18 +16,17 @@ $touchtime = touch_time(0, false);
 
 $ticket = $xoopsWPTicket->getTicketHtml(__LINE__);
 
-$wpTpl =& new XoopsTpl;
-$wpTpl->assign('user_level', $user_level);
-$wpTpl->assign('comment', $comment);
-$wpTpl->assign('commentdata', $commentdata);
-$wpTpl->assign('content', $content);
-$wpTpl->assign('use_quicktags', $use_quicktags);
-$wpTpl->assign('quicktags', $quicktags);
-$wpTpl->assign('referer', $referer);
-$wpTpl->assign('rows', $rows);
-$wpTpl->assign('saveasdraft', $saveasdraft);
-$wpTpl->assign('touchtime', $touchtime);
-$wpTpl->assign('ticket', $ticket);
-$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
-$wpTpl->display('edit-form-comment.html');
+$_wpTpl =& new WordPresTpl('wp-admin');
+$_wpTpl->assign('user_level', $user_level);
+$_wpTpl->assign('comment', $comment);
+$_wpTpl->assign('commentdata', $commentdata);
+$_wpTpl->assign('content', $content);
+$_wpTpl->assign('use_quicktags', $use_quicktags);
+$_wpTpl->assign('quicktags', $quicktags);
+$_wpTpl->assign('referer', $referer);
+$_wpTpl->assign('rows', $rows);
+$_wpTpl->assign('saveasdraft', $saveasdraft);
+$_wpTpl->assign('touchtime', $touchtime);
+$_wpTpl->assign('ticket', $ticket);
+$_wpTpl->display('edit-form-comment.html');
 ?>

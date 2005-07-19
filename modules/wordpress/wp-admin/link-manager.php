@@ -396,16 +396,15 @@ switch (get_param('action')) {
 			}
 		}
 		
-		$wpTpl =& new XoopsTpl;
-		$wpTpl->assign('selectLinkCatControl', $selectLinkCatControl);
-		$wpTpl->assign('selectOrderControl', $selectOrderControl);
-		$wpTpl->assign('ticketHiddenContorl', $ticketHiddenContorl);
-		$wpTpl->assign('selectSetLinkCatControl', $selectSetLinkCatControl);
-		$wpTpl->assign('selectSetUserControl', $selectSetUserControl);
-		$wpTpl->assign('helpLink', $helpLink);
-		$wpTpl->assign('link_rows', $link_rows);
-		$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
-		$wpTpl->display('link-manager.html');
+		$_wpTpl =& new WordPresTpl('wp-admin');
+		$_wpTpl->assign('selectLinkCatControl', $selectLinkCatControl);
+		$_wpTpl->assign('selectOrderControl', $selectOrderControl);
+		$_wpTpl->assign('ticketHiddenContorl', $ticketHiddenContorl);
+		$_wpTpl->assign('selectSetLinkCatControl', $selectSetLinkCatControl);
+		$_wpTpl->assign('selectSetUserControl', $selectSetUserControl);
+		$_wpTpl->assign('helpLink', $helpLink);
+		$_wpTpl->assign('link_rows', $link_rows);
+		$_wpTpl->display('link-manager.html');
 
 		include('admin-footer.php');
 		break;

@@ -227,13 +227,11 @@ switch (get_param('action')) {
 		$defcat = $linkCategoryHandler->get(1);
 		$note_name = $defcat->getVar('cat_name');
 		
-		$wpTpl =& new XoopsTpl;
-
-		$wpTpl->assign('linkCat_rows', $linkCat_rows);
-		$wpTpl->assign('note_name', $note_name);
-		$wpTpl->assign('formHTML', $formHTML);
-		$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
-		$wpTpl->display('link-categories.html');
+		$_wpTpl =& new WordPresTpl('wp-admin');
+		$_wpTpl->assign('linkCat_rows', $linkCat_rows);
+		$_wpTpl->assign('note_name', $note_name);
+		$_wpTpl->assign('formHTML', $formHTML);
+		$_wpTpl->display('link-categories.html');
 
 		include('admin-footer.php');
 	    break;

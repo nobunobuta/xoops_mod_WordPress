@@ -12,19 +12,17 @@ init_param('GET', 'action', 'string','');
 
 require_once(XOOPS_ROOT_PATH.'/class/template.php');
 
-$wpTpl =& new XoopsTpl;
-$wpTpl->error_reporting = error_reporting();
-$wpTpl->assign('action', $action);
-$wpTpl->assign('admin_area_charset', $admin_area_charset);
+$_wpTpl =& new WordPresTpl('wp-admin');
+$_wpTpl->assign('action', $action);
+$_wpTpl->assign('admin_area_charset', $admin_area_charset);
 
 if ($action != 'done') {
 	$category_select = categories_nested_select(array(get_settings('default_post_category')));
     $ticket = $xoopsWPTicket->getTicketHtml(__LINE__, 10800);
-	$wpTpl->assign('user_ID', $user_ID);
-	$wpTpl->assign('category_select', $category_select);
-	$wpTpl->assign('ticket', $ticket);
+	$_wpTpl->assign('user_ID', $user_ID);
+	$_wpTpl->assign('category_select', $category_select);
+	$_wpTpl->assign('ticket', $ticket);
 }
-$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
-$wpTpl->display('sidebar.html');
+$_wpTpl->display('sidebar.html');
 require_once('admin-footer.php');
 ?>

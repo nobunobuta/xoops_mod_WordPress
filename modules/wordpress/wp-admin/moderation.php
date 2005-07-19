@@ -89,16 +89,14 @@ switch($action) {
 		}
 		$ticket = $xoopsWPTicket->getTicketHtml(__LINE__);
 
-		$wpTpl =& new XoopsTpl;
-		$wpTpl->error_reporting = error_reporting();
-		$wpTpl->assign('ignored', $ignored);
-		$wpTpl->assign('deleted', $deleted);
-		$wpTpl->assign('approved', $approved);
-		$wpTpl->assign('comments_notify', get_settings('comments_notify'));
-		$wpTpl->assign('comment_rows', $comment_rows);
-		$wpTpl->assign('ticket', $ticket);
-		$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
-		$wpTpl->display('moderation.html');
+		$_wpTpl =& new WordPresTpl('wp-admin');
+		$_wpTpl->assign('ignored', $ignored);
+		$_wpTpl->assign('deleted', $deleted);
+		$_wpTpl->assign('approved', $approved);
+		$_wpTpl->assign('comments_notify', get_settings('comments_notify'));
+		$_wpTpl->assign('comment_rows', $comment_rows);
+		$_wpTpl->assign('ticket', $ticket);
+		$_wpTpl->display('moderation.html');
 		include('admin-footer.php');
 		break;
 }

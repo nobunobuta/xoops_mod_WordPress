@@ -83,33 +83,31 @@ if (!empty($_SERVER['HTTP_REFERER'])) {
 	$referer = "";
 }
 
-$wpTpl =& new XoopsTpl;
-$wpTpl->error_reporting = error_reporting();
-$wpTpl->assign('user_ID', $user_ID);
-$wpTpl->assign('user_level', $user_level);
-$wpTpl->assign('mode', $mode);
-$wpTpl->assign('edited_post_title', $edited_post_title);
-$wpTpl->assign('category_select', $category_select);
-$wpTpl->assign('use_quicktags', $use_quicktags);
-$wpTpl->assign('smilies', $smilies);
-$wpTpl->assign('use_spaw', $use_spaw);
-$wpTpl->assign('use_koivi', false);
-$wpTpl->assign('spaw_form', $spaw_form);
-$wpTpl->assign('content', $content);
-$wpTpl->assign('rows', $rows);
-$wpTpl->assign('use_pingback', $use_pingback);
-$wpTpl->assign('ping_checked', $ping_checked);
-$wpTpl->assign('can_upload', $can_upload);
-$wpTpl->assign('referer', $referer);
-$wpTpl->assign('use_trackback', $use_trackback);
-$wpTpl->assign('trackback_url', $trackback_url);
-$wpTpl->assign('pinged', $pinged);
-$wpTpl->assign('pingedlist', $pingedlist);
-$wpTpl->assign('form_addon', $form_addon);
-$wpTpl->assign('target_charset', $target_charset);
-$wpTpl->assign('ticket', $ticket);
-$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
-$wpTpl->display('edit-form.html');
+$_wpTpl =& new WordPresTpl('wp-admin');
+$_wpTpl->assign('user_ID', $user_ID);
+$_wpTpl->assign('user_level', $user_level);
+$_wpTpl->assign('mode', $mode);
+$_wpTpl->assign('edited_post_title', $edited_post_title);
+$_wpTpl->assign('category_select', $category_select);
+$_wpTpl->assign('use_quicktags', $use_quicktags);
+$_wpTpl->assign('smilies', $smilies);
+$_wpTpl->assign('use_spaw', $use_spaw);
+$_wpTpl->assign('use_koivi', false);
+$_wpTpl->assign('spaw_form', $spaw_form);
+$_wpTpl->assign('content', $content);
+$_wpTpl->assign('rows', $rows);
+$_wpTpl->assign('use_pingback', $use_pingback);
+$_wpTpl->assign('ping_checked', $ping_checked);
+$_wpTpl->assign('can_upload', $can_upload);
+$_wpTpl->assign('referer', $referer);
+$_wpTpl->assign('use_trackback', $use_trackback);
+$_wpTpl->assign('trackback_url', $trackback_url);
+$_wpTpl->assign('pinged', $pinged);
+$_wpTpl->assign('pingedlist', $pingedlist);
+$_wpTpl->assign('form_addon', $form_addon);
+$_wpTpl->assign('target_charset', $target_charset);
+$_wpTpl->assign('ticket', $ticket);
+$_wpTpl->display('edit-form.html');
 
 return;
 ?>

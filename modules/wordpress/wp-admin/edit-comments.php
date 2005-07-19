@@ -11,19 +11,19 @@ $title = 'Edit Comments';
 require_once('admin-header.php');
 
 init_param('GET', 'showcomments', 'integer', 10);
-init_param('GET', 'commentstart', 'integer', 0);
+init_param('GET', 'commentstart', 'integer', 1);
 init_param('GET', 'commentend', 'integer', 0);
 init_param('GET', 'commentorder', 'string', 'DESC');
 
-if (test_param('commentstart') && test_param('commentend')) {
-	$showcomments = $commentend - $commentstart+ 1;
+$commentstart = get_param('commentstart');
+$commentorder = get_param('commentorder');
+
+if (test_param('commentend')) {
+	$commentend = get_param('commentend');
+	$showcomments = $commentend - $commentstart + 1;
 } else {
-	if (!test_param('$commentstart')) {
-		$commentstart = 1;
-	}
-	if (!test_param('$commentend')) {
-		$commentend = $commentstart + $showcomments -1;
-	}
+	$showcomments = get_param('showcomments');
+	$commentend = $commentstart + $showcomments -1;
 }
 
 $nextXstart = $commentend + 1;
@@ -80,21 +80,19 @@ if ($commentObjects) {
 	$comments_found = false;
 }
 
-$wpTpl =& new XoopsTpl;
-
-$wpTpl->assign('showcomments', $showcomments);
-$wpTpl->assign('previousXstart', $previousXstart);
-$wpTpl->assign('previousXend', $previousXend);
-$wpTpl->assign('nextXstart', $nextXstart);
-$wpTpl->assign('nextXend', $nextXend);
-$wpTpl->assign('commentstart', $commentstart);
-$wpTpl->assign('commentend', $commentend);
-$wpTpl->assign('selorder_desc', $selorder_desc);
-$wpTpl->assign('selorder_asc', $selorder_asc);
-$wpTpl->assign('comments_found', $comments_found);
-$wpTpl->assign('comment_rows', $comment_rows);
-$wpTpl->template_dir = wp_base().'/wp-admin/templates/';
-$wpTpl->display('edit-comments.html');
+$_wpTpl =& new WordPresTpl('wp-admin');
+$_wpTpl->assign('showcomments', $showcomments);
+$_wpTpl->assign('previousXstart', $previousXstart);
+$_wpTpl->assign('previousXend', $previousXend);
+$_wpTpl->assign('nextXstart', $nextXstart);
+$_wpTpl->assign('nextXend', $nextXend);
+$_wpTpl->assign('commentstart', $commentstart);
+$_wpTpl->assign('commentend', $commentend);
+$_wpTpl->assign('selorder_desc', $selorder_desc);
+$_wpTpl->assign('selorder_asc', $selorder_asc);
+$_wpTpl->assign('comments_found', $comments_found);
+$_wpTpl->assign('comment_rows', $comment_rows);
+$_wpTpl->display('edit-comments.html');
 
 include('admin-footer.php');
 ?>
