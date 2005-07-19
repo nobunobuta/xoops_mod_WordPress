@@ -4,7 +4,7 @@ if( ! defined( 'WP_FUNCTION_FORMATTING_INCLUDED' ) ) {
 function wptexturize($text) {
 	$output = '';
 	// Capture tags and everything inside them
-	$textarr = preg_split("/(<.*>)/Us", $text, -1, PREG_SPLIT_DELIM_CAPTURE); // capture the tags as well as in between
+	$textarr = preg_split("/(<.*>)/Us", $text, -1, PREG_SPLIT_DELIM_CAPTURE);
 	$stop = count($textarr); $next = true; // loop stuff
 	for ($i = 0; $i < $stop; $i++) {
 		$curl = $textarr[$i];
@@ -16,8 +16,8 @@ function wptexturize($text) {
 			$curl = str_replace('``', '&#8220;', $curl);
 
 			// This is a hack, look at this more later. It works pretty well though.
-			$cockney = array("'tain't","'twere","'twas","'tis","'twill","'til","'bout","'nuff","'round");
-			$cockneyreplace = array("&#8217;tain&#8217;t","&#8217;twere","&#8217;twas","&#8217;tis","&#8217;twill","&#8217;til","&#8217;bout","&#8217;nuff","&#8217;round");
+			$cockney = array("'tain't","'twere","'twas","'tis","'twill","'til","'bout","'nuff","'round","'cause");
+			$cockneyreplace = array("&#8217;tain&#8217;t","&#8217;twere","&#8217;twas","&#8217;tis","&#8217;twill","&#8217;til","&#8217;bout","&#8217;nuff","&#8217;round","&#8217;cause");
 			$curl = str_replace($cockney, $cockneyreplace, $curl);
 
 			$curl = preg_replace("/'s/", '&#8217;s', $curl);
@@ -35,7 +35,7 @@ function wptexturize($text) {
 			$curl = preg_replace('/&([^#])(?![a-z]{1,8};)/', '&#038;$1', $curl);
 			$curl = str_replace("''", '&#8221;', $curl);
 			
-			$curl = preg_replace('/(d+)x(\d+)/', "$1&#215;$2", $curl);
+			$curl = preg_replace('/(\d+)x(\d+)/', "$1&#215;$2", $curl);
 
 		} elseif (strstr($curl, '<code') || strstr($curl, '<pre') || strstr($curl, '<kbd' || strstr($curl, '<style') || strstr($curl, '<script'))) {
 			// strstr is fast
@@ -49,8 +49,9 @@ function wptexturize($text) {
 }
 
 function clean_pre($text) {
-	$text = stripslashes($text);
 	$text = str_replace('<br />', '', $text);
+	$text = str_replace('<p>', "\n", $text);
+	$text = str_replace('</p>', '', $text);
 	return $text;
 }
 
@@ -58,23 +59,23 @@ function wpautop($pee, $br = 1) {
 	$pee = $pee . "\n"; // just to make things a little easier, pad the end
 	$pee = preg_replace('|<br />\s*<br />|i', "\n\n", $pee);
 	// Space things out a little
-	$pee = preg_replace('!(<(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)!i', "\n$1", $pee);
-	$pee = preg_replace('!(</(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])>)!i', "$1\n", $pee);
+	$pee = preg_replace('!(<(?:table|thead|tfoot|caption|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|address|math|p|h[1-6])[^>]*>)!i', "\n$1", $pee);
+	$pee = preg_replace('!(</(?:table|thead|tfoot|caption|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|address|math|p|h[1-6])>)!i', "$1\n", $pee);
 	$pee = preg_replace("/(\r\n|\r)/", "\n", $pee); // cross-platform newlines 
 	$pee = preg_replace("/\n\n+/", "\n\n", $pee); // take care of duplicates
 	$pee = preg_replace('/\n?(.+?)(?:\n\s*\n|\z)/s', "\t<p>$1</p>\n", $pee); // make paragraphs, including one at the end 
 	$pee = preg_replace('|<p>\s*?</p>|i', '', $pee); // under certain strange conditions it could create a P of entirely whitespace 
-    $pee = preg_replace('!<p>\s*(</?(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)\s*</p>!i', "$1", $pee); // don't pee all over a tag
+    $pee = preg_replace('!<p>\s*(</?(?:table|thead|tfoot|caption|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|hr|pre|select|form|blockquote|address|math|p|h[1-6])[^>]*>)\s*</p>!i', "$1", $pee); // don't pee all over a tag
 	$pee = preg_replace("|<p>(<li.+?)</p>|i", "$1", $pee); // problem with nested lists
 	$pee = preg_replace('|<p><blockquote([^>]*)>|i', "<blockquote$1><p>", $pee);
 	$pee = preg_replace('|</blockquote></p>|i', '</p></blockquote>', $pee);
-	$pee = preg_replace('!<p>\s*(</?(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)!i', "$1", $pee);
-	$pee = preg_replace('!(</?(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)\s*</p>!i', "$1", $pee); 
+	$pee = preg_replace('!<p>\s*(</?(?:table|thead|tfoot|caption|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|hr|pre|select|form|blockquote|address|math|p|h[1-6])[^>]*>)!i', "$1", $pee);
+	$pee = preg_replace('!(</?(?:table|thead|tfoot|caption|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|address|math|p|h[1-6])[^>]*>)\s*</p>!i', "$1", $pee); 
 	if ($br) {
        $pee = preg_replace('/(\<[a-z][a-z0-9]+\s.*?\>)/ies' ,'str_replace(array("\n","\r"), array(" ", " "), "\\1")', $pee);
 	   $pee = preg_replace('|(?<!<br />)\s*\n|i', "<br />\n", $pee); // optionally make line breaks
     }
-	$pee = preg_replace('!(</?(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)\s*<br />!i', "$1", $pee);
+	$pee = preg_replace('!(</?(?:table|thead|tfoot|caption|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)\s*<br />!i', "$1", $pee);
 	$pee = preg_replace('!<br />(\s*</?(?:p|li|div|dl|dd|dt|th|pre|td|ul|ol)>)!i', '$1', $pee);
 	$pee = preg_replace('/&([^#])(?![a-z]{1,8};)/', '&#038;$1', $pee);
 	$pee = preg_replace('!(<pre.*?>)(.*?)</pre>!ise', " stripslashes('$1') .  clean_pre('$2')  . '</pre>' ", $pee);
@@ -109,9 +110,6 @@ function sanitize_title_with_dashes($title) {
 }
 
 function sanitize_text($str, $isArea=false, $isURL=false) {
-	if (get_magic_quotes_gpc()) {
-		$str = stripslashes($str);
-	}
 	$patterns = array();
 	$replacements = array();
 
@@ -124,11 +122,11 @@ function sanitize_text($str, $isArea=false, $isURL=false) {
 		$patterns[] = "/&lt;(\/)?\s*script.*?&gt;/si";
 		$replacements[] = '[$1script]';
 		$patterns[] = "/&lt;(\/)?\s*style.*?&gt;/si";
-		$replacements[] = '[$style]';
+		$replacements[] = '[$1$style]';
 		$patterns[] = "/&lt;(\/)?\s*body.*?&gt;/si";
-		$replacements[] = '[$body]';
+		$replacements[] = '[$1$body]';
 		$patterns[] = "/&lt;(\/)?\s*link.*?&gt;/si";
-		$replacements[] = '[$link]';
+		$replacements[] = '[$1$link]';
 		$patterns[] = "/(&lt;.*)(?:onError|onUnload|onBlur|onFocus|onClick|onMouseOver|onSubmit|onReset|onChange|onSelect|onAbort)\s*=\s*(&quot;|&#039;).*\\2(.*?&gt;)/si";
 		$replacements[] = '$1$3';
 		if ($isURL) {
@@ -200,14 +198,12 @@ function convert_chars($content,$flag='obsolete attribute left there for backwar
              1.0  First Version
 */
 function balanceTags($text, $is_comment = 0) {
+	
 	if (get_settings('use_balanceTags') == 0) {
 		return $text;
 	}
 
-	$tagstack = array();
-	$stacksize = 0;
-	$tagqueue = '';
-	$newtext = '';
+	$tagstack = array(); $stacksize = 0; $tagqueue = ''; $newtext = '';
 
 	# WP bug fix for comments - in case you REALLY meant to type '< !--'
 	$text = str_replace('< !--', '<    !--', $text);
@@ -215,10 +211,10 @@ function balanceTags($text, $is_comment = 0) {
 	$text = preg_replace('#<([0-9]{1})#', '&lt;$1', $text);
 
 	while (preg_match("/<(\/?\w*)\s*([^>]*)>/",$text,$regex)) {
-		$newtext = $newtext . $tagqueue;
+		$newtext .= $tagqueue;
 
 		$i = strpos($text,$regex[0]);
-		$l = strlen($tagqueue) + strlen($regex[0]);
+		$l = strlen($regex[0]);
 
 		// clear the shifter
 		$tagqueue = '';
@@ -254,32 +250,46 @@ function balanceTags($text, $is_comment = 0) {
 
 			// Tag Cleaning
 
-			// Push if not img or br or hr
-			if($tag != 'br' && $tag != 'img' && $tag != 'hr') {
+			// If self-closing or '', don't do anything.
+			if((substr($regex[2],-1) == '/') || ($tag == '')) {
+			}
+			// ElseIf it's a known single-entity tag but it doesn't close itself, do so
+			elseif ($tag == 'br' || $tag == 'img' || $tag == 'hr' || $tag == 'input') {
+				$regex[2] .= '/';
+			} else {	// Push the tag onto the stack
+				// If the top of the stack is the same as the tag we want to push, close previous tag
+				if (($stacksize > 0) && ($tag != 'div') && ($tagstack[$stacksize - 1] == $tag)) {
+					$tagqueue = '</' . array_pop ($tagstack) . '>';
+					$stacksize--;
+				}
 				$stacksize = array_push ($tagstack, $tag);
 			}
 
 			// Attributes
-			// $attributes = $regex[2];
 			$attributes = $regex[2];
 			if($attributes) {
 				$attributes = ' '.$attributes;
 			}
 			$tag = '<'.$tag.$attributes.'>';
+			//If already queuing a close tag, then put this tag on, too
+			if ($tagqueue) {
+				$tagqueue .= $tag;
+				$tag = '';
+			}
 		}
 		$newtext .= substr($text,0,$i) . $tag;
 		$text = substr($text,$i+$l);
 	}
 
 	// Clear Tag Queue
-	$newtext = $newtext . $tagqueue;
+	$newtext .= $tagqueue;
 
 	// Add Remaining text
 	$newtext .= $text;
 
 	// Empty Stack
 	while($x = array_pop($tagstack)) {
-		$newtext = $newtext . '</' . $x . '>'; // Add remaining tags to close
+		$newtext .= '</' . $x . '>'; // Add remaining tags to close
 	}
 
 	// WP fix for the bug with HTML comments
@@ -290,7 +300,6 @@ function balanceTags($text, $is_comment = 0) {
 }
 
 function format_to_edit($content) {
-	$content = stripslashes($content);
 	if ($GLOBALS['autobr']) { $content = unautobrize($content); }
 	$content = apply_filters('format_to_edit', $content);
 	$content = htmlspecialchars($content);
@@ -298,7 +307,6 @@ function format_to_edit($content) {
 	}
 
 function format_to_post($content) {
-	$content = addslashes($content);
 	if ($GLOBALS['post_autobr'] || $GLOBALS['comment_autobr']) { $content = autobrize($content); }
 	$content = apply_filters('format_to_post', $content);
 	return $content;
@@ -350,16 +358,22 @@ function mysql2date($dateformatstring, $mysqlstring, $use_b2configmonthsdays = 1
 	return $j;
 }
 
-function current_time($type) {
+function current_time($type, $offset=0) {
 	$time_difference = get_settings('time_difference');
 	switch ($type) {
 		case 'mysql':
-			return date('Y-m-d H:i:s', (time() + ($time_difference * 3600) ) );
+			return date('Y-m-d H:i:s', (time() + ($time_difference * 3600) + $offset) );
 			break;
 		case 'timestamp':
-			return (time() + ($time_difference * 3600) );
+			return (time() + ($time_difference * 3600) + $offset);
 			break;
 	}
+}
+
+function format_month($year,$month) {
+	$str = ereg_replace('%MONTH', $month, $GLOBALS['wp_month_format']);
+	$str = ereg_replace('%YEAR', sprintf("%d",$year), $str);
+	return $str;
 }
 
 function addslashes_gpc($gpc) {
@@ -418,7 +432,7 @@ function convert_smilies($text) {
 }
 
 function is_email($user_email) {
-	$chars = "/^([a-z0-9_]|\\-|\\.)+@(([a-z0-9_]|\\-)+\\.)+[a-z]{2,4}\$/i";
+	$chars = "/^([a-z0-9+_]|\\-|\\.)+@(([a-z0-9_]|\\-)+\\.)+[a-z]{2,6}\$/i";
 	if(strstr($user_email, '@') && strstr($user_email, '.')) {
 		if (preg_match($chars, $user_email)) {
 			return true;
