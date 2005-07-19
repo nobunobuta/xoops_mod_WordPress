@@ -88,9 +88,8 @@ function get_permalink($id=false) {
 }
 
 function get_month_link($year, $month) {
-	$time_difference = get_settings('time_difference');
-	if (!$year) $year = date('Y', time()+($time_difference * 3600));
-	if (!$month) $month = date('m', time()+($time_difference * 3600));
+	if (!$year) $year = date('Y', current_time('timestamp'));
+	if (!$month) $month = date('m', current_time('timestamp'));
 	if ('' != get_settings('permalink_structure')) {
         $permalink = get_settings('permalink_structure');
 
@@ -117,10 +116,9 @@ function get_month_link($year, $month) {
 }
 
 function get_day_link($year, $month, $day) {
-	$time_difference = get_settings('time_difference');
-	if (!$year) $year = date('Y', time()+($time_difference * 3600));
-	if (!$month) $month = date('m', time()+($time_difference * 3600));
-	if (!$day) $day = date('j', time()+($time_difference * 3600));
+	if (!$year) $year = date('Y', current_time('timestamp'));
+	if (!$month) $month = date('m', current_time('timestamp'));
+	if (!$day) $day = date('j', current_time('timestamp'));
 	if ('' != get_settings('permalink_structure')) {
         $permalink = get_settings('permalink_structure');
 
