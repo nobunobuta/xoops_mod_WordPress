@@ -54,6 +54,16 @@ init_param('', 'more','integer',NO_DEFAULT_PARAM); // Display More Content;
 init_param('', 'feed','string',NO_DEFAULT_PARAM);
 init_param('', 'tb','integer',NO_DEFAULT_PARAM);
 
+if (preg_match('#/modules/'.wp_mod().'(/|/index.php.*)?$#',$_SERVER['PHP_SELF'])) {
+	if (test_param('feed')) {
+		init_param('GET', 'num','integer');
+		if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
+		$GLOBALS['doing_rss'] = 1;
+		$lastpostdate_s = mysql2date('Y-m-d H:i:s', get_lastpostdate());
+		$lastpostdate = mysql2date('U',$lastpostdate_s);
+		static_content_header($lastpostdate);
+	}
+}
 /* Getting settings from db */
 if (!empty($GLOBALS['doing_rss'])) {
     $GLOBALS['posts_per_page']=get_settings('posts_per_rss');
@@ -320,7 +330,7 @@ if (test_param('postend') && (get_param('postend') > get_param('poststart')) && 
 		}
 	}
 }
-if (isset($GLOBALS['p']) && ($GLOBALS['p']=='all')) {
+if (!empty($GLOBALS['p']) && ($GLOBALS['p']=='all')) {
 	unset($_criteria);
 	$_criteria =& new CriteriaCompo();
 }
@@ -378,8 +388,7 @@ if ($GLOBALS['posts']) {
 			$GLOBALS['c'] = 1;
 			$GLOBALS['single'] = 1;
 		}
-//		if (!empty($s) && empty($paged) && !strstr($_SERVER['PHP_SELF'], 'wp-admin/')) { // If they were doing a search and got one result
-		if (empty($GLOBALS['p']) && empty($GLOBALS['name']) && empty($paged) && preg_match('#/modules/'.wp_mod().'(/|/index.php)?$#',$_SERVER['PHP_SELF'])) { // If they were doing a search and got one result
+		if (empty($GLOBALS['p']) && empty($GLOBALS['name']) && empty($paged) && preg_match('#/modules/'.wp_mod().'(/|/index.php.*)?$#',$_SERVER['PHP_SELF']) && empty($GLOBALS['doing_rss'])) {
 			header('Location: ' . get_permalink($GLOBALS['posts'][0]->ID));
 		}
 	}
@@ -441,7 +450,7 @@ if ($GLOBALS['posts']) {
 	}
 
 }
-if (preg_match('#/modules/'.wp_mod().'(/|/index.php)?$#',$_SERVER['PHP_SELF'])) {
+if (preg_match('#/modules/'.wp_mod().'(/|/index.php.*)?$#',$_SERVER['PHP_SELF'])) {
 	//redirect feed and trackback
 	if (test_param('feed')) {
 		require_once('wp-feed.php');
@@ -452,5 +461,4 @@ if (preg_match('#/modules/'.wp_mod().'(/|/index.php)?$#',$_SERVER['PHP_SELF'])) 
 		exit();
 	}
 }
-
 ?>
