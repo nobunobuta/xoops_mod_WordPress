@@ -69,15 +69,12 @@ function wp_dropdown_cats($currentcat, $currentparent = 0, $parent = 0, $level =
 }
 
 function wp_dropdown_month($current) {
-	global $wpdb;
-	global $wp_month_format, $month;
-	$arc_result=$wpdb->get_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date) FROM ".wp_table('posts')." ORDER BY post_date DESC",ARRAY_A);
+	$arc_result=$GLOBALS['wpdb']->get_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date) FROM ".wp_table('posts')." ORDER BY post_date DESC",ARRAY_A);
 	foreach ($arc_result as $arc_row) {
 		$arc_year  = $arc_row["YEAR(post_date)"];
 		$arc_month = $arc_row["MONTH(post_date)"];
 		$arc_ym = $arc_year.zeroise($arc_month,2);
-   		$month_str = ereg_replace('%MONTH',$month[zeroise($arc_month,2)],$wp_month_format);
-		$month_str = ereg_replace('%YEAR',$arc_year,$month_str);
+		$month_str = format_month($arc_year, $GLOBALS['month'][zeroise($arc_month,2)]);
 ?> 
 		<option value="<?php echo $arc_ym ?>"<?php selected($current, $arc_ym)?>><?php echo $month_str ?></option>
 <?php
@@ -130,7 +127,7 @@ function wp_dropdown_postbypost($current) {
 	$resultarc = $wpdb->get_results("SELECT ID,post_date,post_title FROM ".wp_table('posts')." ORDER BY post_date DESC");
 	foreach ($resultarc as $row) {
 		if ($row->post_date != "0000-00-00 00:00:00") {
-			$title = (strip_tags($row->post_title)) ? strip_tags(stripslashes($row->post_title)) : $row->ID;
+			$title = (strip_tags($row->post_title)) ? strip_tags($row->post_title) : $row->ID;
 ?>
 			<option value="<?php echo $row->ID ?>"<?php selected($current, $row->ID)?>><?php echo $title ?></option>
 <?php
@@ -265,9 +262,9 @@ function veriflog() {
 function add_meta($post_ID) {
 	global $wpdb;
 	
-	$metakeyselect = $wpdb->escape( stripslashes( trim($_POST['metakeyselect']) ) );
-	$metakeyinput  = $wpdb->escape( stripslashes( trim($_POST['metakeyinput']) ) );
-	$metavalue     = $wpdb->escape( stripslashes( trim($_POST['metavalue']) ) );
+	$metakeyselect = $wpdb->escape( remove_magic_quotes( trim($_POST['metakeyselect']) ) );
+	$metakeyinput  = $wpdb->escape( remove_magic_quotes( trim($_POST['metakeyinput']) ) );
+	$metavalue     = $wpdb->escape( remove_magic_quotes( trim($_POST['metavalue']) ) );
 
 	if (!empty($metavalue) && ((('#NONE#' != $metakeyselect) && !empty($metakeyselect)) || !empty($metakeyinput))) {
 		// We have a key/value pair. If both the select and the 
@@ -314,13 +311,13 @@ function draft_list($user_ID) {
 		$i = 0;
 		foreach ($drafts as $draft) {
 			$delim =  (0 != $i) ? ', ' : '';
-			$draft->post_title = stripslashes($draft->post_title);
+			$draft->post_title = $draft->post_title;
 			if ($draft->post_title == '') {
 				$draft->post_title = 'Post #'.$draft->ID;
 			}
 			++$i;
 ?> 
-		<?php echo $delim ?><a href='post.php?action=edit&amp;post=<?echo $draft->ID ?>' title='Edit this draft'><?php echo $draft->post_title ?></a>
+		<?php echo $delim ?><a href='post.php?action=edit&amp;post=<?php echo $draft->ID ?>' title='Edit this draft'><?php echo $draft->post_title ?></a>
 <?php
 		}
 ?>
@@ -340,7 +337,7 @@ function do_trackback($postObject, $useutf8, $target_charset="") {
 			$the_excerpt = apply_filters('the_content', $postObject->getVar('post_content'));
 		}
 		$the_excerpt = (strlen(strip_tags($the_excerpt)) > 255) ? substr(strip_tags($the_excerpt), 0, 252) . '...' : strip_tags($the_excerpt);
-		$excerpt = stripslashes($the_excerpt);
+		$excerpt = $the_excerpt;
 		$to_pings = explode("\n", $to_ping);
 		if ($useutf8=="1") {
 			$target_charset = 'UTF-8';
