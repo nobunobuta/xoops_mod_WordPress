@@ -12,6 +12,7 @@ define("_MI_WORDPRESS_AUTHOR",'<a href="http://www.kowa.org/" target="_blank">no
 
 // Sub menu titles
 define("_MI_WORDPRESS_SMNAME1","Submit Blog");
+define("_MI_WORDPRESS_SMNAME2","Archive");
 // Sample Blog Message
 define("_MI_WORDPRESS_INST_POST_CONTENT","'Welcome to WordPress. This is the first post. Edit or delete it, then start blogging!'");
 define("_MI_WORDPRESS_INST_POST_TITLE","'Hello world!'");
@@ -42,10 +43,26 @@ define("_MI_WP_USE_THEME_TEMPLATE","Use Template file under theme directory, whe
 define("_MI_WP_USE_THEME_TEMPLATE_DESC","Use Template file(content_block-template.php) under theme directory, when display content XOOPS block.");
 
 define("_MI_WP_USE_BLOCKCSSHEADER","Use CSS link Tag for Wordpress Style");
-define("_MI_WP_USE_BLOCKCSSHEADER_DESC",'Use CSS link Tag for Wordpress Style in the HTML &lt;HEAD&gt; section.<br/>You must insert <b>&lt;{$xoops_block_header}&gt;</b> line at next line <b>&lt;{$xoops_module_header}&gt;</b> in theme.html of your XOOPS Theme.');
+define("_MI_WP_USE_BLOCKCSSHEADER_DESC",'Use CSS link Tag for Wordpress Style in the HTML &lt;HEAD&gt; section.<br/>You must insert <b>&lt;{$xoops_block_header}&gt;</b> line at next line <b>&lt;{$xoops_module_header}&gt;</b> in theme.html of your XOOPS Theme.<br />Another way, you can use <b>&lt;{$xoops_themecss}&gt;</b>, if this variable is used with same format in default template');
+define('_MI_OPT_BLOCKCSSHEADER_NONE', 'No');
+define('_MI_OPT_BLOCKCSSHEADER_YES', 'Using &lt;{$xoops_block_header}&gt;');
+define('_MI_OPT_BLOCKCSSHEADER_HACK', 'Using &lt;{$xoops_themecss}&gt;');
 
 define("_MI_WP_USE_XOOPS_COMM","Using XOOPS Comment System");
 define("_MI_WP_USE_XOOPS_COMM_DESC","Using XOOPS Comment System");
+
+define("_MI_WP_SHOW_ARCHIVE_MENU","Show \"Archive\" Submenu");
+define("_MI_WP_SHOW_ARCHIVE_MENU_DESC","Show \"Archive\" Submenu");
+
+define("_MI_WP_USE_KAKASI","Use Kakasi with Archive Listing");
+define("_MI_WP_USE_KAKASI_DESC","Only for Japanese Blog Title sorting");
+
+define("_MI_WP_KAKASI_PATH","Path for kakasi");
+define("_MI_WP_KAKASI_PATH_DESC","Only for Japanese Blog Title sorting");
+
+define("_MI_WP_KAKASI_CHARSET","Charset of kakasi");
+define("_MI_WP_KAKASI_CHARSET_DESC","Only for Japanese Blog Title sorting");
+
 // Block Name
 define("_MI_WORDPRESS_BNAME1","WordPress%s Calendar");
 define("_MI_WORDPRESS_BDESC1","WordPress Calendar");

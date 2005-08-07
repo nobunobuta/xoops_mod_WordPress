@@ -12,6 +12,7 @@ define("_MI_WORDPRESS_AUTHOR",'<a href="http://www.kowa.org/" target="_blank">¤Î
 
 // Sub menu titles
 define("_MI_WORDPRESS_SMNAME1","Blog¤ò½ñ¤¯");
+define("_MI_WORDPRESS_SMNAME2","µ­»ö°ìÍ÷");
 // Sample Blog Message
 define("_MI_WORDPRESS_INST_POST_CONTENT","'WordPress ME for Xoops2¤ÎÆ³ÆþÀ®¸ù¤ª¤á¤Ç¤È¤¦¤´¤¶¤¤¤Þ¤¹¡£<br /> . This is the first post. Edit or delete it, then start blogging!'");
 define("_MI_WORDPRESS_INST_POST_TITLE","'¤è¤¦¤³¤½¡¢WordPress¤ÎÀ¤³¦¤Ø¡ª'");
@@ -41,10 +42,26 @@ define("_MI_WP_USE_THEME_TEMPLATE","µ­»ö¥Ö¥í¥Ã¥¯É½¼¨¤Ëtheme¥Ç¥£¥ì¥¯¥È¥ê¤Î¥Æ¥ó¥×¥
 define("_MI_WP_USE_THEME_TEMPLATE_DESC","µ­»ö¥Ö¥í¥Ã¥¯É½¼¨¤Ëtheme¥Ç¥£¥ì¥¯¥È¥ê²¼¤Î¥Æ¥ó¥×¥ì¡¼¥È(content_block-template.php)¤ò»ÈÍÑ¤·¤Þ¤¹¡£");
 
 define("_MI_WP_USE_BLOCKCSSHEADER","BLOCK¤ÎCSS»²¾È¤òHTML¥Ø¥Ã¥ÀÉôÊ¬¤ËÁÞÆþ");
-define("_MI_WP_USE_BLOCKCSSHEADER_DESC",'BLOCK¤ÎCSS»ØÄê¤ò¡¢HTML¤Î¥Ø¥Ã¥ÀÉôÊ¬¤Ç¥ê¥ó¥¯¤·¤Þ¤¹¡£<br/>XOOPS¥Æ¥ó¥×¥ì¡¼¥È¤Îtheme.htmlÆâ¤Î&lt;{$xoops_module_header}&gt;¤Î²¼¹Ô¤Ë¡¢&lt;{$xoops_block_header}&gt;¤òÁÞÆþ¤¹¤ëÉ¬Í×¤¬¤¢¤ê¤Þ¤¹¡£');
+define("_MI_WP_USE_BLOCKCSSHEADER_DESC",'BLOCK¤ÎCSS»ØÄê¤ò¡¢HTML¤Î¥Ø¥Ã¥ÀÉôÊ¬¤Ç¥ê¥ó¥¯¤·¤Þ¤¹¡£<br/>XOOPS¥Æ¥ó¥×¥ì¡¼¥È¤Îtheme.htmlÆâ¤Î<b>&lt;{$xoops_module_header}&gt;</b>¤Î²¼¹Ô¤Ë¡¢<b>&lt;{$xoops_block_header}&gt;</b>¤òÁÞÆþ¤¹¤ëÉ¬Í×¤¬¤¢¤ê¤Þ¤¹¡£<br/><b>&lt;{$xoops_themecss}&gt;</b>¤ò»ÈÍÑ¤¹¤ë¤³¤È¤â²ÄÇ½¤Ç¤¹¤¬¡¢¤³¤Î¾ì¹ç¤Ï¡¢XOOPS¤ÎÉ¸½à¥Æ¥ó¥×¥ì¡¼¥È¤ÈÆ±ÍÍ¤Î½ñ¼°¤Ë¤è¤Ã¤Æ<b>&lt;{$xoops_themecss}&gt;</b>¤¬»ÈÍÑ¤µ¤ì¤Æ¤¤¤ë»ö¤¬Á°Äó¤Ë¤Ê¤ê¤Þ¤¹¡£');
+define('_MI_OPT_BLOCKCSSHEADER_NONE', '¤·¤Ê¤¤');
+define('_MI_OPT_BLOCKCSSHEADER_YES', '&lt;{$xoops_block_header}&gt;¤ò»ÈÍÑ');
+define('_MI_OPT_BLOCKCSSHEADER_HACK', '&lt;{$xoops_themecss}&gt;¤ò»ÈÍÑ');
 
 define("_MI_WP_USE_XOOPS_COMM","XOOPS¤Î¥³¥á¥ó¥È¥·¥¹¥Æ¥à¤ò»ÈÍÑ");
 define("_MI_WP_USE_XOOPS_COMM_DESC","¥³¥á¥ó¥È¤òXOOPS¶¦ÄÌ¤Î¥³¥á¥ó¥È¥·¥¹¥Æ¥à¤ò»ÈÍÑ¤·¤Þ¤¹¡¢°Ê²¼¤Î£²¹àÌÜ¤Ï¤³¤ÎÀßÄê¤¬¡Ö¤Ï¤¤¡×¤Î»þ¤Î¤ß¤ËÍ­¸ú¤Ç¤¹¡£");
+
+define("_MI_WP_SHOW_ARCHIVE_MENU","¡Öµ­»ö°ìÍ÷¡×¤ò¥µ¥Ö¥á¥Ë¥å¡¼¤ËÉ½¼¨");
+define("_MI_WP_SHOW_ARCHIVE_MENU_DESC","¡Öµ­»ö°ìÍ÷¡×¤ò¥µ¥Ö¥á¥Ë¥å¡¼¤ËÉ½¼¨¤·¤Æ¡Öµ­»ö°ìÍ÷µ¡Ç½¤Î»ÈÍÑ¤ò²ÄÇ½¤Ë¤·¤Þ¤¹¡£");
+
+define("_MI_WP_USE_KAKASI","¡Öµ­»ö°ìÍ÷¡×¤ÇKakasi¤ò»ÈÍÑ");
+define("_MI_WP_USE_KAKASI_DESC","¡Öµ­»ö°ìÍ÷¡×¤ÇKakasi¤ò»ÈÍÑ¤·¤Æ¥¿¥¤¥È¥ë¤ÎÆÉ¤ß¤Ë¤è¤ëÊÂ¤ÓÂØ¤¨¤ò²ÄÇ½¤Ë¤·¤Þ¤¹¡£");
+
+define("_MI_WP_KAKASI_PATH","kakasi¤Î¥Õ¥ë¥Ñ¥¹");
+define("_MI_WP_KAKASI_PATH_DESC","¡Öµ­»ö°ìÍ÷¡×¤Ç»ÈÍÑ¤¹¤ëkakasi¥×¥í¥°¥é¥à¥Õ¥¡¥¤¥ë¤Î¥Õ¥ë¥Ñ¥¹¤ò»ØÄê¤·¤Þ¤¹¡£");
+
+define("_MI_WP_KAKASI_CHARSET","kakasi¤Î»ÈÍÑÊ¸»ú¥³¡¼¥É");
+define("_MI_WP_KAKASI_CHARSET_DESC","¡Öµ­»ö°ìÍ÷¡×¤Ç»ÈÍÑ¤¹¤ëkakasi¤¬»ÈÍÑ¤¹¤ëÊ¸»ú¥³¡¼¥É¤ò»ØÄê¤·¤Þ¤¹¡£");
+
 // Block Name
 define("_MI_WORDPRESS_BNAME1","WordPress%s ¥«¥ì¥ó¥À¡¼");
 define("_MI_WORDPRESS_BDESC1","WordPress ¥«¥ì¥ó¥À¡¼");

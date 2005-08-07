@@ -4,14 +4,15 @@ define ('WP_LANGUAGE_XOOPS_MODINFO_READ','1');
 // Module Info
 
 // The name of this module
-define("_MI_WORDPRESS_NAME","Blog");
+define("_MI_WORDPRESS_NAME","WordPress%s");
 
 // A brief description of this module
-define("_MI_WORDPRESS_DESC","Blog");
-define("_MI_WORDPRESS_AUTHOR",'<a href="" target="_blank">nobunobu</a>');
+define("_MI_WORDPRESS_DESC","XOOPS Module of WordPress.");
+define("_MI_WORDPRESS_AUTHOR",'<a href="http://www.kowa.org/" target="_blank">nobunobu</a>');
 
 // Sub menu titles
 define("_MI_WORDPRESS_SMNAME1","Aggiungi un Blog");
+define("_MI_WORDPRESS_SMNAME2","Archive");
 // Sample Blog Message
 define("_MI_WORDPRESS_INST_POST_CONTENT","'Benvenuto nel Blog. Questo è il tuo primo post. Puoi fare Modifiche o Cancellare. Poi inizia il tuo Blog!'");
 define("_MI_WORDPRESS_INST_POST_TITLE","'Salve a Tutti!'");
@@ -35,17 +36,33 @@ define("_MI_WPEDITAUTHGRP_CFG_DESC","Seleziona i gruppi che possono postare ed e
 define("_MI_WPADMINAUTHGRP_CFG_MSG","Amministra i gruppi");
 define("_MI_WPADMINAUTHGRP_CFG_DESC","Seleziona i gruppi che posso cambiare le Opzioni del Blog.<br/>(Utenti Livello 10)");
 
-define("_MI_WP_USE_XOOPS_SMILE","Usa le Faccine");
+define("_MI_WP_USE_XOOPS_SMILE","Usa le XOOPS Faccine");
 define("_MI_WP_USE_XOOPS_SMILE_DESC","Faccine");
 
 define("_MI_WP_USE_THEME_TEMPLATE","Scegli il Template per visualizzare i blocchi.");
 define("_MI_WP_USE_THEME_TEMPLATE_DESC","Scegli il Template per visualizzare i contenuti.");
 
 define("_MI_WP_USE_BLOCKCSSHEADER","Use CSS link Tag for Wordpress Style");
-define("_MI_WP_USE_BLOCKCSSHEADER_DESC",'Use CSS link Tag for Wordpress Style in the HTML &lt;HEAD&gt; section.<br/>You must insert <b>&lt;{$xoops_block_header}&gt;</b> line at next line <b>&lt;{$xoops_module_header}&gt;</b> in theme.html of your XOOPS Theme.');
+define("_MI_WP_USE_BLOCKCSSHEADER_DESC",'Use CSS link Tag for Wordpress Style in the HTML &lt;HEAD&gt; section.<br/>You must insert <b>&lt;{$xoops_block_header}&gt;</b> line at next line <b>&lt;{$xoops_module_header}&gt;</b> in theme.html of your XOOPS Theme.<br />Another way, you can use <b>&lt;{$xoops_themecss}&gt;</b>, if this variable is used with same format in default template');
+define('_MI_OPT_BLOCKCSSHEADER_NONE', 'No');
+define('_MI_OPT_BLOCKCSSHEADER_YES', 'Using &lt;{$xoops_block_header}&gt;');
+define('_MI_OPT_BLOCKCSSHEADER_HACK', 'Using &lt;{$xoops_themecss}&gt;');
 
 define("_MI_WP_USE_XOOPS_COMM","Using XOOPS Comment System");
 define("_MI_WP_USE_XOOPS_COMM_DESC","Using XOOPS Comment System");
+
+define("_MI_WP_SHOW_ARCHIVE_MENU","Show \"Archive\" Submenu");
+define("_MI_WP_SHOW_ARCHIVE_MENU_DESC","Show \"Archive\" Submenu");
+
+define("_MI_WP_USE_KAKASI","Use Kakasi with Archive Listing");
+define("_MI_WP_USE_KAKASI_DESC","Only for Japanese Blog Title sorting");
+
+define("_MI_WP_KAKASI_PATH","Path for kakasi");
+define("_MI_WP_KAKASI_PATH_DESC","Only for Japanese Blog Title sorting");
+
+define("_MI_WP_KAKASI_CHARSET","Charset of kakasi");
+define("_MI_WP_KAKASI_CHARSET_DESC","Only for Japanese Blog Title sorting");
+
 // Block Name
 define("_MI_WORDPRESS_BNAME1","Calendario");
 define("_MI_WORDPRESS_BDESC1","Calendario Blog");
