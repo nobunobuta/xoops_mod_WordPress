@@ -42,6 +42,9 @@ if( ! defined( 'WP_AUTHORS_BLOCK_INCLUDED' ) ) {
 		$hide_empty = true;
 		$feed = ($show_rss2_icon == 1) ? 'rss2' : '' ;
 		$feed_image = ($show_rss2_icon == 1) ? wp_siteurl().'/wp-images/rss-mini.gif' : '';
+
+		$block['wp_num'] = $wp_num;
+		$block['divid'] = 'wpAuthor'.$wp_num;
 		$block['style'] = block_style_get(false);
 		$block['authors'] = list_authors2($optioncount,$exclude_admin,$idmode, $hide_empty,$feed,$feed_image,false);
 		$_wpTpl =& new WordPresTpl('theme');

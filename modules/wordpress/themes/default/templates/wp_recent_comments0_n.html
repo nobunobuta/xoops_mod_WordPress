@@ -1,7 +1,7 @@
 <ul class="wpBlockList">
 <{foreach item=record from=$block.records}>
   <li>
-    <span class="comment-author"><{$record.comment_author}></span>
+    <span class="comment-author"><{$record.comment_author_link}></span>
     <a href="<{$record.permalink}>" title="View the entire comment by <{$record.comment_author}>" style="display: inline;"><{$record.comment_excerpt}>...</a>
 <{if $block.show_type }>
     <span style="font-size:70%">-<{$record.type}></span>

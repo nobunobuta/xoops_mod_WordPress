@@ -123,9 +123,8 @@ function wp_title($sep = '&raquo;', $echo = true) {
 	if (!empty($my_day)) {
 		$title = mysql2date($GLOBALS['dateformat'], $my_year.'-'.$my_month.'-'.$my_day.' 00:00:00');
 	} else if (!empty($my_month)) {
-		$title = ereg_replace('%MONTH', $my_month, $GLOBALS['wp_month_format']);
-		$title = ereg_replace('%YEAR', $my_year, $title);
-	}
+		$title = format_month($my_year, $my_month);
+		}
 
 	// If there's a post
 	if ((!empty($GLOBALS['p']) && intval($GLOBALS['p'])) || (!empty($GLOBALS['name']) && $GLOBALS['name'] != '')) {
@@ -283,8 +282,7 @@ function single_month_title($prefix = '', $echo = true ) {
 		if (!empty($my_day)) {
 			$title = mysql2date($GLOBALS['dateformat'], $my_year.'-'.$my_month.'-'.$my_day.' 00:00:00');
 		} else if (!empty($my_month)) {
-			$title = ereg_replace('%MONTH', $my_month, $GLOBALS['wp_month_format']);
-			$title = ereg_replace('%YEAR', $my_year, $title);
+			$title = format_month($my_year, $my_month);
 		}
 	}
 	if (!empty($title)) {
@@ -365,12 +363,10 @@ function get_archives($type='', $limit='', $format='html', $before = "", $after 
 				$this_month = $postObject->getExtraVar('month');
 				$url  = get_month_link($this_year, $this_month);
 				if ($show_post_count) {
-					$text = ereg_replace('%MONTH',$GLOBALS['month'][zeroise($this_month,2)],$GLOBALS['wp_month_format']);
-					$text = ereg_replace('%YEAR',sprintf("%d",$this_year),$text);
+					$text = format_month(sprintf("%d",$this_year), $GLOBALS['month'][zeroise($this_month,2)]);
 					$after = "&nbsp;(".$postObject->getExtraVar('posts').")";
 				} else {
-					$text = ereg_replace('%MONTH',$GLOBALS['month'][zeroise($this_month,2)],$GLOBALS['wp_month_format']);
-					$text = ereg_replace('%YEAR',sprintf("%d",$this_year),$text);
+					$text = format_month(sprintf("%d",$this_year), $GLOBALS['month'][zeroise($this_month,2)]);
 				}
 				$selected = ($selvalue == $this_year.zeroise($this_month,2));
 				$get_archives .= get_archives_link($url, $text, $format, $before, $after, $selected);
@@ -494,8 +490,7 @@ function get_calendar($daylength = 1, $echo=true) {
 	$criteria->setLimit(1);
 	$nextPostObjects =& $postHandler->getObjects($criteria, false, 'post_date');
 	
-	$month_str = ereg_replace('%MONTH',$GLOBALS['month'][zeroise($thismonth, 2)],$GLOBALS['wp_month_format']);
-	$month_str = ereg_replace('%YEAR',date('Y', $unixmonth),$month_str);
+	$month_str = format_month(date('Y', $unixmonth), $GLOBALS['month'][zeroise($thismonth, 2)]);
 	$get_calendar = "<table id='wp-calendar' summary='wp-calendar'>\n<caption>$month_str</caption>\n<thead>\n\t<tr>";
 	foreach ($GLOBALS['weekday'] as $wd) {
 		if (function_exists('mb_substr')) {
@@ -514,8 +509,7 @@ function get_calendar($daylength = 1, $echo=true) {
 		} else {
 			$smonth_name = substr($GLOBALS['month'][zeroise($prev_month, 2)], 0, 3);
 		}
-		$month_str = ereg_replace('%MONTH',$GLOBALS['month'][zeroise($prev_month, 2)],$GLOBALS['wp_month_format']);
-		$month_str = ereg_replace('%YEAR',date('Y', mktime(0, 0 , 0, $prev_month, 1, $prev_year)),$month_str);
+		$month_str = format_month(date('Y', mktime(0, 0 , 0, $prev_month, 1, $prev_year)), $GLOBALS['month'][zeroise($prev_month, 2)]);
 		$get_calendar .= "\n\t\t".'<td abbr="' . $GLOBALS['month'][zeroise($prev_month, 2)] . '" colspan="3" id="prev"><a href="' .
 				get_month_link($prev_year, $prev_month) . '" title="View posts for ' . $month_str . '">&laquo; ' . $smonth_name . '</a></td>';
 	} else {
@@ -531,8 +525,7 @@ function get_calendar($daylength = 1, $echo=true) {
 		} else {
 			$smonth_name = substr($GLOBALS['month'][zeroise($next_month, 2)], 0, 3);
 		}
-		$month_str = ereg_replace('%MONTH',$GLOBALS['month'][zeroise($next_month, 2)],$GLOBALS['wp_month_format']);
-		$month_str = ereg_replace('%YEAR',date('Y', mktime(0, 0 , 0, $next_month, 1, $next_year)),$month_str);
+		$month_str = format_month(date('Y', mktime(0, 0 , 0, $next_month, 1, $next_year)), $GLOBALS['month'][zeroise($next_month, 2)]);
 		$get_calendar .= "\n\t\t".'<td abbr="' . $GLOBALS['month'][zeroise($next_month, 2)] . '" colspan="3" id="next"><a href="' .
 				get_month_link($next_year, $next_month) . '" title="View posts for ' . $month_str . '">' . $smonth_name . ' &raquo;</a></td>';
 	} else {
@@ -613,7 +606,7 @@ function get_calendar($daylength = 1, $echo=true) {
 
 function allowed_tags() {
 	$allowed = "";
-	foreach($GLOBALS['allowedtags'] as $tag => $attributes) {
+	foreach($GLOBALS['wp_allowed_tags'] as $tag => $attributes) {
 		$allowed .= "<$tag";
 		if (0 < count($attributes)) {
 			foreach ($attributes as $attribute => $limits) {

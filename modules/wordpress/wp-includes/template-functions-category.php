@@ -25,7 +25,7 @@ function get_the_category($id=false) {
 	}
 }
 
-function get_category_link($echo = false, $category_id, $category_nicename) {
+function get_category_link($echo = false, $category_id, $category_nicename = '') {
 	$category_id = intval($category_id);
 	$cat_ID = $category_id;
 	$permalink_structure = get_settings('permalink_structure');

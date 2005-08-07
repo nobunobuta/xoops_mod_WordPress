@@ -78,13 +78,15 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 					elseif (preg_match('|<pingback />|', $lcomment->comment_content)) $type='[PingBack]';
 					else  $type='[Comment]';
 
-					$_record['comment_author'] = _get_comment_author_link($lcomment,25);
-					$_record['comment_content'] = strip_tags(apply_filters('comment_text',$lcomment->comment_content));
+					$_record['comment_author'] = apply_filters('comment_author', $lcomment->comment_author);
+					$_record['comment_author_link'] = _get_comment_author_link($lcomment,25);
+					$_record['comment_content'] = strip_tags($lcomment->comment_content);
 					if (function_exists('mb_substr')) {
 						$_record['comment_excerpt'] = mb_substr($_record['comment_content'],0,$comment_lenth);
 					} else {
 						$_record['comment_excerpt'] = substr($_record['comment_content'],0,$comment_lenth);
 					}
+					$_record['comment_excerpt'] = preg_replace('/([a-zA-Z0-9\.\/\:\%\?\-\+\&\;]{15})/ms','\\1&#8203;',$_record['comment_excerpt']);
 					$_record['permalink'] = get_permalink($lcomment->ID).'#comment-'.$lcomment->comment_ID;
 					if ($show_type) {
 						$_record['type'] = $type;
@@ -123,6 +125,7 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 						} else {
 							$_record['comment_excerpt'] = substr($_record['comment_content'],0,$comment_lenth);
 						}
+						$_record['comment_excerpt'] = preg_replace('/([a-zA-Z0-9\.\/\:\?\-\+%&;]{15})/ms','\\1&#8203;',$_record['comment_excerpt']);
 						$_record['permalink'] = wp_siteurl().'/index.php?p='.$lcomment->ID.'&amp;c=1'; 
 						$new_post_ID = $lcomment->ID; 
 					} 
@@ -134,7 +137,8 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 						   $_record['comment_date'] = mysql2date('m/d', $comment_date); 
 						}
 					}
-					$_record['comment_author'] = _get_comment_author_link($lcomment,25);
+					$_record['comment_author'] = apply_filters('comment_author', $lcomment->comment_author);
+					$_record['comment_author_link'] = _get_comment_author_link($lcomment,25);
 					if (preg_match('|<trackback />|', $lcomment->comment_content)) $type='[TrackBack]';
 					elseif (preg_match('|<pingback />|', $lcomment->comment_content)) $type='[Ping]';
 					else  $type='[Comment]';
@@ -190,7 +194,7 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 		if (empty($url)) {
 			$ret = $author;
 		} else {
-			$ret = "<a href='$url' rel='external'>$author</a>";
+			$ret = '<a href="'.$url.'" title="Go to '.$author.'\'s site" rel="nofollow">'.$author.'</a>';
 		}
 		 return $ret; 
 	}

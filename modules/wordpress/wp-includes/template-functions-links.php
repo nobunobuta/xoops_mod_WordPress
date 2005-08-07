@@ -65,7 +65,11 @@ function get_permalink($id=false) {
 	if ('' != $permalink) {
 		$unixtime = strtotime($idpost->post_date);
 		$cats = get_the_category($idpost->ID);
-		$category = $cats[0]->category_nicename;
+		if ($cats) {
+			$category = $cats[0]->category_nicename;
+		} else {
+			$category = '';
+		}
 		$authordata = get_userdata($idpost->post_author);
 		$author = $authordata->user_login;
 		$rewritereplace = array(
