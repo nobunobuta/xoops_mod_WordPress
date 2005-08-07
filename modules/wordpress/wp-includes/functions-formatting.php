@@ -85,11 +85,11 @@ function wpautop($pee, $br = 1) {
 
 
 function wp_filter_kses($string) {
-	return wp_kses($string, $GLOBALS['allowedtags']);
+	return wp_kses($string, $GLOBALS['wp_allowed_tags'],$GLOBALS['wp_allowed_protocols'], false);
 }
 
 function clean_html($string) {
-	return wp_kses($string, $GLOBALS['fullcleantags']);
+	return wp_kses($string, $GLOBALS['wp_fullclean_tags'],$GLOBALS['wp_allowed_protocols'], false);
 }
 
 function sanitize_title($title) {
@@ -372,7 +372,7 @@ function current_time($type, $offset=0) {
 
 function format_month($year,$month) {
 	$str = ereg_replace('%MONTH', $month, $GLOBALS['wp_month_format']);
-	$str = ereg_replace('%YEAR', sprintf("%d",$year), $str);
+	$str = ereg_replace('%YEAR', $year, $str);
 	return $str;
 }
 
