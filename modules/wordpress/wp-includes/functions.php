@@ -291,6 +291,29 @@ function get_lastpostmodified() {
 	return $lastpostmodified;
 }
 
+function get_lastcommentmodified($p=0, $name='') {
+	if ((!isset($GLOBALS['lastcommentmodified'][$p][wp_id()])) || (!$GLOBALS['use_cache'])) {
+		$_criteria =& new CriteriaCompo(new Criteria('comment_approved','1 '));
+		$_criteria->add(new Criteria('post_status','publish'));
+		$_criteria->add(new Criteria('post_date',current_time('mysql'), '<='));
+		if ($p > 0) {
+			$_criteria->add(new Criteria('comment_post_ID',$p));
+		} else if ($p == -1) {
+			$_criteria->add(new Criteria(wp_table('posts').'.post_name',$name));
+		}
+		$_criteria->setOrder('DESC');
+		$_criteria->setSort('comment_date');
+		$_criteria->setLimit(1);
+		$_joinCriteria =& new XoopsJoinCriteria(wp_table('posts'), 'comment_post_id', 'ID');
+		$commentHandler =& wp_handler('Comment');
+		$commentObjects = $commentHandler->getObjects($_criteria, false, 'comment_date', false, $_joinCriteria);
+		$GLOBALS['lastcommentmodified'][$p][wp_id()] = $lastcommentmodified = $commentObjects[0]->getVar('comment_date');
+	} else {
+		$lastcommentmodified = $GLOBALS['lastcommentmodified'][$p][wp_id()];
+	}
+	return $lastcommentmodified;
+}
+
 function user_pass_ok($user_login,$user_pass) {
 	if ((empty($GLOBALS['cache_userdata'][wp_id()][$user_login])) OR (!$GLOBALS['use_cache'])) {
 		$userdata = get_userdatabylogin($user_login);
@@ -445,6 +468,9 @@ function url_to_postid($url = '') {
 
 
 /* Options functions */
+function get_option($option) {
+	return get_settings($option);
+}
 
 function get_settings($setting) {
 	if (!isset($GLOBALS['use_cache'])) $use_cache=1;
@@ -1391,7 +1417,11 @@ function permlink_to_param() {
 	if ( !empty( $_SERVER['PATH_INFO'] ) ) {
 		// Fetch the rewrite rules.
 		$rewrite = rewrite_rules('matches');
-		$pathinfo = $_SERVER['PATH_INFO'];
+		$pathinfo =explode('/',$_SERVER['PATH_INFO']);
+		foreach($pathinfo as $key => $val) {
+			$pathinfo[$key] = rawurlencode($pathinfo[$key]);
+		}
+		$pathinfo = implode('/',$pathinfo);
 		// Trim leading '/'.
 		$pathinfo = preg_replace('!^/!', '', $pathinfo);
 
@@ -1426,7 +1456,9 @@ function permlink_to_param() {
 					break;
 				}
 			}
-			$_GET += $get;
+			if ($get) {
+				$_GET += $get;
+			}
 		}
 	}
 }
@@ -1647,7 +1679,7 @@ function get_xoops_option($dirname,$conf_name) {
 function block_style_get($echo = true, $with_tpl = true) {
 	$wp_num= (wp_id()=='-' ? '' : wp_id());
 	if ($with_tpl) {
-		if (get_xoops_option(wp_mod(),'wp_use_blockcssheader')) {
+		if (get_xoops_option(wp_mod(),'wp_use_blockcssheader')==1) {
 			$tplVars =& $GLOBALS['xoopsTpl']->get_template_vars();
 			$csslink = "\n".'<link rel="stylesheet" type="text/css" media="screen" href="'.wp_siteurl() .'/wp-blockstyle.php" />';
 			if(array_key_exists('xoops_block_header', $tplVars)) {
@@ -1656,6 +1688,13 @@ function block_style_get($echo = true, $with_tpl = true) {
 				}
 			} else {
 				$GLOBALS['xoopsTpl']->assign('xoops_block_header',$csslink);
+			}
+			return;
+		} else if (get_xoops_option(wp_mod(),'wp_use_blockcssheader')==2) {
+			$tplVars =& $GLOBALS['xoopsTpl']->get_template_vars();
+			$csslink = '" />'."\n".'<link rel="stylesheet" type="text/css" media="screen" href="'.wp_siteurl() .'/wp-blockstyle.php';
+			if (!strstr($tplVars['xoops_themecss'],$csslink)) {
+				$GLOBALS['xoopsTpl']->assign('xoops_themecss',$tplVars['xoops_themecss'].$csslink);
 			}
 			return;
 		} else {
