@@ -22,8 +22,8 @@ function the_title($before = '', $after = '', $echo = true) {
 	return _echo($title, $echo);
 }
 
-function the_title_rss($echo=true) {
-	$title = get_the_title();
+function the_title_rss($echo=true, $title='') {
+	if (!$title) $title = get_the_title();
 	$title = apply_filters('the_title', $title);
 	$title = apply_filters('the_title_rss', $title);
 	return _echo(wp_convert_rss_charset($title), $echo);
