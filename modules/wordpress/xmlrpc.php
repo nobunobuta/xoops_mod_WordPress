@@ -1042,7 +1042,9 @@ function mwnewpost($params) {
 			$postarr['post_excerpt'] = $contentstruct['mt_excerpt'];
 		}
 		if (array_key_exists('mt_text_more',$contentstruct)) {
-			$postarr['post_content'] .= "\n<!--more-->\n" . format_to_post($contentstruct['mt_text_more']);
+			if (trim(format_to_post($contentstruct['mt_text_more']))) {
+				$postarr['post_content'] .= "\n<!--more-->\n" . format_to_post($contentstruct['mt_text_more']);
+			}
 		}
 		
 		if (array_key_exists('mt_allow_comments',$contentstruct)) {
@@ -1141,7 +1143,9 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 			$postarr['post_excerpt'] = $contentstruct['mt_excerpt'];
 		}
 		if (array_key_exists('mt_text_more',$contentstruct)) {
-			$postarr['post_content'] .= "\n<!--more-->\n" . format_to_post($contentstruct['mt_text_more']);
+			if (trim(format_to_post($contentstruct['mt_text_more']))) {
+				$postarr['post_content'] .= "\n<!--more-->\n" . format_to_post($contentstruct['mt_text_more']);
+			}
 		}
 		if (array_key_exists('mt_allow_comments',$contentstruct)) {
 			$postarr['comment_status'] = $contentstruct['mt_allow_comments']? 'open' : 'closed';
