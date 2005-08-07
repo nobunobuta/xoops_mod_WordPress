@@ -59,14 +59,33 @@ if (preg_match('#/modules/'.wp_mod().'(/|/index.php.*)?$#',$_SERVER['PHP_SELF'])
 		init_param('GET', 'num','integer');
 		if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
 		$GLOBALS['doing_rss'] = 1;
-		$lastpostdate_s = mysql2date('Y-m-d H:i:s', get_lastpostdate());
-		$lastpostdate = mysql2date('U',$lastpostdate_s);
-		static_content_header($lastpostdate);
+		if ((test_param('p') && ($p != 'all')) || test_param('name') || (get_param('withcomments') == 1)) {
+			if (test_param('p')) {
+				$_post_id = get_param('p');
+				$_post_name = '';
+			} else if (test_param('name')) {
+				$_post_id = -1;
+				$_post_name = get_param('name');
+			} else {
+				$_post_id = 0;
+				$_post_name = '';
+			}
+			$lastcommentdate_s = mysql2date('Y-m-d H:i:s', get_lastcommentmodified($_post_id,$_post_name));
+			$lastcommentdate = mysql2date('U',$lastcommentdate_s);
+			static_content_header($lastcommentdate);
+		} else {
+			$lastpostdate_s = mysql2date('Y-m-d H:i:s', get_lastpostmodified());
+			$lastpostdate = mysql2date('U',$lastpostdate_s);
+			static_content_header($lastpostdate);
+		}
 	}
 }
 /* Getting settings from db */
 if (!empty($GLOBALS['doing_rss'])) {
     $GLOBALS['posts_per_page']=get_settings('posts_per_rss');
+}
+if ($GLOBALS['pagenow']=='nkarchives.php' && !empty($GLOBALS['wp_arc_posts_per_page'])) {
+    $GLOBALS['posts_per_page'] = $GLOBALS['wp_arc_posts_per_page'];
 }
 if (empty($GLOBALS['posts_per_page'])) {
     $GLOBALS['posts_per_page'] = get_settings('posts_per_page');
@@ -271,17 +290,23 @@ if (!test_param('orderby')) {
 } else {
 	// used to filter values
 	$_allowed_keys = array('author','date','category','title');
+	$_order_keys = array('post_author','post_date','cat_name','post_title');
 	$_orderby_list = explode(' ', addslashes_gpc(urldecode(get_param('orderby'))));
 	if (!in_array($_orderby_list[0], $_allowed_keys)) {
 		$_orderby_array[] = 'post_date';
 	}
 	for ($_i = 0; $_i < (count($_orderby_list)); $_i++) {
 		// Only allow certain values for safety
-		if (in_array($_orderby_list[$_i], $_allowed_keys)) {
-			$_orderby_array[] = 'post_'.$_orderby_list[$_i];
+		$_key = array_search($_orderby_list[$_i], $_allowed_keys);
+		if ($_key !== false) {
+			$_orderby_array[] = $_order_keys[$_key];
 		}
 	}
 	$_criteria_sort = $_orderby_array;
+	if (in_array('category', $_orderby_list) && !test_param('category_name')) {
+		$_joinCriteria =& new XoopsJoinCriteria(wp_table('post2cat'), 'ID', 'post_id');
+		$_joinCriteria->cascade(new XoopsJoinCriteria(wp_table('categories'), 'category_id', 'cat_ID'));
+	}
 }
 
 if (!test_param('cat') && !test_param('category_name') && !test_param('m') && !test_param('p') && !test_param('w') && !test_param('s') && !test_param('poststart') && !test_param('postend')) {
@@ -339,8 +364,12 @@ if ($GLOBALS['pagenow'] != 'post.php' && $GLOBALS['pagenow'] != 'edit.php') {
 	if (!test_param('poststart') || !test_param('postend') || !(get_param('postend') > get_param('poststart'))) {
 		$_criteria->add(new Criteria('post_date', current_time('mysql'), '<='));
 	}
-	$_distinct = 'DISTINCT';
+	if ($GLOBALS['pagenow'] != 'nkarchives.php' || get_param('orderby') != 'category') {
+		$_distinct = 'DISTINCT';
+		$_criteria->setGroupBy(wp_table('posts').'.ID');
+	}
 }
+
 $_wCriteria = new CriteriaCompo(new Criteria('post_status', 'publish'));
 // Get private posts
 if (!empty($GLOBALS['user_ID'])) {
@@ -349,8 +378,6 @@ if (!empty($GLOBALS['user_ID'])) {
 }
 $_criteria->add($_wCriteria);
 unset($_wCriteria);
-
-$_criteria->setGroupBy(wp_table('posts').'.ID');
 
 if ($_criteria_sort) $_criteria->setSort($_criteria_sort);
 if ($_criteria_order) $_criteria->setOrder($_criteria_order);
