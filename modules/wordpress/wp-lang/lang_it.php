@@ -475,6 +475,11 @@ define('_LANG_WPCM_COM_SAYIT','Dimmi!');
 define('_LANG_WPCM_THIS_TIME','Spiacenti, il formulario dei commenti è chiuso in questo momento.');
 // define('_LANG_WPCM_GO_BACK','Torna indietro');
 define('_LANG_WPCM_COM_NAME','Nome');
+define('_LANG_WPCM_CONF_TITLE','Comment (Confirm)');
+define('_LANG_WPCM_CONF_MSG','Please press "Confirm" button');
+define('_LANG_WPCM_CONF_BTN','Confirm');
+define('_LANG_WPCM_EDIT_TITLE','Edit Comment');
+define('_LANG_WPCM_EDIT_BTN','Update');
 
 /* File Name wp-comments-post.php */
 define('_LANG_WPCP_SORRY_ITEM','Spiacenti, i commenti sono chiusi per questo oggetto.');

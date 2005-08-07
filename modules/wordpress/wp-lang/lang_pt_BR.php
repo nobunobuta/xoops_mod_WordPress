@@ -469,6 +469,11 @@ define('_LANG_WPCM_COM_SAYIT','Enviar');
 define('_LANG_WPCM_THIS_TIME','Lamento, no momento os comentôþios estôþ fechados.');
 define('_LANG_WPCM_GO_BACK','Voltar');
 define('_LANG_WPCM_COM_NAME','Nome');
+define('_LANG_WPCM_CONF_TITLE','Comment (Confirm)');
+define('_LANG_WPCM_CONF_MSG','Please press "Confirm" button');
+define('_LANG_WPCM_CONF_BTN','Confirm');
+define('_LANG_WPCM_EDIT_TITLE','Edit Comment');
+define('_LANG_WPCM_EDIT_BTN','Update');
 
 /* File Name wp-comments-post.php */
 define('_LANG_WPCP_SORRY_ITEM','Desculpe, os comentôþios estôþ fechados para este item.');
