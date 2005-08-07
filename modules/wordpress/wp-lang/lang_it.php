@@ -485,7 +485,6 @@ define('_LANG_WPCP_SORRY_SECONDS','Spiacenti, puoi solo postare un nuovo comment
 /* File Name wp-admin/upload.php */
 define('_LANG_WAU_UPLOAD_DISABLED','L Amministratore ha disabilitato questa funzione');
 define('_LANG_WAU_UPLOAD_DIRECTORY','Sembra che esista un errore dovuto al fatto che la directory del file specificato non è riscrivibile da WordPress. Controlla i permessi sulla directory e sui file.');
-
 define('_LANG_WAU_UPLOAD_EXTENSION','Puoi caricare file con le estensioni : ');
 define('_LANG_WAU_UPLOAD_BYTES','Solo se non sono più grandi di <abbr title="Kilobytes">KB</abbr> : ');
 define('_LANG_WAU_UPLOAD_OPTIONS','Se sei un amministratore puoi configurare questi valori sotto <a href="options.php?option_group_id=4">opzioni</a>.');
@@ -722,14 +721,17 @@ define('_LANG_PG_HELLO_DOLLY','Questo non è un plugin, ma simbolizza la speranza
 define('_LANG_PG_TEXTILE_1','Questo è un semplice wrapper per <a href="http://textism.com/?wp">Dean Allen\'s</a> Generatore di Testo Web Umano, anche conosciuto come <a href="http://www.textism.com/tools/textile/">Textile</a>. Se usi questo plugin dovresti disabilitare Textile 2 e Markdown, perchè non funzionano bene insieme.');
 
 /* File Name nkarchives.php */
+define('_LANG_NKA_ARCHIVE', 'Sort By');
 define('_LANG_NKA_ALL_YEAR', 'All Years');
 define('_LANG_NKA_ALL_AUTHOR', 'All Authors');
 define('_LANG_NKA_ORDER_DATE', 'Date');
 define('_LANG_NKA_ORDER_TITLE', 'Title');
 define('_LANG_NKA_ORDER_CATEGORY', 'Category');
+define('_LANG_NKA_ORDER_AUTHOR', 'Author');
 define('_LANG_NKA_SORT_ASC', 'ASC');
 define('_LANG_NKA_SORT_DSC', 'DESC');
 define('_LANG_NKA_ACTION_SORT', 'Sort');
 define('_LANG_NKA_YEAR_SUFFIX', '');
+define('_LANG_NKA_EXCEEDS_COUNT', 'Number of results exceeds limit count(=%d).');
 }
 ?>

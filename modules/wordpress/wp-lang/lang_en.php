@@ -236,6 +236,7 @@ define('_LANG_WLA_CHECK_HEART','sweetheart');
 define('_LANG_WLA_CHECK_ZERO','Leave at 0 for no rating.');
 define('_LANG_WLA_CHECK_STRICT','Note that the <code>target</code> attribute is illegal in XHTML 1.1 and 1.0 Strict.');
 define('_LANG_WLA_TEXT_TOOLBAR','You can drag "Link This" to your toolbar and when you click it a window will pop up that will allow you to add whatever site you&#8217;re on to your links! Right now this only works on Mozilla or Netscape, but we&#8217;re working on it.');
+define('_LANG_WLA_BUTTON_TEXTNAME','Add This Link');
 
 /* File Name wp-admin/link-categories.php */
 define('_LANG_WLC_DONOT_DELETE','Can&#8217;t delete the link category. this is the default one');
@@ -486,7 +487,6 @@ define('_LANG_WPCP_SORRY_SECONDS','Sorry, you can only post a new comment once e
 /* File Name wp-admin/upload.php */
 define('_LANG_WAU_UPLOAD_DISABLED','The admin disabled this function');
 define('_LANG_WAU_UPLOAD_DIRECTORY','It doesn\'t look like you can use the file upload feature at this time because the directory you have specified doesn\'t appear to be writable by WordPress. Check the permissions on the directory and for typos.');
-
 define('_LANG_WAU_UPLOAD_EXTENSION','You can upload files with the extension : ');
 define('_LANG_WAU_UPLOAD_BYTES','As long as they are no larger than <abbr title="Kilobytes">KB</abbr> : ');
 define('_LANG_WAU_UPLOAD_OPTIONS','If you\'re an admin you can configure these values under <a href="options.php?option_group_id=4">options</a>.');
@@ -723,14 +723,17 @@ define('_LANG_PG_HELLO_DOLLY','This is not just a plugin, it symbolizes the hope
 define('_LANG_PG_TEXTILE_1','This is a simple wrapper for <a href="http://textism.com/?wp">Dean Allen\'s</a> Humane Web Text Generator, also known as <a href="http://www.textism.com/tools/textile/">Textile</a>. If you use this plugin you should disable Textile 2 and Markdown, as they don\'t play well together.');
 
 /* File Name nkarchives.php */
+define('_LANG_NKA_ARCHIVE', 'Sort By');
 define('_LANG_NKA_ALL_YEAR', 'All Years');
 define('_LANG_NKA_ALL_AUTHOR', 'All Authors');
 define('_LANG_NKA_ORDER_DATE', 'Date');
 define('_LANG_NKA_ORDER_TITLE', 'Title');
 define('_LANG_NKA_ORDER_CATEGORY', 'Category');
+define('_LANG_NKA_ORDER_AUTHOR', 'Author');
 define('_LANG_NKA_SORT_ASC', 'ASC');
 define('_LANG_NKA_SORT_DSC', 'DESC');
 define('_LANG_NKA_ACTION_SORT', 'Sort');
 define('_LANG_NKA_YEAR_SUFFIX', '');
+define('_LANG_NKA_EXCEEDS_COUNT', 'Number of results exceeds limit count(=%d).');
 }
 ?>

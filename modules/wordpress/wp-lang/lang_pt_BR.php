@@ -1,17 +1,14 @@
 <?php //* Brazilian Portuguese Translation by Marcelo Yuji Himoro <www.yuji.eu.org> *//
 global $blog_charset;
 $blog_charset = 'iso-8859-1';
-
 if (!defined('WP_LANGUAGE_FILE_READ')) {
 define ('WP_LANGUAGE_FILE_READ','1');
 /* This is Multilingual correspondence file */
-
 
 /* Copylight 2004 -----------------------
 Author : Otsukare
 URL : http://wordpress.xwd.jp/
 -------------------------------------- */
-
 /* File Name wp-settings.php */
 define('_LANG_WA_SETTING_GUIDE','<p>O WordPress ME ainda nôþ estôþinstalado. Clique <a href=\'wp-admin/install.php\'>aqui</a> para comeôþr a instalação.</p>');
 
@@ -43,7 +40,6 @@ define('_LANG_WA_WPDB_GUIDE1','<strong>Nôþ foi possôþel estabelecer uma conexôþ 
 define('_LANG_WA_WPDB_GUIDE2','Tem certeza de que o nome de usuôþio/senha estôþ corretos?');
 define('_LANG_WA_WPDB_GUIDE3','Tem certeza de que vocôþo hostname estôþcorreto?');
 define('_LANG_WA_WPDB_GUIDE4','Tem certeza de que o servidor do banco de dados estôþrodando?');
-
 
 /* File Name wp-include/functions.php */
 define('_LANG_F_TIMESTAMP','Editar formato da hora');
@@ -87,7 +83,6 @@ define('_LANG_L_EXIST_SORRY','Este usuôþio nôþ existe. Clique <a href="wp-login.
 define('_LANG_L_YOUR_LOGPASS','Usuôþio/senha do WordPress');
 define('_LANG_L_NOT_SENT','O e-mail nôþ pôþe ser enviado.');
 define('_LANG_L_DISABLED_FUNC','Possôþel razôþ: seu servidor pode ter desativado a função mail().');
-
 define('_LANG_L_SUCCESS_SEND',': o e-mail foi enviado com sucesso.');
 define('_LANG_L_CLICK_ENTER','Clique aqui para se identificar!');
 define('_LANG_L_WRONG_SESSION','Erro: usuôþio/senha invôþidos.');
@@ -131,6 +126,7 @@ define('_LANG_C_NAME_PARENT','Categoria padrôþ:');
 define('_LANG_C_MESS_ADD','Categoria adicionada com sucesso.');
 define('_LANG_C_MESS_DELE','Categoria apagada com sucesso.');
 define('_LANG_C_MESS_UP','Categoria atualizada com sucesso.');
+
 /* File Name wp-admin/edit.php */
 define('_LANG_E_LATEST_POSTS','ôþtimos posts');
 define('_LANG_E_LATEST_COMMENTS','ôþtimos comentôþios');
@@ -172,8 +168,8 @@ define('_LANG_EF_AD_EDITING','Edição avanôþda &raquo;');
 define('_LANG_EFA_POST_STATUS','Estado do post');
 define('_LANG_EFA_AD_COMMENTS','Comentôþios');
 define('_LANG_EFA_AD_PINGS','Pings');
-define('_LANG_EFA_POST_CUSTOM','Custom Field');
 define('_LANG_EFA_POST_PASSWORD','Senha do post');
+define('_LANG_EFA_POST_CUSTOM','Custom Field');
 define('_LANG_EFA_POST_EXCERPT','Excerto');
 define('_LANG_EFA_POST_LATITUDE','Latitude:');
 define('_LANG_EFA_POST_LONGITUDE','Longitude:');
@@ -438,15 +434,6 @@ define('_LANG_WAT_TYPE_HERE','Nome do arquivo:');
 define('_LANG_WAT_FTP_CLIENT','Nota: ôþclaro, vocôþpode editar os arquivos/templates em seu editor de textos favorito e fazer o upload. Este editor on-line sôþdeve ser usado caso vocôþnôþ tem um editor de textos ou cliente de FTP.');
 define('_LANG_WAT_UPTEXT_TEMP','Enviar');
 
-/* File Name wp-admin/upload.php */
-define('_LANG_WAU_ADMIN_DISABLED','Esta opção foi desativada pelo administrador.');
-define('_LANG_WAU_FILE_UPLOAD','Fazer upload de um arquivo');
-define('_LANG_WAU_CAN_TYPE','Extensôþs permitidas:');
-define('_LANG_WAU_MAX_SIZE','Tamanho môþimo:');
-define('_LANG_WAU_FILE_DESC','Descrição:');
-define('_LANG_WAU_BUTTON_TEXT','Enviar');
-define('_LANG_WAU_ATTACH_ICON','Apenas o ôþone do arquivo anexado');
-
 /* File Name wp-admin/users.php */
 define('_LANG_WUS_WHOSE_LEVEL','Nôþ ôþpossôþel alterar o nôþel de um usuôþio cujo nôþel ôþmaior que o seu.');
 define('_LANG_WUS_WHOSE_DELETE','Nôþ ôþpossôþel apagar um usuôþio cujo nôþel ôþmaior que o seu.');
@@ -514,6 +501,15 @@ define('_LANG_WAU_UPLOAD_ALTER','Nome alternativo:');
 define('_LANG_WAU_UPLOAD_REBTN','Renomear');
 define('_LANG_WAU_UPLOAD_CODEIN','Inserir côþigo no formulôþio');
 define('_LANG_WAU_UPLOAD_AMAZON','Amazon Associate');
+
+/* File Name wp-admin/upload.php */
+define('_LANG_WAU_ADMIN_DISABLED','Esta opção foi desativada pelo administrador.');
+define('_LANG_WAU_FILE_UPLOAD','Fazer upload de um arquivo');
+define('_LANG_WAU_CAN_TYPE','Extensôþs permitidas:');
+define('_LANG_WAU_MAX_SIZE','Tamanho môþimo:');
+define('_LANG_WAU_FILE_DESC','Descrição:');
+define('_LANG_WAU_BUTTON_TEXT','Enviar');
+define('_LANG_WAU_ATTACH_ICON','Apenas o ôþone do arquivo anexado');
 
 /* File Name wp-admin/options-general.php */
 define('_LANG_WAO_GENERAL_DISABLED','Vocôþnôþ tem permissôþ suficiente para editar as opções para este blog.');
@@ -727,14 +723,17 @@ define('_LANG_PG_HELLO_DOLLY','Este nôþ ôþapenas um plug-in, ele simboliza a esp
 define('_LANG_PG_TEXTILE_1','Este ôþum wrapper simples para o Humane Web Text Generator de <a href="http://textism.com/?wp">Dean Allen</a>, tambôþ conhecido como <a href="http://www.textism.com/tools/textile/">Textile</a>. Se vocôþativar este plug-in, deve desativar o Textile 2 e Markdown, pois eles nôþ funcionam muito bem juntos.');
 
 /* File Name nkarchives.php */
+define('_LANG_NKA_ARCHIVE', 'Sort By');
 define('_LANG_NKA_ALL_YEAR', 'All Years');
 define('_LANG_NKA_ALL_AUTHOR', 'All Authors');
 define('_LANG_NKA_ORDER_DATE', 'Date');
 define('_LANG_NKA_ORDER_TITLE', 'Title');
 define('_LANG_NKA_ORDER_CATEGORY', 'Category');
+define('_LANG_NKA_ORDER_AUTHOR', 'Author');
 define('_LANG_NKA_SORT_ASC', 'ASC');
 define('_LANG_NKA_SORT_DSC', 'DESC');
 define('_LANG_NKA_ACTION_SORT', 'Sort');
 define('_LANG_NKA_YEAR_SUFFIX', '');
+define('_LANG_NKA_EXCEEDS_COUNT', 'Number of results exceeds limit count(=%d).');
 }
 ?>

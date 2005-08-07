@@ -508,6 +508,7 @@ define('_LANG_WAU_UPLOAD_ALTER','Alternativer Name:');
 define('_LANG_WAU_UPLOAD_REBTN','Umbenennen');
 define('_LANG_WAU_UPLOAD_CODEIN','It inserts in form.');
 define('_LANG_WAU_UPLOAD_AMAZON','Amazon Verkn&uuml;pfung');
+define('_LANG_WAU_ATTACH_ICON','File attachment ICON only');
 
 /* File Name wp-admin/options-general.php */
 define('_LANG_WAO_GENERAL_DISABLED','Nicht gen&uuml;gend Rechte um die Einstellungen zu editieren.');
@@ -703,10 +704,6 @@ define('_LANG_INST_BASE_VALUE93','blog_charset');
 define('_LANG_INST_BASE_VALUE94','Zeitunterschied zwischen GMT und Deiner Zeitzone (in Stunden)');
 define('_LANG_INST_BASE_VALUE95','Check if Trackback sending site contains my URL');
 
-/* Missing tags */
-define('_WP_LIST_CAT_ALL','-----WP KAT-----');
-define('_LANG_C_NAME_EDITBTN','&Uuml;bernehmen');
-
 /* File Name wp-admin/plugins.php */
 define('_LANG_PG_LEAST_LEVEL','Sorry, you must be at least a level 8 user to modify plugins.');
 define('_LANG_PG_ACTIVATED_OK','Plugin <strong>activated</strong>');
@@ -728,14 +725,17 @@ define('_LANG_PG_HELLO_DOLLY','This is not just a plugin, it symbolizes the hope
 define('_LANG_PG_TEXTILE_1','This is a simple wrapper for <a href="http://textism.com/?wp">Dean Allen\'s</a> Humane Web Text Generator, also known as <a href="http://www.textism.com/tools/textile/">Textile</a>. If you use this plugin you should disable Textile 2 and Markdown, as they don\'t play well together.');
 
 /* File Name nkarchives.php */
+define('_LANG_NKA_ARCHIVE', 'Sort By');
 define('_LANG_NKA_ALL_YEAR', 'All Years');
 define('_LANG_NKA_ALL_AUTHOR', 'All Authors');
 define('_LANG_NKA_ORDER_DATE', 'Date');
 define('_LANG_NKA_ORDER_TITLE', 'Title');
 define('_LANG_NKA_ORDER_CATEGORY', 'Category');
+define('_LANG_NKA_ORDER_AUTHOR', 'Author');
 define('_LANG_NKA_SORT_ASC', 'ASC');
 define('_LANG_NKA_SORT_DSC', 'DESC');
 define('_LANG_NKA_ACTION_SORT', 'Sort');
 define('_LANG_NKA_YEAR_SUFFIX', '');
+define('_LANG_NKA_EXCEEDS_COUNT', 'Number of results exceeds limit count(=%d).');
 }
 ?>

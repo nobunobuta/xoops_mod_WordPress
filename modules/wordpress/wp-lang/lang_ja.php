@@ -1,17 +1,14 @@
 <?php
 global $blog_charset;
 $blog_charset = 'euc-jp';
-
 if (!defined('WP_LANGUAGE_FILE_READ')) {
 define ('WP_LANGUAGE_FILE_READ','1');
 /* This is Multilingual correspondence file */
-/* 美乳 */
 
 /* Copylight 2004 -----------------------
 Author : Otsukare
 URL : http://wordpress.xwd.jp/
 -------------------------------------- */
-
 /* File Name wp-settings.php */
 define('_LANG_WA_SETTING_GUIDE','<p>WordPress ME はまだインストールされていません<br /><a href="wp-admin/install.php">こちらをクリック</a>してインストールを実行してください。</p>');
 
@@ -87,7 +84,6 @@ define('_LANG_L_EXIST_SORRY','入力されたログイン名は当サイトのデータベースに存在
 define('_LANG_L_YOUR_LOGPASS','WordPressログインパスワード');
 define('_LANG_L_NOT_SENT','メールが送信できませんでした');
 define('_LANG_L_DISABLED_FUNC','エラーの原因: 恐らくご利用のサーバーで mail()関数がサポートされていないのだと思います。');
-
 define('_LANG_L_SUCCESS_SEND','さん宛てのメールの送信は正常に行われました');
 define('_LANG_L_CLICK_ENTER','こちらからログインしてください');
 define('_LANG_L_WRONG_SESSION','Error: ログイン名かパスワードが違います');
@@ -449,15 +445,6 @@ define('_LANG_WAT_TYPE_HERE','該当ファイル名を入力してください:');
 define('_LANG_WAT_FTP_CLIENT','もちろんテキストエディターでテンプレートを編集し、それらをアップロードすることができます。<br />このオンライン・エディターはローカルでの編集が煩わしい場合や補助としてお使いください。');
 define('_LANG_WAT_UPTEXT_TEMP','アップデート !');
 
-/* File Name wp-admin/upload.php */
-define('_LANG_WAU_ADMIN_DISABLED','管理人により、この機能は停止されています');
-define('_LANG_WAU_FILE_UPLOAD','ファイルアップロード');
-define('_LANG_WAU_CAN_TYPE','アップロード可能なファイル拡張子:');
-define('_LANG_WAU_MAX_SIZE','ファイルの最大サイズ:');
-define('_LANG_WAU_FILE_DESC','画像の説明(alt):');
-define('_LANG_WAU_BUTTON_TEXT','アップロード !');
-define('_LANG_WAU_ATTACH_ICON','添付ファイルのアイコンのみ');
-
 /* File Name wp-admin/users.php */
 define('_LANG_WUS_WHOSE_LEVEL','あなたより高いユーザーレベルのレベルを変更することはできません。');
 define('_LANG_WUS_WHOSE_DELETE','あなたより高いレベルのユーザーを削除することはできません。');
@@ -494,6 +481,11 @@ define('_LANG_WPCM_COM_SAYIT','投稿する');
 define('_LANG_WPCM_THIS_TIME','ごめんなさい、現在コメントを付けることは出来ません');
 // define('_LANG_WPCM_GO_BACK','Go Back');
 define('_LANG_WPCM_COM_NAME','お名前(ニックネーム)(必須)');
+define('_LANG_WPCM_CONF_TITLE','コメント (確認画面)');
+define('_LANG_WPCM_CONF_MSG','この内容でよろしければ、「確認」ボタンを押して下さい。');
+define('_LANG_WPCM_CONF_BTN','確認');
+define('_LANG_WPCM_EDIT_TITLE','コメントの修正');
+define('_LANG_WPCM_EDIT_BTN','修正');
 
 /* File Name wp-comments-post.php */
 define('_LANG_WPCP_SORRY_ITEM','ごめんなさい  この投稿に対するコメントは受け付けていません');
@@ -526,6 +518,15 @@ define('_LANG_WAU_UPLOAD_ALTER','代替名:');
 define('_LANG_WAU_UPLOAD_REBTN','リネーム');
 define('_LANG_WAU_UPLOAD_CODEIN','このコードを投稿フォームに挿入');
 define('_LANG_WAU_UPLOAD_AMAZON','アマゾンアソシエイト');
+
+/* File Name wp-admin/upload.php */
+define('_LANG_WAU_ADMIN_DISABLED','管理人により、この機能は停止されています');
+define('_LANG_WAU_FILE_UPLOAD','ファイルアップロード');
+define('_LANG_WAU_CAN_TYPE','アップロード可能なファイル拡張子:');
+define('_LANG_WAU_MAX_SIZE','ファイルの最大サイズ:');
+define('_LANG_WAU_FILE_DESC','画像の説明(alt):');
+define('_LANG_WAU_BUTTON_TEXT','アップロード !');
+define('_LANG_WAU_ATTACH_ICON','添付ファイルのアイコンのみ');
 
 /* File Name wp-admin/options-general.php */
 define('_LANG_WAO_GENERAL_DISABLED','あなたは、このBlogを編集する権限を持っていません。');
@@ -740,14 +741,17 @@ define('_LANG_PG_HELLO_DOLLY','これはただのプラグインではありません。Louis Armst
 define('_LANG_PG_TEXTILE_1','これは <a href="http://www.textism.com/tools/textile/">Textile</a> として知られる <a href="http://textism.com/?wp">Dean Allen</a> の Humane Web Text Generator の単純なラッパーです。このプラグインを使用する場合は、一緒にはうまく作動しないので Textile 2 と Markdown を無効にしてください。');
 
 /* File Name nkarchives.php */
+define('_LANG_NKA_ARCHIVE', '過去ログ');
 define('_LANG_NKA_ALL_YEAR', '全期間');
 define('_LANG_NKA_ALL_AUTHOR', '全投稿者');
 define('_LANG_NKA_ORDER_DATE', '日付');
 define('_LANG_NKA_ORDER_TITLE', 'タイトル');
 define('_LANG_NKA_ORDER_CATEGORY', 'カテゴリ');
+define('_LANG_NKA_ORDER_AUTHOR', '投稿者');
 define('_LANG_NKA_SORT_ASC', '昇順');
 define('_LANG_NKA_SORT_DSC', '降順');
 define('_LANG_NKA_ACTION_SORT', '並び替える');
 define('_LANG_NKA_YEAR_SUFFIX', '年');
+define('_LANG_NKA_EXCEEDS_COUNT', '検索結果の件数が制限値(=%d)を越えました');
 }
 ?>
