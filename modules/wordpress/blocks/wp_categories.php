@@ -61,10 +61,12 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 			    $categoryObject =& $categoryHandler->getByNiceName($GLOBALS['category_name']);
 			    $GLOBALS['cat'] = $categoryObject->getVar('cat_ID');
 			}
+		} else {
+			$GLOBALS['cat'] = '';
 		}
 
 		$block['wp_num'] = $wp_num;
-		$block['divid'] = 'wpArchive'.$wp_num;
+		$block['divid'] = 'wpCategory'.$wp_num;
 		$block['siteurl'] = wp_siteurl();
 		$block['style'] = block_style_get(false);
 		$block['block_style'] = $block_style;
@@ -82,7 +84,7 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 		$block['content'] = $_wpTpl->fetch('wp_categories.html');
 		return $block;
 	}
-	
+
 	function _b_wp_categories_list($sort_column = 'ID', $sort_order = 'asc', $optioncount = 0, $child_of=0,
 									$categoryObjects=null, $arraytree = true, $padchar='&#8211;',
 									$level=0, $current=0) {
@@ -96,11 +98,11 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 		}
 		if (empty($GLOBALS['category_posts']) || !count($GLOBALS['category_posts'])) {
 			$criteria =& new CriteriaCompo('post_status', 'publish');
-		    $criteria->setGroupBy('category_id');
+			$criteria->setGroupBy('category_id');
 			$joinCriteria =& new XoopsJoinCriteria(wp_table('post2cat'), 'cat_ID', 'category_id', 'INNER');
 			$joinCriteria->cascade(new XoopsJoinCriteria(wp_table('posts'), 'post_id', 'ID', 'INNER'));
 			$categoryPostsObjects =& $categoryHandler->getObjects($criteria, false, 'cat_ID, COUNT('.wp_table('post2cat').'.post_id) AS cat_count', false, $joinCriteria);
-	        if ($categoryPostsObjects) {
+			if ($categoryPostsObjects) {
 				foreach ($categoryPostsObjects as $categoryObject) {
 					if ($categoryObject->getExtraVar('cat_count') > 0) {
 						$GLOBALS['category_posts'][$categoryObject->getVar('cat_ID')] = $categoryObject->getExtraVar('cat_count');
