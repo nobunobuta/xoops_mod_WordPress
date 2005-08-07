@@ -239,7 +239,7 @@ function add_options_page($page_title, $menu_title, $access_level, $file) {
 
 	$file = basename($file);
 
-	$submenu['options-general.php'][] = array($menu_title, $access_level, $file, $page_title);
+	$submenu['options.php'][] = array($menu_title, $access_level, $file, $page_title);
 }
 
 /* checking login & pass in the database */
