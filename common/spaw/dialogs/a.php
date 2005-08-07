@@ -149,15 +149,15 @@ $l->setBlock('hyperlink');
       document.getElementById("catype").selectedIndex = 2;
     }
 
+    document.getElementById("url_row").style.display = new_type=="link"?"":"none";
+  	document.getElementById("name_row").style.display = new_type=="anchor"?"":"none";
+  	document.getElementById("anchor_row").style.display = new_type=="link2anchor"?"":"none";
+  	document.getElementById("target_row").style.display = (new_type=="link"||new_type=="link2anchor")?"":"none";
+  	
     <?php if (SPAW_Util::getBrowser() != 'Gecko') { ?>
     // doesn't work right in mozilla
-    document.getElementById("url_row").style.display = new_type=="link"?"inline":"none";
-  	document.getElementById("name_row").style.display = new_type=="anchor"?"inline":"none";
-  	document.getElementById("anchor_row").style.display = new_type=="link2anchor"?"inline":"none";
-  	document.getElementById("target_row").style.display = (new_type=="link"||new_type=="link2anchor")?"inline":"none";
-  	<?php } ?>
-  	
     resizeDialogToContent();
+  	<?php } ?>
   }
   //-->
   </script>
