@@ -93,6 +93,11 @@
 	font-style: normal;
 }
 
+#wpMainContent ol#commentlist li {
+	list-style-type: decimal;
+	list-style-position:outside;
+}
+
 #wpMainContent ol#commentlist li p {
 	font-size: 100%;
 }
