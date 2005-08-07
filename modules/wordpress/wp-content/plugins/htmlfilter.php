@@ -9,7 +9,7 @@ Author URI: http://www.kowa.org
 if (!defined('WP_PLUGIN_HTMLFILTER')) {
 	define('WP_PLUGIN_HTMLFILTER',1);
 	global $fullcleantags;
-	$fullcleantags = array(
+	$GLOBALS['wp_clean_tags'] = array(
 		'a' => array(
 			'href' => array(),
 			'title' => array(),
@@ -44,7 +44,9 @@ if (!defined('WP_PLUGIN_HTMLFILTER')) {
 			'width' => array()),
 		'del' => array('datetime' => array()),
 		'dd' => array(),
-		'div' => array('align' => array()),
+		'div' => array(
+			'align' => array(),
+			'style' => array()),
 		'dl' => array(),
 		'dt' => array(),
 		'em' => array(),
@@ -75,8 +77,11 @@ if (!defined('WP_PLUGIN_HTMLFILTER')) {
 			'src' => array(),
 			'usemap' => array(),
 			'vspace' => array(),
-			'width' => array()),
-		'ins' => array('datetime' => array(), 'cite' => array()),
+			'width' => array(),
+			'style' => array()),
+		'ins' => array(
+			'datetime' => array(),
+			'cite' => array()),
 		'kbd' => array(),
 		'li' => array(),
 		'map' => array(
@@ -87,7 +92,9 @@ if (!defined('WP_PLUGIN_HTMLFILTER')) {
 			'compact' => array(),
 			'start' => array(),
 			'type' => array()),
-		'p' => array('align' => array()),
+		'p' => array(
+			'align' => array(),
+			'style' => array()),
 		'pre' => array('width' => array()),
 		'q' => array('cite' => array()),
 		'rb' => array(),
@@ -96,6 +103,9 @@ if (!defined('WP_PLUGIN_HTMLFILTER')) {
 		'ruby' => array(),
 		's' => array(),
 		'samp' => array(),
+		'span' => array(
+			'align' => array(),
+			'style' => array()),
 		'strike' => array(),
 		'strong' => array(),
 		'sub' => array(),
@@ -166,9 +176,10 @@ if (!defined('WP_PLUGIN_HTMLFILTER')) {
 		'ul' => array(),
 		'var' => array()
 	);
+	$GLOBALS['wp_allowed_protocols'] = array('http', 'https', 'ftp', 'news', 'nntp', 'telnet', 'gopher', 'mailto');
 	function wp_html_filter($data) {
 		global $fullcleantags;
-		return wp_kses($data, $fullcleantags);
+		return wp_kses($data, $GLOBALS['wp_clean_tags'],$GLOBALS['wp_allowed_protocols'], true);
 	}
 }
 add_filter('the_content', 'wp_html_filter');
