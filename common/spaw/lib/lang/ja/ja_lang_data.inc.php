@@ -228,7 +228,7 @@ $spaw_lang_data = array(
   'hyperlink' => array(
     'title' => 'ハイパーリンク',
     'url' => 'URL',
-    'name' => 'サイト名',
+    'name' => 'アンカー名',
     'target' => 'ターゲット',
     'title_attr' => 'タイトル',
 	'a_type' => 'タイプ', // <=== new 1.0.6
