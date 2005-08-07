@@ -121,10 +121,6 @@ if ($_ok) { // if there was no comment from this IP in the last 10 seconds
 	setcookie('comment_author_'.$GLOBALS['cookiehash'], $_author, time()+30000000);
 	setcookie('comment_author_email_'.$GLOBALS['cookiehash'], $_email, time()+30000000);
 	setcookie('comment_author_url_'.$GLOBALS['cookiehash'], $_url, time()+30000000);
-	header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-	header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-	header('Cache-Control: no-cache, must-revalidate');
-	header('Pragma: no-cache');
 	if ($GLOBALS['is_IIS']) {
 		header('Refresh: 0;url='.$_location);
 	} else {
