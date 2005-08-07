@@ -47,4 +47,12 @@ $GLOBALS['month']['12']='December';
 $GLOBALS['s_month_length'] = 3; //月名を省略形で表示するときの文字数 "January"は"Jan"になる。
 $GLOBALS['wp_month_format'] = '%MONTH %YEAR'; 年月表示の表示形式
 */
+
+//Customize nkarchives.php settings
+//$GLOBALS['wp_arc_posts_per_page'] = 50;       // Max number for listing (-1 means no limit)
+//$GLOBALS['wp_arc_display_authors'] = 1;       // 0:Don't show Autor list  1:Show Autor list.
+//$GLOBALS['wp_arc_display_categories'] = 1;    // 0:Don't show Category list  1:Show Category list.
+//$GLOBALS['wp_arc_display_keyword'] = 1;       // 0:Don't show Keyword input  1:Show Keyword input.
+//$GLOBALS['wp_arc_defaultorderby'] = 'date';
+//$GLOBALS['wp_arc_defaultorder']   = 'DESC';
 ?>
