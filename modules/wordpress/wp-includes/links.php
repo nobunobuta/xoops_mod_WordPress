@@ -531,9 +531,11 @@ WHERE link_visible =  'Y'
 			$orderby = (bool_from_yn($cat['sort_desc'])?'_':'') . $orderby;
 
 			// Display the category name
-			$cat_id = sanitize_title($cat['cat_name']);
-			if ($cat_id == "") $cat_id = "lcat-".$cat['link_category'];
-			$links .= '	<li id="'.sanitize_title($cat['cat_name']).'">' . $cat['cat_name'] . "\n\t<ul>\n";
+			$cat_lid = sanitize_title_with_dashes($cat['cat_name']);
+			if ($cat_lid == "") {
+				$cat_lid = $cat['link_category'];
+			}
+			$links .= '	<li id="lcat-'.$cat['link_category'].'_'.$cat_lid.'">' . $cat['cat_name'] . "\n\t<ul>\n";
 			// Call get_links() with all the appropriate params
 			$links .= get_links($cat['link_category'],
 				'<li>',"</li>","\n",
