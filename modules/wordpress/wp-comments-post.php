@@ -60,64 +60,15 @@ if ((get_settings('use_comment_preview'))&&($_action!='confirm')) {
 	$_comment = convert_chars($_comment);
 	$_comment = apply_filters('post_comment_text', $_comment);
 
-	$_comment_new = apply_filters('comment_text', $_comment);
-	$_author_new = apply_filters('comment_author', $_author);
-?>
-<div id="wpMainContent">
-<h2 id="comments"><?php echo _LANG_WPCM_COM_TITLE." (Preview)"; ?></h2>
-<ol id="commentlist">
-	<li id="comment-prev ?>">
-	<?php echo $_comment_new; ?> by 
-<?php 
-	if (empty($_url)) {
-		echo $_author;
-	} else {
-		echo "<a href='$_url' rel='external'>$_author_new</a>";
+	$comment_preview = apply_filters('comment_text', $_comment);
+	$author_preview = apply_filters('comment_author', $_author);
+
+	if (!empty($_url)) {
+		$author_preview = '<a href="'.$_url.'" rel="external">'.$author_preview.'</a>';
 	}
-?>
-	</li>
-</ol>
-<form action="<?php echo wp_siteurl(); ?>/wp-comments-post.php" method="post" id="commentform">
-	<input type="hidden" name="author" id="author" class="textarea" value="<?php echo $_author; ?>" />
-	<input type="hidden" name="comment_post_ID" value="<?php echo $_comment_post_ID; ?>" />
-	<input type="hidden" name="redirect_to" value="<?php echo $_redirect_to; ?>" />
-	<input type="hidden" name="email" id="email" value="<?php echo $_email; ?>" />
-	<input type="hidden" name="url" id="url" value="<?php echo $_url; ?>" />
-	<input type="hidden" name="comment" id="comment" value="<?php echo htmlspecialchars($_comment); ?>" />
-	<?php echo $xoopsWPTicket->getTicketHtml(__LINE__) ?>
-	<input type="hidden" name="action" id="action"  value="confirm" />
-	<p>
-	  <input name="submit" type="submit" tabindex="5" value="Confirm" />
-	</p>
-</form>
-<h2><?php echo _LANG_WPCM_COM_LEAVE; ?></h2>
-<p><?php echo _LANG_WPCM_HTML_ALLOWED; ?><code><?php echo allowed_tags(); ?></code></p>
-<form action="<?php echo wp_siteurl(); ?>/wp-comments-post.php" method="post" id="commentform">
-	<p>
-	  <input type="text" name="author" id="author" class="textarea" value="<?php echo $_author; ?>" size="28" tabindex="1" />
-	  <label for="author"><?php echo _LANG_WPCM_COM_NAME ?></label>
-	  <input type="hidden" name="comment_post_ID" value="<?php echo $_comment_post_ID; ?>" />
-	  <input type="hidden" name="redirect_to" value="<?php echo $_redirect_to; ?>" />
-	</p>
-	<p>
-	  <input type="text" name="email" id="email" value="<?php echo $_email; ?>" size="28" tabindex="2" />
-	  <label for="email"><?php echo _LANG_WUS_AU_MAIL; ?></label>
-	</p>
-	<p>
-	  <input type="text" name="url" id="url" value="<?php echo $_url; ?>" size="28" tabindex="3" />
-	  <label for="url"><?php echo _LANG_WUS_AU_URI; ?></label>
-	</p>
-	<p>
-	  <label for="comment"><?php echo _LANG_WPCM_COM_YOUR; ?></label>
-	<br />
-	  <textarea name="comment" id="comment" cols="70" rows="4" tabindex="4" ><?php echo $_comment; ?></textarea>
-	</p>
-	<p>
-	  <input name="submit" type="submit" tabindex="5" value="<?php echo _LANG_WPCM_COM_SAYIT; ?>" />
-	</p>
-</form>
-</div>
-<?php
+
+	include(get_custom_path('confirm-template.php'));
+
 	include(XOOPS_ROOT_PATH.'/footer.php');
 	exit();
 } else {
@@ -169,7 +120,7 @@ if ($_ok) { // if there was no comment from this IP in the last 10 seconds
 	$commentObject->setVar('comment_date',$_now);
 	$commentObject->setVar('comment_content',$_comment);
 	$commentObject->setVar('comment_approved',$_approved);
-	if(!$commentHandler->insert($commentObject)) {
+	if(!$commentHandler->insert($commentObject, get_settings('use_comment_preview'))) {
 		redirect_header($_location, 3, $commentHandler->getErrors());
 	}
 	$_comment_ID = $commentObject->getVar('comment_ID');
@@ -188,10 +139,6 @@ if ($_ok) { // if there was no comment from this IP in the last 10 seconds
 	setcookie('comment_author_'.$GLOBALS['cookiehash'], $_author, time()+30000000);
 	setcookie('comment_author_email_'.$GLOBALS['cookiehash'], $_email, time()+30000000);
 	setcookie('comment_author_url_'.$GLOBALS['cookiehash'], $_url, time()+30000000);
-	header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-	header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-	header('Cache-Control: no-cache, must-revalidate');
-	header('Pragma: no-cache');
 	if ($GLOBALS['is_IIS']) {
 		header('Refresh: 0;url='.$_location);
 	} else {
