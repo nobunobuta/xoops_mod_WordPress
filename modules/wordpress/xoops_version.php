@@ -55,9 +55,28 @@ $modversion['adminindex'] = "admin/index.php";
 $modversion['adminmenu'] = "admin/menu.php";
 
 $modversion['hasMain'] = 1;
+$_sub_id = 1;
 if($GLOBALS['xoopsUser']){
-	$modversion['sub'][1]['name'] = _MI_WORDPRESS_SMNAME1;
-	$modversion['sub'][1]['url'] = "wp-admin/post.php";
+	$modversion['sub'][$_sub_id]=  array(
+		'name'  =>  _MI_WORDPRESS_SMNAME1,
+		'url'   =>  "wp-admin/post.php"
+	);
+	$_sub_id++;
+}
+
+// get my config
+$_wp_my_module_handler =& xoops_gethandler('module');
+$_wp_my_module =& $_wp_my_module_handler->getByDirname($_wp_my_dirname);
+if( is_object( $_wp_my_module ) ) {
+	$_wp_my_config_handler =& xoops_gethandler('config');
+	$_wp_my_mod_config =& $_wp_my_config_handler->getConfigsByCat(0, $_wp_my_module->getVar('mid'));
+	if (!empty($_wp_my_mod_config['wp_show_archive_menu'])) {
+		$modversion['sub'][$_sub_id]=  array(
+			'name'  =>  _MI_WORDPRESS_SMNAME2,
+			'url'   =>  "nkarchives.php"
+		);
+		$_sub_id++;
+	}
 }
 
 $modversion['hasconfig'] = 1;
@@ -71,7 +90,6 @@ $modversion['config'][1] = array(
 	'options' => array(
                     '_MI_OPT_WYSIWYG_NONE'=>0 ,
                     '_MI_OPT_WYSIWYG_SPAW'=>1 ,
-//                    '_MI_OPT_WYSIWYG_KOIVI'=>2 ,
                 ),
 );
 
@@ -112,15 +130,56 @@ $modversion['config'][5] = array(
 );
 
 $modversion['config'][6] = array(
-	'name'			=> 'wp_use_blockcssheader' ,
-	'title'			=> '_MI_WP_USE_BLOCKCSSHEADER' ,
-	'description'	=> '_MI_WP_USE_BLOCKCSSHEADER_DESC' ,
+	'name'			=> 'wp_show_archive_menu' ,
+	'title'			=> '_MI_WP_SHOW_ARCHIVE_MENU' ,
+	'description'	=> '_MI_WP_SHOW_ARCHIVE_MENU_DESC' ,
 	'formtype'		=> 'yesno' ,
 	'valuetype'		=> 'int' ,
 	'default'		=> 0 ,
 );
 
 $modversion['config'][7] = array(
+	'name'			=> 'wp_use_kakasi_for_archive' ,
+	'title'			=> '_MI_WP_USE_KAKASI' ,
+	'description'	=> '_MI_WP_USE_KAKASI_DESC' ,
+	'formtype'		=> 'yesno' ,
+	'valuetype'		=> 'int' ,
+	'default'		=> 0 ,
+);
+
+$modversion['config'][8] = array(
+	'name'			=> 'wp_kakasi_path' ,
+	'title'			=> '_MI_WP_KAKASI_PATH' ,
+	'description'	=> '_MI_WP_KAKASI_PATH_DESC' ,
+	'formtype'		=> 'textbox' ,
+	'valuetype'		=> 'text' ,
+	'default'		=> '/usr/bin/kakasi' ,
+);
+
+$modversion['config'][9] = array(
+	'name'			=> 'wp_kakasi_charset' ,
+	'title'			=> '_MI_WP_KAKASI_CHARSET' ,
+	'description'	=> '_MI_WP_KAKASI_CHARSET_DESC' ,
+	'formtype'		=> 'textbox' ,
+	'valuetype'		=> 'text' ,
+	'default'		=> 'EUC-JP' ,
+);
+
+$modversion['config'][10] = array(
+	'name'			=> 'wp_use_blockcssheader' ,
+	'title'			=> '_MI_WP_USE_BLOCKCSSHEADER' ,
+	'description'	=> '_MI_WP_USE_BLOCKCSSHEADER_DESC' ,
+	'formtype'		=> 'select' ,
+	'valuetype'		=> 'int' ,
+	'default'		=> 0 ,
+	'options' => array(
+                    '_MI_OPT_BLOCKCSSHEADER_NONE'=>0 ,
+                    '_MI_OPT_BLOCKCSSHEADER_YES'=>1 ,
+                    '_MI_OPT_BLOCKCSSHEADER_HACK'=>2 ,
+     ),
+);
+
+$modversion['config'][11] = array(
 	'name'			=> 'wp_use_xoops_comments' ,
 	'title'			=> '_MI_WP_USE_XOOPS_COMM' ,
 	'description'	=> '_MI_WP_USE_XOOPS_COMM_DESC' ,
@@ -196,6 +255,13 @@ $modversion['blocks'][9]['show_func'] = "b_{$_wp_my_prefix}authors_show";
 $modversion['blocks'][9]['edit_func'] = "b_{$_wp_my_prefix}authors_edit";
 $modversion['blocks'][9]['options'] = "0|nickname|0";
 $modversion['blocks'][9]['can_clone'] = true ;
+
+$modversion['blocks'][10]['file'] = "wp_style.php";
+$modversion['blocks'][10]['name'] =sprintf( 'Block Style Sheet Insert' , $_wp_my_dirnumber );
+$modversion['blocks'][10]['description'] = 'Block Style Sheet Insert dummy block';
+$modversion['blocks'][10]['show_func'] = "b_{$_wp_my_prefix}style_show";
+$modversion['blocks'][10]['edit_func'] = "b_{$_wp_my_prefix}style_edit";
+$modversion['blocks'][10]['can_clone'] = false ;
 
 $modversion['hasComments'] = 1;
 $modversion['comments']['itemName'] = 'p';
