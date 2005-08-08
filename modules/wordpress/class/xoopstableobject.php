@@ -415,7 +415,11 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 							$valueList .= $delim . 'null';
 						}
 					} else {
-						$valueList .= $delim . $this->db->quoteString($v);
+						if (!is_null($v)) {
+							$valueList .= $delim . $this->db->quoteString($v);
+						} else {
+							$valueList .= $delim . $this->db->quoteString('');;
+						}
 					}
 					$cacheRow[$k] = $v;
 					$delim = ", ";
