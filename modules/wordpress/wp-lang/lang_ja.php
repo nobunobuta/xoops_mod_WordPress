@@ -668,7 +668,7 @@ define('_LANG_INST_BASE_VALUE56','コメントのデフォルトセット');
 define('_LANG_INST_BASE_VALUE57','新規投稿に対するPingのデフォルトセット');
 define('_LANG_INST_BASE_VALUE58','PingBackによる投稿をデフォルトでチェックする');
 define('_LANG_INST_BASE_VALUE59','新規投稿のデフォルトカテゴリー');
-define('_LANG_INST_BASE_VALUE83','編集フォームに表示する記事の数 (min 3, max 100)');
+define('_LANG_INST_BASE_VALUE83','編集フォームの記事編集エリアの行数 (min 3, max 100)');
 define('_LANG_INST_BASE_VALUE60','リンクを編集できるユーザーレベルの設定');
 define('_LANG_INST_BASE_VALUE61','ここを[false]にすることですべてのリンクが表示され、<br>誰でもリンクマネージャーを編集することが出来るようになります');
 define('_LANG_INST_BASE_VALUE62','評価表示に使用するタイプを指定します');
