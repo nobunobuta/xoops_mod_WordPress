@@ -33,7 +33,7 @@ $l->setBlock($block);
   <title><?php echo $l->m('title')?></title>
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $l->getCharset()?>">
   <link rel="stylesheet" type="text/css" href="<?php echo $theme_path.'css/'?>dialog.css">
-  <script language="javascript" src="utils.js"></script>
+  <script language="javascript" src="<?php echo $spaw_dir ?>/dialogs/utils.js"></script>
   
   <script language="javascript">
   <!--  

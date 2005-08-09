@@ -32,9 +32,9 @@ $l->setBlock('hyperlink');
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $l->getCharset()?>">
   <link rel="stylesheet" type="text/css" href="<?php echo $theme_path.'css/'?>dialog.css">
   <?php if (SPAW_Util::getBrowser() == 'Gecko') { ?>
-  <script language="javascript" src="utils.gecko.js"></script>
+  <script language="javascript" src="<?php echo $spaw_dir ?>/dialogs/utils.gecko.js"></script>
   <?php }else{ ?>
-  <script language="javascript" src="utils.js"></script>
+  <script language="javascript" src="<?php echo $spaw_dir ?>/dialogs/utils.js"></script>
   <?php } ?>
   
   <script language="javascript">
