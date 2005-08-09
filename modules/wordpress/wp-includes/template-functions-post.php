@@ -54,7 +54,7 @@ function the_content($more_link_text=_WP_TPL_MORE, $stripteaser=0, $more_file=''
 
 function the_content_rss($more_link_text='(more...)', $stripteaser=0, $more_file='', $cut = 0, $encode_html = 0, $echo=true) {
 	if (!empty($GLOBALS['post']->post_password)) { // if there's a password
-		$output = "<p>This post is password protected. To view it please enter your password below:</p>";
+		$output = "<p>This post is a password protected content.</p>";
 		return _echo($output, $echo);
 	}
 	$content = get_the_content($more_link_text, $stripteaser, $more_file);
@@ -127,6 +127,43 @@ function get_the_content($more_link_text='(more...)', $stripteaser=0, $more_file
 		$output =  preg_replace('/\%u([0-9A-F]{4,4})/e',  "'&#'.base_convert('\\1',16,10).';'", $output);
 	}
 	return $output;
+}
+
+function the_enclosure_rss($echo=true) {
+	if (!empty($GLOBALS['post']->post_password)) { // if there's a password
+		return _echo('', $echo);
+	}
+	$content = get_the_content($more_link_text, $stripteaser, $more_file);
+	$content = apply_filters('the_content', $content);
+	$content = wp_convert_rss_charset($content);
+	$post_links = array();
+
+	preg_match('#(http://[^/]*)#' , XOOPS_URL, $my_host);
+	$my_host = $my_host[0];
+
+	preg_match_all("{href=([\"'])((http://|https://|/)[^\\1]*?)\\1}i", $content, $post_links_temp);
+	foreach($post_links_temp[2] as $link_test) {
+		$test = parse_url($link_test);
+		if (!isset($test['host'])) {
+			$link_test = $my_host.$link_test;
+		}
+		if (isset($test['query']))
+			$post_links[] = $link_test;
+		elseif(($test['path'] != '/') && ($test['path'] != ''))
+			$post_links[] = $link_test;
+	}
+	$output = '';
+	foreach ($post_links as $url) {
+		if ( $headers = wp_get_http_headers( $url) ) {
+			$len  = (int) $headers['content-length'];
+			$type = addslashes( $headers['content-type'] );
+			$allowed_types = array('video', 'audio');
+			if( in_array( substr( $type, 0, strpos( $type, "/" ) ), $allowed_types ) ) {
+				$output .= "<enclosure url='".trim( htmlspecialchars($url) )."' length='".trim( $len )."' type='".trim( $type )."'/>\n";
+			}
+		}
+	}
+	return _echo($output,$echo);
 }
 
 function the_excerpt($echo=true) {

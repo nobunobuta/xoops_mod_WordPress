@@ -1974,6 +1974,37 @@ function static_content_header($mod_timestamp) {
 	header('Last-Modified: '.gmdate('D, d M Y H:i:s',$mod_timestamp).' GMT');
 }
 
+function wp_get_http_headers( $url ) {
+	set_time_limit( 60 ); 
+	$parts = parse_url( $url );
+	$file  = $parts['path'] . ($parts['query'] ? '?'.$parts['query'] : '');
+	$host  = $parts['host'];
+	if ( !isset( $parts['port'] ) )
+		$parts['port'] = 80;
+
+	$head = "HEAD $file HTTP/1.1\r\nHOST: $host\r\n\r\n";
+
+	$fp = @fsockopen($host, $parts['port'], $err_num, $err_msg, 3);
+	if ( !$fp )
+		return false;
+
+	$response = '';
+	fputs( $fp, $head );
+	while ( !feof( $fp ) && strpos( $response, "\r\n\r\n" ) == false )
+		$response .= fgets( $fp, 2048 );
+	fclose( $fp );
+	preg_match_all('/(.*?): (.*)\r/', $response, $matches);
+	$count = count($matches[1]);
+	for ( $i = 0; $i < $count; $i++) {
+		$key = strtolower($matches[1][$i]);
+		$headers["$key"] = $matches[2][$i];
+	}
+
+	preg_match('/.*([0-9]{3}).*/', $response, $return);
+	$headers['response'] = $return[1]; // HTTP response code eg 204, 200, 404
+	return $headers;
+}
+
 //May not Used now, but keeping for compatiblity
 function is_new_day() {
 	if ($GLOBALS['day'] != $GLOBALS['previousday']) {

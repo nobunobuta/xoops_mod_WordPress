@@ -45,6 +45,8 @@ header('Content-type: application/xml');
 } // end else use content
 ?>
 		<content:encoded><![CDATA[<?php the_content_rss('', 0, '',0, 3) ?>]]></content:encoded>
+		<wfw:commentRSS><?php echo comments_rss(); ?></wfw:commentRSS>
+        <?php the_enclosure_rss(); ?>
 	</item>
 	<?php } } ?>
 </channel>
