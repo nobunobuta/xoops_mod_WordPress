@@ -546,10 +546,24 @@
   {
     var ed = document.getElementById(editor+'_rEdit');
    	var a = SPAW_getA(editor);
-   	var imgSrc = sender.returnValue;
 
-    if(imgSrc != null)    
-    {
+    var retval = sender.returnValue;
+    if (retval) {
+      var imgSrc = retval.imgurl;
+      var match = imgSrc.match(/(.*)\/thumb-(.*)/);
+      if (match) {
+      	imgSrc = match[1]+'/'+match[2];
+      } else {
+        match = imgSrc.match(/(.*)\/thumbs(\d*)\/(.*)/);
+        if (match) {
+        	imgSrc = match[1]+'/photos'+match[2]+'/'+match[3];
+        } else {
+           if (retval.zoomrate != 1) {
+             imgSrc = imgSrc;
+             imgNode.width = imgNode.width * retval.zoomrate;
+           }
+        }
+      }
       if (a)
       {
         // edit hyperlink
@@ -575,7 +589,7 @@
         
         insertNodeAtSelection(ed.contentWindow, a);  
       }      
-		}	
+    }
     ed.contentWindow.focus();
   }
   

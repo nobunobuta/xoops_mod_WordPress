@@ -15,7 +15,6 @@
 <html>
 <head>
 <title>Img</title>
-<meta name="Author" content="Solmetra (www.solmetra.com)">
 <link rel="stylesheet" type="text/css" href="lib/style.css">
 <script language="JavaScript">
 function resizeOuterTo(w,h) {
@@ -40,7 +39,7 @@ function init()
 }
 </script>
 </head>
-<body marginheight="0" marginwidth="0" topmargin="0" leftmargin="0" rightmargin="0" bottommargin="0" onLoad="init();" bgcolor="red">
-<img name="LargeImg" src="<?php echo $_GET['img_url']?>" border="0"/>
+<body marginheight="0" marginwidth="0" topmargin="0" leftmargin="0" rightmargin="0" bottommargin="0" onLoad="init();" bgcolor="black">
+<img name="LargeImg" src="<?php echo htmlspecialcars($_GET['img_url'])?>" border="0"/>
 </body>
 </html>

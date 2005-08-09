@@ -506,11 +506,27 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
 	
   	var a = SPAW_getA(editor);
 
-    var imgSrc = showModalDialog('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value+'&request_uri='+escape(window.location.href), '', 
+    var retval = showModalDialog('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value+'&request_uri='+escape(window.location.href), '', 
       'dialogHeight:420px; dialogWidth:420px; resizable:no; status:no');
+    
+    var imgSrc = retval.imgurl;
     
     if(imgSrc != null)    
 	{
+		var match = imgSrc.match(/(.*)\/thumb-(.*)/);
+		if (match) {
+			imgSrc = match[1]+'/'+match[2];
+		} else {
+			match = imgSrc.match(/(.*)\/thumbs(\d*)\/(.*)/);
+			if (match) {
+				imgSrc = match[1]+'/photos'+match[2]+'/'+match[3];
+			} else {
+			   if (retval.zoomrate != 1) {
+			     imgSrc = imgSrc;
+			     imgNode.width = imgNode.width * retval.zoomrate;
+			   }
+			}
+		}
 		if (a)
 		{
 			// edit hyperlink
