@@ -114,7 +114,7 @@ function wp_mail_receive() {
 			$subject = trim($mailParts['header']['subject'][0]);
 			if (function_exists('mb_decode_mimeheader')) {
 				$subject1 = mb_decode_mimeheader($subject);
-				if ($subject != $subject) {
+				if ($subject1 != $subject) {
 					$sub_charset = mb_internal_encoding();
 				} else {
 					$sub_charset = "auto";
@@ -163,6 +163,7 @@ function wp_mail_receive() {
 						$content = $mailParts['body'][0]['body'];
 						$charset = $mailParts['body'][0]['charset'];
 						$encoding =  $mailParts['body'][0]['encodings'];
+						$content =convert_content($content, $charest, $encoding);
 					} else {
 						$mailParts = $mailParts['body'][0];
 					}
@@ -172,10 +173,12 @@ function wp_mail_receive() {
 						$content = $mailParts['body'][0]['body'][1]['body'];
 						$charset = $mailParts['body'][0]['body'][1]['charset'];
 						$encoding =  $mailParts['body'][0]['body'][1]['encodings'];
+						$content =convert_content($content, $charest, $encoding);
 					} else {
 						$content = $mailParts['body'][0]['body'];
 						$charset = $mailParts['body'][0]['charset'];
 						$encoding =  $mailParts['body'][0]['encodings'];
+						$content =convert_content($content, $charest, $encoding);
 					}
 					$content = preg_replace('/(\<.*?\>)/es' ,'str_replace(array("\n","\r"), array(" ", " "), "\\1")', $content);
 					$content = preg_replace('/\<head\>.*\<\/head\>/is','', $content);
@@ -194,6 +197,7 @@ function wp_mail_receive() {
 						$content = $mailParts['body'][1]['body'][0]['body'];
 						$charset = $mailParts['body'][1]['body'][0]['charset'];
 						$encoding =  $mailParts['body'][1]['body'][0]['encodings'];
+						$content =convert_content($content, $charest, $encoding);
 						for ($i = 1; $i < count($mailParts['body'][1]['body']) ; $i++) {
 							$attaches[] = array(
 											'type' => 'relate',
@@ -205,16 +209,18 @@ function wp_mail_receive() {
 						$content = $mailParts['body'][1]['body'];
 						$charset = $mailParts['body'][1]['charset'];
 						$encoding =  $mailParts['body'][1]['encodings'];
+						$content =convert_content($content, $charest, $encoding);
 					}
 					$content = preg_replace('/(\<[^\>]*\>)/es' ,'str_replace(array("\n","\r"), array(" ", " "), "\\1")', $content);
 					$content = preg_replace('/\<head\>.*\<\/head\>/is','', $content);
 					$content = preg_replace('/\<body\>\s*\<br\s*\/*\>\s*/is','<body>', $content);
-					$content = strip_tags($content, '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td><category><title>');echo $content;
+					$content = strip_tags($content, '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td><category><title>');
 				}
 			} else {
 				$content = $mailParts['body'];
 				$charset = $mailParts['charset'];
 				$encoding = $mailParts['encodings'];
+				$content =convert_content($content, $charest, $encoding);
 			}
 			
 
@@ -276,9 +282,8 @@ function wp_mail_receive() {
 			} 
 
 			$blah = explode(':', $userpassstring);
-			$user_login = $blah[0];
+			$user_login = trim($blah[0]);
 			$user_pass = $blah[1];
-			$user_login = mb_conv(trim($user_login), $GLOBALS['blog_charset'], $charset);
 			
 			$content = $contentfirstline . str_replace($firstline, '', $content);
 			$content = trim($content); 
@@ -314,12 +319,13 @@ function wp_mail_receive() {
 				$post_category = explode(',', $post_category);
 
 				if (!get_settings('emailtestonly')) {
-					if ($encoding == 'quoted-printable') {
-						$content = preg_replace('/\=[\n\r]+[\s]*/','',$content);
-						$content = preg_replace('/\=([0-9a-fA-F]{2,2})/e', "pack('c',base_convert('\\1',16,10))", $content);
-					}
-					$content = preg_replace('|\n([^\n])|', " $1", $content);
-					$content = mb_conv(trim($content), $GLOBALS['blog_charset'], $charset);
+//					if ($encoding == 'quoted-printable') {
+//						$content = preg_replace('/\=[\n\r]+[\s]*/','',$content);
+//						$content = preg_replace('/\=([0-9a-fA-F]{2,2})/e', "pack('c',base_convert('\\1',16,10))", $content);
+//					}
+//					$content = preg_replace('|\n([^\n])|', " $1", $content);
+//					$content = mb_conv(trim($content), $GLOBALS['blog_charset'], $charset);
+					$content = preg_replace('|\n([^\n])|', " $1", trim($content));
 					$content_before = "";
 					$content_after = "";
 					for ($i =0; $i < count($attaches); $i++) {
@@ -389,7 +395,7 @@ function wp_mail_receive() {
 				echo "<p><strong>Level 0 users can\'t post.</strong></p>\n";
 			} 
 			echo "</div>\n";
-		} 
+		}
 	} 
 
 	$GLOBALS['wp_pop3']->quit();
@@ -437,7 +443,18 @@ function wp_getattach(&$content, $prefix = "", $create_thumbs = 0)
 		return array($filename, in_array($subtype, $allowedimage), $origname);
 	} 
 	return false;
-} 
+}
+
+function convert_content($content, $charest, $encoding) {
+	if (($charset == "") || (trim(strtoupper($charset)) == "ISO-2022-JP")) $charset = "JIS";
+	if (trim(strtoupper($charset)) == "SHIFT_JIS") $charset = "SJIS";
+	if ($encoding == 'quoted-printable') {
+		$content = preg_replace('/\=[\n\r]+[\s]*/','',$content);
+		$content = preg_replace('/\=([0-9a-fA-F]{2,2})/e', "pack('c',base_convert('\\1',16,10))", $content);
+	}
+	$content = mb_conv($content, $GLOBALS['blog_charset'], $charset);
+	return $content;
+}
 
 function parse_msg($mail_part) {
 	$retval = array();
