@@ -1953,6 +1953,7 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
 		return 1;
 	} 
 }
+
 function str2time( $str ) {
     $str = preg_replace( '/;.*$/', '', $str );
     if ( strpos( $str, ',' ) === false )
@@ -1972,6 +1973,16 @@ function static_content_header($mod_timestamp) {
         exit();
 	}
 	header('Last-Modified: '.gmdate('D, d M Y H:i:s',$mod_timestamp).' GMT');
+}
+
+function wp_get_fullurl($url) {
+	preg_match('#(http://[^/]*)#' , XOOPS_URL, $my_host);
+	$my_host = $my_host[0];
+	$test = parse_url($url);
+	if (!isset($test['host']) && ($url[0] == '/')) {
+		$url = $my_host.$url;
+	}
+	return($url);
 }
 
 function wp_get_http_headers( $url ) {

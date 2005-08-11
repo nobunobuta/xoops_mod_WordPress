@@ -143,10 +143,8 @@ function the_enclosure_rss($echo=true) {
 
 	preg_match_all("{href=([\"'])((http://|https://|/)[^\\1]*?)\\1}i", $content, $post_links_temp);
 	foreach($post_links_temp[2] as $link_test) {
+		$link_test = wp_get_fullurl($link_test);
 		$test = parse_url($link_test);
-		if (!isset($test['host'])) {
-			$link_test = $my_host.$link_test;
-		}
 		if (isset($test['query']))
 			$post_links[] = $link_test;
 		elseif(($test['path'] != '/') && ($test['path'] != ''))
