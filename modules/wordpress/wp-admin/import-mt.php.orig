@@ -1,6 +1,7 @@
 <?php
 $_my_ext_=pathinfo(__FILE__);if ($_my_ext_['extension']!="php") exit;
 define('MTEXPORT', '');
+require_once('admin.php');
 $stand_alone=0;
 require("admin-header.php");
 //if (!file_exists('../wp-config.php')) die("There doesn't seem to be a wp-config.php file. You must install WordPress before you import any entries.");
