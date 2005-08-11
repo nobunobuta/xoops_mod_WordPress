@@ -97,4 +97,5 @@ define("_MI_WORDPRESS_AD_MENU3","グループ管理");
 }else{
 define("_MI_WORDPRESS_AD_MENU2","ブロックアクセス権限");
 }
+}
 ?>
