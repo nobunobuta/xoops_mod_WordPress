@@ -154,9 +154,9 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 		$this->module = $module;
 		$this->tableName = $this->db->prefix($prefix.'users');
 		$this->member_handler =& xoops_gethandler('member');
-		if (empty($GLOBALS['__'.$prefix.'usersync'])) {
+		if (!empty($GLOBALS['__'.$prefix.'dosync'])) {
 			$this->syncXoopsUsers();
-			$GLOBALS['__'.$prefix.'usersync'] = true;
+			$GLOBALS['__'.$prefix.'dosync'] = false;
 		}
 	}
 	

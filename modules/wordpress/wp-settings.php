@@ -3,6 +3,10 @@ $GLOBALS['HTTP_HOST'] = getenv('HTTP_HOST');  /* domain name */
 $GLOBALS['REMOTE_ADDR'] = getenv('REMOTE_ADDR'); /* visitor's IP */
 $GLOBALS['HTTP_USER_AGENT'] = getenv('HTTP_USER_AGENT'); /* visitor's browser */
 
+if (preg_match('#/modules/'.$GLOBALS['wp_mod'][$GLOBALS['wp_id']].'(/|/wp-admin/users.php.*)?$#',$_SERVER['PHP_SELF'])) {
+	$GLOBALS['__'.$GLOBALS['wp_prefix'][$GLOBALS['wp_id']].'dosync'] = true;
+}
+
 global $siteurl;
 
 if(!defined('WPINC')) define('WPINC', 'wp-includes');
