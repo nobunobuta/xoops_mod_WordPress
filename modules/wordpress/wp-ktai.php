@@ -42,7 +42,7 @@ $ListPerPage = 6; //¥±¡¼¥¿¥¤¤Îaccesskey¤ò»È¤¦¤¿¤á6°Ê¾å¤ò»ØÄê¤¹¤ë¤È¶¯À©Åª¤Ë6¤Ë¤Ê¤
 $CharCountPerPage = 0; //Ê¸»ú¿ô
 // ²èÁü¤òÊ¸»úÎó¤ËÃÖ´¹¤¹¤ë¤«¡©¤¹¤ë¤Ê¤é¤ĞÃÖ´¹Ê¸»úÎó¤òÀßÄê¤¹¤ë¡£
 //$ImageReplaceString = ''; //ÃÖ´¹¤·¤Ê¤¤
-$ImageReplaceString = '²èÁü:'; //'²èÁü:'¤ËÃÖ´¹¤¹¤ë¡£
+$ImageReplaceString = '²èÁü'; //'²èÁü'¤ËÃÖ´¹¤¹¤ë¡£
 // ²èÁü½Ì¾®¸å¤Î²£¥µ¥¤¥º
 $ImageResizeX = 132;
 //ÇØ·Ê¿§
@@ -56,6 +56,8 @@ $LinkColor = "#0000FF";
 $CommentSort = "DESC"; //¿·¤·¤¤¤â¤Î¤«¤éÉ½¼¨
 //XOOPS¤ÎSESSION¤ò»ÈÍÑ¤·¤Æ¥³¥á¥ó¥ÈÅê¹Æ¤Ë¥Á¥±¥Ã¥È¤ò»ÈÍÑ¤¹¤ë¡£
 $UseSession = true;
+
+$DoRedir = true;
 // ÀßÄêÃÍ¡Ê¤³¤³¤Ş¤Ç¡Ë
 // ----------------------------------------------------------------
 ini_set ('display_errors', '1');
@@ -216,6 +218,14 @@ if (!isset($_REQUEST["view"])) {
 	$_REQUEST["start"] = "0";
 }
 switch ($_REQUEST["view"]) {
+    case 'redir'  :
+    	$url = ereg_replace(";ampchar;","&",$_GET['url']);
+		$echostring .= '<center>'.$blogname.'<br />Ktai edition</center><hr />';
+		$echostring .= '<p>Åö¥µ¥¤¥È¤Î³°¤Ë¥ê¥ó¥¯¤·¤Æ¤¤¤Ş¤¹¡£¾ì¹ç¤Ë¤è¤Ã¤Æ¤Ï¡¢·ÈÂÓÃ¼Ëö¤Ç¤ÏÉ½¼¨¤Ç¤­¤Ê¤¤²ÄÇ½À­¤¬¤¢¤ê¤Ş¤¹¡£</p>';
+		$echostring .= '<a href="'.$url.'">GO!</a>';
+		$DoRedir = false;
+		$hidefooter = true;
+    	break;
 	case "list" :
 		$start = intval($_REQUEST["start"]);
 		//Åê¹Æ°ìÍ÷É½¼¨
@@ -273,12 +283,14 @@ switch ($_REQUEST["view"]) {
 		if ($ImageReplaceString == '') { //²èÁüÃÖ´¹¤·¤Ê¤¤
 			$content = $postdata['Content'];
 		}else{ //²èÁüºï½ü¤¹¤ë¾ì¹ç¡¢img¥¿¥°¤ò»ØÄêÊ¸»úÎó¤ËÃÖ´¹
-			$imgstr = '<img[^>]*src\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*alt\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*>';
-			$repstr = '&lt;<a href="'.$_SERVER["PHP_SELF"].'?view=imagepage&num='.$num.'&p='.$p.'&url=\\1'.$ses_param.'">'.$ImageReplaceString.'\\2</a>&gt;<br>';
-			$content = mb_ereg_replace($imgstr,$repstr,stripslashes($postdata['Content']));
-			$imgstr = '<img[^>]*src\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*>';
-			$repstr = '&lt;<a href="'.$_SERVER["PHP_SELF"].'?view=imagepage&num='.$num.'&p='.$p.'&url=\\1'.$ses_param.'">'.$ImageReplaceString.'</a>&gt;<br>';
-			$content = mb_ereg_replace($imgstr,$repstr,$content);
+			$imgstr = array();
+			$repstr = array();
+			$imgstr[] = '/<img[^>]*src\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*alt\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*>/ie';
+			$repstr[] = '"&lt;<a href=\"'.$_SERVER["PHP_SELF"].'?view=imagepage&num='.$num.'&p='.$p.'&url=".urlencode("$1")."'.$ses_param.'\">'.$ImageReplaceString.':\\2</a>&gt;<br>"';
+			$content = preg_replace($imgstr,$repstr,$postdata['Content']);
+			$imgstr[] = '/<img[^>]*src\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*>/i';
+			$repstr[] = '"&lt;<a href=\"'.$_SERVER["PHP_SELF"].'?view=imagepage&num='.$num.'&p='.$p.'&url=".urlencode("$1")."'.$ses_param.'\">'.$ImageReplaceString.'</a>&gt;<br>"';
+			$content = preg_replace($imgstr,$repstr,$content);
 		}
 
 		if ($CharCountPerPage > 0) {
@@ -404,9 +416,9 @@ switch ($_REQUEST["view"]) {
 
 	case "imagepage" :
 		//²èÁüÉ½¼¨¥Ú¡¼¥¸
-		$url = intval($_REQUEST["url"]);
 		$num = intval($_REQUEST["num"]);
 		$p = intval($_REQUEST["p"]);
+		$url = urlencode(wp_get_fullurl(htmlspecialchars($_REQUEST['url'])));
 
 		$echostring .= '<br />';
 		$echostring .= '<center><img src="'.$_SERVER["PHP_SELF"].'?view=image&url='.$url.'"/></center>';
@@ -417,11 +429,24 @@ switch ($_REQUEST["view"]) {
 } 
 
 $echostring .= '<hr />';
-
-$echostring .= '<center><a href="http://www.nyaos.net/pukiwiki/pukiwiki.php?%A5%B1%A1%BC%A5%BF%A5%A4%A4%C7WordPress%A4%F2%B1%DC%CD%F7">WP-Ktai ver '.$Version.'</a></center>';
-
+if (empty($hidefooter)) {
+	$echostring .= '<center><a href="http://www.nyaos.net/pukiwiki/pukiwiki.php?%A5%B1%A1%BC%A5%BF%A5%A4%A4%C7WordPress%A4%F2%B1%DC%CD%F7">WP-Ktai ver '.$Version.'</a></center>';
+}
 $echostring .= '</body>';
 $echostring .= '</html>';
+if ($DoRedir) {
+	preg_match_all("{<(?:img|a)[^>]*(?:href|src)=([\"'])((http://|https://|/)[^\\1]*?)\\1[^>]*>}i", $echostring, $post_links_temp);
+	for($i = 0; $i < count($post_links_temp[0]); $i++) {
+		$link_test = wp_get_fullurl($post_links_temp[2][$i]);
+		$test = parse_url($link_test);
+		if (!strstr($link_test,XOOPS_URL)) {
+			$src[] = $post_links_temp[0][$i];
+			$t_url = $_SERVER["PHP_SELF"].'?view=redir&url='.urlencode(preg_replace('|&amp;|',';ampchar;', $link_test));
+			$target[] = str_replace($post_links_temp[2][$i],$t_url, $post_links_temp[0][$i]);
+		}
+	}
+	$echostring = str_replace($src,$target,$echostring);
+}
 header("Content-Type: text/html; charset=Shift_JIS");
 echo mb_convert_encoding($echostring, "sjis", "auto");
 ?>
