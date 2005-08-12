@@ -273,7 +273,7 @@ switch ($_REQUEST["view"]) {
 		$date = mysql2date('m/d H:i', $postdata['Date']);
 		$echostring .= $postdata['Title'].'('.$date.') Page:'.$nextpage.'<hr />';
 		$authordata = get_userdata($postdata['Author_ID']);
-		$echostring .= "Author : ".the_author('',false).' - 	['.strip_tags(the_category('-', '', false)).']<hr />';
+		$echostring .= "Author   : ".the_author('',false).'<br>Category: '.strip_tags(the_category('-', '', false)).'<hr />';
 		$pages[0] =$postdata['Content'];$page=1;$more=1;
 		$postdata['Content']=get_the_content('');
 		//PukiWikiプラグインなどでレンダリングしている場合の為にフィルタを通す
