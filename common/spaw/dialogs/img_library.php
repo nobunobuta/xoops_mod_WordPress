@@ -166,6 +166,11 @@ function selectChange() {
 		if (imgurl == "" ) return;
    		var zoom =  document.libbrowser.zoom.checked;
    		var zoomrate =  document.libbrowser.zoomrate.value;
+		// GIJ start
+		if( ! imgurl.match(/(\.gif|\.png|\.jpg|\.jpeg)$/i) ) {
+			imgurl = imgurl.replace(/\.\w+$/,'.gif');
+		}
+		// GIJ end
 		imgpreview.document.body.innerHTML = '<html><body><IMG src="'+imgurl+'"/></body></html>';
 		if (!imgurl.match(/(.*)\/thumb-(.*)/) && !imgurl.match(/(.*)\/thumbs(\d*)\/(.*)/)) {
 			document.libbrowser.zoom.disabled = false;
@@ -271,12 +276,14 @@ function selectChange() {
 		$mydirnumber = $imagetype === '' ? '' : intval( $imagetype ) ;
 
 		global $xoopsDB;
-		$result = $xoopsDB->query("SELECT lid, title, ext FROM ".$xoopsDB->prefix("myalbum{$mydirnumber}_photos")." WHERE cid='".intval($imgcat)."' AND ext IN ('gif','png','jpg','jpeg') ORDER BY title" );
+		$result = $xoopsDB->query("SELECT lid, title, ext FROM ".$xoopsDB->prefix("myalbum{$mydirnumber}_photos")." WHERE cid='".intval($imgcat)."' AND status>0 ORDER BY title" ); // GIJ
 		while($image = $xoopsDB->fetcharray($result)){
 			$fname = trim($image["lid"]).".".$image["ext"];
 			if (file_exists($_root.$imglib."photos{$mydirnumber}/".$fname)) {
-				if (file_exists($_root.$imglib."thumbs{$mydirnumber}/".$fname)) {
+				// GIJ start
+				if (!in_array($image["ext"],array('gif','png','jpg','jpeg')) || file_exists($_root.$imglib."thumbs{$mydirnumber}/".$fname)) {
 					echo '<option value="thumbs'.$mydirnumber.'/'.$fname.'" '.($fname == $img ? 'selected' : '' ).'>'.$image["title"].'</option>' ;
+				// GIJ end
 				} else {
 				echo '<option value="photos'.$mydirnumber.'/'.$fname.'" '.($fname == $img ? 'selected' : '' ).'>'.$image["title"].'</option>' ;
 				}

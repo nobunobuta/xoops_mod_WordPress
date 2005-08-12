@@ -418,7 +418,13 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
     if (retval) {
 	    var imgSrc = retval.imgurl;
 	  	if(imgSrc != null) {
-	    	this[editor+'_rEdit'].document.execCommand('insertimage', false, imgSrc);
+			/* GIJ */
+		    if( imgSrc.match(/(\.gif|\.png|\.jpg|\.jpeg)$/i) ) {
+	    		this[editor+'_rEdit'].document.execCommand('insertimage', false, imgSrc);
+		    } else {
+		    	this[editor+'_rEdit'].document.execCommand('insertimage', false, imgSrc.replace(/\.\w+$/,'.gif'));
+		    }
+		    /* /GIJ */
 	  		var match = imgSrc.match(/(.*)\/thumb-(.*)/);
 	  		if (match) {
 	  			this[editor+'_rEdit'].document.execCommand('createlink',false,match[1]+'/'+match[2]);

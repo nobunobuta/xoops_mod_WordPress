@@ -426,7 +426,13 @@
 			range.deleteContents();
 
 		    var imgNode = document.createElement('IMG');
-		    imgNode.src = imgSrc;
+			/* GIJ */
+		    if( imgSrc.match(/(\.gif|\.png|\.jpg|\.jpeg)$/i) ) {
+		    	imgNode.src = imgSrc;
+		    } else {
+		    	imgNode.src = imgSrc.replace(/\.\w+$/,'.gif');
+		    }
+			/* /GIJ */
 		    range.insertNode(imgNode);
 			range.setEndAfter(imgNode);
 
