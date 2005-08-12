@@ -13,7 +13,7 @@ if (!defined('WP_PLUGIN_WRAPLONGWORD')) {
         $ret = '';
         foreach($strs as $str) {
             if (!preg_match('/(<[^>]+>)/',$str)) {
-                $ret .=  preg_replace('/([a-zA-Z0-9\.\/:%\?\-\+&;]{15})/ms','\\1&#8203;',$str);
+                $ret .=  preg_replace('/([a-zA-Z0-9\.\/\:\%\?\-\+\&\;]{15})/ms','\\1&#8203;',$str);
             } else {
                 $ret .= $str;
             }
