@@ -192,7 +192,11 @@ class PukiWikiRender {
 	function _fix_table_br($string) {
 		$string = str_replace("~___td_br___","<br />",$string);
 		$string = str_replace("___td_br___","",$string);
-		$string = preg_replace("/^<p>([^<>\n]*)<\/p>$/sD","$1",$string);
+		if (PukiWikiConfig::getParam("omit_paragraph")) {
+			$string = preg_replace("/^<p>(.*)<\/p>$/sD","$1",$string);
+		} else {
+			$string = preg_replace("/^<p>([^<>\n]*)<\/p>$/sD","$1",$string);
+		}
 		return $string;
 	}
 
