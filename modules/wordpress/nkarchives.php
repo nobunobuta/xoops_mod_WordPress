@@ -141,12 +141,14 @@ function archive_header(&$post, $before='', $after='') {
     switch($orderby) {
       case 'title':
     	if (_LANGCODE == 'ja') {
-	    	$thisletter = ucfirst(mb_substr($post->yomi,0,1,$GLOBALS['blog_charset']));
+	    	$thisletter = ucfirst(mb_substring($post->yomi,0,1,$GLOBALS['blog_charset']));
     		if ($thisletter > "¤ó") $thisletter = "´Á»ú";
     	} else {
     		$thisletter = ucfirst(substr($post->yomi,0,1));
     	}
-        if (empty($previous) || $thisletter != $previous) {
+    	if ($thisletter == "") $thisletter = _WP_POST_NOTITLE;
+   		
+        if ($previous==='' || $thisletter !== $previous) {
             $output = "<br/>".$thisletter;
         }
         $previous = $thisletter;
@@ -200,29 +202,53 @@ function &title_sort(&$posts) {
 	$kakasi           = $GLOBALS['xoopsModuleConfig']['wp_kakasi_path'];
 	$kakasi_encode    = $GLOBALS['xoopsModuleConfig']['wp_kakasi_charset'];
 	$blog_charset     = $GLOBALS['blog_charset'];
-	if (!file_exists($kakasi)) $enable_kakasi = 0;
-
 	if (_LANGCODE == 'ja') {
 		if ($enable_kakasi) {
 			$descriptorspec = array(
-				0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
-				1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+				0 => array('pipe', 'r'),  // stdin is a pipe that the child will read from
+				1 => array('pipe', 'w'),  // stdout is a pipe that the child will write to
+				2 => array('pipe', 'w'),  // stdout is a pipe that the child will write to
 			);
-			$process = proc_open($kakasi." -kH -KH -JH", $descriptorspec, $pipes);
+			// Precheck for kakasi (file_exists cannot be used in safemode);
+			$process = proc_open($kakasi." -?", $descriptorspec, $pipes);
 			if (is_resource($process)) {
-		    	for($i = 0; $i < count($posts); $i++) {
-					fputs($pipes[0], mb_conv($posts[$i]->post_title."\n", $kakasi_encode, $blog_charset));
+				if (!preg_match('/^KAKASI /',fgets($pipes[2]))) $enable_kakasi=false;
+				proc_close($process);
+			}
+			if ($enable_kakasi) {
+				$process = proc_open($kakasi.' -kH -KH -JH', $descriptorspec, $pipes);
+				if (is_resource($process)) {
+			    	for($i = 0; $i < count($posts); $i++) {
+						fputs($pipes[0], mb_conv($posts[$i]->post_title."\n", $kakasi_encode, $blog_charset));
+					}
+					fclose($pipes[0]);
+			    	for($i = 0; $i < count($posts); $i++) {
+						$posts[$i]->yomi = mb_conv(fgets ($pipes[1]), $blog_charset, $kakasi_encode);
+						$posts[$i]->yomi = preg_replace('/[\r\n]*$/','',$posts[$i]->yomi);
+			    	}
+					fclose($pipes[1]);
+					$return_value = proc_close($process);
 				}
-				fclose($pipes[0]);
-		    	for($i = 0; $i < count($posts); $i++) {
-					$posts[$i]->yomi = mb_conv(fgets ($pipes[1]), $blog_charset, $kakasi_encode);
-		    	}
-				fclose($pipes[1]);
-				$return_value = proc_close($process);
+			} else {
+	    		if (function_exists('mb_convert_kana')) {
+			    	for($i = 0; $i < count($posts); $i++) {
+						$posts[$i]->yomi = mb_convert_kana($posts[$i]->post_title,'KcV', $blog_charset);
+					}
+				} else {
+					for($i = 0; $i < count($posts); $i++) {
+						$posts[$i]->yomi = $posts[$i]->post_title;
+					}
+				}
 			}
 		} else {
-	    	for($i = 0; $i < count($posts); $i++) {
-				$posts[$i]->yomi = mb_convert_kana($posts[$i]->post_title,"KcV", $blog_charset);
+    		if (function_exists('mb_convert_kana')) {
+		    	for($i = 0; $i < count($posts); $i++) {
+					$posts[$i]->yomi = mb_convert_kana($posts[$i]->post_title,'KcV', $blog_charset);
+				}
+			} else {
+				for($i = 0; $i < count($posts); $i++) {
+					$posts[$i]->yomi = $posts[$i]->post_title;
+				}
 			}
 		}
 	} else {
@@ -240,14 +266,14 @@ function post_count_exceeds() {
 	$postObjects =& $postHandler->getObjects($GLOBALS['current_posts_criteria'], false, 'count(DISTINCT ID) numposts', '',$GLOBALS['current_posts_join']);
     $numposts = $postObjects[0]->getExtraVar('numposts');
     if ($GLOBALS['posts_per_page'] != -1 && $numposts > $GLOBALS['posts_per_page'])
-    echo "<p><b>".sprintf(_LANG_NKA_EXCEEDS_COUNT,$GLOBALS['posts_per_page'])."</b></p>";
+    echo '<p><b>'.sprintf(_LANG_NKA_EXCEEDS_COUNT,$GLOBALS['posts_per_page']).'</b></p>';
 }
 
 $GLOBALS['show_cblock'] =0;
 include('header.php');
 
 if (get_param('orderby') == 'title') {
-	$posts =& title_sort($posts);
+	title_sort($posts);
 }
 
 ?>
