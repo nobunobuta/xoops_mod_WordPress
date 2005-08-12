@@ -15,6 +15,7 @@
 <html>
 <head>
 <title>Img</title>
+<meta name="Author" content="Solmetra (www.solmetra.com)">
 <link rel="stylesheet" type="text/css" href="lib/style.css">
 <script language="JavaScript">
 function resizeOuterTo(w,h) {
