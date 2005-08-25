@@ -2,7 +2,7 @@
 //$GLOBALS['wp_mail_debug'] = 0; # =0 if you don't want to output any debugging info.
 $GLOBALS['wp_mail_debug'] = 1; # =1 if you want to output debugging info to screen.
 //$GLOBALS['wp_mail_debug'] = 2; # =2 if you want to output debugging info to log file. TODO.
-
+$GLOBALS['exec_key'] = '';
 if (file_exists(dirname(__FILE__).'/xoops_version.php')) {
 	require_once(dirname(__FILE__) . '/wp-config.php');
 } else {
@@ -182,8 +182,9 @@ function wp_mail_receive() {
 					}
 					$content = preg_replace('/(\<.*?\>)/es' ,'str_replace(array("\n","\r"), array(" ", " "), "\\1")', $content);
 					$content = preg_replace('/\<head\>.*\<\/head\>/is','', $content);
-					$content = preg_replace('/\<body\>\s*\<br\s*\/*\>\s*/is','<body>', $content);
+					$content = preg_replace('/(\<body\s*[^\>]*\>)\s*\<br\s*\/*\>\s*/is','\\1', $content);
 					$content = strip_tags($content, '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td><category><title>');
+					$content = preg_replace('!(</div>|</p>)([^\r\n])!i',"\\1\n\\2", $content);
 					for ($i = 1; $i < count($mailParts['body']) ; $i++) {
 						$attaches[] = array(
 										'type' => 'relate',
@@ -213,8 +214,9 @@ function wp_mail_receive() {
 					}
 					$content = preg_replace('/(\<[^\>]*\>)/es' ,'str_replace(array("\n","\r"), array(" ", " "), "\\1")', $content);
 					$content = preg_replace('/\<head\>.*\<\/head\>/is','', $content);
-					$content = preg_replace('/\<body\>\s*\<br\s*\/*\>\s*/is','<body>', $content);
+					$content = preg_replace('/(\<body\s*[^\>]*\>)\s*\<br\s*\/*\>\s*/is','\\1', $content);
 					$content = strip_tags($content, '<img><p><br><i><b><u><em><strong><strike><font><span><div><dl><dt><dd><ol><ul><li>,<table><tr><td><category><title>');
+					$content = preg_replace('!(</div>|</p>)([^\r\n])!i',"\\1\n\\2", $content);
 				}
 			} else {
 				$content = $mailParts['body'];
@@ -319,12 +321,6 @@ function wp_mail_receive() {
 				$post_category = explode(',', $post_category);
 
 				if (!get_settings('emailtestonly')) {
-//					if ($encoding == 'quoted-printable') {
-//						$content = preg_replace('/\=[\n\r]+[\s]*/','',$content);
-//						$content = preg_replace('/\=([0-9a-fA-F]{2,2})/e', "pack('c',base_convert('\\1',16,10))", $content);
-//					}
-//					$content = preg_replace('|\n([^\n])|', " $1", $content);
-//					$content = mb_conv(trim($content), $GLOBALS['blog_charset'], $charset);
 					$content = preg_replace('|\n([^\n])|', " $1", trim($content));
 					$content_before = "";
 					$content_after = "";
@@ -365,6 +361,10 @@ function wp_mail_receive() {
 						$postObject->setVar('post_lat',$flat);
 						$postObject->setVar('post_lon', $flon);
 					}
+
+					$postObject->setVar('post_status', get_settings('default_post_status'));
+					$postObject->setVar('ping_status', get_settings('default_ping_status'));
+					$postObject->setVar('comment_status', get_settings('default_comment_status'));
 
 					if (!$postHandler->insert($postObject, true)) {
 						echo "<b>Error: Insert New Post</b><br />";
@@ -449,7 +449,7 @@ function convert_content($content, $charest, $encoding) {
 	if (($charset == "") || (trim(strtoupper($charset)) == "ISO-2022-JP")) $charset = "JIS";
 	if (trim(strtoupper($charset)) == "SHIFT_JIS") $charset = "SJIS";
 	if ($encoding == 'quoted-printable') {
-		$content = preg_replace('/\=[\n\r]+[\s]*/','',$content);
+		$content = preg_replace('/\=[\n\r]+/','',$content);
 		$content = preg_replace('/\=([0-9a-fA-F]{2,2})/e', "pack('c',base_convert('\\1',16,10))", $content);
 	}
 	$content = mb_conv($content, $GLOBALS['blog_charset'], $charset);
