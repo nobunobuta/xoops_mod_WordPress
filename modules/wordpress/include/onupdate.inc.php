@@ -69,6 +69,12 @@ if (!function_exists('upgrade_wp_tables')){
 		if(!get_settings('trackback_filename')) {
 			add_option('trackback_filename','wp-trackback.php', 3, 'TrackBack File Name (default wp-trackback.php)', 3, 8);
 		}
+		if(!get_settings('xmlrpc_filename')) {
+			add_option('xmlrpc_filename','xmlrpc.php', 3, 'TrackBack File Name (default xmlrpc.php)', 3, 8);
+		}
+		if(!get_settings('xmlrpc_autodetect')) {
+			add_option('xmlrpc_autodetect','0', 3, 'Enable XMLRPC File Auto detection', 2, 8);
+		}
 		$date_format = get_settings('date_format');
 		$date_format = str_replace('\\\d', '\d', $date_format);
 		update_option('date_format', $date_format);

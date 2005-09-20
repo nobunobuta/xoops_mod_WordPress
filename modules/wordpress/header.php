@@ -5,7 +5,9 @@ include(XOOPS_ROOT_PATH.'/header.php');
 require('wp-blog-header.php');
 /* Sending HTTP headers */
 // It is presumptious to think that WP is the only thing that might change on the page.
-@header ('X-Pingback: '.wp_siteurl().'/xmlrpc.php');
+if(get_settings('use_pingback')) {
+	@header ('X-Pingback: '.wp_siteurl().'/'.get_settings('xmlrpc_filename'));
+}
 ob_start();
 ?>
 	<meta name="generator" content="WordPress <?php echo $GLOBALS['wp_version']; ?>" />
@@ -41,8 +43,20 @@ ob_start();
 <?php
 	}
 ?>
+<?php
+	if(get_settings('use_pingback')) {
+?>
 	<link rel="pingback" href="<?php bloginfo('pingback_url'); ?>" />
-	<link rel="EditURI" type="application/rsd+xml" title="RSD" href="<?php echo wp_siteurl(); ?>/wp-rsd.php" />
+<?php
+	}
+?>
+<?php
+	if(get_settings('xmlrpc_autodetect')) {
+?>
+	<link rel="EditURI" type="application/rsd+xml" title="RSD" href="<?php bloginfo('rsd_url'); ?>" />
+<?php
+	}
+?>
 <?php get_archives('monthly', '', 'link'); ?>
 <?php // comments_popup_script(); // off by default ?>
 <?php

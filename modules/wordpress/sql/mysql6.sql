@@ -211,6 +211,8 @@ INSERT INTO wp6_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 
 INSERT INTO wp6_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (2, 93, 15);
 INSERT INTO wp6_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 95, 11);
 INSERT INTO wp6_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 96, 12);
+INSERT INTO wp6_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 97, 13);
+INSERT INTO wp6_optiongroup_options (`group_id`, `option_id`, `seq`) VALUES (3, 98, 13);
 
 # --------------------------------------------------------
 
@@ -286,7 +288,7 @@ INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_over
 INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (25, 0, 'rss_use_excerpt', 'Y', 2, '1', 20, 8, '_LANG_INST_BASE_VALUE25', 8);
 INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (26, 0, 'use_weblogsping', 'Y', 2, '0', 20, 8, '_LANG_INST_BASE_VALUE26', 8);
 INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (29, 0, 'use_trackback', 'Y', 2, '1', 20, 8, '_LANG_INST_BASE_VALUE29', 8);
-INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (30, 0, 'use_pingback', 'Y', 2, '1', 20, 8, '_LANG_INST_BASE_VALUE30', 8);
+INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (30, 0, 'use_pingback', 'Y', 2, '0', 20, 8, '_LANG_INST_BASE_VALUE30', 8);
 INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (31, 0, 'use_fileupload', 'Y', 2, '0', 20, 8, '_LANG_INST_BASE_VALUE31', 8);
 INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (32, 0, 'fileupload_realpath', 'Y', 3, '/home/your/site/wordpress/images', 40, 8, '_LANG_INST_BASE_VALUE32', 8);
 INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (33, 0, 'fileupload_url', 'Y', 3, 'http://example.com/images', 40, 8, '_LANG_INST_BASE_VALUE33', 8);
@@ -348,7 +350,9 @@ INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_over
 INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (93, 0, 'use_comment_preview', 'Y', 2, 0, 20, 8, 'Display Preview Screen after comment posting.', 8);
 INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (94, 0, 'active_plugins', 'Y', 1, '', 20, 8, 'Plugin List', 8);
 INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (95, 0, 'check_trackback_content', 'Y', 2, '0', 20, 8, '_LANG_INST_BASE_VALUE95', 8);
-INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (96, 0, 'trackback_filename', 'Y', 3, '0', 20, 8, 'TrackBack File Name (default wp-trackback.php)', 8);
+INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (96, 0, 'trackback_filename', 'Y', 3, 'wp-trackback.php', 20, 8, 'TrackBack File Name (default wp-trackback.php)', 8);
+INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (97, 0, 'xmlrpc_filename', 'Y', 3, 'xmlrpc.php', 20, 8, 'XMLRPC File Name (default xmlrpc.php)', 8);
+INSERT INTO wp6_options (`option_id`, `blog_id`, `option_name`, `option_can_override`, `option_type`, `option_value`, `option_width`, `option_height`, `option_description`, `option_admin_level`) VALUES (98, 0, 'xmlrpc_autodetect', 'Y', 2, '0', 20, 8, 'Enable XMLRPC File Auto detection', 8);
 
 # --------------------------------------------------------
 
