@@ -27,16 +27,15 @@ $l->setBlock('colorpicker');
 
 <html>
 <head>
-	<meta http-equiv="Pragma" content="no-cache">
-  <title><?php echo $l->m('title')?></title>
+  <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $l->getCharset()?>">
+  <title><?php echo $l->m('title')?></title>
   <link rel="stylesheet" type="text/css" href="<?php echo $theme_path.'css/'?>dialog.css">
   <?php if (SPAW_Util::getBrowser() == 'Gecko') { ?>
-  <script language="javascript" src="<?php echo $spaw_dir ?>/dialogs/utils.gecko.js"></script>
+  <script language="javascript" src="<?php echo $spaw_dir ?>dialogs/utils.gecko.js"></script>
   <?php }else{ ?>
-  <script language="javascript" src="<?php echo $spaw_dir ?>/dialogs/utils.js"></script>
+  <script language="javascript" src="<?php echo $spaw_dir ?>dialogs/utils.js"></script>
   <?php } ?>
-  
   <script language="javascript">
   <!--  
   var cur_color; // passed color
