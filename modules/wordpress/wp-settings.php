@@ -5,6 +5,8 @@ $GLOBALS['HTTP_USER_AGENT'] = getenv('HTTP_USER_AGENT'); /* visitor's browser */
 
 if (preg_match('#/modules/'.$GLOBALS['wp_mod'][$GLOBALS['wp_id']].'(/|/wp-admin/users.php.*)?$#',$_SERVER['PHP_SELF'])) {
 	$GLOBALS['__'.$GLOBALS['wp_prefix'][$GLOBALS['wp_id']].'dosync'] = true;
+} else {
+	$GLOBALS['__'.$GLOBALS['wp_prefix'][$GLOBALS['wp_id']].'dosync'] = false;
 }
 
 global $siteurl;
@@ -84,6 +86,7 @@ $GLOBALS['querystring_equal'] = '=';
 $GLOBALS['querystring_separator'] = '&amp;';
 $GLOBALS['dateformat'] = get_settings('date_format');
 $GLOBALS['timeformat'] = get_settings('time_format');
+$GLOBALS['wpcommentsjavascript'] = 0;
 
 // Used to guarantee unique cookies
 $GLOBALS['cookiehash'] = md5(wp_siteurl());
