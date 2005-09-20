@@ -96,7 +96,7 @@ $spaw_a_targets['_top'] = 'Top';
 $spaw_a_targets['_parent'] = 'Parent';
 
 // image popup script url
-$spaw_img_popup_url = $spaw_dir.'img_popup.php';
+//$spaw_img_popup_url = $spaw_dir.'img_popup.php';
 
 // internal link script url
 $spaw_internal_link_script = 'url to your internal link selection script';

@@ -508,6 +508,7 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
 
   function SPAW_image_popup_click(editor, sender)
   {
+    <?php if (!empty($GLOBALS['spaw_img_popup_url'])) { ?>
     window.frames[editor+'_rEdit'].focus();     
 	
   	var a = SPAW_getA(editor);
@@ -568,6 +569,7 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
 	
 
     SPAW_update_toolbar(editor, true);    
+    <?php } ?>
   }
   
   function SPAW_hr_click(editor, sender)
@@ -2019,6 +2021,9 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
     // style dropdown
     var pt = SPAW_getParentTag(editor);
     SPAW_toggle_tbi_dropdown(editor, "style", pt.className);
+    <?php if (empty($GLOBALS['spaw_img_popup_url'])) { ?>
+       SPAW_toggle_tbi(editor,"image_popup", false);
+    <?php } ?>
   }
   
   // enable/disable toolbar item

@@ -541,11 +541,13 @@
 
   function SPAW_image_popup_click(editor, sender)
   {
+    <?php if (!empty($GLOBALS['spaw_img_popup_url'])) { ?>
     var wnd = window.open('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' 
       + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
       + document.getElementById('SPAW_'+editor+'_theme').value
       + '&editor=' + editor + '&callback=SPAW_image_popup_click_callback', "img_library", 
       'status=no,modal=yes,width=420,height=420'); 
+    <?php } ?>
   }
   
   function SPAW_image_popup_click_callback(editor, sender)
@@ -1472,6 +1474,9 @@
     var pt = SPAW_getParentTag(editor);
     if (pt)
       SPAW_toggle_tbi_dropdown(editor, "style", pt.className);
+    <?php if (empty($GLOBALS['spaw_img_popup_url'])) { ?>
+       SPAW_toggle_tbi(editor,"image_popup", false);
+    <?php } ?>
   }
   
   // enable/disable toolbar item
