@@ -230,14 +230,16 @@ if (test_param('category_name')) {
 	$_wCriteria =& new CriteriaCompo(new Criteria('category_nicename', $GLOBALS['category_name']));
 	$categoryHandler =& wp_handler('Category');
 	$categoryObject =& $categoryHandler->getByNiceName($GLOBALS['category_name']);
-	$GLOBALS['cat'] = $categoryObject->getVar('cat_ID');
-	$_catc = trim(get_category_children($GLOBALS['cat'], '', ' '));
-	$_catc_array = explode(' ',$_catc);
-    for ($_i = 0; $_i < (count($_catc_array)); $_i++) {
-		$_wCriteria->add(new Criteria('category_id', intval($_catc_array[$_i])),'OR');
-    }
-	$_criteria->add($_wCriteria);
-	unset($_wCriteria);
+	if ($categoryObject) {
+		$GLOBALS['cat'] = $categoryObject->getVar('cat_ID');
+		$_catc = trim(get_category_children($GLOBALS['cat'], '', ' '));
+		$_catc_array = explode(' ',$_catc);
+	    for ($_i = 0; $_i < (count($_catc_array)); $_i++) {
+			$_wCriteria->add(new Criteria('category_id', intval($_catc_array[$_i])),'OR');
+	    }
+		$_criteria->add($_wCriteria);
+		unset($_wCriteria);
+	}
 }
 
 // author stuff
