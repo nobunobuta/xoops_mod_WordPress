@@ -15,26 +15,26 @@ function the_author($idmode = '', $echo=true) {
     if ($idmode == 'ID')        $id = $GLOBALS['authordata']->ID;
     if (!$idmode) $id = $GLOBALS['authordata']->user_nickname;
 
-    return _echo($id, $echo);
+    return _echo(htmlspecialchars($id, ENT_QUOTES), $echo);
 }
 
 function the_author_description($echo=true) {
-	return _echo($GLOBALS['authordata']->user_description, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_description, ENT_QUOTES), $echo);
 }
 function the_author_login($echo=true) {
-	return _echo($GLOBALS['authordata']->user_login, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_login, ENT_QUOTES),$echo);
 }
 
 function the_author_firstname($echo=true) {
-	return _echo($GLOBALS['authordata']->user_firstname, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_firstname, ENT_QUOTES),$echo);
 }
 
 function the_author_lastname($echo=true) {
-	return _echo($GLOBALS['authordata']->user_lastname, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_lastname, ENT_QUOTES),$echo);
 }
 
 function the_author_nickname($echo=true) {
-	return _echo($GLOBALS['authordata']->user_nickname, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_nickname, ENT_QUOTES),$echo);
 }
 
 function the_author_ID($echo=true) {
@@ -42,39 +42,39 @@ function the_author_ID($echo=true) {
 }
 
 function the_author_email($echo=true) {
-	return _echo(antispambot($GLOBALS['authordata']->user_email), $echo);
+	return _echo(htmlspecialchars(antispambot($GLOBALS['authordata']->user_email), ENT_QUOTES),$echo);
 }
 
 function the_author_url($echo=true) {
-	return _echo($GLOBALS['authordata']->user_url, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_url, ENT_QUOTES),$echo);
 }
 
 function the_author_icq($echo=true) {
-	return _echo($GLOBALS['authordata']->user_icq, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_icq, ENT_QUOTES),$echo);
 }
 
 function the_author_aim($echo=true) {
-	return _echo(str_replace(' ', '+', $GLOBALS['authordata']->user_aim), $echo);
+	return _echo(htmlspecialchars(str_replace(' ', '+', $GLOBALS['authordata']->user_aim), ENT_QUOTES),$echo);
 }
 
 function the_author_yim($echo=true) {
-	return _echo($GLOBALS['authordata']->user_yim, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_yim, ENT_QUOTES),$echo);
 }
 
 function the_author_msn($echo=true) {
-	return _echo($GLOBALS['authordata']->user_msn, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_msn, ENT_QUOTES),$echo);
 }
 
 function the_author_posts($echo=true) {
-	return _echo(get_usernumposts($GLOBALS['post']->post_author), $echo);
+	return _echo(get_usernumposts($GLOBALS['post']->post_author),$echo);
 }
 
 function the_author_posts_link($idmode='', $echo=true) {
-    return _echo('<a href="' . get_author_link(0, $GLOBALS['authordata']->ID, $GLOBALS['authordata']->user_login) . '" title="' . sprintf("Posts by %s", htmlspecialchars(the_author($idmode, false))) . '">' . the_author($idmode, false) . '</a>', $echo);
+    return _echo('<a href="' . get_author_link(0, $GLOBALS['authordata']->ID, $GLOBALS['authordata']->user_login) . '" title="' . sprintf("Posts by %s", the_author($idmode, false)) . '">' . the_author($idmode, false) . '</a>', $echo);
 }
 
 function the_author_info_link($idmode='', $echo=true) {
-    return _echo('<a href="' . XOOPS_URL . '/userinfo.php?uid=' .the_author('ID',false) . '" title="' . sprintf("Posts by %s", htmlspecialchars(the_author($idmode, false))) . '">' . the_author($idmode, false) . '</a>', $echo);
+    return _echo('<a href="' . XOOPS_URL . '/userinfo.php?uid=' .the_author('ID',false) . '" title="' . sprintf("Posts by %s", the_author($idmode, false)) . '">' . the_author($idmode, false) . '</a>', $echo);
 }
 
 function get_author_link($echo = false, $author_id, $author_name="") {
@@ -183,25 +183,15 @@ function list_authors2($optioncount = false, $exclude_admin = true, $idmode = ''
 	$userHandler =& wp_handler('User');
 	$userObjects =& $userHandler->getObjects($criteria);
     foreach($userObjects as $userObject) {
-    	$author =& $userObject->exportWpObject();
+    	$author =& $userObject->exportWpObject($idmode);
+    	$name = htmlspecialchars(get_author_name($author->ID, $idmode), ENT_QUOTES);
         $posts = get_usernumposts($author->ID);
-        $name = $author->user_nickname;
-	    if (empty($idmode)) {
-	        $idmode = $author->user_idmode;
-	    }
-	    if ($idmode == 'nickname')    $name = $author->user_nickname;
-	    if ($idmode == 'login')    $name = $author->user_login;
-	    if ($idmode == 'firstname')    $name = $author->user_firstname;
-	    if ($idmode == 'lastname')    $name = $author->user_lastname;
-	    if ($idmode == 'namefl')    $name = $author->user_firstname.' '.$author->user_lastname;
-	    if ($idmode == 'namelf')    $name = $author->user_lastname.' '.$author->user_firstname;
-	    if (!$idmode) $name = $author->user_nickname;
 
         if (! ($posts == 0 && $hide_empty)) $list_authors2 .= "<li>";
         if ($posts == 0) {
             if (! $hide_empty) $list_authors2 .= $name;
         } else {
-            $link = '<a href="' . get_author_link(0, $author->ID, $author->user_login) . '" title="' . sprintf("Posts by %s", htmlspecialchars($author->user_nickname)) . '">' . $name . '</a>';
+            $link = '<a href="' . get_author_link(0, $author->ID, $author->user_login) . '" title="' . sprintf("Posts by %s", $name) . '">' . $name . '</a>';
 
             if ( (! empty($feed_image)) || (! empty($feed)) ) {
                 $link .= ' ';

@@ -322,7 +322,7 @@ $GLOBALS['wp_allowed_tags'] = array(
 				'acronym' => array('title' => array()),
 				'b' => array(),
 //				'blockquote' => array('cite' => array()),
-//				'br' => array(),
+				'br' => array(),
 				'code' => array(),
 //				'del' => array('datetime' => array()),
 //				'dd' => array(),
