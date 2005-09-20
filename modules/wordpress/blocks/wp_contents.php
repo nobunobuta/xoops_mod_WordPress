@@ -106,7 +106,7 @@ if( ! defined( 'WP_CONTENTS_BLOCK_INCLUDED' ) ) {
 				} else {
 					$content['comments'] = xcomments_popup_link(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS, '', 'Comments Off', false);
 					$content['comments'] .= " | ";
-					$content['comments'] .= comments_popup_link(_WP_TPL_COMMENT0, _WP_TPL_COMMENT1, _WP_TPL_COMMENTS, '', 'Comments Off', false);
+                    $content['comments'] .= comments_popup_link(_WP_TPL_TRACKBACK0, _WP_TPL_TRACKBACK1, _WP_TPL_TRACKBACKS,'', 'Trackback Off', false);
 				}
 				$content['trackback'] = trackback_rdf(0, false);;
 
