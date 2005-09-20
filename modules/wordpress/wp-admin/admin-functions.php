@@ -82,10 +82,8 @@ function wp_dropdown_month($current) {
 }
 
 function wp_dropdown_daily($current) {
-	global $wpdb;
-
 	$archive_day_date_format = "Y/m/d";
-	$arc_result=$wpdb->get_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date), DAYOFMONTH(post_date) FROM ".wp_table('posts')." ORDER BY post_date DESC", ARRAY_A);
+	$arc_result=$GLOBALS['wpdb']->get_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date), DAYOFMONTH(post_date) FROM ".wp_table('posts')." ORDER BY post_date DESC", ARRAY_A);
 	foreach ($arc_result as $arc_row) {
 		$arc_year  = $arc_row["YEAR(post_date)"];
 		$arc_month = $arc_row["MONTH(post_date)"];
@@ -98,12 +96,10 @@ function wp_dropdown_daily($current) {
 	}
 }
 function wp_dropdown_weekly($current) {
-	global $wpdb;
-
 		$archive_week_start_date_format = "Y/m/d";
 		$archive_week_end_date_format   = "Y/m/d";
 		$archive_week_separator = " - ";
-		$arc_result=$wpdb->geT_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date), DAYOFMONTH(post_date), WEEK(post_date) FROM ".wp_table('posts')." ORDER BY post_date DESC", ARRAY_A);
+		$arc_result=$GLOBALS['wpdb']->geT_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date), DAYOFMONTH(post_date), WEEK(post_date) FROM ".wp_table('posts')." ORDER BY post_date DESC", ARRAY_A);
 		$arc_w_last = '';
         foreach ($arc_result as $arc_row) {
 			$arc_year = $arc_row["YEAR(post_date)"];
@@ -123,8 +119,7 @@ function wp_dropdown_weekly($current) {
 }
 
 function wp_dropdown_postbypost($current) {
-	global $wpdb;
-	$resultarc = $wpdb->get_results("SELECT ID,post_date,post_title FROM ".wp_table('posts')." ORDER BY post_date DESC");
+	$resultarc = $GLOBALS['wpdb']->get_results("SELECT ID,post_date,post_title FROM ".wp_table('posts')." ORDER BY post_date DESC");
 	foreach ($resultarc as $row) {
 		if ($row->post_date != "0000-00-00 00:00:00") {
 			$title = (strip_tags($row->post_title)) ? strip_tags($row->post_title) : $row->ID;
@@ -136,29 +131,22 @@ function wp_dropdown_postbypost($current) {
 }
 
 function user_level_check() {
-	global $siteurl;
 	if (!user_can_access_admin_page()) {
-    	redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+    	redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 	}
 }
 
 function user_can_access_admin_page() {
-	global $parent_file;
-	global $pagenow;
-	global $menu;
-	global $submenu;
-	global $user_level;
-
-	if (! isset($parent_file)) {
-		$parent = $pagenow;
+	if (! isset($GLOBALS['parent_file'])) {
+		$parent = $GLOBALS['pagenow'];
 	} else {
-		$parent = $parent_file;
+		$parent = $GLOBALS['parent_file'];
 	}
 
-	foreach ($menu as $menu_array) {
+	foreach ($GLOBALS['menu'] as $menu_array) {
 		//echo "parent array: " . $menu_array[2];
 		if ($menu_array[2] == $parent) {
-			if ($user_level < $menu_array[1]) {
+			if ($GLOBALS['user_level'] < $menu_array[1]) {
 				return false;
 			} else {
 				break;
@@ -166,10 +154,10 @@ function user_can_access_admin_page() {
 		}
 	}
 
-	if (isset($submenu[$parent])) {
-		foreach ($submenu[$parent] as $submenu_array) {
-			if ($submenu_array[2] == $pagenow) {
-				if ($user_level < $submenu_array[1]) {
+	if (isset($GLOBALS['submenu'][$parent])) {
+		foreach ($GLOBALS['submenu'][$parent] as $submenu_array) {
+			if ($submenu_array[2] == $GLOBALS['pagenow']) {
+				if ($GLOBALS['user_level'] < $submenu_array[1]) {
 					return false;
 				} else {
 					return true;
@@ -182,23 +170,18 @@ function user_can_access_admin_page() {
 }
 
 function get_admin_page_title() {
-	global $title;
-	global $submenu;
-	global $pagenow;
-	global $plugin_page;
-
-	if (isset($title) && ! empty($title)) {
-		return $title;
+	if (isset($GLOBALS['title']) && ! empty($GLOBALS['title'])) {
+		return $GLOBALS['title'];
 	}
 
-	foreach (array_keys($submenu) as $parent) {
-		foreach ($submenu[$parent] as $submenu_array) {
+	foreach (array_keys($GLOBALS['submenu']) as $parent) {
+		foreach ($GLOBALS['submenu'][$parent] as $submenu_array) {
 			if (isset($submenu_array[3])) {
-				if ($submenu_array[2] == $pagenow) {
-					$title = $submenu_array[3];
+				if ($submenu_array[2] == $GLOBALS['pagenow']) {
+					$GLOBALS['title'] = $submenu_array[3];
 					return $submenu_array[3];
-				} else if (isset($plugin_page) && ($plugin_page == $submenu_array[2])) {
-					$title = $submenu_array[3];
+				} else if (isset($GLOBALS['plugin_page']) && ($GLOBALS['plugin_page'] == $submenu_array[2])) {
+					$GLOBALS['title'] = $submenu_array[3];
 					return $submenu_array[3];
 				}
 			}
@@ -209,37 +192,29 @@ function get_admin_page_title() {
 }
 
 function get_admin_page_parent() {
-	global $parent_file;
-	global $submenu;
-	global $pagenow;
-	global $plugin_page;
-
-	if (isset($parent_file) && ! empty($parent_file)) {
-		return $parent_file;
+	if (isset($GLOBALS['parent_file']) && ! empty($GLOBALS['parent_file'])) {
+		return $GLOBALS['parent_file'];
 	}
 
-	foreach (array_keys($submenu) as $parent) {
-		foreach ($submenu[$parent] as $submenu_array) {
-			if ($submenu_array[2] == $pagenow) {
-				$parent_file = $parent;
+	foreach (array_keys($GLOBALS['submenu']) as $parent) {
+		foreach ($GLOBALS['submenu'][$parent] as $submenu_array) {
+			if ($submenu_array[2] == $GLOBALS['pagenow']) {
+				$GLOBALS['parent_file'] = $parent;
 				return $parent;
-			} else if (isset($plugin_page) && ($plugin_page == $submenu_array[2])) {
-				$parent_file = $parent;
+			} else if (isset($GLOBALS['plugin_page']) && ($GLOBALS['plugin_page'] == $submenu_array[2])) {
+				$GLOBALS['parent_file'] = $parent;
 				return $parent;
 			}
 		}
 	}
 
-	$parent_file = '';
+	$GLOBALS['parent_file'] = '';
 	return '';
 }
 
 function add_options_page($page_title, $menu_title, $access_level, $file) {
-	global $submenu;
-
 	$file = basename($file);
-
-	$submenu['options.php'][] = array($menu_title, $access_level, $file, $page_title);
+	$GLOBALS['submenu']['options.php'][] = array($menu_title, $access_level, $file, $page_title);
 }
 
 /* checking login & pass in the database */
@@ -248,23 +223,20 @@ function veriflog() {
 		$userHandler =& wp_handler('User');
 		$userObject =& $userHandler->get($GLOBALS['xoopsUser']->uid());
 		if ($userObject) {
-			$userHandler->insert($userObject, true, true);
+			return ($userHandler->insert($userObject, true, true));
 		} else {
 			$userObject =& $userHandler->create();
-			$userObject->setVar('ID', $GLOBALS['xoopsUser']->uid());
-			$userHandler->insert($userObject, true, true);
+			$userObject->setVar('ID', $GLOBALS['xoopsUser']->uid(), true);
+			return ($userHandler->insert($userObject, true, true));
 		}
-		return true;
 	}
 	return false;
 }
 // Some postmeta stuff
 function add_meta($post_ID) {
-	global $wpdb;
-	
-	$metakeyselect = $wpdb->escape( remove_magic_quotes( trim($_POST['metakeyselect']) ) );
-	$metakeyinput  = $wpdb->escape( remove_magic_quotes( trim($_POST['metakeyinput']) ) );
-	$metavalue     = $wpdb->escape( remove_magic_quotes( trim($_POST['metavalue']) ) );
+	$metakeyselect = $GLOBALS['wpdb']->escape( remove_magic_quotes( trim($_POST['metakeyselect']) ) );
+	$metakeyinput  = $GLOBALS['wpdb']->escape( remove_magic_quotes( trim($_POST['metakeyinput']) ) );
+	$metavalue     = $GLOBALS['wpdb']->escape( remove_magic_quotes( trim($_POST['metavalue']) ) );
 
 	if (!empty($metavalue) && ((('#NONE#' != $metakeyselect) && !empty($metakeyselect)) || !empty($metakeyinput))) {
 		// We have a key/value pair. If both the select and the 
@@ -276,7 +248,7 @@ function add_meta($post_ID) {
 		if ($metakeyinput)
 			$metakey = $metakeyinput; // default
 
-		$result = $wpdb->query("
+		$result = $GLOBALS['wpdb']->query("
 				INSERT INTO ".wp_table('postmeta')." 
 				(post_id,meta_key,meta_value) 
 				VALUES ('$post_ID','$metakey','$metavalue')
@@ -285,23 +257,18 @@ function add_meta($post_ID) {
 } // add_meta
 
 function delete_meta($mid) {
-	global $wpdb;
-
-	$result = $wpdb->query("DELETE FROM ".wp_table('postmeta')." WHERE meta_id = '$mid'");
+	$result = $GLOBALS['wpdb']->query("DELETE FROM ".wp_table('postmeta')." WHERE meta_id = '$mid'");
 }
 
 function update_meta($mid, $mkey, $mvalue) {
-	global $wpdb;
-
-	return $wpdb->query("UPDATE ".wp_table('postmeta')." SET meta_key = '$mkey', meta_value = '$mvalue' WHERE meta_id = '$mid'");
+	return $GLOBALS['wpdb']->query("UPDATE ".wp_table('postmeta')." SET meta_key = '$mkey', meta_value = '$mvalue' WHERE meta_id = '$mid'");
 }
 
 function draft_list($user_ID) {
-	global $wpdb;
 	if ($GLOBALS['user_level'] == 10) {
-		$drafts = $wpdb->get_results("SELECT ID, post_title FROM ".wp_table('posts')." WHERE post_status = 'draft'");
+		$drafts = $GLOBALS['wpdb']->get_results("SELECT ID, post_title FROM ".wp_table('posts')." WHERE post_status = 'draft'");
 	} else {
-		$drafts = $wpdb->get_results("SELECT ID, post_title FROM ".wp_table('posts')." WHERE post_status = 'draft' AND post_author = $user_ID");
+		$drafts = $GLOBALS['wpdb']->get_results("SELECT ID, post_title FROM ".wp_table('posts')." WHERE post_status = 'draft' AND post_author = $user_ID");
 	}
 	if ($drafts) {
 ?>
@@ -353,8 +320,6 @@ function do_trackback($postObject, $useutf8, $target_charset="") {
 }
 
 function show_bookmarklet_link() {
-	global $is_NS4, $is_gecko, $is_winIE, $is_opera, $is_macIE;
-	global $siteurl, $wp_use_spaw;
 ?>
 <div class="wrap">
 	<h2>WordPress bookmarklet</h2>
@@ -365,18 +330,18 @@ function show_bookmarklet_link() {
 	$bookmarklet_tbpb  = (get_settings('use_trackback')) ? '&amp;trackback=1' : '';
 	$bookmarklet_tbpb .= (get_settings('use_pingback'))  ? '&amp;pingback=1'  : '';
 
-	if ($is_NS4 || $is_gecko) {
+	if ($GLOBALS['is_NS4'] || $GLOBALS['is_gecko']) {
 ?>
-		<a href="javascript:if(navigator.userAgent.indexOf('Safari') >= 0){Q=getSelection();}else{Q=document.selection?document.selection.createRange().text:document.getSelection();}void(window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?text='+escape(Q)+'<?php echo $bookmarklet_tbpb ?>&amp;popupurl='+escape(location.href)+'&amp;popuptitle='+escape(document.title),'WordPress bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));">Press It - <?php echo get_settings('blogname') ?></a>
+		<a href="javascript:if(navigator.userAgent.indexOf('Safari') >= 0){Q=getSelection();}else{Q=document.selection?document.selection.createRange().text:document.getSelection();}void(window.open('<?php echo wp_siteurl() ?>/wp-admin/bookmarklet.php?text='+escape(Q)+'<?php echo $bookmarklet_tbpb ?>&amp;popupurl='+escape(location.href)+'&amp;popuptitle='+escape(document.title),'WordPress bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));">Press It - <?php echo get_settings('blogname') ?></a>
 <?php
-	} else if ($is_winIE) {
-		if ($wp_use_spaw) {
+	} else if ($GLOBALS['is_winIE']) {
+		if ($GLOBALS['wp_use_spaw']) {
 			$range_text = "htmlText";
 		} else {
 			$range_text = "text";
 		}
 ?>
-		<a href="javascript:Q='';if(top.frames.length==0)Q=document.selection.createRange().<?php echo $range_text ?>;void(btw=window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?text='+escape(Q)+'<?php echo $bookmarklet_tbpb ?>&amp;popupurl='+escape(location.href)+'&amp;popuptitle='+escape(document.title),'bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=50,status=yes'));btw.focus();">Press it - <?php echo get_settings('blogname') ?></a>
+		<a href="javascript:Q='';if(top.frames.length==0)Q=document.selection.createRange().<?php echo $range_text ?>;void(btw=window.open('<?php echo wp_siteurl() ?>/wp-admin/bookmarklet.php?text='+escape(Q)+'<?php echo $bookmarklet_tbpb ?>&amp;popupurl='+escape(location.href)+'&amp;popuptitle='+escape(document.title),'bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=50,status=yes'));btw.focus();">Press it - <?php echo get_settings('blogname') ?></a>
 		<script type="text/javascript" language="JavaScript">
 		<!--
 		function oneclickbookmarklet(blah) {
@@ -387,13 +352,13 @@ function show_bookmarklet_link() {
 		<br /><br />One-click bookmarklet:<br />
 		<a href="javascript:oneclickbookmarklet(0);">click here</a>
 <?php
-	} else if ($is_opera) {
+	} else if ($GLOBALS['is_opera']) {
 ?>
-		<a href="javascript:void(window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?popupurl='+escape(location.href)+'&amp;popuptitle='+escape(document.title)+'<?php echo $bookmarklet_tbpb ?>','bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));">Press it - <?php echo get_settings('blogname') ?></a> 
+		<a href="javascript:void(window.open('<?php echo wp_siteurl() ?>/wp-admin/bookmarklet.php?popupurl='+escape(location.href)+'&amp;popuptitle='+escape(document.title)+'<?php echo $bookmarklet_tbpb ?>','bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));">Press it - <?php echo get_settings('blogname') ?></a> 
 <?php
-	} else if ($is_macIE) {
+	} else if ($GLOBALS['is_macIE']) {
 ?>
-		<a href="javascript:Q='';if(top.frames.length==0);void(btw=window.open('<?php echo $siteurl ?>/wp-admin/bookmarklet.php?text='+escape(document.getSelection())+'&amp;popupurl='+escape(location.href)+'&amp;popuptitle='+escape(document.title)+'<?php echo $bookmarklet_tbpb ?>','bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));btw.focus();">Press it - <?php echo get_settings('blogname') ?></a>
+		<a href="javascript:Q='';if(top.frames.length==0);void(btw=window.open('<?php echo wp_siteurl() ?>/wp-admin/bookmarklet.php?text='+escape(document.getSelection())+'&amp;popupurl='+escape(location.href)+'&amp;popuptitle='+escape(document.title)+'<?php echo $bookmarklet_tbpb ?>','bookmarklet','scrollbars=yes,width=600,height=<?php echo $bookmarklet_height ?>,left=100,top=150,status=yes'));btw.focus();">Press it - <?php echo get_settings('blogname') ?></a>
 <?php
 	}
 ?>

@@ -152,7 +152,7 @@ if ($GLOBALS['posts']) {
 <?php if (get_xoops_option(wp_mod(), 'wp_use_xoops_comments') == 0) { ?>
 <h3><?php echo _LANG_E_TITLE_LEAVECOM; ?></h3>
 	<!-- form to add a comment -->
-	<form action="<?php echo $siteurl.'/wp-comments-post.php'?>" method="post">
+	<form action="<?php echo wp_siteurl().'/wp-comments-post.php'?>" method="post">
 		<input type="hidden" name="comment_post_ID" value="<?php echo $wp_post_id; ?>" />
 		<input type="hidden" name="redirect_to" value="<?php echo $_SERVER["REQUEST_URI"]; ?>" />
 		<input type="text" name="author" class="textarea" value="<?php echo $user_nickname ?>" size="20" tabindex="1" /><br />

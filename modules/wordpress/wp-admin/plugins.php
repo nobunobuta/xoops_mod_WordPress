@@ -6,7 +6,7 @@ $this_file = 'plugins.php';
 $parent_file = 'plugins.php';
 
 if ($user_level < 9) {
-	redirect_header($siteurl.'/wp-admin/',5,_LANG_PG_LEAST_LEVEL);
+	redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_PG_LEAST_LEVEL);
 	exit();
 }
 
@@ -15,7 +15,7 @@ init_param('', 'action','string', '');
 switch(get_param('action')) {
 	case 'activate':
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/plugins.php',3,$xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/plugins.php',3,$xoopsWPTicket->getErrors());
 		}
 		init_param('GET', 'plugin','string',NO_DEFAULT_PARAM, true);
 		$current = "\n" . get_settings('active_plugins') . "\n";
@@ -29,7 +29,7 @@ switch(get_param('action')) {
 	
 	case 'deactivate':
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/plugins.php',3,$xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/plugins.php',3,$xoopsWPTicket->getErrors());
 		}
 		init_param('GET', 'plugin','string',NO_DEFAULT_PARAM, true);
 		$current = "\n" . get_settings('active_plugins') . "\n";

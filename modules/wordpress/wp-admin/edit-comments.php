@@ -52,13 +52,13 @@ if ($commentObjects) {
 	foreach($commentObjects as $commentObject) {
 		$row = $commentObject->getVarArray();
 		$comment = $commentObject->exportWpObject(); //$comment global is used in template_functions.
-		$postHandler =& wp_handler('Post');
-		$postObject =& $postHandler->get($commentObject->getVar('comment_post_ID'));
 		if ($commentObject->getVar('comment_approved') == 0) {
 			$row['class'] = 'class="unapproved" ';
 		} else {
 			$row['class'] = '';
 		}
+		$postHandler =& wp_handler('Post');
+		$postObject =& $postHandler->get($commentObject->getVar('comment_post_ID'));
 		if ($postObject) {
 			$row['post_title'] = $postObject->getVar('post_title');
 			$row['canEdit'] = user_can_edit($postObject->getVar('post_author'));

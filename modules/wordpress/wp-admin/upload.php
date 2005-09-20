@@ -234,7 +234,7 @@ switch ($action) {
 			$asin = explode(".", $img1_name);
 			$piece_of_code = "&lt;a href=&quot;http://www.amazon.co.jp/exec/obidos/ASIN/$asin[0]/$amazon_id&quot; target=&quot;_blank&quot;&gt;&lt;img style=&quot;float: left; margin: 0 10px 0 0;&quot; src=&quot;". get_settings('fileupload_url') ."/$img1_name&quot; border=&quot;0&quot; alt=&quot;$imgdesc&quot; /&gt;&lt;/a&gt;";
 		} elseif ($_POST['thumbsize'] == 'icon') {
-			$piece_of_code = "&lt;a style=&quot;float: left; margin: 0 10px 0 0;&quot; href=&quot;". get_settings('fileupload_url') . "/$img1_name&quot;&gt;" . "&lt;img src=&quot;". $siteurl ."/wp-images/file.gif&quot; alt=&quot;$imgdesc&quot; /&gt;" .$img1_name. "(".$fsize."KB)&lt;/a&gt;";
+			$piece_of_code = "&lt;a style=&quot;float: left; margin: 0 10px 0 0;&quot; href=&quot;". get_settings('fileupload_url') . "/$img1_name&quot;&gt;" . "&lt;img src=&quot;". wp_siteurl() ."/wp-images/file.gif&quot; alt=&quot;$imgdesc&quot; /&gt;" .$img1_name. "(".$fsize."KB)&lt;/a&gt;";
 		} elseif ( ereg('image/',$img1_type) && $_POST['thumbsize'] != 'none') {
 			$piece_of_code = "&lt;a style=&quot;float: left; margin: 0 10px 0 0;&quot; href=&quot;". get_settings('fileupload_url') . "/$img1_name&quot;&gt;" . "&lt;img src=&quot;". get_settings('fileupload_url') ."/$img_prefix$img1_name&quot; alt=&quot;$imgdesc&quot; /&gt;" . "&lt;/a&gt;";
 		} else {

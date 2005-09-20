@@ -21,10 +21,10 @@ switch(get_param('action')) {
 		init_param('POST', 'category_parent', 'integer', 0, true);
 		
 		$categoryObject =& $categoryHandler->create();
-		$categoryObject->setVar('cat_name', get_param('cat_name'));
-		$categoryObject->setVar('category_nicename',sanitize_title(get_param('cat_name')));
-		$categoryObject->setVar('category_description',get_param('category_description'));
-		$categoryObject->setVar('category_parent',get_param('category_parent'));
+		$categoryObject->setVar('cat_name', get_param('cat_name'), true);
+		$categoryObject->setVar('category_nicename',sanitize_title(get_param('cat_name')), true);
+		$categoryObject->setVar('category_description',get_param('category_description'), true);
+		$categoryObject->setVar('category_parent',get_param('category_parent'), true);
 		if (!$categoryHandler->insert($categoryObject)) {
 			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $categoryHandler->getErrors());
 		}
@@ -62,7 +62,7 @@ switch(get_param('action')) {
 		init_param('POST', 'cat_ID', 'integer', NO_DEFAULT_PARAM, true);
 
 		$categoryObject =& $categoryHandler->get(get_param('cat_ID'));
-		if(!$categoryHandler->delete($categoryObject)) {
+		if(!$categoryObject || !$categoryHandler->delete($categoryObject)) {
 			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $categoryHandler->getErrors());
 		}
 		header('Location: '.$_this_file.'?message=2');
@@ -79,7 +79,9 @@ switch(get_param('action')) {
 		require_once ('admin-header.php');
 	
 		$categoryObject =& $categoryHandler->get(get_param('cat_ID'));
-
+		if(!$categoryObject) {
+			redirect_header(wp_siteurl().'/wp-admin/'.$_this_file, 3, $categoryHandler->getErrors());
+		}
 		$_form_id = "editcat";
 		$_form_title = _LANG_C_EDIT_TITLECAT;
 		$_form_cat_ID = $categoryObject->getVar('cat_ID','e');
@@ -107,13 +109,13 @@ switch(get_param('action')) {
 	
 		$categoryObject =& $categoryHandler->create(false);
 		
-		$categoryObject->setVar('cat_ID',get_param('cat_ID'));
-		$categoryObject->setVar('cat_name',get_param('cat_name'));
+		$categoryObject->setVar('cat_ID',get_param('cat_ID'), true);
+		$categoryObject->setVar('cat_name',get_param('cat_name'), true);
 		$_category_nicename = sanitize_title(get_param('cat_name'));
 		if ($_category_nicename == "")  $_category_nicename = "category-".get_param('cat_ID');
-		$categoryObject->setVar('category_nicename', $_category_nicename);
-		$categoryObject->setVar('category_description', get_param('category_description'));
-		$categoryObject->setVar('category_parent', get_param('category_parent'));
+		$categoryObject->setVar('category_nicename', $_category_nicename, true);
+		$categoryObject->setVar('category_description', get_param('category_description'), true);
+		$categoryObject->setVar('category_parent', get_param('category_parent'), true);
 
 		if (!$categoryHandler->insert($categoryObject)) {
 			redirect_header("", 3, $categoryHandler->getErrors());

@@ -12,7 +12,7 @@ switch($action) {
 	case 'update':
 		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file,3,$xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file,3,$xoopsWPTicket->getErrors());
 		}
 		//Check User_Level
 		user_level_check();
@@ -34,14 +34,14 @@ switch($action) {
 					
 					case 'delete':
 						if (!$commentHandler->delete($commentObject)) {
-							redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $categoryHandler->getErrors());
+							redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $categoryHandler->getErrors());
 						}
 						++$item_deleted;
 						break;
 					
 					case 'approve':
 						if (!$commentObject->approve()) {
-							redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $categoryHandler->getErrors());
+							redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $categoryHandler->getErrors());
 						}
 						if (get_settings('comments_notify') == true) {
 							wp_notify_postauthor($key);

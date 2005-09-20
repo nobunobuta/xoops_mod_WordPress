@@ -2,7 +2,7 @@
 require_once('admin-functions.php');
 
 if (!(veriflog())) {
-	redirect_header($siteurl.'/',2,_NOPERM);
+	redirect_header(wp_siteurl().'/',2,_NOPERM);
 }
 
 get_currentuserinfo();
