@@ -105,7 +105,7 @@ function remove_magic_quotes( $mixed ) {
  *
  * {@internal init_param(-) }}
  *
- * @author fplanque
+ * @author NobuNobu
  * @param string Variable to set
  * @param string Force value type to one of:
  * - boolean
@@ -254,7 +254,8 @@ function set_param($var, $value) {
 }
 
 function get_lastpostdate() {
-	if ((!isset($GLOBALS['cache_lastpostdate'][wp_id()])) || (!$GLOBALS['use_cache'])) {
+	static $cache_lastpostdate;
+	if ((!isset($cache_lastpostdate[wp_id()])) || (!$GLOBALS['use_cache'])) {
 		$criteria =& new CriteriaCompo(new Criteria('post_date', current_time('mysql'), "<="));
 		$criteria->add(new Criteria('post_status', 'publish'));
 		$criteria->setSort('post_date');
@@ -262,15 +263,16 @@ function get_lastpostdate() {
 		$criteria->setLimit(1);
 		$postHandler =& wp_handler('Post');
 		$postObjects =& $postHandler->getObjects($criteria, false, 'post_date');
-		$GLOBALS['cache_lastpostdate'][wp_id()] = $lastpostdate = $postObjects[0]->getVar('post_date');
+		$cache_lastpostdate[wp_id()] = $lastpostdate = $postObjects[0]->getVar('post_date');
 	} else {
-		$lastpostdate = $GLOBALS['cache_lastpostdate'][wp_id()];
+		$lastpostdate = $cache_lastpostdate[wp_id()];
 	}
 	return $lastpostdate;
 }
 
 function get_lastpostmodified() {
-	if ((!isset($GLOBALS['lastpostmodified'][wp_id()])) || (!$GLOBALS['use_cache'])) {
+	static $cache_lastpostmodified;
+	if ((!isset($cache_lastpostmodified[wp_id()])) || (!$GLOBALS['use_cache'])) {
 		$criteria =& new CriteriaCompo(new Criteria('post_date', current_time('mysql'), "<="));
 		$criteria->add(new Criteria('post_status', 'publish'));
 		$criteria->setSort('post_modified');
@@ -281,9 +283,9 @@ function get_lastpostmodified() {
 		$lastpostmodified = $postObjects[0]->getVar('post_modified');
 		$lastpostdate =get_lastpostdate();
 		if ($lastpostmodified < $lastpostdate) {
-			$GLOBALS['lastpostmodified'][wp_id()] = $lastpostmodified = $lastpostdate;
+			$cache_lastpostmodified[wp_id()] = $lastpostmodified = $lastpostdate;
 		} else {
-			$GLOBALS['lastpostmodified'][wp_id()] = $lastpostmodified;
+			$cache_lastpostmodified[wp_id()] = $lastpostmodified;
 		}
 	} else {
 		$lastpostmodified = $GLOBALS['lastpostmodified'][wp_id()];
@@ -292,7 +294,8 @@ function get_lastpostmodified() {
 }
 
 function get_lastcommentmodified($p=0, $name='') {
-	if ((!isset($GLOBALS['lastcommentmodified'][$p][wp_id()])) || (!$GLOBALS['use_cache'])) {
+	static $cache_lastcommentmodified;
+	if ((!isset($cache_lastcommentmodified[wp_id()][$p])) || (!$GLOBALS['use_cache'])) {
 		$_criteria =& new CriteriaCompo(new Criteria('comment_approved','1 '));
 		$_criteria->add(new Criteria('post_status','publish'));
 		$_criteria->add(new Criteria('post_date',current_time('mysql'), '<='));
@@ -307,9 +310,9 @@ function get_lastcommentmodified($p=0, $name='') {
 		$_joinCriteria =& new XoopsJoinCriteria(wp_table('posts'), 'comment_post_id', 'ID');
 		$commentHandler =& wp_handler('Comment');
 		$commentObjects = $commentHandler->getObjects($_criteria, false, 'comment_date', false, $_joinCriteria);
-		$GLOBALS['lastcommentmodified'][$p][wp_id()] = $lastcommentmodified = $commentObjects[0]->getVar('comment_date');
+		$cache_lastcommentmodified[wp_id()][$p] = $lastcommentmodified = $commentObjects[0]->getVar('comment_date');
 	} else {
-		$lastcommentmodified = $GLOBALS['lastcommentmodified'][$p][wp_id()];
+		$lastcommentmodified = $cache_lastcommentmodified[wp_id()][$p];
 	}
 	return $lastcommentmodified;
 }
@@ -326,8 +329,9 @@ function user_pass_ok($user_login,$user_pass) {
 
 function get_currentuserinfo() { // a bit like get_userdata(), on steroids
 	if ($GLOBALS['xoopsUser']) {
-		$GLOBALS['user_login'] = $GLOBALS['xoopsUser']->uname();
-		$GLOBALS['userdata'] = get_userdatabylogin($GLOBALS['user_login']);
+		$GLOBALS['user_ID'] = $GLOBALS['xoopsUser']->uid();
+		$GLOBALS['userdata'] = get_userdata($GLOBALS['user_ID']);
+		$GLOBALS['user_login'] = $GLOBALS['xoopsUser']->uname('n');
 		$GLOBALS['user_level'] = $GLOBALS['userdata']->user_level;
 		$GLOBALS['user_ID'] = $GLOBALS['userdata']->ID;
 		$GLOBALS['user_nickname'] = $GLOBALS['userdata']->user_nickname;
@@ -364,6 +368,7 @@ function get_userdata($userid) {
 }
 
 function get_userdatabylogin($user_login) {
+	$user_login = addslashes($user_login);
 	if ((empty($GLOBALS['cache_userdata'][wp_id()]["$user_login"])) || (!$GLOBALS['use_cache'])) {
 		$userHandler =& wp_handler('User');
 		$userObject =& $userHandler->getByLogin($user_login);
@@ -382,6 +387,43 @@ function get_userdatabylogin($user_login) {
 function get_userid($user_login) {
 	$user = get_userdatabylogin($user_login);
 	return $user->ID;
+}
+
+function get_author_name($auth_id, $idmode='') {
+	$authordata = get_userdata($auth_id);
+	if (empty($idmode)) {
+		$idmode = $authordata->user_idmode;
+	}
+	switch($idmode) {
+		case 'nickname':
+			$authorname = $authordata->user_nickname;
+			break;
+
+		case 'login':
+			$authorname = $authordata->user_login;
+			break;
+
+		case 'firstname':
+			$authorname = $authordata->user_firstname;
+			break;
+
+		case 'lastname':
+			$authorname = $authordata->user_lastname;
+			break;
+
+		case 'namefl':
+			$authorname = $authordata->user_firstname.' '.$authordata->user_lastname;
+			break;
+
+		case 'namelf':
+			$authorname = $authordata->user_lastname.' '.$authordata->user_firstname;
+			break;
+
+		default:
+			$authorname = $authordata->user_nickname;
+			break;
+	}
+	return $authorname;
 }
 
 function get_usernumposts($userid) {
@@ -504,7 +546,7 @@ function update_option($option_name, $newvalue, $force=false) {
 	if (get_settings($option_name) != $newvalue) {
 		$optionHandler =& wp_handler('Option');
 		$optionObject =& $optionHandler->getByName($option_name);
-		$optionObject->setVar('option_value', $newvalue);
+		$optionObject->setVar('option_value', $newvalue, true);
 		if (!$optionHandler->insert($optionObject,$force, true)) {
 			return false;
 		}
@@ -519,11 +561,11 @@ function add_option($name, $value='', $group=0, $desc='', $type=1, $level=8) {
 		$optionHandler =& wp_handler('Option');
 		if (!$optionHandler->getByName($name)) {
 			$optionObject =& $optionHandler->create();
-			$optionObject->setVar('option_name', $name);
-			$optionObject->setVar('option_value', $value);
-			$optionObject->setVar('option_type', $type);
-			$optionObject->setVar('option_description', $desc);
-			$optionObject->setVar('option_admin_level', $level);
+			$optionObject->setVar('option_name', $name, true);
+			$optionObject->setVar('option_value', $value, true);
+			$optionObject->setVar('option_type', $type, true);
+			$optionObject->setVar('option_description', $desc, true);
+			$optionObject->setVar('option_admin_level', $level, true);
 			if ($optionHandler->insert($optionObject, true)) {
 				$option_id = $optionObject->getVar('option_id');
 				$GLOBALS['cache_settings'][wp_id()]->{$name} = $value;
@@ -534,9 +576,9 @@ function add_option($name, $value='', $group=0, $desc='', $type=1, $level=8) {
 					if ($optionGroup2OptionObjects) {
 						$seq = $optionGroup2OptionObjects[0]->getExtraVar('seq_max')+1;
 						$optionGroup2OptionObject =& $optionGroup2OptionHandler->create();
-						$optionGroup2OptionObject->setVar('group_id',$group);
-						$optionGroup2OptionObject->setVar('option_id',$option_id);
-						$optionGroup2OptionObject->setVar('seq',$seq);
+						$optionGroup2OptionObject->setVar('group_id',$group, true);
+						$optionGroup2OptionObject->setVar('option_id',$option_id, true);
+						$optionGroup2OptionObject->setVar('seq',$seq, true);
 						$optionGroup2OptionHandler->insert($optionGroup2OptionObject, true);
 					}
 				}
@@ -557,9 +599,9 @@ function add_post_meta($post_id, $key, $value, $unique = false) {
 		}
 	}
 	$postmetaObject =& $postmetaHandler->create();
-	$postmetaObject->setVar('post_id', $post_id);
-	$postmetaObject->setVar('meta_key', $key);
-	$postmetaObject->setVar('meta_value', $value);
+	$postmetaObject->setVar('post_id', $post_id, true);
+	$postmetaObject->setVar('meta_key', $key, true);
+	$postmetaObject->setVar('meta_value', $value, true);
 	$GLOBALS['post_meta_cache'][wp_id()][$post_id][$key][] = $value;
 	return $postmetaHandler->insert($postmetaObject, true);
 }
@@ -619,26 +661,29 @@ function update_post_meta($post_id, $key, $value, $prev_value = '') {
 
 function get_postdata($postid) {
 	$postHandler =& wp_handler('Post');
-	$postObject =& $postHandler->get($postid);
-	$GLOBALS['post'] = $postObject->exportWpObject();
-	$postdata = array (
-		'ID' => $GLOBALS['post']->ID,
-		'Author_ID' => $GLOBALS['post']->post_author,
-		'Date' => $GLOBALS['post']->post_date,
-		'Content' => $GLOBALS['post']->post_content,
-		'Excerpt' => $GLOBALS['post']->post_excerpt,
-		'Title' => $GLOBALS['post']->post_title,
-		'Category' => $GLOBALS['post']->post_category,
-		'Lat' => $GLOBALS['post']->post_lat,
-		'Lon' => $GLOBALS['post']->post_lon,
-		'post_status' => $GLOBALS['post']->post_status,
-		'comment_status' => $GLOBALS['post']->comment_status,
-		'ping_status' => $GLOBALS['post']->ping_status,
-		'post_password' => $GLOBALS['post']->post_password,
-		'to_ping' => $GLOBALS['post']->to_ping,
-		'pinged' => $GLOBALS['post']->pinged
-	);
-	return $postdata;
+	if ($postObject =& $postHandler->get($postid)) {
+		$GLOBALS['post'] = $postObject->exportWpObject();
+		$postdata = array (
+			'ID' => $GLOBALS['post']->ID,
+			'Author_ID' => $GLOBALS['post']->post_author,
+			'Date' => $GLOBALS['post']->post_date,
+			'Content' => $GLOBALS['post']->post_content,
+			'Excerpt' => $GLOBALS['post']->post_excerpt,
+			'Title' => $GLOBALS['post']->post_title,
+			'Category' => $GLOBALS['post']->post_category,
+			'Lat' => $GLOBALS['post']->post_lat,
+			'Lon' => $GLOBALS['post']->post_lon,
+			'post_status' => $GLOBALS['post']->post_status,
+			'comment_status' => $GLOBALS['post']->comment_status,
+			'ping_status' => $GLOBALS['post']->ping_status,
+			'post_password' => $GLOBALS['post']->post_password,
+			'to_ping' => $GLOBALS['post']->to_ping,
+			'pinged' => $GLOBALS['post']->pinged
+		);
+		return $postdata;
+	} else {
+		return array();
+	}
 }
 
 function get_postdata2($postid=0) { // less flexible, but saves DB queries
@@ -667,6 +712,9 @@ function get_commentdata($comment_ID, $no_cache=0, $include_unapproved=false) { 
 		$criteria = null;
 		$commentHandler =& wp_handler('Comment');
 		$commentObject =& $commentHandler->get($comment_ID);
+		if (!$commentObject) {
+			return false;
+		}
 		if (!$include_unapproved) {
 			if ($commentObject->getVar('comment_approved') != 1) {
 				return false;
@@ -695,14 +743,15 @@ function get_commentdata($comment_ID, $no_cache=0, $include_unapproved=false) { 
 }
 
 function get_catname($cat_ID) {
-	if (empty($GLOBALS['cache_catnames'][wp_id()]) || (!$GLOBALS['use_cache'])) {
+	static $cache_catnames;
+	if (empty($cache_catnames[wp_id()]) || (!$GLOBALS['use_cache'])) {
 		$categoryHandler =& wp_handler('Category');
 		$categoryObjects =& $categoryHandler->getObjects();
 		foreach ($categoryObjects as $categoryObject) {
-			$GLOBALS['cache_catnames'][wp_id()][$categoryObject->getVar('cat_ID')] = $categoryObject->getVar('cat_name');
+			$cache_catnames[wp_id()][$categoryObject->getVar('cat_ID')] = $categoryObject->getVar('cat_name');
 		}
 	}
-	$cat_name = $GLOBALS['cache_catnames'][wp_id()][$cat_ID];
+	$cat_name = $cache_catnames[wp_id()][$cat_ID];
 	return $cat_name;
 }
 
@@ -831,8 +880,8 @@ function trackback($trackback_url, $title, $excerpt, $ID, $charset = "", $force=
 	debug_fwrite($fp, "\n\n");
 	$postHandler =& wp_handler('Post');
 	$postObject =& $postHandler->get($ID);
-	$postObject->setVar('pinged', "__MySqlFunc__CONCAT(pinged, '\n', '$trackback_url')");
-	$postObject->setVar('to_ping', "__MySqlFunc__REPLACE(to_ping, '$trackback_url', '')");
+	$postObject->setVar('pinged', "__MySqlFunc__CONCAT(pinged, '\n', '$trackback_url')", true);
+	$postObject->setVar('to_ping', "__MySqlFunc__REPLACE(to_ping, '$trackback_url', '')", true);
 	if( !$postHandler->insert($postObject, $force, true)) {
 		debug_fwrite($fp, $postHandler->getErrors());
 	}
