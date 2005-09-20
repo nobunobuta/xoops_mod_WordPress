@@ -32,7 +32,10 @@
 // を負いません。自己の責任において使用してください。
 // プログラムの改変は自由に行ってください。
 // ----------------------------------------------------------------
-
+if (file_exists(dirname(__FILE__)."/xoops_version.php")) {
+	require('../../mainfile.php'); //XOOPSの場合には呼び出されるはず。
+}
+require_once(dirname(__FILE__).'/wp-config.php');
 // ----------------------------------------------------------------
 // 設定値（ここから）
 //
@@ -55,21 +58,22 @@ $LinkColor = "#0000FF";
 //$CommentSort = "ASC"; //古いものから表示
 $CommentSort = "DESC"; //新しいものから表示
 //XOOPSのSESSIONを使用してコメント投稿にチケットを使用する。
-$UseSession = true;
-
-$DoRedir = true;
+if (defined('XOOPS_URL')) {
+	$UseSession = true;
+}
 // 設定値（ここまで）
 // ----------------------------------------------------------------
 ini_set ('display_errors', '1');
 ini_set ('error_reporting', E_ALL);
-if (file_exists(dirname(__FILE__)."/xoops_version.php")) {
-	require('../../mainfile.php'); //XOOPSの場合には呼び出されるはず。
-}
-require_once(dirname(__FILE__).'/wp-config.php');
+
 if (defined('XOOPS_URL')) {
 	$tableposts = wp_table('posts');
 	$tablecomments = wp_table('comments');
+} else {
+	$siteurl = get_settings('home');
 }
+$myurl = $siteurl.'/'.basename(__FILE__);
+
 if (preg_match('/DoCoMo/', $HTTP_USER_AGENT)) {
     $ua_list = explode("/", $HTTP_USER_AGENT);
     $is_docomo = substr($ua_list[3], 1);
@@ -79,6 +83,7 @@ if (preg_match('/DoCoMo/', $HTTP_USER_AGENT)) {
 }
 if ($UseSession) {
     $ses_param = (SID) ? '&'.SID : '';
+	$do_redir = true;
 } else {
 	$ses_param = '';
 }
@@ -89,22 +94,26 @@ if ($is_docomo) {
 }
 function get_post_titles($start,$count) {
 	global $tableposts,$wpdb;
-	$titles = $wpdb->get_results("SELECT ID,post_title,post_date "
-	                           ."FROM $tableposts WHERE "
-	                           ."post_status = 'publish' "
-	                           ."ORDER BY post_date DESC "
-	                           ."LIMIT $start,$count"
+	$now = current_time('mysql');
+	$titles = $wpdb->get_results('SELECT ID,post_title,post_date '
+	                           .'FROM '.$tableposts.' WHERE '
+	                           .'post_status = \'publish\' '
+                               .'AND post_date <= \''.$now.'\' '
+	                           .'ORDER BY post_date DESC '
+	                           .'LIMIT '.$start.','.$count
 	                           );
 	return $titles;
 }
 
 function find_post($num) {
 	global $tableposts,$wpdb;
-	$post = $wpdb->get_row("SELECT ID "
-	                           ."FROM $tableposts WHERE "
-	                           ."post_status = 'publish' "
-	                           ."ORDER BY post_date DESC "
-	                           ."LIMIT $num,1"
+	$now = current_time('mysql');
+	$post = $wpdb->get_row('SELECT ID '
+	                           .'FROM '.$tableposts.' WHERE '
+	                           .'post_status = \'publish\' '
+                               .'AND post_date <= \''.$now.'\' '
+	                           .'ORDER BY post_date DESC '
+	                           .'LIMIT '.$num.',1'
 	                           );
 	if($post) {
 		return $post->ID;
@@ -123,6 +132,18 @@ function get_comments($ID) {
 	global $tablecomments,$wpdb,$CommentSort;
 	$comments = $wpdb->get_results("SELECT * FROM $tablecomments WHERE comment_post_ID = $ID AND comment_approved = '1' ORDER BY comment_date $CommentSort");
 	return $comments;
+}
+
+if (!function_exists('wp_get_fullurl')) {
+	function wp_get_fullurl($url) {
+		preg_match('#(http://[^/]*)#' , XOOPS_URL, $my_host);
+		$my_host = $my_host[0];
+		$test = parse_url($url);
+		if (!isset($test['host']) && ($url[0] == '/')) {
+			$url = $my_host.$url;
+		}
+		return($url);
+	}
 }
 
 $blogname = get_bloginfo('name'); //ブログのタイトル
@@ -223,7 +244,7 @@ switch ($_REQUEST["view"]) {
 		$echostring .= '<center>'.$blogname.'<br />Ktai edition</center><hr />';
 		$echostring .= '<p>当サイトの外にリンクしています。場合によっては、携帯端末では表示できない可能性があります。</p>';
 		$echostring .= '<a href="'.$url.'">GO!</a>';
-		$DoRedir = false;
+		$do_redir = false;
 		$hidefooter = true;
     	break;
 	case "list" :
@@ -240,19 +261,19 @@ switch ($_REQUEST["view"]) {
 			$ackey = $line_count + 1;
 			$num = $start + $line_count;
 			$date = mysql2date('m/d H:i', $title->post_date);
-			$echostring .= $ackeychar[$ackey].'.<a href="'.$_SERVER["PHP_SELF"].'?view=content&num='.$num.'&p='.$title->ID.'&start=0'.$ses_param.'" accesskey="'.$ackey.'">'.$title->post_title.'</a>('.$date.')';
+			$echostring .= $ackeychar[$ackey].'.<a href="'.$myurl.'?view=content&num='.$num.'&p='.$title->ID.'&start=0'.$ses_param.'" accesskey="'.$ackey.'">'.$title->post_title.'</a>('.$date.')';
 			$echostring .= '<font color="#FF00FF">['.get_number_of_comments($title->ID).']</font><br />';
 			$line_count++;
 		}
 		$echostring .= '<hr />';
 		$nextstart = $start + $ListPerPage;
 		if (find_post($nextstart)) {
-			$echostring .= $ackeychar[9].'<a href="'.$_SERVER["PHP_SELF"].'?view=list&start='.$nextstart.$ses_param.'" accesskey="9">次の'.$ListPerPage.'件 &gt;</a><br/>';
+			$echostring .= $ackeychar[9].'<a href="'.$myurl.'?view=list&start='.$nextstart.$ses_param.'" accesskey="9">次の'.$ListPerPage.'件 &gt;</a><br/>';
 		}
 		$prevstart = $start - $ListPerPage;
 		if ($prevstart >= 0) {
-			$echostring .= $ackeychar[7].'<a href="'.$_SERVER["PHP_SELF"].'?view=list&start='.$prevstart.$ses_param.'" accesskey="7">&lt; 前の'.$ListPerPage.'件</a><br/>';
-			$echostring .= $ackeychar[0].'<a href="'.$_SERVER["PHP_SELF"].'?view=list&start=0'.$ses_param.'" accesskey="0">トップ </a><br/>';
+			$echostring .= $ackeychar[7].'<a href="'.$myurl.'?view=list&start='.$prevstart.$ses_param.'" accesskey="7">&lt; 前の'.$ListPerPage.'件</a><br/>';
+			$echostring .= $ackeychar[0].'<a href="'.$myurl.'?view=list&start=0'.$ses_param.'" accesskey="0">トップ </a><br/>';
 		}
 		break;
 
@@ -274,73 +295,75 @@ switch ($_REQUEST["view"]) {
 		$echostring .= $postdata['Title'].'('.$date.') Page:'.$nextpage.'<hr />';
 		$authordata = get_userdata($postdata['Author_ID']);
 		$echostring .= "Author   : ".the_author('',false).'<br>Category: '.strip_tags(the_category('-', '', false)).'<hr />';
-		$pages[0] =$postdata['Content'];$page=1;$more=1;
-		$postdata['Content']=get_the_content('');
-		//PukiWikiプラグインなどでレンダリングしている場合の為にフィルタを通す
-		$postdata['Content']=apply_filters('the_content',$postdata['Content']);
-		//PukiWikiプラグインなどで挿入された<style>..</style>タグを削除
-		$postdata['Content'] = preg_replace('/<style.*?>.*?<\/style.*?>/ms','',$postdata['Content']);
-		if ($ImageReplaceString == '') { //画像置換しない
-			$content = $postdata['Content'];
-		}else{ //画像削除する場合、imgタグを指定文字列に置換
-			$imgstr = array();
-			$repstr = array();
-			$imgstr[] = '/<img[^>]*src\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*alt\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*>/ie';
-			$repstr[] = '"&lt;<a href=\"'.$_SERVER["PHP_SELF"].'?view=imagepage&num='.$num.'&p='.$p.'&url=".urlencode("$1")."'.$ses_param.'\">'.$ImageReplaceString.':\\2</a>&gt;<br>"';
-			$content = preg_replace($imgstr,$repstr,$postdata['Content']);
-			$imgstr[] = '/<img[^>]*src\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*>/i';
-			$repstr[] = '"&lt;<a href=\"'.$_SERVER["PHP_SELF"].'?view=imagepage&num='.$num.'&p='.$p.'&url=".urlencode("$1")."'.$ses_param.'\">'.$ImageReplaceString.'</a>&gt;<br>"';
-			$content = preg_replace($imgstr,$repstr,$content);
-		}
+		if (empty($GLOBALS['post']->post_password)) {
+			$pages[0] =$postdata['Content'];$page=1;$more=1;
+			$postdata['Content']=get_the_content('');
+			//PukiWikiプラグインなどでレンダリングしている場合の為にフィルタを通す
+			$postdata['Content']=apply_filters('the_content',$postdata['Content']);
+			//PukiWikiプラグインなどで挿入された<style>..</style>タグを削除
+			$postdata['Content'] = preg_replace('/<style.*?>.*?<\/style.*?>/ms','',$postdata['Content']);
+			if ($ImageReplaceString == '') { //画像置換しない
+				$content = $postdata['Content'];
+			}else{ //画像削除する場合、imgタグを指定文字列に置換
+				$imgstr = array();
+				$repstr = array();
+				$imgstr[] = '/<img[^>]*src\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*alt\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*>/ie';
+				$repstr[] = '"&lt;<a href=\"'.$siteurl.'/wp-ktai.php?view=imagepage&num='.$num.'&p='.$p.'&url=".urlencode("$1")."'.$ses_param.'\">'.$ImageReplaceString.':\\2</a>&gt;<br>"';
+				$imgstr[] = '/<img[^>]*src\s*=\s*[\"\']([^\"\'>]*)[\"\'][^>]*>/ie';
+				$repstr[] = '"&lt;<a href=\"'.$siteurl.'/wp-ktai.php?view=imagepage&num='.$num.'&p='.$p.'&url=".urlencode("$1")."'.$ses_param.'\">'.$ImageReplaceString.'</a>&gt;<br>"';
+				$content = preg_replace($imgstr,$repstr,$postdata['Content']);
+			}
 
-		if ($CharCountPerPage > 0) {
-			//携帯で表示出来る文字サイズに応じて分割
-			$content_1 = mb_strcut($content, $start, $CharCountPerPage);
-			//分割結果でタグの途中になってしまった場合の処理
-			$content_1 = preg_replace("/^[^<]*?>/","",$content_1);
-			if (preg_match("/<[^>]*?$/",$content_1,$match)) {
-				$nextstart = $nextstart - strlen($match[0]);
-				$prevstart = $prevstart - strlen($match[0]);
-				$content_1 = preg_replace("/<[^>]*?$/","",$content_1);
-			}
-			//対応するタグが無い場合に強制的にタグを閉じる。
-			$content_1 = "<div>".balanceTags($content_1)."</div>";
-			$echostring .= $content_1;
-			
-			$nextpagelen = strlen(mb_strcut($content,$nextstart));
-			if ($start >0 ) {
-				$prevstart = ($prevstart < 0) ? 0 : $prevstart;
-				$echostring .= '<hr />';
-				$echostring .= $ackeychar[2].'<a href="'.$_SERVER["PHP_SELF"].'?view=content&num='.$num.'&p='.$p.'&start='.$prevstart.$ses_param.'" accesskey="2">&lt;&lt;手前</a><br />';
-			}
-			if ($nextpagelen != 0) {
-				if ($prevstart < 0 ) {
-					$echostring .= '<hr />';
+			if ($CharCountPerPage > 0) {
+				//携帯で表示出来る文字サイズに応じて分割
+				$content_1 = mb_strcut($content, $start, $CharCountPerPage);
+				//分割結果でタグの途中になってしまった場合の処理
+				$content_1 = preg_replace("/^[^<]*?>/","",$content_1);
+				if (preg_match("/<[^>]*?$/",$content_1,$match)) {
+					$nextstart = $nextstart - strlen($match[0]);
+					$prevstart = $prevstart - strlen($match[0]);
+					$content_1 = preg_replace("/<[^>]*?$/","",$content_1);
 				}
-				$echostring .= $ackeychar[8].'<a href="'.$_SERVER["PHP_SELF"].'?view=content&num='.$num.'&p='.$p.'&start='.$nextstart.$ses_param.'" accesskey="8">続き&gt;&gt;</a><br />';
+				//対応するタグが無い場合に強制的にタグを閉じる。
+				$content_1 = "<div>".balanceTags($content_1)."</div>";
+				$echostring .= $content_1;
+				
+				$nextpagelen = strlen(mb_strcut($content,$nextstart));
+				if ($start >0 ) {
+					$prevstart = ($prevstart < 0) ? 0 : $prevstart;
+					$echostring .= '<hr />';
+					$echostring .= $ackeychar[2].'<a href="'.$myurl.'?view=content&num='.$num.'&p='.$p.'&start='.$prevstart.$ses_param.'" accesskey="2">&lt;&lt;手前</a><br />';
+				}
+				if ($nextpagelen != 0) {
+					if ($prevstart < 0 ) {
+						$echostring .= '<hr />';
+					}
+					$echostring .= $ackeychar[8].'<a href="'.$myurl.'?view=content&num='.$num.'&p='.$p.'&start='.$nextstart.$ses_param.'" accesskey="8">続き&gt;&gt;</a><br />';
+				}
+			} else {
+				$echostring .= $content;
+			}
+			$echostring .= '<hr />';
+			$count = get_number_of_comments($postdata['ID']);
+			if ($count == 0) {
+				$echostring .='<a href="'.$myurl.'?view=comment&num='.$num.'&p='.$p.$ses_param.'">コメントする</a><br />';
+			}else{
+				$echostring .='<a href="'.$myurl.'?view=comprev&num='.$num.'&p='.$p.'&page=0'.$ses_param.'">コメント('.$count.')</a><br />';
 			}
 		} else {
-			$echostring .= $content;
-		}
-		$echostring .= '<hr />';
-		$count = get_number_of_comments($postdata['ID']);
-
-		if ($count == 0) {
-			$echostring .='<a href="'.$_SERVER["PHP_SELF"].'?view=comment&num='.$num.'&p='.$p.$ses_param.'">コメントする</a><br />';
-		}else{
-			$echostring .='<a href="'.$_SERVER["PHP_SELF"].'?view=comprev&num='.$num.'&p='.$p.'&page=0'.$ses_param.'">コメント('.$count.')</a><br />';
+			$echostring .=  '<font color="red">[パスワードで保護された記事は携帯ではご覧になれません。]</font>';
 		}
 		$echostring .= '<hr />';
 
 		$nextnum = $num + 1;
 		if ($next_p = find_post($nextnum)) {
-			$echostring .= $ackeychar[9].'<a href="'.$_SERVER["PHP_SELF"].'?view=content&num='.$nextnum.'&p='.$next_p.'&page=0'.$ses_param.'" accesskey="9">次の記事へ &gt;</a><br />';
+			$echostring .= $ackeychar[9].'<a href="'.$myurl.'?view=content&num='.$nextnum.'&p='.$next_p.'&page=0'.$ses_param.'" accesskey="9">次の記事へ &gt;</a><br />';
 		}
 		$prevnum = $num - 1;
 		if ($prev_p = find_post($prevnum)) {
-			$echostring .= $ackeychar[7].'<a href="'.$_SERVER["PHP_SELF"].'?view=content&num='.$prevnum.'&p='.$prev_p.'&page=0'.$ses_param.'" accesskey="7">&lt; 前の記事へ</a><br />';
+			$echostring .= $ackeychar[7].'<a href="'.$myurl.'?view=content&num='.$prevnum.'&p='.$prev_p.'&page=0'.$ses_param.'" accesskey="7">&lt; 前の記事へ</a><br />';
 		}
-		$echostring .= $ackeychar[0].'<a href="'.$_SERVER["PHP_SELF"].'?view=list&start=0'.$ses_param.'" accesskey="0">一覧へ戻る</a><br/>';
+		$echostring .= $ackeychar[0].'<a href="'.$myurl.'?view=list&start=0'.$ses_param.'" accesskey="0">一覧へ戻る</a><br/>';
 		
 		break;
 
@@ -368,18 +391,23 @@ switch ($_REQUEST["view"]) {
 				$echostring .= '<hr />';
 			}
 		}
-		$echostring .='<a href="'.$_SERVER["PHP_SELF"].'?view=comment&num='.$num.'&p='.$p.$ses_param.'">コメントする</a><br />';
+		if (defined('XOOPS_URL')) {
+			if (!get_xoops_option(wp_mod(), 'wp_use_xoops_comments')) {
+				$echostring .='<a href="'.$myurl.'?view=comment&num='.$num.'&p='.$p.$ses_param.'">コメントする</a><br />';
+			}
+		} else {
+			if (!get_option('comment_registration')) {
+				$echostring .='<a href="'.$myurl.'?view=comment&num='.$num.'&p='.$p.$ses_param.'">コメントする</a><br />';
+			}
+		}
 		$echostring .='<hr />';
-		$echostring .= $ackeychar[0].'<a href="'.$_SERVER["PHP_SELF"].'?view=content&num='.$num.'&p='.$p.'&start=0'.$ses_param.'" accesskey="0">記事へ戻る</a><br/>';
+		$echostring .= $ackeychar[0].'<a href="'.$myurl.'?view=content&num='.$num.'&p='.$p.'&start=0'.$ses_param.'" accesskey="0">記事へ戻る</a><br/>';
 		break;
 
 	case "comment" :
 		$num = intval($_REQUEST["num"]);
 		$p = intval($_REQUEST["p"]);
 		//コメント投稿
-		if (!defined('XOOPS_URL')) {
-			$siteurl = get_settings('home');
-		}
 		$postdata = get_postdata($p);
 		$tmp = substr($postdata['Date'],5,2).'/'.substr($postdata['Date'],8,2).substr($postdata['Date'],10,6);
 		$echostring .= '<b>'.$postdata['Title'].'('.$tmp.')へのコメント投稿</b>';
@@ -421,9 +449,9 @@ switch ($_REQUEST["view"]) {
 		$url = urlencode(wp_get_fullurl(htmlspecialchars($_REQUEST['url'])));
 
 		$echostring .= '<br />';
-		$echostring .= '<center><img src="'.$_SERVER["PHP_SELF"].'?view=image&url='.$url.'"/></center>';
+		$echostring .= '<center><img src="'.$myurl.'?view=image&url='.$url.'"/></center>';
 		$echostring .='<hr />';
-		$echostring .= $ackeychar[0].'<a href="'.$_SERVER["PHP_SELF"].'?view=content&num='.$num.'&p='.$p.'&start=0'.$ses_param.'" accesskey="0">記事へ戻る</a><br/>';
+		$echostring .= $ackeychar[0].'<a href="'.$myurl.'?view=content&num='.$num.'&p='.$p.'&start=0'.$ses_param.'" accesskey="0">記事へ戻る</a><br/>';
 		break;
 
 } 
@@ -434,19 +462,19 @@ if (empty($hidefooter)) {
 }
 $echostring .= '</body>';
 $echostring .= '</html>';
-if ($DoRedir) {
+if ($do_redir) {
 	preg_match_all("{<(?:img|a)[^>]*(?:href|src)=([\"'])((http://|https://|/)[^\\1]*?)\\1[^>]*>}i", $echostring, $post_links_temp);
 	for($i = 0; $i < count($post_links_temp[0]); $i++) {
 		$link_test = wp_get_fullurl($post_links_temp[2][$i]);
 		$test = parse_url($link_test);
-		if (!strstr($link_test,XOOPS_URL)) {
+		if (!strstr($link_test,$siteurl)) {
 			$src[] = $post_links_temp[0][$i];
-			$t_url = $_SERVER["PHP_SELF"].'?view=redir&url='.urlencode(preg_replace('|&amp;|',';ampchar;', $link_test));
+			$t_url = $myurl.'?view=redir&url='.urlencode(preg_replace('|&amp;|',';ampchar;', $link_test));
 			$target[] = str_replace($post_links_temp[2][$i],$t_url, $post_links_temp[0][$i]);
 		}
 	}
 	$echostring = str_replace($src,$target,$echostring);
 }
-header("Content-Type: text/html; charset=Shift_JIS");
-echo mb_convert_encoding($echostring, "sjis", "auto");
+header('Content-Type: text/html; charset=Shift_JIS');
+echo mb_convert_encoding($echostring, 'sjis', 'auto');
 ?>
