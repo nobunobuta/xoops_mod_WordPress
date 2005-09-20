@@ -100,7 +100,8 @@ if( ! defined( 'WP_RECENT_POSTS_BLOCK_INCLUDED' ) ) {
 						$_record['newstr'] = '';
 					}
 				}
-				$_record['post_title'] = $lpost->post_title;
+				$_record['post_title'] = htmlspecialchars($lpost->post_title);
+				$_record['post_author'] = htmlspecialchars(get_author_name($lpost->post_author));
 				if (trim($_record['post_title'])=='')
 					$_record['post_title'] = _WP_POST_NOTITLE;
 				$_record['permalink'] = get_permalink($lpost->ID);
