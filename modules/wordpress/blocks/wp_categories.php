@@ -59,7 +59,9 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 			    }
 			    $categoryHandler =& wp_handler('Category');
 			    $categoryObject =& $categoryHandler->getByNiceName($GLOBALS['category_name']);
-			    $GLOBALS['cat'] = $categoryObject->getVar('cat_ID');
+			    if ($categoryObject) {
+			    	$GLOBALS['cat'] = $categoryObject->getVar('cat_ID');
+			    }
 			}
 		} else {
 			$GLOBALS['cat'] = '';
