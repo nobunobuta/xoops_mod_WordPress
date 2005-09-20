@@ -3,6 +3,20 @@
 $HTTP_RAW_POST_DATA = $GLOBALS['HTTP_RAW_POST_DATA'];
 $HTTP_RAW_POST_DATA = trim($HTTP_RAW_POST_DATA);
 
+if (file_exists(dirname(__FILE__).'/xoops_version.php')) {
+	require_once(dirname(__FILE__) . '/wp-config.php');
+} else {
+	if (file_exists(dirname(dirname(__FILE__)). '/xoops_version.php')) {
+		require_once(dirname(dirname(__FILE__)) . '/wp-config.php');
+	}
+}
+$xmlrpc_filename = get_settings('xmlrpc_filename') ? get_settings('xmlrpc_filename') : 'xmlrpc.php';
+if (wp_base().'/'.$xmlrpc_filename != __FILE__ ) {
+	@header('HTTP/1.x 404 Not Found');
+	echo ("404 Not Found");
+	exit();
+}
+
 include('wp-config.php');
 
 require_once(wp_base().'/wp-includes/class-xmlrpc.php');
@@ -71,7 +85,7 @@ function wp_insert_post($postarr = array()) {
 		if (get_param('kousagi') == 2) {
 			$post_content = miniHTMLtoWiki($post_content);
 		}
-		$postObject->setVar('post_content', $post_content);
+		$postObject->setVar('post_content', $post_content, true);
 	}
 	if (!empty($postarr['post_excerpt'])) {
 		$post_excerpt = mb_conv($postarr['post_excerpt'], $GLOBALS['blog_charset'], 'auto');
@@ -79,14 +93,14 @@ function wp_insert_post($postarr = array()) {
 		if (get_param('kousagi') == 2) {
 			$post_excerpt = miniHTMLtoWiki($post_excerpt);
 		}
-		$postObject->setVar('post_excerpt', $post_excerpt);
+		$postObject->setVar('post_excerpt', $post_excerpt, true);
 	}
 	if (!empty($postarr['post_title'])) {
 		$post_title = mb_conv($postarr['post_title'], $GLOBALS['blog_charset'], 'auto');
-		$postObject->setVar('post_title', $post_title);
+		$postObject->setVar('post_title', $post_title, true);
 
 		$post_name = sanitize_title($post_title);
-		$postObject->setVar('post_name', $post_name);
+		$postObject->setVar('post_name', $post_name, true);
 	}
 	if (!empty($postarr['post_category'])) {
 		// Make sure we set a valid category
@@ -94,32 +108,32 @@ function wp_insert_post($postarr = array()) {
 		if (count($post_category) == 0	|| !is_array($post_category)) {
 			$post_category = array($GLOBALS['post_default_category']);
 		}
-		$postObject->setVar('post_category', $post_category[0]);
+		$postObject->setVar('post_category', $post_category[0], true);
 	} else {
 		$post_category = array($GLOBALS['post_default_category']);
 	}
 	if (!empty($postarr['post_date'])) {
-		$postObject->setVar('post_date', $postarr['post_date']);
+		$postObject->setVar('post_date', $postarr['post_date'], true);
 	} else {
-		$postObject->setVar('post_date', current_time('mysql'));
+		$postObject->setVar('post_date', current_time('mysql'), true);
 	}
 	if (!empty($postarr['post_author'])) {
-		$postObject->setVar('post_author', $postarr['post_author']);
+		$postObject->setVar('post_author', $postarr['post_author'], true);
 	}
 	if (!empty($postarr['post_status'])) {
-		$postObject->setVar('post_status', $postarr['post_status']);
+		$postObject->setVar('post_status', $postarr['post_status'], true);
 	} else {
-		$postObject->setVar('post_status', get_settings('default_post_status'));
+		$postObject->setVar('post_status', get_settings('default_post_status'), true);
 	}
 	if (!empty($postarr['ping_status'])) {
-		$postObject->setVar('ping_status', $postarr['ping_status']);
+		$postObject->setVar('ping_status', $postarr['ping_status'], true);
 	} else {
-		$postObject->setVar('ping_status', get_settings('default_ping_status'));
+		$postObject->setVar('ping_status', get_settings('default_ping_status'), true);
 	}
 	if (!empty($postarr['comment_status'])) {
-		$postObject->setVar('comment_status', $postarr['comment_status']);
+		$postObject->setVar('comment_status', $postarr['comment_status'], true);
 	} else {
-		$postObject->setVar('comment_status', get_settings('default_comment_status'));
+		$postObject->setVar('comment_status', get_settings('default_comment_status'), true);
 	}
 	if ($postHandler->insert($postObject, true)) {
 		$post_ID = $postObject->getVar('ID');
@@ -133,15 +147,18 @@ function wp_insert_post($postarr = array()) {
 
 function wp_get_single_post($post_ID = 0, $mode = OBJECT) {
 	$postHandler =& wp_handler('Post');
-	$postObject =& $postHandler->get($post_ID);
-	if ($mode == OBJECT) {
-		$result =& $postObject->exportWpObject();
+	if ($postObject =& $postHandler->get($post_ID)) {
+		if ($mode == OBJECT) {
+			$result =& $postObject->exportWpObject();
+		} else {
+			$result =& $postObject->getVarArray();
+		}
+		// Set categories
+		$result['post_category'] = wp_get_post_cats('',$post_ID);
+		return $result;
 	} else {
-		$result =& $postObject->getVarArray();
+		return false;
 	}
-	// Set categories
-	$result['post_category'] = wp_get_post_cats('',$post_ID);
-	return $result;
 }
 
 function wp_get_recent_posts($num = 10) {
@@ -162,67 +179,70 @@ function wp_get_recent_posts($num = 10) {
 
 function wp_update_post($postarr = array()) {
 	$postHandler =& wp_handler('Post');
-	$postObject =& $postHandler->get($postarr['ID']);
-	if (!empty($postarr['post_content'])) {
-		// Charset Encoding
-		$post_content = mb_conv($postarr['post_content'], $GLOBALS['blog_charset'], 'auto');
-		//Simple HTML to PukiWiki Format(for kousagi only)
-		if (get_param('kousagi') == 2) {
-			$post_content = miniHTMLtoWiki($post_content);
+	if ($postObject =& $postHandler->get($postarr['ID'])) {
+		if (!empty($postarr['post_content'])) {
+			// Charset Encoding
+			$post_content = mb_conv($postarr['post_content'], $GLOBALS['blog_charset'], 'auto');
+			//Simple HTML to PukiWiki Format(for kousagi only)
+			if (get_param('kousagi') == 2) {
+				$post_content = miniHTMLtoWiki($post_content);
+			}
+			$postObject->setVar('post_content', $post_content, true);
 		}
-		$postObject->setVar('post_content', $post_content);
-	}
-	if (!empty($postarr['post_excerpt'])) {
-		$post_excerpt = mb_conv($postarr['post_excerpt'], $GLOBALS['blog_charset'], 'auto');
-		//Simple HTML to PukiWiki Format(for kousagi only)
-		if (get_param('kousagi') == 2) {
-			$post_excerpt = miniHTMLtoWiki($post_excerpt);
+		if (!empty($postarr['post_excerpt'])) {
+			$post_excerpt = mb_conv($postarr['post_excerpt'], $GLOBALS['blog_charset'], 'auto');
+			//Simple HTML to PukiWiki Format(for kousagi only)
+			if (get_param('kousagi') == 2) {
+				$post_excerpt = miniHTMLtoWiki($post_excerpt);
+			}
+			$postObject->setVar('post_excerpt', $post_excerpt, true);
 		}
-		$postObject->setVar('post_excerpt', $post_excerpt);
-	}
-	if (!empty($postarr['post_title'])) {
-		$post_title = mb_conv($postarr['post_title'], $GLOBALS['blog_charset'], 'auto');
-		$postObject->setVar('post_title', $post_title);
+		if (!empty($postarr['post_title'])) {
+			$post_title = mb_conv($postarr['post_title'], $GLOBALS['blog_charset'], 'auto');
+			$postObject->setVar('post_title', $post_title, true);
 
-		$post_name = sanitize_title($post_title);
-		if ($post_name == '') {
-			$post_name = 'post-'.$ID;
+			$post_name = sanitize_title($post_title);
+			if ($post_name == '') {
+				$post_name = 'post-'.$ID;
+			}
+			$postObject->setVar('post_name', $post_name, true);
 		}
-		$postObject->setVar('post_name', $post_name);
-	}
-	if (!empty($postarr['post_category'])) {
-		// Make sure we set a valid category
-		$post_category = $postarr['post_category'];
-		if (count($post_category) == 0	|| !is_array($post_category)) {
+		if (!empty($postarr['post_category'])) {
+			// Make sure we set a valid category
+			$post_category = $postarr['post_category'];
+			if (count($post_category) == 0	|| !is_array($post_category)) {
+				$post_category = array($GLOBALS['post_default_category']);
+			}
+			$postObject->setVar('post_category', $post_category[0], true);
+		} else {
 			$post_category = array($GLOBALS['post_default_category']);
 		}
-		$postObject->setVar('post_category', $post_category[0]);
-	} else {
-		$post_category = array($GLOBALS['post_default_category']);
-	}
-	if (!empty($postarr['post_status'])) {
-		$postObject->setVar('post_status', $postarr['post_status']);
-	} else {
-		$postObject->setVar('post_status', get_settings('default_post_status'));
-	}
-	if (!empty($postarr['ping_status'])) {
-		$postObject->setVar('ping_status', $postarr['ping_status']);
-	} else {
-		$postObject->setVar('ping_status', get_settings('default_ping_status'));
-	} 
-	if (!empty($postarr['comment_status'])) {
-		$postObject->setVar('comment_status', $postarr['comment_status']);
-	} else {
-		$postObject->setVar('comment_status', get_settings('default_comment_status'));
-	}
-	if (!empty($postarr['comment_status'])) {
-		$postObject->setVar('comment_status', $postarr['comment_status']);
-	}
-	if ($postHandler->insert($postObject, true, true)) {
-		$post_ID = $postObject->getVar('ID');
-		$postObject->assignCategories($post_category, true);
-		do_action('publish_post', $post_ID);
-		return $post_ID;
+		if (!empty($postarr['post_status'])) {
+			$postObject->setVar('post_status', $postarr['post_status'], true);
+		} else {
+			$postObject->setVar('post_status', get_settings('default_post_status'), true);
+		}
+		if (!empty($postarr['ping_status'])) {
+			$postObject->setVar('ping_status', $postarr['ping_status'], true);
+		} else {
+			$postObject->setVar('ping_status', get_settings('default_ping_status'), true);
+		} 
+		if (!empty($postarr['comment_status'])) {
+			$postObject->setVar('comment_status', $postarr['comment_status'], true);
+		} else {
+			$postObject->setVar('comment_status', get_settings('default_comment_status'), true);
+		}
+		if (!empty($postarr['comment_status'])) {
+			$postObject->setVar('comment_status', $postarr['comment_status'], true);
+		}
+		if ($postHandler->insert($postObject, true, true)) {
+			$post_ID = $postObject->getVar('ID');
+			$postObject->assignCategories($post_category, true);
+			do_action('publish_post', $post_ID);
+			return $post_ID;
+		} else {
+			return 0;
+		}
 	} else {
 		return 0;
 	}
@@ -230,13 +250,16 @@ function wp_update_post($postarr = array()) {
 
 function wp_get_post_cats($blogid = '1', $post_ID = 0) {
 	$postHandler =& wp_handler('Post');
-	$postObject =& $postHandler->get($post_ID);
-	$categoryObjects =& $postObject->getCategories();
-	$result = array();
-	foreach($categoryObjects as $categoryObject) {
-		$result[] = $categoryObject->getVar('category_id');
+	if ($postObject =& $postHandler->get($post_ID)) {
+		$categoryObjects =& $postObject->getCategories();
+		$result = array();
+		foreach($categoryObjects as $categoryObject) {
+			$result[] = $categoryObject->getVar('category_id');
+		}
+		return array_unique($result);
+	} else {
+		return array();
 	}
-	return array_unique($result);
 }
 
 function wp_set_post_cats($blogid = '1', $post_ID = 0, $post_categories = array()) {
@@ -249,15 +272,19 @@ function wp_set_post_cats($blogid = '1', $post_ID = 0, $post_categories = array(
 	}
 	$post_categories = array_unique($post_categories);
 	$postHandler =& wp_handler('Post');
-	$postObject =& $postHandler->get($post_ID);
-	$postObject->assignCategories($post_categories, true);
+	if ($postObject =& $postHandler->get($post_ID)) {
+		$postObject->assignCategories($post_categories, true);
+	}
 }
 
 function wp_delete_post($post_ID = 0) {
 	$postHandler =& wp_handler('Post');
-	$postObject =& $postHandler->get($post_ID);
-	$result = $postHandler->delete($postObject, true);
-	return $result;
+	if ($postObject =& $postHandler->get($post_ID)) {
+		$result = $postHandler->delete($postObject, true);
+		return $result;
+	} else {
+		return false;
+	}
 }
 
 /**** /DB Functions ****/
@@ -283,40 +310,44 @@ function get_cat_ID($cat_name='General') {
 	return $cid?$cid:1;	// default to cat 1
 }
 
-// Get author's preferred display name
-function get_author_name($auth_id) {
-	$authordata = get_userdata($auth_id);
+if (!function_exists('get_author_name')) {
+	// Get author's preferred display name
+	function get_author_name($auth_id, $idmode='') {
+		$authordata = get_userdata($auth_id);
+		if (empty($idmode)) {
+			$idmode = $authordata->user_idmode;
+		}
+		switch($idmode) {
+			case 'nickname':
+				$authorname = $authordata->user_nickname;
+				break;
 
-	switch($authordata['user_idmode']) {
-		case 'nickname':
-			$authorname = $authordata['user_nickname'];
+			case 'login':
+				$authorname = $authordata->user_login;
+				break;
 
-		case 'login':
-			$authorname = $authordata['user_login'];
-			break;
-	
-		case 'firstname':
-			$authorname = $authordata['user_firstname'];
-			break;
+			case 'firstname':
+				$authorname = $authordata->user_firstname;
+				break;
 
-		case 'lastname':
-			$authorname = $authordata['user_lastname'];
-			break;
+			case 'lastname':
+				$authorname = $authordata->user_lastname;
+				break;
 
-		case 'namefl':
-			$authorname = $authordata['user_firstname'].' '.$authordata['user_lastname'];
-			break;
+			case 'namefl':
+				$authorname = $authordata->user_firstname.' '.$authordata->user_lastname;
+				break;
 
-		case 'namelf':
-			$authorname = $authordata['user_lastname'].' '.$authordata['user_firstname'];
-			break;
+			case 'namelf':
+				$authorname = $authordata->user_lastname.' '.$authordata->user_firstname;
+				break;
 
-		default:
-			$authorname = $authordata['user_nickname'];
-			break;
+			default:
+				$authorname = $authordata->user_nickname;
+				break;
+		}
+		return $authorname;
 	}
-
-	return $authorname;
 }
 
 // get extended entry info (<!--more-->)
@@ -852,9 +883,10 @@ function bloggergetrecentposts($m) {
 				'Author_ID' => $row->post_author,
 				'Date' => $row->post_date,
 				'Content' => $row->post_content,
-				'Title' => $row->post_title,
+				'Title' => ($row->post_title ? $row->post_title : ' '),
 				'Category' => $row->post_category
 			);
+		logIO('O',"Post Title: ".mb_conv($postdata['Title'],'UTF-8',$GLOBALS['blog_charset']));
 
 			// Don't convert to GMT
 			//$post_date = mysql2date('U', $postdata['Date']);
@@ -1018,7 +1050,7 @@ function mwnewpost($params) {
 	$blogid = $xblogid->scalarval();
 	$username = $xuser->scalarval();
 	$password = $xpass->scalarval();
-	$contentstruct = xmlrpc_decode1($xcontent);
+	$contentstruct = php_xmlrpc_decode($xcontent);
 	$postarr['post_status'] = $xpublish->scalarval() ? 'publish' : 'draft';
 
 	// Check login
@@ -1107,7 +1139,7 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 	$ID = intval($xpostid->scalarval());
 	$username = $xuser->scalarval();
 	$password = $xpass->scalarval();
-	$contentstruct = xmlrpc_decode1($xcontent);
+	$contentstruct = php_xmlrpc_decode($xcontent);
 	$postarr['post_status'] = $xpublish->scalarval() ? 'publish' : 'draft';
 
 	// Check login
@@ -1196,7 +1228,7 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 }
 
 $mwgetpost_sig =  array(array($xmlrpcStruct,$xmlrpcString,$xmlrpcString,$xmlrpcString));
-$mwegetpost_doc = 'Get a post, MetaWeblog API-style';
+$mwgetpost_doc = 'Get a post, MetaWeblog API-style';
 
 function mwgetpost ($params) {	// ($postid, $user, $pass) 
 	$xpostid = $params->getParam(0);
@@ -1262,7 +1294,7 @@ function mwgetpost ($params) {	// ($postid, $user, $pass)
 }
 
 $mwrecentposts_sig =  array(array($xmlrpcArray,$xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcInt));
-$mwerecentposts_doc = 'Get recent posts, MetaWeblog API-style';
+$mwrecentposts_doc = 'Get recent posts, MetaWeblog API-style';
 
 function mwrecentposts ($params) {	// ($blogid, $user, $pass, $num) 
 	$xblogid = $params->getParam(0);
@@ -1306,9 +1338,9 @@ function mwrecentposts ($params) {	// ($blogid, $user, $pass, $num)
 			$categories = new xmlrpcval(array(new xmlrpcval($pcat)),'array');
 
 			$post = get_extended(mb_conv($entry['post_content'],'UTF-8',$GLOBALS['blog_charset']));
-			logIO('O','blog_charset='.$GLOBALS['blog_charset']);
 
 			$postid = new xmlrpcval($entry['ID']);
+			$entry['post_title'] = $entry['post_title'] ? $entry['post_title'] : ' ';
 			$title = new xmlrpcval(mb_conv($entry['post_title'],'UTF-8',$GLOBALS['blog_charset']));
 			$description = new xmlrpcval($post['main']);
 			$link = new xmlrpcval(post_permalink($entry['ID']));
@@ -1362,7 +1394,7 @@ function mwgetcats ($params) {	// ($blogid, $user, $pass)
 			$struct['htmlUrl'] = htmlspecialchars($blog_URL . '?cat='. $cat['cat_ID']);
 			$struct['rssUrl'] = ''; // will probably hack alexking's stuff in here
 			
-			$arr[] = xmlrpc_encode1($struct);
+			$arr[] = php_xmlrpc_encode($struct);
 		}
 	}
 	
@@ -1386,7 +1418,7 @@ function mwnewmedia($params) {
 	$blogid = $xblogid->scalarval();
 	$username = $xuser->scalarval();
 	$password = $xpass->scalarval();
-	$data = xmlrpc_decode1($xdata);
+	$data = php_xmlrpc_decode($xdata);
 
 	$name = $data['name'];
 	$type = $data['type'];
@@ -1523,7 +1555,7 @@ function mt_getPostCategories($params) {
 			$struct['categoryId'] = $catid;
 			$struct['categoryName'] = mb_conv(get_cat_name($catid),'UTF-8',$GLOBALS['blog_charset']);
 
-			$resp_struct[] = xmlrpc_encode1($struct);
+			$resp_struct[] = php_xmlrpc_encode($struct);
 			$struct['isPrimary'] = false;
 		}
 		
@@ -1552,7 +1584,7 @@ function mt_setPostCategories($params) {
 	$post_ID = $xpostid->scalarval();
 	$username = $xuser->scalarval();
 	$password = $xpass->scalarval();
-	$cats = xmlrpc_decode1($xcats);
+	$cats = php_xmlrpc_decode($xcats);
 	
 	foreach($cats as $cat) {
 		$catids[] = $cat['categoryId'];
@@ -1654,7 +1686,7 @@ function mt_getTrackbackPings($params) {
 	$struct['pingURL'] = '';
 	$struct['pingIP'] = '';
 	
-	$xmlstruct = xmlrpc_encode1($struct);
+	$xmlstruct = php_xmlrpc_encode($struct);
 	
 	return new xmlrpcresp(new xmlrpcval(array($xmlstruct),'array'));
 }
@@ -2425,7 +2457,7 @@ function i_whichToolkit($m) {
 		 'toolkitName' => $xmlrpcName,
 		 'toolkitVersion' => $xmlrpcVersion,
 		 'toolkitOperatingSystem' => $SERVER_SOFTWARE);
-	return new xmlrpcresp ( xmlrpc_encode1($ret));
+	return new xmlrpcresp ( php_xmlrpc_encode($ret));
 }
 
 /**** SERVER FUNCTIONS ARRAY ****/
@@ -2535,10 +2567,10 @@ $dispatch_map =	 array(
 							 array('function' => 'b2getcategories',
 										 'signature' => $wpgetcategories_sig,
 										 'docstring' => $wpgetcategories_doc),
-					 'b2.ping' =>
-							 array('function' => 'b2ping',
-										 'signature' => $wpping_sig,
-										 'docstring' => $wpping_doc),
+//					 'b2.ping' =>
+//							 array('function' => 'b2ping',
+//										 'signature' => $wpping_sig,
+//										 'docstring' => $wpping_doc),
 					 'pingback.ping' =>
 							 array('function' => 'pingback_ping',
 										 'signature' => $pingback_ping_sig,
