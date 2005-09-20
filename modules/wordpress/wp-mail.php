@@ -351,20 +351,20 @@ function wp_mail_receive() {
  					$content = $content_before . $content . "<br clear=\"left\" />" . $content_after;
 					$postHandler =& wp_handler('Post');
 					$postObject =& $postHandler->create();
-					$postObject->setVar('post_content', $content);
-					$postObject->setVar('post_title', trim(mb_conv($post_title, $GLOBALS['blog_charset'], $sub_charset)));
-					$postObject->setVar('post_date', $post_date);
-					$postObject->setVar('post_author', $post_author);
-					$postObject->setVar('post_category', $post_category[0]);
-					$postObject->setVar('post_name', sanitize_title($post_title));
+					$postObject->setVar('post_content', $content, true);
+					$postObject->setVar('post_title', trim(mb_conv($post_title, $GLOBALS['blog_charset'], $sub_charset)), true);
+					$postObject->setVar('post_date', $post_date, true);
+					$postObject->setVar('post_author', $post_author, true);
+					$postObject->setVar('post_category', $post_category[0], true);
+					$postObject->setVar('post_name', sanitize_title($post_title), true);
 					if ($flat < 500) {
-						$postObject->setVar('post_lat',$flat);
-						$postObject->setVar('post_lon', $flon);
+						$postObject->setVar('post_lat',$flat, true);
+						$postObject->setVar('post_lon', $flon, true);
 					}
 
-					$postObject->setVar('post_status', get_settings('default_post_status'));
-					$postObject->setVar('ping_status', get_settings('default_ping_status'));
-					$postObject->setVar('comment_status', get_settings('default_comment_status'));
+					$postObject->setVar('post_status', get_settings('default_post_status'), true);
+					$postObject->setVar('ping_status', get_settings('default_ping_status'), true);
+					$postObject->setVar('comment_status', get_settings('default_comment_status'), true);
 
 					if (!$postHandler->insert($postObject, true)) {
 						echo "<b>Error: Insert New Post</b><br />";

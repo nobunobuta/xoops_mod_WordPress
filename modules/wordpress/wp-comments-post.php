@@ -112,14 +112,14 @@ if ($_ok) { // if there was no comment from this IP in the last 10 seconds
 		$_approved = 1;
 	}
 	$commentObject =& $commentHandler->create();
-	$commentObject->setVar('comment_post_ID',$_comment_post_ID);
-	$commentObject->setVar('comment_author',$_author);
-	$commentObject->setVar('comment_author_email',$_email);
-	$commentObject->setVar('comment_author_url',$_url);
-	$commentObject->setVar('comment_author_IP',$_user_ip);
-	$commentObject->setVar('comment_date',$_now);
-	$commentObject->setVar('comment_content',$_comment);
-	$commentObject->setVar('comment_approved',$_approved);
+	$commentObject->setVar('comment_post_ID', $_comment_post_ID, true);
+	$commentObject->setVar('comment_author',$_author, true);
+	$commentObject->setVar('comment_author_email',$_email, true);
+	$commentObject->setVar('comment_author_url',$_url, true);
+	$commentObject->setVar('comment_author_IP',$_user_ip, true);
+	$commentObject->setVar('comment_date',$_now, true);
+	$commentObject->setVar('comment_content',$_comment, true);
+	$commentObject->setVar('comment_approved',$_approved, true);
 	if(!$commentHandler->insert($commentObject, get_settings('use_comment_preview'))) {
 		redirect_header($_location, 3, $commentHandler->getErrors());
 	}

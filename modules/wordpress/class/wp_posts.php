@@ -69,8 +69,8 @@ class WordPressPost  extends XoopsTableObject
 		foreach ($categories as $category) {
 			if (!in_array($category, $oldCategoryArray)) {
 				$post2cat =&  $post2catHandler->create();
-				$post2cat->setVar('post_id', $this->getVar('ID'));
-				$post2cat->setVar('category_id', $category);
+				$post2cat->setVar('post_id', $this->getVar('ID'), true);
+				$post2cat->setVar('category_id', $category, true);
 				$post2catHandler->insert($post2cat, $force);
 				unset($post2cat);
 			}
@@ -137,10 +137,10 @@ class WordPressPostHandler  extends XoopsTableObjectHandler
      */
 	function insert(&$record,$force=false,$updateOnlyChanged=false)
 	{
-		$record->setVar('post_modified', current_time('mysql'));
+		$record->setVar('post_modified', current_time('mysql'), true);
 		if ($result = parent::insert($record, $force, $updateOnlyChanged)) {
 			if (trim($record->getVar('post_name'))=='') {
-				$record->setVar('post_name', "post-".$record->getVar('ID'));
+				$record->setVar('post_name', "post-".$record->getVar('ID'), true);
 				$record->unsetNew();
 				return parent::insert($record, $force, true);
 			}

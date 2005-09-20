@@ -29,18 +29,18 @@ switch(get_param('action')) {
 
 		$userObject =& $userHandler->create(false);
 
-		$userObject->setVar('ID', $GLOBALS['user_ID']);
-		$userObject->setVar('user_firstname', get_param('newuser_firstname'));
-		$userObject->setVar('user_lastname', get_param('newuser_lastname'));
-		$userObject->setVar('user_nickname', get_param('newuser_nickname'));
-		$userObject->setVar('user_icq', get_param('newuser_icq'));
-		$userObject->setVar('user_aim', get_param('newuser_aim'));
-		$userObject->setVar('user_msn', get_param('newuser_msn'));
-		$userObject->setVar('user_yim', get_param('newuser_yim'));
-		$userObject->setVar('user_email', get_param('newuser_email'));
-		$userObject->setVar('user_url', get_param('newuser_url'));
-		$userObject->setVar('newuser_idmode', get_param('newuser_idmode'));
-		$userObject->setVar('user_description', get_param('user_description'));
+		$userObject->setVar('ID', $GLOBALS['user_ID'], true);
+		$userObject->setVar('user_firstname', get_param('newuser_firstname'), true);
+		$userObject->setVar('user_lastname', get_param('newuser_lastname'), true);
+		$userObject->setVar('user_nickname', get_param('newuser_nickname'), true);
+		$userObject->setVar('user_icq', get_param('newuser_icq'), true);
+		$userObject->setVar('user_aim', get_param('newuser_aim'), true);
+		$userObject->setVar('user_msn', get_param('newuser_msn'), true);
+		$userObject->setVar('user_yim', get_param('newuser_yim'), true);
+		$userObject->setVar('user_email', get_param('newuser_email'), true);
+		$userObject->setVar('user_url', get_param('newuser_url'), true);
+		$userObject->setVar('newuser_idmode', get_param('newuser_idmode'), true);
+		$userObject->setVar('user_description', get_param('user_description'), true);
 		
 		if (!$userHandler->insert($userObject, false, true)) {
 			redirect_header($_this_file, 3, $userHandler->getErrors());

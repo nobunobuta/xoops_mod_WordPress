@@ -41,26 +41,26 @@ switch(get_param('action')) {
 
 		//Set PostObject Variable for Insert
 		$postObject =& $postHandler->create();
-		$postObject->setVar('post_author', $GLOBALS['user_ID']);
-		$postObject->setVar('post_content', apply_filters('content_save_pre', get_param('wp_content')));
-		$postObject->setVar('post_title', get_param('post_title'));
-		$postObject->setVar('post_excerpt', apply_filters('excerpt_save_pre',get_param('excerpt')));
-		$postObject->setVar('comment_status', get_param('comment_status'));
-		$postObject->setVar('ping_status', get_param('ping_status'));
-		$postObject->setVar('post_password', get_param('post_password'));
-		$postObject->setVar('post_name', sanitize_title(get_param('post_title')));
-		$postObject->setVar('to_ping', preg_replace('|\s+|', "\n", get_param('trackback_url')));
+		$postObject->setVar('post_author', $GLOBALS['user_ID'], true);
+		$postObject->setVar('post_content', apply_filters('content_save_pre', get_param('wp_content')), true);
+		$postObject->setVar('post_title', get_param('post_title'), true);
+		$postObject->setVar('post_excerpt', apply_filters('excerpt_save_pre',get_param('excerpt')), true);
+		$postObject->setVar('comment_status', get_param('comment_status'), true);
+		$postObject->setVar('ping_status', get_param('ping_status'), true);
+		$postObject->setVar('post_password', get_param('post_password'), true);
+		$postObject->setVar('post_name', sanitize_title(get_param('post_title')), true);
+		$postObject->setVar('to_ping', preg_replace('|\s+|', "\n", get_param('trackback_url')), true);
 
 		if(get_settings('use_geo_positions')) {
 			init_param('POST', 'post_latf', 'float', get_settings('default_geourl_lat'));
 			init_param('POST', 'post_lonf', 'float', get_settings('default_geourl_lon'));
 			$post_latf = get_param('post_latf');
 			if (($post_latf <= 90 ) && ($post_lonf >= -90)) {
-				$postObject->setVar('post_lat', $post_latf);
+				$postObject->setVar('post_lat', $post_latf, true);
 			}
 			$post_lonf = get_param('post_lonf');
 			if (($post_lonf <= 360 ) && ($post_lonf >=-360)) {
-				$postObject->setVar('post_lon', $post_lonf);
+				$postObject->setVar('post_lon', $post_lonf, true);
 			}
 		}
 
@@ -79,7 +79,7 @@ switch(get_param('action')) {
 		} else {
 			$now = current_time('mysql');
 		}
-		$postObject->setVar('post_date', $now);
+		$postObject->setVar('post_date', $now, true);
 
 		$post_status = get_param('post_status');
 		// What to do based on which button they pressed
@@ -87,7 +87,7 @@ switch(get_param('action')) {
 		if (test_param('saveasprivate')) $post_status = 'private';
 		if (test_param('publish')) $post_status = 'publish';
 		if (test_param('advanced')) $post_status = 'draft';
-		$postObject->setVar('post_status', $post_status);
+		$postObject->setVar('post_status', $post_status, true);
 
 		if(!$postHandler->insert($postObject)) {
 			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $postHandler->getErrors());
@@ -210,25 +210,25 @@ switch(get_param('action')) {
 		if ($post_name == "") {
 			$post_name = "post-".get_param('post_ID');
 		}
-		$postObject->setVar('post_content', apply_filters('content_save_pre', get_param('wp_content')));
-		$postObject->setVar('post_title', get_param('post_title'));
-		$postObject->setVar('post_excerpt', apply_filters('excerpt_save_pre',get_param('excerpt')));
-		$postObject->setVar('comment_status', get_param('comment_status'));
-		$postObject->setVar('ping_status', get_param('ping_status'));
-		$postObject->setVar('post_password', get_param('post_password'));
-		$postObject->setVar('post_name', $post_name);
-		$postObject->setVar('to_ping', preg_replace('|\s+|', "\n", get_param('trackback_url')));
+		$postObject->setVar('post_content', apply_filters('content_save_pre', get_param('wp_content')), true);
+		$postObject->setVar('post_title', get_param('post_title'), true);
+		$postObject->setVar('post_excerpt', apply_filters('excerpt_save_pre',get_param('excerpt')), true);
+		$postObject->setVar('comment_status', get_param('comment_status'), true);
+		$postObject->setVar('ping_status', get_param('ping_status'), true);
+		$postObject->setVar('post_password', get_param('post_password'), true);
+		$postObject->setVar('post_name', $post_name, true);
+		$postObject->setVar('to_ping', preg_replace('|\s+|', "\n", get_param('trackback_url')), true);
 
 		if(get_settings('use_geo_positions')) {
 			init_param('POST', 'post_latf', 'float', get_settings('default_geourl_lat'));
 			init_param('POST', 'post_lonf', 'float', get_settings('default_geourl_lon'));
 			$post_latf = get_param('post_latf');
 			if (($post_latf <= 90 ) && ($post_lonf >= -90)) {
-				$postObject->setVar('post_lat', $post_latf);
+				$postObject->setVar('post_lat', $post_latf, true);
 			}
 			$post_lonf = get_param('post_lonf');
 			if (($post_lonf <= 360 ) && ($post_lonf >=-360)) {
-				$postObject->setVar('post_lon', $post_lonf);
+				$postObject->setVar('post_lon', $post_lonf, true);
 			}
 		}
 
@@ -243,7 +243,7 @@ switch(get_param('action')) {
 			$hh = ($hh > 23) ? $hh - 24 : $hh;
 			$mn = ($mn > 59) ? $mn - 60 : $mn;
 			$ss = ($ss > 59) ? $ss - 60 : $ss;
-			$postObject->setVar('post_date', "$aa-$mm-$jj $hh:$mn:$ss");
+			$postObject->setVar('post_date', "$aa-$mm-$jj $hh:$mn:$ss", true);
 		}
 
 		$post_status = get_param('post_status');
@@ -252,7 +252,7 @@ switch(get_param('action')) {
 		if (test_param('saveasprivate')) $post_status = 'private';
 		if (test_param('publish')) $post_status = 'publish';
 		if (test_param('save')) $post_status = 'publish';
-		$postObject->setVar('post_status', $post_status);
+		$postObject->setVar('post_status', $post_status, true);
 
 		if(!$postHandler->insert($postObject, false, true)) {
 			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $postHandler->getErrors());
@@ -616,13 +616,13 @@ switch(get_param('action')) {
 		}
 		$commentObject =& $commentHandler->get($comment_ID);
 
-		$commentObject->setVar('comment_ID',$comment_ID);
-		$commentObject->setVar('comment_content',apply_filters('comment_save_pre', $wp_content));
-		$commentObject->setVar('comment_author',$newcomment_author);
-		$commentObject->setVar('comment_author_email',$newcomment_author_email);
-		$commentObject->setVar('comment_author_url',$newcomment_author_url);
+		$commentObject->setVar('comment_ID',$comment_ID, true);
+		$commentObject->setVar('comment_content',apply_filters('comment_save_pre', $wp_content), true);
+		$commentObject->setVar('comment_author',$newcomment_author, true);
+		$commentObject->setVar('comment_author_email',$newcomment_author_email, true);
+		$commentObject->setVar('comment_author_url',$newcomment_author_url, true);
 		if ($datemodif) {
-			$commentObject->setVar('comment_date',$datemodif);
+			$commentObject->setVar('comment_date',$datemodif, true);
 		}
 
 		if (!test_param('referredby') && $_SERVER['HTTP_REFERER'] != "") {
