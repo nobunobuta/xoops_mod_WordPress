@@ -1,3 +1,3 @@
 <?php
-$amazon_id = "cafelognet-22";
+$amazon_id = "nobunobuxoops-22";
 ?>
