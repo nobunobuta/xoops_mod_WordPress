@@ -275,7 +275,7 @@ include('header.php');
 if (get_param('orderby') == 'title') {
 	title_sort($posts);
 }
-
+$myurl = $siteurl.'/'.basename(__FILE__);
 ?>
 <div id="rap">
 <h2 id="header"><a href="<?php bloginfo('url'); ?>"><?php bloginfo('name'); ?></a></h2>
@@ -290,7 +290,7 @@ function Choose(whichSort) {
 }
 </script>
 <?php echo _LANG_NKA_ARCHIVE ?> :
-<form action="<?php getenv('PHP_SELF') ?>" method="GET">
+<form action="<?php echo $myurl; ?>" method="GET">
 <?php show_orderby_select() ?>
 <?php show_order_select() ?>
 <?php show_year_select() ?>

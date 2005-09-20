@@ -1,4 +1,27 @@
 <?php
+if (!defined('WP_INIT_DONE')) {
+    // Turn register globals off
+    function wp_unregister_GLOBALS() {
+        if ( !ini_get('register_globals') )
+            return;
+        // Variables that should be unset
+        $Unset = array(
+            'cache_lastpostdate','cache_catnames', 'cache_categories', 'cache_userdata', 'cache_settings',
+            'category_cache', 'category_posts', 'post_meta_cache',  'comment_count_cache', 'wpPostHandler',
+            'wp_filter', 'wp_xoops_config', 'wpParams', 'wpcommentsjavascript', '_xoopsTableCache',
+            '_xoopsTableQueryCount','permalink_cache',
+        );
+
+        $input = array_merge($_GET, $_POST, $_COOKIE, $_SERVER, $_ENV, $_FILES, isset($_SESSION) && is_array($_SESSION) ? $_SESSION : array());
+        foreach ( $input as $k => $v ) {
+            if ( in_array($k, $Unset) && isset($GLOBALS[$k]) ) {
+                unset($GLOBALS[$k]);
+            }
+        }
+    }
+    wp_unregister_GLOBALS(); 
+    define('WP_INIT_DONE', 1);
+}
 $_wp_base_prefix = 'wp';
 //************************************************
 // You should not edit this file for customization.
