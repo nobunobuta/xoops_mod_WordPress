@@ -119,10 +119,10 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 			$formEdit =& new XoopsThemeForm($caption,$name,$action);
 			foreach ($this->_formElements as $key=>$formElement) {
 				if (!$this->isNew()) {
-					$formElement->setValue($this->getVar($key));
+					$formElement->setValue($this->getVar($key,'e'));
 				}
 				$formEdit->addElement($formElement,$this->vars[$key]['required']);
-//		echo "$key - " .get_class($formElement) ."<br/>";
+//				echo "$key - " .get_class($formElement) ."<br/>";
 				unset($formElement);
 			}
 			
@@ -247,7 +247,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 		}
 		function importWpObject(&$wp_object) {
 	        foreach ($this->vars as $k => $v) {
-	        	$this->setVar($k, $wp_object->$k);
+	        	$this->setVar($k, $wp_object->$k, true);
 			}
 		}
 	}
@@ -329,7 +329,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 			$cacheKey = array();
 			foreach ($record->getKeyFields() as $k => $v) {
 				if (array_key_exists($v, $keys)) {
-					$whereStr = $whereAnd . "`$v` = ";
+					$whereStr .= $whereAnd . "`$v` = ";
 					if (($recordVars[$v]['data_type'] == XOBJ_DTYPE_INT) || ($recordVars[$v]['data_type'] == XOBJ_DTYPE_FLOAT)) {
 						$whereStr .= $keys[$v];
 					} else {
@@ -357,6 +357,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 				$row = $this->db->fetchArray($result);
 				$record->assignVars($row);
 				$GLOBALS['_xoopsTableCache']->set($this->tableName, $cacheKey, $row, $this->cacheLimit);
+				$this->db->freeRecordSet();
 				return $record;
 			}
 			unset($record);
@@ -485,9 +486,9 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 			return true;
 		}
 
-	    function updateByField(&$record, $fieldName, $fieldValue)
+	    function updateByField(&$record, $fieldName, $fieldValue, $not_gpc=false)
 	    {
-	        $record->setVar($fieldName, $fieldValue);
+	        $record->setVar($fieldName, $fieldValue, $not_gpc);
 	        return $this->insert($record, true, true);
 	    }
 
@@ -626,7 +627,9 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 							if ($i == $count_ids-1) {
 								$r[$myrow[$ids[$i]]] =& $record;
 							} else {
-								$r[$myrow[$ids[$i]]] = array();
+								if (!isset($r[$myrow[$ids[$i]]])) {
+									$r[$myrow[$ids[$i]]] = array();
+								}
 								$r =& $r[$myrow[$ids[$i]]];
 							}
 						}
@@ -636,8 +639,77 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 					}
 					unset($record);
 				}
+				$this->db->freeRecordSet();
 			}
 			return $records;
+		}
+
+		/**
+		 * テーブルの条件検索による複数レコード取得用のOpen （一度には取得しない）
+		 * 
+		 * @param	object	$criteria 	{@link XoopsTableObject} 検索条件
+		 * 
+		 * @return	mixed Array			検索結果レコードの配列
+		 */
+		function &open($criteria = null, $fieldlist="", $distinct = false, $joindef = false)
+		{
+			$ret = array();
+			$limit = $start = 0;
+			$whereStr = '';
+			$orderStr = '';
+			if ($distinct) {
+				$distinct = "DISTINCT ";
+			} else {
+				$distinct = "";
+			}
+			if ($fieldlist) {
+				$sql = 'SELECT '.$distinct.$fieldlist.' FROM '.$this->tableName;
+			} else {
+				$sql = 'SELECT '.$distinct.'* FROM '.$this->tableName;
+			}
+			if ($joindef) {
+				$sql .= $joindef->render($this->tableName);
+			}
+			if (isset($criteria) && is_subclass_of($criteria, 'criteriaelement')) {
+				$whereStr = $criteria->renderWhere();
+				$sql .= ' '.$whereStr;
+			}
+			if (isset($criteria) && (is_subclass_of($criteria, 'criteriaelement')||get_class($criteria)=='criteriaelement')) {
+				if ($criteria->getGroupby() != ' GROUP BY ') {
+					$sql .= ' '.$criteria->getGroupby();
+				}
+				if ((is_array($criteria->getSort()) && count($criteria->getSort()) > 0)) {
+					$orderStr = 'ORDER BY ';
+					$orderDelim = "";
+					foreach ($criteria->getSort() as $sortVar) {
+						$orderStr .= $orderDelim . $sortVar.' '.$criteria->getOrder();
+						$orderDelim = ",";
+					}
+					$sql .= ' '.$orderStr;
+				} elseif ($criteria->getSort() != '') {
+					$orderStr = 'ORDER BY '.$criteria->getSort().' '.$criteria->getOrder();
+					$sql .= ' '.$orderStr;
+				}
+				$limit = $criteria->getLimit();
+				$start = $criteria->getStart();
+			}
+			$result =& $this->query($sql, false ,$limit, $start);
+			return $result;
+		}
+
+		function &getNext()
+		{
+			if ($myrow = $this->db->fetchArray($result)) {
+				$record =& $this->create(false);
+				$record->assignVars($myrow);
+				if (!$fieldlist) {
+					$GLOBALS['_xoopsTableCache']->set($this->tableName, $record->cacheKey(), $myrow, $this->cacheLimit);
+				}
+				return $records;
+			} else {
+				$result = false;
+				return $result;
+			}
 		}
 
 		/**
