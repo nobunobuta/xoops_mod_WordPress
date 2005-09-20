@@ -70,8 +70,11 @@ function get_bloginfo($show='') {
                 $output = $comment_feed_url . '/rss2/';
             }
             break;
+        case 'rsd_url':
+            $output = $site_url.'/wp-rsd.php';
+            break;
         case 'pingback_url':
-            $output = $site_url.'/xmlrpc.php';
+            $output = $site_url.'/'.get_settings('xmlrpc_filename');
             break;
         case 'admin_email':
             $output = get_settings('admin_email');
@@ -158,9 +161,10 @@ function wp_title($sep = '&raquo;', $echo = true) {
 		$userObject =& $userHandler->get($GLOBALS['author']);
 	} elseif (!empty($GLOBALS['p'])) {
 		$postHandler =& wp_handler('Post');
-		$postObject =& $postHandler->get($GLOBALS['p']);
-		$userHandler =& wp_handler('User');
-		$userObject =& $userHandler->get($postObject->getVar('post_author'));
+		if ($postObject =& $postHandler->get($GLOBALS['p'])) {
+			$userHandler =& wp_handler('User');
+			$userObject =& $userHandler->get($postObject->getVar('post_author'));
+		}
 	}
 	if ($userObject) {
 		$result = $userObject->exportWpObject();
@@ -221,9 +225,10 @@ function single_author_title($prefix = '', $echo = true ) {
 		$userObject =& $userHandler->get($GLOBALS['author']);
 	} elseif (!empty($GLOBALS['p'])) {
 		$postHandler =& wp_handler('Post');
-		$postObject =& $postHandler->get($GLOBALS['p']);
-		$userHandler =& wp_handler('User');
-		$userObject =& $userHandler->get($postObject->getVar('post_author'));
+		if ($postObject =& $postHandler->get($GLOBALS['p'])) {
+			$userHandler =& wp_handler('User');
+			$userObject =& $userHandler->get($postObject->getVar('post_author'));
+		}
 	}
 	if ($userObject) {
 		$result = $userObject->exportWpObject();

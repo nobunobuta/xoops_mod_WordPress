@@ -11,15 +11,17 @@ function get_the_category($id=false) {
 	} else {
 		$postHandler =& wp_handler('Post');
 		$postObject =& $postHandler->get($id);
-		$post2CatObjects =& $postObject->getCategories();
 		$categories = array();
-		$categoryHandler =& wp_handler('Category');
-		foreach($post2CatObjects as $post2CatObject) {
-			$categoryObject =& $categoryHandler->get($post2CatObject->getVar('category_id'));
-			$category =& $categoryObject->exportWpObject();
-			$category->category_id = $category->cat_ID;
-			$categories[] = $category;
-			$GLOBALS['category_cache'][wp_id()][$id][] = $category;
+		if ($post2CatObjects =& $postObject->getCategories()) {
+			$categoryHandler =& wp_handler('Category');
+			foreach($post2CatObjects as $post2CatObject) {
+				if ($categoryObject =& $categoryHandler->get($post2CatObject->getVar('category_id'))) {
+					$category =& $categoryObject->exportWpObject();
+					$category->category_id = $category->cat_ID;
+					$categories[] = $category;
+					$GLOBALS['category_cache'][wp_id()][$id][] = $category;
+				}
+			}
 		}
 		return $categories;
 	}
@@ -69,7 +71,7 @@ function the_category($seperator = '', $parents='', $echo=true) {
     if ('' == $seperator) {
         $thelist .= '<ul class="post-categories">';
         foreach ($categories as $category) {
-            $category->cat_name = $category->cat_name;
+            $category->cat_name = htmlspecialchars($category->cat_name, ENT_QUOTES);
             $thelist .= "\n\t<li>";
             switch(strtolower($parents)) {
                 case 'multiple':
@@ -94,7 +96,7 @@ function the_category($seperator = '', $parents='', $echo=true) {
     } else {
         $i = 0;
         foreach ($categories as $category) {
-            $category->cat_name = $category->cat_name;
+            $category->cat_name = htmlspecialchars($category->cat_name, ENT_QUOTES);
             if (0 < $i) $thelist .= $seperator . ' ';
             switch(strtolower($parents)) {
                 case 'multiple':

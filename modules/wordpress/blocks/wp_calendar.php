@@ -24,7 +24,7 @@ if( ! defined( 'WP_CALENDAR_BLOCK_INCLUDED' ) ) {
 			if (test_param('p') && !(test_param('m') || test_param('monthnum') || test_param('w'))) {
 				$postHandler =& wp_handler('Post');
 				$postObject =& $postHandler->get(get_param('p'));
-				$GLOBALS['m'] = mysql2date('Ym', $postObject->getVar('post_date'));
+				if ($postObject) $GLOBALS['m'] = mysql2date('Ym', $postObject->getVar('post_date'));
 			}
 		}
 		$block['wp_num'] = $wp_num;
