@@ -97,4 +97,5 @@ define("_MI_WORDPRESS_AD_MENU3","Groups");
 }else{
 define("_MI_WORDPRESS_AD_MENU2","Blocks/Groups");
 }
+}
 ?>

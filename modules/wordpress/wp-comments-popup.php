@@ -55,9 +55,9 @@ if (!empty($commentstatus->post_password) && $_COOKIE['wp-postpass_'.$GLOBALS['c
 	<p><cite><?php comment_type(); ?> by <?php comment_author_link(); ?> &#8212; <?php comment_date() ?> @ <a href="#comment-<?php comment_ID() ?>"><?php comment_time() ?></a></cite></p>
 	</li>
 
-<?php } // end for each comment ?>
+<?php } /* end for each comment */ ?>
 </ol>
-<?php } else { // this is displayed if there are no comments so far ?>
+<?php } else { /* this is displayed if there are no comments so far */ ?>
 	<p><?php echo _LANG_WPCM_COM_YET; ?></p>
 <?php } ?>
 <h2><?php echo _LANG_WPCM_COM_LEAVE; ?></h2>
@@ -92,19 +92,19 @@ if (!empty($commentstatus->post_password) && $_COOKIE['wp-postpass_'.$GLOBALS['c
 	<p>
 	<?php echo _LANG_WPCM_PLEASE_NOTE; ?>
 	</p>
-<?php } // comment_moderation != 'none' ?>
+<?php } /* comment_moderation != 'none' */ ?>
 	<p>
 	  <input name="submit" type="submit" tabindex="5" value="<?php echo _LANG_WPCM_COM_SAYIT; ?>" />
 	</p>
 </form>
-<?php } else { // comments are closed ?>
+<?php } else { /* comments are closed */ ?>
 <p><?php echo _LANG_WPCM_THIS_TIME; ?></p>
 <?php } ?>
-<?php } // end password check ?>
+<?php } /* end password check */ ?>
 
 <div><strong><a href="javascript:window.close()">Close this window</a>.</strong></div>
 
-<?php } // if you delete this the sky will fall on your head ?>
+<?php } /* if you delete this the sky will fall on your head */ ?>
 
 <p class="credit"><?php timer_stop(1); ?> <cite>Powered by <a href="http://wordpress.org"><strong>Wordpress</strong></a></cite></p>
 <script type="text/javascript">
