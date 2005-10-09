@@ -103,7 +103,7 @@ switch(get_param('action')) {
 				break;
 		}
 		if (!empty($advanced)) {
-			$location = "post.php?action=edit&amp;post=$post_ID";
+			$location = "post.php?action=edit&post=$post_ID";
 		}
 		header("Location: $location");
 		$postObject->assignCategories($post_category);
@@ -258,9 +258,9 @@ switch(get_param('action')) {
 		if (!empty($save)) {
 			$location = $_SERVER['HTTP_REFERER'];
 		} elseif (!empty($updatemeta)) {
-			$location = $_SERVER['HTTP_REFERER'] . '&amp;message=2#postcustom';
+			$location = $_SERVER['HTTP_REFERER'] . '&message=2#postcustom';
 		} elseif (!empty($deletemeta)) {
-			$location = $_SERVER['HTTP_REFERER'] . '&amp;message=3#postcustom';
+			$location = $_SERVER['HTTP_REFERER'] . '&message=3#postcustom';
 		} elseif (!empty($referredby)) {
 			$location = urldecode($referredby);
 		} else {
@@ -430,7 +430,7 @@ switch(get_param('action')) {
 
 		switch($referredby) {
 			case 'edit':
-				$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&amp;c=1#comments';
+				$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&c=1#comments';
 				break;
 			case 'edit-comments':
 				$location = wp_siteurl().'/wp-admin/edit-comments.php';
@@ -486,7 +486,7 @@ switch(get_param('action')) {
 		if (($_SERVER['HTTP_REFERER'] != "") && (false == $noredir)) {
 			$location = $_SERVER['HTTP_REFERER'];
 		} else {
-			$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&amp;c=1#comments';
+			$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&c=1#comments';
 		}
 		if ( ! $xoopsWPTicket->check() ) {
 			redirect_header($location,3,$xoopsWPTicket->getErrors());
@@ -557,7 +557,7 @@ switch(get_param('action')) {
 		if (($_SERVER['HTTP_REFERER'] != "") && (false == $noredir)) {
 			$location = $_SERVER['HTTP_REFERER'];
 		} else {
-			$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&amp;c=1#comments';
+			$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&c=1#comments';
 		}
 
 		if ( ! $xoopsWPTicket->check() ) {
@@ -592,7 +592,7 @@ switch(get_param('action')) {
 		init_param('POST', 'comment_post_ID', 'integer', NO_DEFAULT_PARAM, true);
 		init_param('POST', 'edit_date','integer', 0);
 		init_param('POST', 'wp_content','html', '', true);
-		init_param('POST', 'referredby', 'string', urlencode($this_file."?p=$comment_post_ID&amp;c=1#comments"), true);
+		init_param('POST', 'referredby', 'string', urlencode($this_file."?p=$comment_post_ID&c=1#comments"), true);
 
 		if (($user_level > 4) && $edit_date) {
 			init_param('POST', 'aa','integer');
