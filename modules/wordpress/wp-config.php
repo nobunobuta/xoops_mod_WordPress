@@ -1,6 +1,7 @@
 <?php
 if (!defined('WP_INIT_DONE')) {
 	if ( ini_get('register_globals') ) {
+		// Turn register globals off
 		$superglobals = array($_SERVER, $_ENV, $_FILES, $_COOKIE, $_POST, $_GET);
 		if ( isset($_SESSION) ) {
 			array_unshift($superglobals, $_SESSION);

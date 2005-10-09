@@ -118,7 +118,7 @@ function remove_magic_quotes( $mixed ) {
  * - array-int
  * - object
  * - null
- * - clean-html (does nothing)
+ * - clean-html (clean html strin with kses)
  * - html (does nothing)
  * @param mixed Default value or TRUE if user input required
  * @param boolean Override if variable already set
@@ -177,7 +177,7 @@ function init_param($para_types, $var, $type = '', $default = NO_DEFAULT_PARAM, 
 		if ($para_found) break;
 	}
 	if ($must_exist && !$para_found) {
-		redirect_header("", 5, "Required parameter isn't set. [".$var."]");
+		redirect_header('', 5, 'Required parameter['.$var.'] should not be empty.');
 	}
 	if (!$para_found) {
 		if ($default !== NO_DEFAULT_PARAM) {
@@ -222,7 +222,7 @@ function init_param($para_types, $var, $type = '', $default = NO_DEFAULT_PARAM, 
 			if (!empty($GLOBALS[$var])) {
 				unset($GLOBALS[$var]);
 			}
-			if (!empty($para_value)) {
+			if (isset($para_value)) {
 				$GLOBALS[$var] = $para_value;
 			}
 		}
@@ -234,8 +234,8 @@ function init_param($para_types, $var, $type = '', $default = NO_DEFAULT_PARAM, 
 	}
 }
 function test_param($var) {
-	if (!empty($GLOBALS['wpParams'])) {
-		return (!empty($GLOBALS['wpParams'][$var]));
+	if (isset($GLOBALS['wpParams'])) {
+		return (array_key_exists($var, $GLOBALS['wpParams']) && !empty($GLOBALS['wpParams'][$var]));
 	} else {
 		return false;
 	}
@@ -254,7 +254,8 @@ function set_param($var, $value) {
 }
 
 function get_lastpostdate() {
-	if ((!isset($GLOBALS['cache_lastpostdate'][wp_id()])) || (!$GLOBALS['use_cache'])) {
+	static $cache_lastpostdate;
+	if ((!isset($cache_lastpostdate[wp_id()])) || (!$GLOBALS['use_cache'])) {
 		$criteria =& new CriteriaCompo(new Criteria('post_date', current_time('mysql'), "<="));
 		$criteria->add(new Criteria('post_status', 'publish'));
 		$criteria->setSort('post_date');
@@ -262,9 +263,9 @@ function get_lastpostdate() {
 		$criteria->setLimit(1);
 		$postHandler =& wp_handler('Post');
 		$postObjects =& $postHandler->getObjects($criteria, false, 'post_date');
-		$GLOBALS['cache_lastpostdate'][wp_id()] = $lastpostdate = $postObjects[0]->getVar('post_date');
+		$cache_lastpostdate[wp_id()] = $lastpostdate = $postObjects[0]->getVar('post_date');
 	} else {
-		$lastpostdate = $GLOBALS['cache_lastpostdate'][wp_id()];
+		$lastpostdate = $cache_lastpostdate[wp_id()];
 	}
 	return $lastpostdate;
 }
@@ -281,8 +282,9 @@ function user_pass_ok($user_login,$user_pass) {
 
 function get_currentuserinfo() { // a bit like get_userdata(), on steroids
 	if ($GLOBALS['xoopsUser']) {
-		$GLOBALS['user_login'] = $GLOBALS['xoopsUser']->uname();
-		$GLOBALS['userdata'] = get_userdatabylogin($GLOBALS['user_login']);
+		$GLOBALS['user_ID'] = $GLOBALS['xoopsUser']->uid();
+		$GLOBALS['userdata'] = get_userdata($GLOBALS['user_ID']);
+		$GLOBALS['user_login'] = $GLOBALS['xoopsUser']->uname('n');
 		$GLOBALS['user_level'] = $GLOBALS['userdata']->user_level;
 		$GLOBALS['user_ID'] = $GLOBALS['userdata']->ID;
 		$GLOBALS['user_nickname'] = $GLOBALS['userdata']->user_nickname;
@@ -319,6 +321,7 @@ function get_userdata($userid) {
 }
 
 function get_userdatabylogin($user_login) {
+	$user_login = addslashes($user_login);
 	if ((empty($GLOBALS['cache_userdata'][wp_id()]["$user_login"])) || (!$GLOBALS['use_cache'])) {
 		$userHandler =& wp_handler('User');
 		$userObject =& $userHandler->getByLogin($user_login);
@@ -337,6 +340,41 @@ function get_userdatabylogin($user_login) {
 function get_userid($user_login) {
 	$user = get_userdatabylogin($user_login);
 	return $user->ID;
+}
+
+function get_author_name($auth_id) {
+	$authordata = get_userdata($auth_id);
+
+	switch($authordata['user_idmode']) {
+		case 'nickname':
+			$authorname = $authordata['user_nickname'];
+
+		case 'login':
+			$authorname = $authordata['user_login'];
+			break;
+	
+		case 'firstname':
+			$authorname = $authordata['user_firstname'];
+			break;
+
+		case 'lastname':
+			$authorname = $authordata['user_lastname'];
+			break;
+
+		case 'namefl':
+			$authorname = $authordata['user_firstname'].' '.$authordata['user_lastname'];
+			break;
+
+		case 'namelf':
+			$authorname = $authordata['user_lastname'].' '.$authordata['user_firstname'];
+			break;
+
+		default:
+			$authorname = $authordata['user_nickname'];
+			break;
+	}
+
+	return $authorname;
 }
 
 function get_usernumposts($userid) {
@@ -423,6 +461,9 @@ function url_to_postid($url = '') {
 
 
 /* Options functions */
+function get_option($option) {
+	return get_settings($option);
+}
 
 function get_settings($setting) {
 	if (!isset($GLOBALS['use_cache'])) $use_cache=1;
@@ -647,14 +688,15 @@ function get_commentdata($comment_ID, $no_cache=0, $include_unapproved=false) { 
 }
 
 function get_catname($cat_ID) {
-	if (empty($GLOBALS['cache_catnames'][wp_id()]) || (!$GLOBALS['use_cache'])) {
+	static $cache_catnames;
+	if (empty($cache_catnames[wp_id()]) || (!$GLOBALS['use_cache'])) {
 		$categoryHandler =& wp_handler('Category');
 		$categoryObjects =& $categoryHandler->getObjects();
 		foreach ($categoryObjects as $categoryObject) {
-			$GLOBALS['cache_catnames'][wp_id()][$categoryObject->getVar('cat_ID')] = $categoryObject->getVar('cat_name');
+			$cache_catnames[wp_id()][$categoryObject->getVar('cat_ID')] = $categoryObject->getVar('cat_name');
 		}
 	}
-	$cat_name = $GLOBALS['cache_catnames'][wp_id()][$cat_ID];
+	$cat_name = $cache_catnames[wp_id()][$cat_ID];
 	return $cat_name;
 }
 
@@ -672,7 +714,7 @@ function touch_time($edit = 1, $echo=true) {
 	
 	$output = '<p><input type="checkbox" class="checkbox" name="edit_date" value="1" id="timestamp" '.$checked.'/> <label for="timestamp">'._LANG_F_TIMESTAMP.'</label> : <a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#timestamp" title="Help on changing the timestamp">Help</a><br />';
 
-	$time_adj = time() + (get_settings('time_difference') * 3600);
+	$time_adj = current_time('timestamp');
 	$jj = ($edit) ? mysql2date('d', $GLOBALS['postdata']['post_date']) : date('d', $time_adj);
 	$mm = ($edit) ? mysql2date('m', $GLOBALS['postdata']['post_date']) : date('m', $time_adj);
 	$aa = ($edit) ? mysql2date('Y', $GLOBALS['postdata']['post_date']) : date('Y', $time_adj);
@@ -1377,13 +1419,19 @@ function permlink_to_param() {
 	if ( !empty( $_SERVER['PATH_INFO'] ) ) {
 		// Fetch the rewrite rules.
 		$rewrite = rewrite_rules('matches');
-		$pathinfo = $_SERVER['PATH_INFO'];
+		$pathinfo =explode('/',$_SERVER['PATH_INFO']);
+		foreach($pathinfo as $key => $val) {
+			$pathinfo[$key] = rawurlencode($pathinfo[$key]);
+		}
+		$pathinfo = implode('/',$pathinfo);
 		// Trim leading '/'.
 		$pathinfo = preg_replace('!^/!', '', $pathinfo);
 
 		if (! empty($rewrite)) {
 			// Get the name of the file requesting path info.
 			$req_uri = $_SERVER['REQUEST_URI'];
+			$req_uri = explode('?', $req_uri);
+			$req_uri = $req_uri[0];
 			$req_uri = str_replace($pathinfo, '', $req_uri);
 			$req_uri = preg_replace("!/+$!", '', $req_uri);
 			$req_uri = explode('/', $req_uri);
@@ -1406,9 +1454,12 @@ function permlink_to_param() {
 					@eval("\$query = \"$query\";");
 
 					// Parse the query.
-					parse_str($query, $_GET);
+					parse_str($query, $get);
 					break;
 				}
+			}
+			if ($get) {
+				$_GET += $get;
 			}
 		}	 
 	}
@@ -1519,12 +1570,13 @@ function rewrite_rules($matches = '', $permalink_structure = '') {
     $trackbackregex = 'trackback/?$';
     $trackbackmatch .= $trackbackregex;
 
+	$front = preg_match('#^/index.php/#' ,$permalink_structure) ? 'index.php/' : '';
     // Site feed
-    $sitefeedmatch = 'feed/?([_0-9a-z-]+)?/?$';
+    $sitefeedmatch = $front.'feed/?([_0-9a-z-]+)?/?$';
     $sitefeedquery = 'wp-feed.php?feed=' . preg_index(1, $matches);
 
     // Site comment feed
-    $sitecommentfeedmatch = 'comments/feed/?([_0-9a-z-]+)?/?$';
+    $sitecommentfeedmatch = $front.'comments/feed/?([_0-9a-z-]+)?/?$';
     $sitecommentfeedquery = 'wp-feed.php?feed=' . preg_index(1, $matches) . '&withcomments=1';
 
     // Code for nice categories and authors, currently not very flexible
@@ -1679,7 +1731,7 @@ function wp_refcheck($offset = "", $redirect = true) {
 	if ($ref == '') {
 		if ($redirect) {
 			if (defined('XOOPS_URL')) { //XOOPS Module mode
-				redirect_header(wp_siteurl(), 1, "You cannot update Database contents.(Could not detect HTTP_REFERER)");
+				redirect_header(wp_siteurl(), 1, 'You cannot update Database contents.(Could not detect HTTP_REFERER)');
 			} else {
 				header("Location: ".wp_siteurl());
 			}
@@ -1689,7 +1741,7 @@ function wp_refcheck($offset = "", $redirect = true) {
 	if (strpos($ref, wp_siteurl().$offset) !== 0 ) {
 		if ($redirect) {
 			if (defined('XOOPS_URL')) { //XOOPS Module mode
-				redirect_header(wp_siteurl(), 1, "You cannot update Database contents.(HTTP_REFERER is not valid site.)");
+				redirect_header(wp_siteurl(), 1, 'You cannot update Database contents.(HTTP_REFERER is not valid site.)');
 			} else {
 				header("Location: ".wp_siteurl());
 			}
@@ -1786,7 +1838,7 @@ function get_custom_url($filename) {
 
 function current_wp() {
 	$cur_PATH = $_SERVER['SCRIPT_FILENAME'];
-	if (preg_match("/^".preg_quote(wp_base()."/","/")."/i",$cur_PATH)) {
+	if (preg_match('/^'.preg_quote(wp_base().'/','/').'/i',$cur_PATH)) {
 		return true;
 	} else {
 		return false;
@@ -1892,7 +1944,7 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
 			} 
             if (function_exists('gd_info')) {
 	            $gdver=gd_info();
-	            if(strstr($gdver["GD Version"],"1.")!=false){
+	            if(strstr($gdver['GD Version'],'1.')!=false){
 	            	//For GD
 	                $thumbnail = imagecreate($image_new_width, $image_new_height);
 	            }else{
@@ -1916,15 +1968,15 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
 
 			if ($type[2] == 1) {
 				if (!imagegif($thumbnail, $thumbpath)) {
-					$error = "Thumbnail path invalid";
+					$error = 'Thumbnail path invalid';
 				} 
 			} elseif ($type[2] == 2) {
 				if (!imagejpeg($thumbnail, $thumbpath)) {
-					$error = "Thumbnail path invalid";
+					$error = 'Thumbnail path invalid';
 				} 
 			} elseif ($type[2] == 3) {
 				if (!imagepng($thumbnail, $thumbpath)) {
-					$error = "Thumbnail path invalid";
+					$error = 'Thumbnail path invalid';
 				} 
 			} 
 		} 
