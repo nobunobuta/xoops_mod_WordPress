@@ -382,7 +382,7 @@ function b2newpost($m) {
 	$category = $category->scalarval();
 	$postdate = $postdate->scalarval();
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$userdata = get_userdatabylogin($username);
 		if ($userdata->user_level < 1) {
 			return new xmlrpcresp(0, $GLOBALS['xmlrpcerruser']+1, // user error 1
@@ -432,7 +432,7 @@ function b2getcategories($m) {
 	$username = $username->scalarval();
 	$password = $password->scalarval();
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$userdata = get_userdatabylogin($username);
 		if ($userdata->user_level < 1) {
 			return new xmlrpcresp(0, $GLOBALS['xmlrpcerruser']+1, // user error 1
@@ -484,7 +484,7 @@ function b2_getPostURL($m) {
 	$password = $password->scalarval();
 	$post_ID  = intval($post_ID->scalarval());
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$userdata = get_userdatabylogin($username);
 		if ($userdata->user_level < 1) {
 			return new xmlrpcresp(0, $GLOBALS['xmlrpcerruser']+1, // user error 1
@@ -560,7 +560,7 @@ function bloggernewpost($m) {
 	// publish flag sets post status appropriately
 	$postarr['post_status'] = $publish->scalarval() ? 'publish' : 'draft';
 	
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 		$userdata = get_userdatabylogin($username);
 		if ($userdata->user_level < 1) {
@@ -611,7 +611,7 @@ function bloggereditpost($m) {
 	$newcontent = $newcontent->scalarval();
 	$postarr['post_status'] = $publish->scalarval() ? 'publish' : 'draft';
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$postdata = wp_get_single_post($ID,ARRAY_A);
 		if (!$postdata)
 			return new xmlrpcresp(0, $GLOBALS['xmlrpcerruser']+2, // user error 2
@@ -668,7 +668,7 @@ function bloggerdeletepost($m) {
 	$password = $password->scalarval();
 	$newcontent = $newcontent->scalarval();
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$postdata = wp_get_single_post($ID,ARRAY_A);
 		if (!$postdata)
 			return new xmlrpcresp(0, $GLOBALS['xmlrpcerruser']+2, // user error 2
@@ -710,7 +710,7 @@ function bloggergetusersblogs($m) {
 	$username = $username->scalarval();
 	$password = $password->scalarval();
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$userdata = get_userdatabylogin($username);
 		if ($userdata->user_level < 1) {
 			return new xmlrpcresp(0, $GLOBALS['xmlrpcerruser']+1, // user error 1
@@ -746,7 +746,7 @@ function bloggergetuserinfo($m) {
 	$username = $username->scalarval();
 	$password = $password->scalarval();
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$userdata = get_userdatabylogin($username);
 		$struct = new xmlrpcval(
 					array(
@@ -781,7 +781,7 @@ function bloggergetpost($m) {
 	$username = $username->scalarval();
 	$password = $password->scalarval();
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$postdata = get_postdata($post_ID);
 		if ($postdata['Date'] != '') {
 			// Don't convert to GMT
@@ -835,7 +835,7 @@ function bloggergetrecentposts($m) {
 		$limit = '';
 	}
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 		$sql = "SELECT * FROM ".wp_table('posts')." ORDER BY post_date DESC".$limit;
 		$result = $wpdb->get_results($sql);
@@ -918,7 +918,7 @@ function bloggergettemplate($m) {
 	   'Sorry, users whose level is less than 3, can not edit the template.');
 	}
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 	if ($templateType == 'main') {
 		$file = 'index.php';
@@ -966,7 +966,7 @@ function bloggersettemplate($m) {
 	   'Sorry, users whose level is less than 3, can not edit the template.');
 	}
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 	if ($templateType == 'main') {
 		$file = 'index.php';
@@ -1022,7 +1022,7 @@ function mwnewpost($params) {
 	$postarr['post_status'] = $xpublish->scalarval() ? 'publish' : 'draft';
 
 	// Check login
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$userdata = get_userdatabylogin($username);
 		if ($userdata->user_level < 1) {
 			return new xmlrpcresp(0, $GLOBALS['xmlrpcerruser']+1,
@@ -1109,7 +1109,7 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 	$postarr['post_status'] = $xpublish->scalarval() ? 'publish' : 'draft';
 
 	// Check login
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$postdata = wp_get_single_post($ID,ARRAY_A);
 		if (!$postdata) {
 			return new xmlrpcresp(0, $GLOBALS['xmlrpcerruser']+2, // user error 2
@@ -1164,7 +1164,7 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 			$postarr['post_category'][] = $GLOBALS['post_default_category'];
 		}
 
-		$post_ID = wp_update_post($newpost);
+		$post_ID = wp_update_post($postarr);
 		if (!$post_ID) {
 			return new xmlrpcresp(0, $GLOBALS['xmlrpcerruser']+2,
 			'For some strange yet very annoying reason, your entry could not be posted.');
@@ -1204,7 +1204,7 @@ function mwgetpost ($params) {	// ($postid, $user, $pass)
 	$password = $xpass->scalarval();
 
 	// Check login
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$postdata = get_postdata($post_ID);
 
 		if ($postdata['Date'] != '') {
@@ -1272,7 +1272,7 @@ function mwrecentposts ($params) {	// ($blogid, $user, $pass, $num)
 	$num = $xnum->scalarval();
 
 	// Check login
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 		$postlist = wp_get_recent_posts($num);
 		
@@ -1394,7 +1394,7 @@ function mwnewmedia($params) {
 	logIO('O', '(MW) Received '.strlen($bits).' bytes');
 
 // Check login
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$user_data = get_userdatabylogin($username);
 		if(!get_settings('use_fileupload')) {
 			// Uploads not allowed
@@ -1510,7 +1510,7 @@ function mt_getPostCategories($params) {
 	$username = $xuser->scalarval();
 	$password = $xpass->scalarval();
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$catids = wp_get_post_cats('1', $post_ID);
 
 		// The first category listed will be set as primary
@@ -1554,7 +1554,7 @@ function mt_setPostCategories($params) {
 		$catids[] = $cat['categoryId'];
 	}
 	
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		wp_set_post_cats('', $post_ID, $catids);
 		
 		return new xmlrpcresp(new xmlrpcval($result,'boolean'));
@@ -1576,7 +1576,7 @@ function mt_publishPost($params) {
 	$username = $xuser->scalarval();
 	$password = $xpass->scalarval();
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$postdata = wp_get_single_post($post_ID,ARRAY_A);
 		
 		$postdata['post_status'] = 'publish';
@@ -1610,7 +1610,7 @@ function mt_getRecentPostTitles($params) {
 	$password = $xpass->scalarval();
 	$numposts = intval($xnumposts->scalarval());
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$sql = "SELECT post_date, post_author, ID, post_title FROM ".wp_table('posts')." ORDER BY post_date DESC LIMIT $numposts";
 		$posts = $wpdb->get_results($sql,ARRAY_A);
 		$result = array();
@@ -1668,7 +1668,7 @@ function mt_getpost ($params) {	// ($postid, $user, $pass)
 	$password = $xpass->scalarval();
 
 	// Check login
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$postdata = get_postdata($post_ID);
 
 		if ($postdata['Date'] != '') {
@@ -1748,7 +1748,7 @@ function pingback_ping($m) { // original code by Mort
 	$pagelinkedto = $m->getParam(1);
 	$pagelinkedto = $pagelinkedto->scalarval();
 
-	$pagelinkedfrom = str_replace('&amp;', '&', $pagelinkedfrom);
+	$pagelinkedfrom = addslashes(str_replace('&amp;', '&', $pagelinkedfrom));
 	$pagelinkedto = preg_replace('#&([^amp\;])#is', '&amp;$1', $pagelinkedto);
 
 	$messages = array(
