@@ -1,21 +1,23 @@
 <?php
+if (!defined('WP_INIT_DONE')) {
+	if ( ini_get('register_globals') ) {
+		$superglobals = array($_SERVER, $_ENV, $_FILES, $_COOKIE, $_POST, $_GET);
+		if ( isset($_SESSION) ) {
+			array_unshift($superglobals, $_SESSION);
+		}
+		foreach ( $superglobals as $superglobal ) {
+			foreach ( $superglobal as $global => $value ) {
+				unset( $GLOBALS[$global] );
+			}
+		}
+	}
+	define('WP_INIT_DONE', 1);
+}
 $_wp_base_prefix = 'wp';
 //************************************************
 // You should not edit this file for customization.
 //************************************************
 include_once dirname( __FILE__ ).'/../../mainfile.php';
-if (!defined('WP_INIT_DONE')) {
-	$initvars = array(
-		'cache_lastpostdate','cache_catnames', 'cache_categories', 'cache_userdata', 'cache_settings',
-		'category_cache', 'category_posts', 'post_meta_cache',  'comment_count_cache', 'wpPostHandler',
-		'wp_filter', 'wp_xoops_config', 'wpParams', 'wpcommentsjavascript', '_xoopsTableCache',
-		'_xoopsTableQueryCount','permalink_cache',
-	);
-	foreach($initvars as $initvars) {
-		$GLOBALS[$initvars] = array();
-	}
-	define('WP_INIT_DONE', 1);
-}
 // ** MySQL settings ** //
 if (!defined('WP_DB_NAME')) {
 	define('WP_DB_NAME', XOOPS_DB_NAME);
