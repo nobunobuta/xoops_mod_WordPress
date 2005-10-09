@@ -2,7 +2,9 @@
 if (!function_exists('upgrade_wp_tables')){
 	function upgrade_wp_tables() {
 		global $xoopsDB;
+		$GLOBALS["wp_inblock"] = 1;
 		require_once dirname(dirname( __FILE__ )) . '/wp-config.php';
+		$GLOBALS["wp_inblock"] = 0;
 		if ($xoopsDB->query("SHOW COLUMNS FROM ".wp_table('postmeta'))==false) {
 			$sql1 = "CREATE TABLE ".wp_table('postmeta')." (
 						meta_id int(11) NOT NULL auto_increment,

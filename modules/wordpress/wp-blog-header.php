@@ -320,7 +320,7 @@ if (test_param('postend') && (get_param('postend') > get_param('poststart')) && 
 		}
 	}
 }
-if (isset($GLOBALS['p']) && ($GLOBALS['p']=='all')) {
+if (!empty($GLOBALS['p']) && ($GLOBALS['p']=='all')) {
 	unset($_criteria);
 	$_criteria =& new CriteriaCompo();
 }
@@ -378,8 +378,7 @@ if ($GLOBALS['posts']) {
 			$GLOBALS['c'] = 1;
 			$GLOBALS['single'] = 1;
 		}
-//		if (!empty($s) && empty($paged) && !strstr($_SERVER['PHP_SELF'], 'wp-admin/')) { // If they were doing a search and got one result
-		if (empty($GLOBALS['p']) && empty($GLOBALS['name']) && empty($paged) && preg_match('#/modules/'.wp_mod().'(/|/index.php)?$#',$_SERVER['PHP_SELF'])) { // If they were doing a search and got one result
+		if (empty($GLOBALS['p']) && empty($GLOBALS['name']) && empty($paged) && preg_match('#/modules/'.wp_mod().'(/|/index.php.*)?$#',$_SERVER['PHP_SELF']) && empty($GLOBALS['doing_rss'])) {
 			header('Location: ' . get_permalink($GLOBALS['posts'][0]->ID));
 		}
 	}
@@ -441,7 +440,7 @@ if ($GLOBALS['posts']) {
 	}
 
 }
-if (preg_match('#/modules/'.wp_mod().'(/|/index.php)?$#',$_SERVER['PHP_SELF'])) {
+if (preg_match('#/modules/'.wp_mod().'(/|/index.php.*)?$#',$_SERVER['PHP_SELF'])) {
 	//redirect feed and trackback
 	if (test_param('feed')) {
 		require_once('wp-feed.php');
@@ -452,5 +451,4 @@ if (preg_match('#/modules/'.wp_mod().'(/|/index.php)?$#',$_SERVER['PHP_SELF'])) 
 		exit();
 	}
 }
-
 ?>
