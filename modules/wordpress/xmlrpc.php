@@ -21,6 +21,7 @@ require_once(ABSPATH.WPINC."/class-xmlrpcs.php");
 require_once(ABSPATH.WPINC."/template-functions.php");
 require_once(ABSPATH.WPINC."/functions.php");
 require_once(ABSPATH.WPINC."/vars.php");
+error_reporting(E_ERROR);
 
 $use_cache = 1;
 $post_autobr = 0;
@@ -1306,7 +1307,7 @@ function mwnewpost($params) {
 	$blogid = $xblogid->scalarval();
 	$username = $xuser->scalarval();
 	$password = $xpass->scalarval();
-	$contentstruct = xmlrpc_decode1($xcontent);
+	$contentstruct = php_xmlrpc_decode($xcontent);
 	$post_status = $xpublish->scalarval()?'publish':'draft';
 
 	// Check login
@@ -1397,7 +1398,7 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 	$ID = $xpostid->scalarval();
 	$username = $xuser->scalarval();
 	$password = $xpass->scalarval();
-	$contentstruct = xmlrpc_decode1($xcontent);
+	$contentstruct = php_xmlrpc_decode($xcontent);
 	$postdata = wp_get_single_post($ID);
 
 	if (!$postdata)
@@ -1483,7 +1484,7 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 }
 
 $mwgetpost_sig =  array(array($xmlrpcStruct,$xmlrpcString,$xmlrpcString,$xmlrpcString));
-$mwegetpost_doc = 'Get a post, MetaWeblog API-style';
+$mwgetpost_doc = 'Get a post, MetaWeblog API-style';
 
 function mwgetpost ($params) {	// ($postid, $user, $pass) 
 	global $xmlrpcerruser;
@@ -1551,7 +1552,7 @@ function mwgetpost ($params) {	// ($postid, $user, $pass)
 }
 
 $mwrecentposts_sig =  array(array($xmlrpcArray,$xmlrpcString,$xmlrpcString,$xmlrpcString,$xmlrpcInt));
-$mwerecentposts_doc = 'Get recent posts, MetaWeblog API-style';
+$mwrecentposts_doc = 'Get recent posts, MetaWeblog API-style';
 
 function mwrecentposts ($params) {	// ($blogid, $user, $pass, $num) 
 	global $xmlrpcerruser;
@@ -1655,7 +1656,7 @@ function mwgetcats ($params) {	// ($blogid, $user, $pass)
 			$struct['htmlUrl'] = htmlspecialchars($blog_URL . '?cat='. $cat['cat_ID']);
 			$struct['rssUrl'] = ''; // will probably hack alexking's stuff in here
 			
-			$arr[] = xmlrpc_encode1($struct);
+			$arr[] = php_xmlrpc_encode($struct);
 		}
 	}
 	
@@ -1751,7 +1752,7 @@ function mt_getPostCategories($params) {
 			$struct['categoryId'] = $catid;
 			$struct['categoryName'] = get_cat_name($catid);
 
-			$resp_struct[] = xmlrpc_encode1($struct);
+			$resp_struct[] = php_xmlrpc_encode($struct);
 			$struct['isPrimary'] = false;
 		}
 		
@@ -1780,7 +1781,7 @@ function mt_setPostCategories($params) {
 	$post_ID = $xpostid->scalarval();
 	$username = $xuser->scalarval();
 	$password = $xpass->scalarval();
-	$cats = xmlrpc_decode1($xcats);
+	$cats = php_xmlrpc_decode($xcats);
 	
 	foreach($cats as $cat) {
 		$catids[] = $cat['categoryId'];
@@ -1887,7 +1888,7 @@ function mt_getTrackbackPings($params) {
 	$struct['pingURL'] = '';
 	$struct['pingIP'] = '';
 	
-	$xmlstruct = xmlrpc_encode1($struct);
+	$xmlstruct = php_xmlrpc_encode($struct);
 	
 	return new xmlrpcresp(new xmlrpcval(array($xmlstruct),'array'));
 }
@@ -2648,7 +2649,7 @@ function i_whichToolkit($m) {
 						 "toolkitName" => $xmlrpcName,
 						 "toolkitVersion" => $xmlrpcVersion,
 						 "toolkitOperatingSystem" => $SERVER_SOFTWARE);
-	return new xmlrpcresp ( xmlrpc_encode1($ret));
+	return new xmlrpcresp ( php_xmlrpc_encode($ret));
 }
 
 /**** SERVER FUNCTIONS ARRAY ****/
@@ -2784,11 +2785,11 @@ $dispatch_map =  array( "blogger.newPost" =>
 							 array("function" => "b2getcategories",
 										 "signature" => $wpgetcategories_sig,
 										 "docstring" => $wpgetcategories_doc),
-
-							 "b2.ping" =>
-							 array("function" => "b2ping",
-										 "signature" => $wpping_sig,
-										 "docstring" => $wpping_doc),
+//
+//							 "b2.ping" =>
+//							 array("function" => "b2ping",
+//										 "signature" => $wpping_sig,
+//										 "docstring" => $wpping_doc),
 
 							 "pingback.ping" =>
 							 array("function" => "pingback_ping",

@@ -69,7 +69,7 @@ switch($action) {
 			$target_charset = $_POST['target_charset'];
 			$useutf8 = $_POST['useutf8'];
 		// Format trackbacks
-		$trackback = preg_replace('|\s+|', '\n', $trackback);
+		$trackback = preg_replace('|\s+|', "\n", $trackback);
 
         if ($user_level == 0)
             die ('Cheatin&#8217; uh?');
@@ -287,7 +287,7 @@ switch($action) {
 			$trackback = $_POST['trackback_url'];
 			$useutf8 = $_POST['useutf8'];
 		// Format trackbacks
-		$trackback = preg_replace('|\s+|', '\n', $trackback);
+		$trackback = preg_replace('|\s+|', "\n", $trackback);
 		
 		if ('' != $_POST['publish']) $post_status = 'publish';
 

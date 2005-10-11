@@ -35,7 +35,7 @@ function user_pass_ok($user_login,$user_pass) {
 	if ((empty($cache_userdata[$wp_id][$user_login])) OR (!$use_cache)) {
 		$userdata = get_userdatabylogin($user_login);
 	} else {
-		$userdata = $cache_userdata[$user_login];
+		$userdata = $cache_userdata[$wp_id][$user_login];
 	}
 	return (md5(trim($user_pass)) == $userdata->user_pass);
 }
@@ -331,7 +331,14 @@ function get_commentdata($comment_ID,$no_cache=0,$include_unapproved=false) { //
 		if (false == $include_unapproved) {
 		    $query .= " AND comment_approved = '1'";
 		}
-    		$myrow = $wpdb->get_row($query, ARRAY_A);
+    	$myrow = $wpdb->get_row($query, ARRAY_A);
+		if (strstr($myrow['comment_content'], '<trackback />')) {
+			$myrow['comment_type'] = 'trackback';
+		} elseif (strstr($myrow['comment_content'], '<pingback />')) {
+			$myrow['comment_type'] = 'pingback';
+		} else {
+			$myrow['comment_type'] = 'comment';
+		}
 	} else {
 		$myrow['comment_ID']=$postc->comment_ID;
 		$myrow['comment_post_ID']=$postc->comment_post_ID;
@@ -437,6 +444,7 @@ function touch_time($edit = 1) {
 }
 
 function gzip_compression() {
+	return;
 	global $gzip_compressed;
 		if (!$gzip_compressed) {
 		$phpver = phpversion(); //start gzip compression
@@ -1054,6 +1062,7 @@ function wp_notify_postauthor($comment_id, $comment_type='comment') {
     global  $siteurl ,$wp_id;
 
     $comment = $wpdb->get_row("SELECT * FROM {$wpdb->comments[$wp_id]} WHERE comment_ID='$comment_id' LIMIT 1");
+    if (!$comment) return false;
     $post = $wpdb->get_row("SELECT * FROM {$wpdb->posts[$wp_id]} WHERE ID='$comment->comment_post_ID' LIMIT 1");
     $user = $wpdb->get_row("SELECT * FROM {$wpdb->users[$wp_id]} WHERE ID='$post->post_author' LIMIT 1");
 

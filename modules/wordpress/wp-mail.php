@@ -442,8 +442,8 @@ function wp_getattach($content, $prefix = "", $create_thumbs = 0)
 				$i++;
 			} 
 			if (!($temp_fp = fopen("attach/" . $temp_file, "wb"))) {
-				echo("Error1<br />\n");
-				continue;
+				echo("Attachment File Writing Error<br />\n");
+				return false;
 			} 
 			fputs($temp_fp, $tmp);
 			fclose($temp_fp);

@@ -10,6 +10,11 @@
         }
 
  		$comment_author = (isset($_COOKIE['comment_author_'.$cookiehash])) ? trim($_COOKIE['comment_author_'.$cookiehash]) : '';
+        if (!$comment_author) {
+            if (!empty($xoopsUser)) {
+                $comment_author = $xoopsUser->getVar('name') ? $xoopsUser->getVar('name') :$xoopsUser->getVar('uname');
+            }
+        }
         $comment_author_email = (isset($_COOKIE['comment_author_email_'.$cookiehash])) ? trim($_COOKIE['comment_author_email_'.$cookiehash]) : '';
  		$comment_author_url = (isset($_COOKIE['comment_author_url_'.$cookiehash])) ? trim($_COOKIE['comment_author_url_'.$cookiehash]) : '';
 
