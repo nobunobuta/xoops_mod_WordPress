@@ -1,16 +1,19 @@
 <?php
-include_once dirname( __FILE__ ).'/../../mainfile.php';
 if (!defined('WP_INIT_DONE')) {
-	$initvars = array(
-		'cache_lastpostdate','cache_catnames',
-		'cache_categories', 'cache_userdata', 'cache_settings', 'category_cache', 'category_posts',
-		'post_meta_cache',  'comment_count_cache', 'wp_filter', 'wpcommentsjavascript','permalink_cache',
-	);
-	foreach($initvars as $initvars) {
-		$GLOBALS[$initvars] = array();
+	if ( ini_get('register_globals') ) {
+		$superglobals = array($_SERVER, $_ENV, $_FILES, $_COOKIE, $_POST, $_GET);
+		if ( isset($_SESSION) ) {
+			array_unshift($superglobals, $_SESSION);
+		}
+		foreach ( $superglobals as $superglobal ) {
+			foreach ( $superglobal as $global => $value ) {
+				unset( $GLOBALS[$global] );
+			}
+		}
 	}
 	define('WP_INIT_DONE', 1);
 }
+include_once dirname( __FILE__ ).'/../../mainfile.php';
 if(!defined('ABSPATH')) define ('ABSPATH' , XOOPS_ROOT_PATH.'/modules/wordpress/');
 /** WordPress's config file **/
 /** http://wordpress.org/   **/
