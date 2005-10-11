@@ -463,7 +463,7 @@ function b2newpost($m) {
 	$postdate = $postdate->scalarval();
 
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 		$userdata = get_userdatabylogin($username);
 		$post_author = $userdata->ID;
@@ -544,7 +544,7 @@ function b2getcategories($m) {
 	$userdata = get_userdatabylogin($username);
 
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 		$results = $wpdb->get_results("SELECT * FROM {$wpdb->categories[$wp_id]} ORDER BY cat_ID ASC");
 	if (!$results) die("Error getting data");
@@ -610,7 +610,7 @@ function b2_getPostURL($m) {
 	   "Sorry, users whose level is zero, can not use this method.");
 	}
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 		$blog_URL = $siteurl.'/index.php';
 
@@ -700,7 +700,7 @@ function bloggernewpost($m) {
 	// publish flag sets post status appropriately
 	$post_status = $publish->scalarval()?'publish':'draft';
 	
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 		$userdata = get_userdatabylogin($username);
 		$post_author = $userdata->ID;
@@ -797,7 +797,7 @@ function bloggereditpost($m) {
 	   "Sorry, you do not have the right to edit this post");
 	}
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 		if ($user_level < 1) {
 			return new xmlrpcresp(0, $xmlrpcerruser+1, // user error 1
@@ -885,7 +885,7 @@ function bloggerdeletepost($m) {
 	   "Sorry, you do not have the right to delete this post");
 	}
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 		if ($user_level < 1) {
 			return new xmlrpcresp(0, $xmlrpcerruser+1, // user error 1
@@ -969,7 +969,7 @@ function bloggergetuserinfo($m) {
 
 	$userdata = get_userdatabylogin($username);
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$struct = new xmlrpcval(array("nickname" => new xmlrpcval($userdata->user_nickname),
 									  "userid" => new xmlrpcval($userdata->ID),
 									  "url" => new xmlrpcval($userdata->user_url),
@@ -1007,7 +1007,7 @@ function bloggergetpost($m) {
 	$password=$m->getParam(3);
 	$password = $password->scalarval();
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$postdata = get_postdata($post_ID);
 
 		if ($postdata["Date"] != "") {
@@ -1070,7 +1070,7 @@ function bloggergetrecentposts($m) {
 	$password=$m->getParam(3);
 	$password = $password->scalarval();
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 		$sql = "SELECT * FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC".$limit;
 		$result = $wpdb->get_results($sql);
@@ -1189,7 +1189,7 @@ function bloggergettemplate($m) {
 	   "Sorry, users whose level is less than 3, can not edit the template.");
 	}
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 	if ($templateType == "main") {
 		$file = "index.php";
@@ -1248,7 +1248,7 @@ function bloggersettemplate($m) {
 	   "Sorry, users whose level is less than 3, can not edit the template.");
 	}
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 	if ($templateType == "main") {
 		$file = "index.php";
@@ -1310,7 +1310,7 @@ function mwnewpost($params) {
 	$post_status = $xpublish->scalarval()?'publish':'draft';
 
 	// Check login
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$userdata = get_userdatabylogin($username);
 		$post_author = $userdata->ID;
 		$user_level = $userdata->user_level;
@@ -1417,7 +1417,7 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 	}
 		
 	// Check login
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		if ($user_level < 1) {
 			return new xmlrpcresp(0, $xmlrpcerruser+1,
 			  "Sorry, level 0 users cannot edit posts");
@@ -1497,7 +1497,7 @@ function mwgetpost ($params) {	// ($postid, $user, $pass)
 	$password = $xpass->scalarval();
 
 	// Check login
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$postdata = get_postdata($post_ID);
 
 		if ($postdata["Date"] != "") {
@@ -1567,7 +1567,7 @@ function mwrecentposts ($params) {	// ($blogid, $user, $pass, $num)
 	$num = $xnum->scalarval();
 
 	// Check login
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 
 		$postlist = wp_get_recent_posts($num);
 		
@@ -1742,7 +1742,7 @@ function mt_getPostCategories($params) {
 	$username = $xuser->scalarval();
 	$password = $xpass->scalarval();
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$catids = wp_get_post_cats('1', $post_ID);
 
 		// The first category listed will be set as primary
@@ -1786,7 +1786,7 @@ function mt_setPostCategories($params) {
 		$catids[] = $cat['categoryId'];
 	}
 	
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		wp_set_post_cats('', $post_ID, $catids);
 		
 		return new xmlrpcresp(new xmlrpcval($result,'boolean'));
@@ -1810,7 +1810,7 @@ function mt_publishPost($params) {
 	$username = $xuser->scalarval();
 	$password = $xpass->scalarval();
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$postdata = wp_get_single_post($post_ID,ARRAY_A);
 		
 		$postdata['post_status'] = 'publish';
@@ -1844,7 +1844,7 @@ function mt_getRecentPostTitles($params) {
 	$password = $xpass->scalarval();
 	$numposts = intval($xnumposts->scalarval());
 
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$sql = "SELECT post_date, post_author, ID, post_title FROM {$wpdb->posts[$wp_id]} ORDER BY post_date DESC LIMIT $numposts";
 		$posts = $wpdb->get_results($sql,ARRAY_A);
 		$result = array();
@@ -1908,7 +1908,7 @@ function mt_getpost ($params) {	// ($postid, $user, $pass)
 	$password = $xpass->scalarval();
 
 	// Check login
-	if (user_pass_ok($username,$password)) {
+	if (user_pass_ok(addslashes($username),$password)) {
 		$postdata = get_postdata($post_ID);
 
 		if ($postdata["Date"] != "") {
@@ -1981,10 +1981,6 @@ function pingback_ping($m) { // original code by Mort
 	if (!get_settings('use_pingback')) {
 		return new xmlrpcresp(new xmlrpcval('Sorry, this weblog does not allow you to pingback its posts.'));
 	}
-
-
-	//$log = debug_fopen('./xmlrpc.log', 'w');
-
 	$title='';
 
 	$pagelinkedfrom = $m->getParam(0);
@@ -1993,12 +1989,8 @@ function pingback_ping($m) { // original code by Mort
 	$pagelinkedto = $m->getParam(1);
 	$pagelinkedto = $pagelinkedto->scalarval();
 
-	$pagelinkedfrom = str_replace('&amp;', '&', $pagelinkedfrom);
+	$pagelinkedfrom = addslashes(str_replace('&amp;', '&', $pagelinkedfrom));
 	$pagelinkedto = preg_replace('#&([^amp\;])#is', '&amp;$1', $pagelinkedto);
-
-	//debug_fwrite($log, 'BEGIN '.time().' - '.date('Y-m-d H:i:s')."\n\n");
-	//debug_fwrite($log, 'Page linked from: '.$pagelinkedfrom."\n");
-	//debug_fwrite($log, 'Page linked to: '.$pagelinkedto."\n");
 
 	$messages = array(
 		htmlentities("Pingback from ".$pagelinkedfrom." to "
@@ -2014,13 +2006,11 @@ function pingback_ping($m) { // original code by Mort
 	// Check if the page linked to is in our site
 	$pos1 = strpos($pagelinkedto, str_replace('http://', '', str_replace('www.', '', $siteurl)));
 	if($pos1) {
-
 		// let's find which post is linked to
 		$urltest = parse_url($pagelinkedto);
 		if ($post_ID = url_to_postid($pagelinkedto)) {
 			$way = 'url_to_postid()';
-		}
-		elseif (preg_match('#p/[0-9]{1,}#', $urltest['path'], $match)) {
+		} elseif (preg_match('#p/[0-9]{1,}#', $urltest['path'], $match)) {
 			// the path defines the post_ID (archives/p/XXXX)
 			$blah = explode('/', $match[0]);
 			$post_ID = $blah[1];
@@ -2055,15 +2045,10 @@ function pingback_ping($m) { // original code by Mort
 
 		logIO("O","(PB) URI='$pagelinkedto' ID='$post_ID' Found='$way'");
 
-		//debug_fwrite($log, "Found post ID $way: $post_ID\n");
-
 		$sql = "SELECT post_author FROM {$wpdb->posts[$wp_id]} WHERE ID = $post_ID";
 		$result = $wpdb->get_results($sql);
 
 		if ($wpdb->num_rows) {
-
-			//debug_fwrite($log, 'Post exists'."\n");
-
 			// Let's check that the remote site didn't already pingback this entry
 			$sql = 'SELECT * FROM '.$wpdb->comments[$wp_id].' 
 				WHERE comment_post_ID = '.$post_ID.' 
@@ -2072,10 +2057,8 @@ function pingback_ping($m) { // original code by Mort
 			$result = $wpdb->get_results($sql);
 	    
 			if ($wpdb->num_rows || (1==1)) {
-
 				// very stupid, but gives time to the 'from' server to publish !
 				sleep(1);
-
 				// Let's check the remote site
 				$fp = @fopen($pagelinkedfrom, 'r');
 
