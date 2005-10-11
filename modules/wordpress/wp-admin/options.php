@@ -1,4 +1,5 @@
 <?php
+require_once('../wp-config.php');
 $title = 'Options';
 $this_file = 'options.php';
 $parent_file = 'options.php';

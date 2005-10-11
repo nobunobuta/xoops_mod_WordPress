@@ -1,4 +1,5 @@
 <?php
+require_once('../wp-config.php');
 $title = "Profile";
 /* <Profile | My Profile> */
 
@@ -35,7 +36,6 @@ for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 	}
 }
 
-require_once('../wp-config.php');
 require_once(ABSPATH.'/wp-admin/auth.php');
 switch($action) {
 

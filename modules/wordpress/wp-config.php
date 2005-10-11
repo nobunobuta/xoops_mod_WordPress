@@ -1,5 +1,16 @@
 <?php
 include_once dirname( __FILE__ ).'/../../mainfile.php';
+if (!defined('WP_INIT_DONE')) {
+	$initvars = array(
+		'cache_lastpostdate','cache_catnames',
+		'cache_categories', 'cache_userdata', 'cache_settings', 'category_cache', 'category_posts',
+		'post_meta_cache',  'comment_count_cache', 'wp_filter', 'wpcommentsjavascript','permalink_cache',
+	);
+	foreach($initvars as $initvars) {
+		$GLOBALS[$initvars] = array();
+	}
+	define('WP_INIT_DONE', 1);
+}
 if(!defined('ABSPATH')) define ('ABSPATH' , XOOPS_ROOT_PATH.'/modules/wordpress/');
 /** WordPress's config file **/
 /** http://wordpress.org/   **/
@@ -11,10 +22,10 @@ if(!defined('ABSPATH')) define ('ABSPATH' , XOOPS_ROOT_PATH.'/modules/wordpress/
 
 // ** MySQL settings ** //
 if (!defined('WP_DB_NAME')) {
-	define('WP_DB_NAME', XOOPS_DB_NAME);      // ƒf[ƒ^ƒx[ƒX–¼
-	define('WP_DB_USER', XOOPS_DB_USER);      // ƒf[ƒ^ƒx[ƒX‚Ìƒ†[ƒU[–¼
-	define('WP_DB_PASSWORD', XOOPS_DB_PASS);  // ƒf[ƒ^ƒx[ƒXƒpƒXƒ[ƒh
-	define('WP_DB_HOST', XOOPS_DB_HOST);       // 99% ‚±‚Ì‚Ü‚Ü‚ÅOK
+	define('WP_DB_NAME', XOOPS_DB_NAME);      // ¥Ç¡¼¥¿¥Ù¡¼¥¹Ì¾
+	define('WP_DB_USER', XOOPS_DB_USER);      // ¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î¥æ¡¼¥¶¡¼Ì¾
+	define('WP_DB_PASSWORD', XOOPS_DB_PASS);  // ¥Ç¡¼¥¿¥Ù¡¼¥¹¥Ñ¥¹¥ï¡¼¥É
+	define('WP_DB_HOST', XOOPS_DB_HOST);       // 99% ¤³¤Î¤Þ¤Þ¤ÇOK
 }
 // Change the prefix if you want to have multiple blogs in a single database.
 global $xoopsDB,$xoopsUser,$wpdb, $wp_id, $wp_inblock, $table_prefix;
