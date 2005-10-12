@@ -562,12 +562,11 @@ function wp_kses_hair($attr, $allowed_protocols)
         if (preg_match('/^"([^"]*)"(\s+|$)/', $attr, $match))
          # "value"
         { 
-          if (strcasecmp($attrname,'style')) { //hacked by NobuNobu for handling style attribute;
+          if (strcasecmp($attrname,'style') != 0) { //hacked by NobuNobu for handling style attribute;
             $thisval = wp_kses_bad_protocol($match[1], $allowed_protocols);
           } else {
-            $thisval = $match[1];
+            $thisval = preg_replace('/(^|;)\s*expression\s*\(/i','\\1XXexpressionXX(',$match[1]);
           }
-
           $attrarr[] = array
                         ('name'  => $attrname,
                          'value' => $thisval,
@@ -581,10 +580,10 @@ function wp_kses_hair($attr, $allowed_protocols)
         if (preg_match("/^'([^']*)'(\s+|$)/", $attr, $match))
          # 'value'
         {
-          if (strcasecmp($attrname,'style')) {//hacked by NobuNobu for handling style attribute;
+          if (strcasecmp($attrname,'style') != 0) {//hacked by NobuNobu for handling style attribute;
             $thisval = wp_kses_bad_protocol($match[1], $allowed_protocols);
           } else {
-            $thisval = $match[1];
+            $thisval = preg_replace('/(^|;)\s*expression\s*\(/i','\\1XXexpressionXX(',$match[1]);
           }
 
           $attrarr[] = array
@@ -600,10 +599,10 @@ function wp_kses_hair($attr, $allowed_protocols)
         if (preg_match("%^([^\s\"']+)(\s+|$)%", $attr, $match))
          # value
         {
-          if (strcasecmp($attrname,'style')) {//hacked by NobuNobu for handling style attribute;
+          if (strcasecmp($attrname,'style') != 0) {//hacked by NobuNobu for handling style attribute;
             $thisval = wp_kses_bad_protocol($match[1], $allowed_protocols);
           } else {
-            $thisval = $match[1];
+            $thisval = preg_replace('/(^|;)\s*expression\s*\(/i','\\1XXexpressionXX(',$match[1]);
           }
 
           $attrarr[] = array
