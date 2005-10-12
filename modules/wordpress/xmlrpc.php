@@ -1086,7 +1086,18 @@ function mwnewpost($params) {
 			$postarr['ping_status'] = $contentstruct['mt_allow_pings'] ? 'open' : 'closed';
 		}
 		if (!empty($contentstruct['dateCreated'])) {
-			$dateCreated = iso8601_decode($contentstruct['dateCreated']);
+			$dateCreated = preg_split('/([+\-Z])/',$contentstruct['dateCreated'],-1,PREG_SPLIT_DELIM_CAPTURE);
+			if(count($dateCreated) == 3) {
+				$dateCreated[2] = str_replace(':','',$dateCreated[2]);
+			}
+			if ($dateCreated[1] == '+') {
+				$dateoffset = intval($dateCreated[2])*36;
+			} else if ($dateCreated[1] == '-') {
+				$dateoffset = -intval($dateCreated[2])*36;
+			} else {
+				$dateoffset = 0;
+			}
+			$dateCreated = iso8601_decode($dateCreated[0],1)- $dateoffset + (get_settings('time_difference') * 3600);
 		} else {
 			$dateCreated = current_time('timestamp');
 		}
@@ -1186,7 +1197,18 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 			$postarr['ping_status'] = $contentstruct['mt_allow_pings'] ? 'open' : 'closed';
 		}
 		if (!empty($contentstruct['dateCreated'])) {
-			$dateCreated = iso8601_decode($contentstruct['dateCreated']);
+			$dateCreated = preg_split('/([+\-Z])/',$contentstruct['dateCreated'],-1,PREG_SPLIT_DELIM_CAPTURE);
+			if(count($dateCreated) == 3) {
+				$dateCreated[2] = str_replace(':','',$dateCreated[2]);
+			}
+			if ($dateCreated[1] == '+') {
+				$dateoffset = intval($dateCreated[2])*36;
+			} else if ($dateCreated[1] == '-') {
+				$dateoffset = -intval($dateCreated[2])*36;
+			} else {
+				$dateoffset = 0;
+			}
+			$dateCreated = iso8601_decode($dateCreated[0],1)- $dateoffset + (get_settings('time_difference') * 3600);
 		} else {
 			$dateCreated = current_time('timestamp');
 		}
