@@ -303,9 +303,10 @@ if( ! empty( $_POST['submit'] ) ) {
 }
 
 xoops_cp_header() ;
-if( file_exists( './mymenu.php' ) ) include( './mymenu.php' ) ;
-
-echo "<h3 style='text-align:left;'>$target_mname</h3>\n" ;
+if (!strstr(XOOPS_VERSION, "XOOPS Cube 2.1")) {
+	if( file_exists( './mymenu.php' ) ) include( './mymenu.php' ) ;
+	echo "<h3 style='text-align:left;'>$target_mname</h3>\n" ;
+}
 
 if( ! empty( $block_arr ) ) {
 	echo "<h4 style='text-align:left;'>"._AM_BADMIN."</h4>\n" ;
