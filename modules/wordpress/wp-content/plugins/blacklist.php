@@ -132,7 +132,7 @@ function blacklist($commentID) {
         }
     }
     // RBL check
-    if (!$held || in_array('deleterbl', $wpbl_options)) {
+    if (!$held && in_array('deleterbl', $wpbl_options)) {
         $sites = $GLOBALS['wpdb']->get_results("SELECT regex FROM $tableblacklist WHERE regex_type='rbl'");
         if ($sites) {
             foreach ($sites as $site)  {
@@ -189,7 +189,7 @@ function blacklist($commentID) {
             }
         }
     }
-	if (($wpbl_comment['comment_type']=='trackback') && (!$held || in_array('deltbsp', $wpbl_options))) {
+	if (($wpbl_comment['comment_type']=='trackback') && (!$held && in_array('deltbsp', $wpbl_options))) {
 		// Let's check the remote site
 		require_once(XOOPS_ROOT_PATH.'/class/snoopy.php');
 		$snoopy = New Snoopy;
