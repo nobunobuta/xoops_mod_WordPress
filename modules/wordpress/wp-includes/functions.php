@@ -1970,7 +1970,7 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
                     $thumbnail = @imagecreatetruecolor($image_new_width, $image_new_height);
                 }
                 if (!$thumbnail) {
-                     $thumbnail =imagecreate($image_new_width, $image_new_width);
+                     $thumbnail =imagecreate($image_new_width, $image_new_height);
                 }
 			}
 			@imagecopyresized($thumbnail, $image, 0, 0, 0, 0, $image_new_width, $image_new_height, $image_attr[0], $image_attr[1]); 
@@ -1979,6 +1979,7 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
             
 			$path = explode('/', $file);
 			$thumbpath = substr($file, 0, strrpos($file, '/')) . '/thumb-' . $path[count($path)-1];
+			touch($thumbpath);
 
 			if ($type[2] == 1) {
 				if (!imagegif($thumbnail, $thumbpath)) {
