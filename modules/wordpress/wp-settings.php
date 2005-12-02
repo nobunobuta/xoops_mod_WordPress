@@ -32,7 +32,7 @@ $GLOBALS['wpdb']->postmeta[$GLOBALS['wp_id']] = $GLOBALS['table_prefix'][$GLOBAL
 
 // This is the name of the include directory. No "/" allowed.
 
-require ('wp-ver.php');
+require (wp_base().'/wp-ver.php');
 require_once ($GLOBALS['wp_base'][$GLOBALS['wp_id']].'/wp-includes/functions.php');
 require_once (wp_base().'/class/wp_classes.php');
 if (empty($GLOBALS['wpPostHandler'][wp_prefix()])) {
@@ -54,7 +54,7 @@ require_once (wp_base().'/wp-includes/kses.php');
 if (get_settings('hack_file')) {
 	include_once(wp_base().'/my-hacks.php');
 }
-require ('wp-config-extra.php');
+require (wp_base().'/wp-config-extra.php');
 require_once (wp_base().'/wp-includes/template-functions.php');
 require_once (wp_base().'/wp-includes/class-xmlrpc.php');
 require_once (wp_base().'/wp-includes/class-xmlrpcs.php');
