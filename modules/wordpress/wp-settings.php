@@ -32,7 +32,7 @@ $GLOBALS['wpdb']->postmeta[$GLOBALS['wp_id']] = $GLOBALS['table_prefix'][$GLOBAL
 
 // This is the name of the include directory. No "/" allowed.
 
-require (wp_base().'/wp-ver.php');
+require ($GLOBALS['wp_base'][$GLOBALS['wp_id']].'/wp-ver.php');
 require_once ($GLOBALS['wp_base'][$GLOBALS['wp_id']].'/wp-includes/functions.php');
 require_once (wp_base().'/class/wp_classes.php');
 if (empty($GLOBALS['wpPostHandler'][wp_prefix()])) {
