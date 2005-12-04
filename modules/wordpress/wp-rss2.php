@@ -14,7 +14,8 @@ header('Content-type: application/xml');
 <?php echo '<?xml version="1.0" encoding="'.wp_get_rss_charset().'"?'.'>'; ?>
 <!-- generator="wordpress/<?php echo $GLOBALS['wp_version'] ?>" -->
 <rss version="2.0" 
-	xmlns:content="http://purl.org/rss/1.0/modules/content/">
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/" >
 
 <channel>
 	<title><?php bloginfo_rss('name') ?></title>
