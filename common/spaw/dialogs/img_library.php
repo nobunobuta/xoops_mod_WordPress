@@ -1,4 +1,4 @@
-<?php 
+<?php
 // ================================================
 // SPAW PHP WYSIWYG editor control
 // ================================================
@@ -32,6 +32,8 @@ $request_uri = urldecode(empty($_POST['request_uri'])?(empty($_GET['request_uri'
 $lib = isset( $_GET['lib'] ) ? $_GET['lib'] : '' ;
 $lib = isset( $_POST['lib'] ) ? $_POST['lib'] : $lib ;
 $lib = intval($lib);
+$vsep = '!-!';
+
 
 $zoom = isset( $_POST['zoom'] ) ? intval($_POST['zoom']) : '0';
 $zoomrate = isset( $_POST['zoomrate'] ) ? intval($_POST['zoomrate']) : '100';
@@ -61,6 +63,8 @@ foreach ($spaw_imglibs as $spawimg){
         $imgcat= $spawimg['autoID'];
         $imagetype= $spawimg['storetype'];
         $libtype =  $spawimg['type'];
+        $thumb_prefix =  $spawimg['thumb_prefix'];
+        $thumb_dir =  $spawimg['thumb_dir'];
         $value_found=true;
         break;
     }
@@ -72,20 +76,22 @@ if (!$value_found || empty($lib))
   $imagetype= $spaw_imglibs[0]['storetype'];
   $imgcat= $spaw_imglibs[0]['autoID'];
   $libtype =  $spaw_imglibs[0]['type'];
+  $thumb_prefix = $spaw_imglibs[0]['thumb_prefix'];
+  $thumb_dir = $spaw_imglibs[0]['thumb_dir'];
 }
 
 $lib_options = liboptions($spaw_imglibs,'',$lib);
-$img = isset($_POST['imglist'])?$_POST['imglist']:'';
+if (isset($_POST['imglist'])) {
+	$img_params = explode($vsep, $_POST['imglist']);
+	$img = $img_params[1];
+}
 
 $preview = '';
 
 $errors = array();
 if( isset($_FILES['img_file']['size']) && $_FILES['img_file']['size']>0)
 {
-  if ($img = uploadImg('img_file'))
-  {
-    $preview = $spaw_base_url.$imglib.$img;
-  }
+  $img = uploadImg('img_file');
 }
 // delete
 if ($spaw_img_delete_allowed && isset($_POST['lib_action']) 
@@ -108,14 +114,26 @@ if ($spaw_img_delete_allowed && isset($_POST['lib_action'])
   <?php } ?>
   <script language="javascript">
   <!--
+  	var selimg_name;
+  	var selimg_desc;
+  	var selimg_date;
+  	var selimg_thumbflg;
+
   	function getImgUrl() {
       if (document.libbrowser.lib.selectedIndex>=0 && document.libbrowser.imglist.selectedIndex>=0) {
-<?php if ($libtype == 'Dir') {?>
-        imgUrl = '<?php echo XOOPS_URL."/".$imglib ?>' + document.libbrowser.imglist.options[document.libbrowser.imglist.selectedIndex].value;
-<?php } else if ($libtype == 'XoopsImage'){ ?>
-        imgUrl = '<?php if ($imagetype == "file") { echo XOOPS_URL.'/uploads/'; } else { echo XOOPS_URL.'/image.php?id='; }?>'+document.libbrowser.imglist.options[document.libbrowser.imglist.selectedIndex].value;
+        values = document.libbrowser.imglist.options[document.libbrowser.imglist.selectedIndex].value.split('<?php echo $vsep; ?>');
+        selimg_name = values[0];
+        selimg_thumbflg = values[1];
+        selimg_desc = values[2];
+        selimg_date = values[3];
+<?php if ($libtype == 'XoopsImage'){ ?>
+        imgUrl = '<?php if ($imagetype == "file") { echo XOOPS_URL.'/uploads/'; } else { echo XOOPS_URL.'/image.php?id='; }?>'+selimg_name;
 <?php } else { ?>
-        imgUrl = '<?php echo XOOPS_URL."/uploads/" ?>' + document.libbrowser.imglist.options[document.libbrowser.imglist.selectedIndex].value;
+		if (selimg_thumbflg=='Thumb') {
+        	imgUrl = '<?php echo XOOPS_URL."/".$thumb_dir .$thumb_prefix  ?>' + selimg_name;
+        } else {
+        	imgUrl = '<?php echo XOOPS_URL."/".$imglib ?>' + selimg_name;
+        }
 <?php } ?>
       } else {
         imgUrl = '';
@@ -130,10 +148,18 @@ if ($spaw_img_delete_allowed && isset($_POST['lib_action'])
         retval.imgurl = imgurl;
    		var zoom =  document.libbrowser.zoom.checked;
    		var zoomrate =  document.libbrowser.zoomrate.value;
-		if (!imgurl.match(/(.*)\/thumb-(.*)/) && !imgurl.match(/(.*)\/thumbs(\d*)\/(.*)/) && zoom) {
+		if ((selimg_thumbflg=='') && zoom) {
 			retval.zoomrate = zoomrate/100;
 		} else {
 			retval.zoomrate = 1;
+		}
+		retval.thumbFlg = selimg_thumbflg;
+		retval.imgHref = '<?php echo XOOPS_URL."/".$imglib ?>' + selimg_name;
+
+		if (selimg_desc != '') {
+			retval.title = selimg_desc;
+		} else {
+			retval.title = selimg_name;
 		}
         window.returnValue = retval;
         window.close();
@@ -148,7 +174,7 @@ if ($spaw_img_delete_allowed && isset($_POST['lib_action'])
     
 function deleteClick()
 	{
-	  if (document.getElementById('imglist').selectedIndex>=0)
+	  if (document.libbrowser.imglist.selectedIndex>=0)
 	  {
       document.getElementById('lib_action').value = 'delete';
       document.getElementById('libbrowser').submit();
@@ -170,7 +196,11 @@ function selectChange() {
 			imgurl = imgurl.replace(/\.\w+$/,'.gif');
 		}
 		// GIJ end
-		imgpreview.document.body.innerHTML = '<html><body><IMG src="'+imgurl+'"/></body></html>';
+		if (selimg_name) {
+			imgpreview.document.body.innerHTML = '<html><body><b>Name:</b>'+selimg_name+'<br /><b>Desc:</b>'+selimg_desc+'<br /><b>Date:</b>'+selimg_date+'<hr /><IMG src="'+imgurl+'"/></body></html>';
+		} else {
+			imgpreview.document.body.innerHTML = '<html><body><IMG src="'+imgurl+'"/></body></html>';
+		}
 		if (!imgurl.match(/(.*)\/thumb-(.*)/) && !imgurl.match(/(.*)\/thumbs(\d*)\/(.*)/)) {
 			document.libbrowser.zoom.disabled = false;
 			document.libbrowser.zoomrate.disabled = false;
@@ -228,17 +258,38 @@ function selectChange() {
     $_root = XOOPS_ROOT_PATH."/";
 	$d = @dir($_root.$imglib);
 	if ($libtype == 'Dir') {
-		echo '<select name="imglist" size="15" class="input" style="width: 150px;" onchange="selectChange();" ondblclick="selectClick();">';
+		echo '<select name="imglist" size="20" class="input" style="width: 150px;" onchange="selectChange();" ondblclick="selectClick();">';
 		if ($d) {
 			while (false !== ($entry = $d->read())) {
 				if (is_file($_root.$imglib.$entry)) {
-					if (ereg('^thumb-.*',$entry)) continue;
-					if (ereg('\.(jpg|jpeg|gif|png)',$entry)) {
-						if (file_exists($_root.$imglib.'thumb-'.$entry)) {
-							echo '<option value="thumb-'.$entry.'" '.(($entry == $img)?'selected':''). '>'.$entry.'</option>';
-						} else {
-							echo '<option value="'. $entry.'" '.(($entry == $img)?'selected':''). '>'.$entry.'</option>';
+					if (preg_match('/^'.preg_quote($thumb_prefix).'.*/',$entry)) continue;
+					if (preg_match('/\.(jpg|jpeg)/i',$entry)) {
+						$exif = array();
+						if (function_exists('exif_read_data')) {
+							$exif  = exif_read_data($_root.$imglib.$entry, 0, true);
 						}
+						$fnames[$entry] = array(
+											'name' => $entry,
+											'desc' => (isset($exif['IFD0']['ImageDescription']) ? htmlspecialchars($exif['IFD0']['ImageDescription'],ENT_QUOTES) :''),
+											'date' => (isset($exif['IFD0']['DateTime']) ?htmlspecialchars($exif['IFD0']['DateTime'],ENT_QUOTES) :date('Y:m:d H:i:s', filemtime($_root.$imglib.$entry))),
+										  );
+					}
+					else if (preg_match('/\.(gif|png)/i',$entry)) {
+						$fnames[$entry] = array(
+											'name' => $entry,
+											'desc' => '',
+											'date' => date('Y:m:d H:i:s', filemtime($_root.$imglib.$entry)),
+										  );
+					}
+				}
+			}
+			ksort($fnames);
+			foreach($fnames as $entry => $attr) {
+				if (is_file($_root.$imglib.$entry)) {
+					if (file_exists($_root.$thumb_dir.$thumb_prefix.$entry)) {
+						echo '<option value="'.$attr['name'].$vsep.'Thumb'.$vsep.$attr['desc'].$vsep.$attr['date'].'" '.(($entry == $img)?'selected':''). '>'.$entry.'</option>'."\n";
+					} else {
+						echo '<option value="'.$attr['name'].$vsep.$vsep.$attr['desc'].$vsep.$attr['date'].'" '.(($entry == $img)?'selected':''). '>'.$entry.'</option>'."\n";
 					}
 				}
 			}
@@ -249,42 +300,44 @@ function selectChange() {
 	  	echo '</select>';
 	} else if ($libtype == 'XoopsImage') {
 		// XOOPS original ImageManager
-  		echo '<select name="imglist" size="15" class="input" style="width: 150px;" onchange="selectChange();" ondblclick="selectClick();">';
+  		echo '<select name="imglist" size="20" class="input" style="width: 150px;" onchange="selectChange();" ondblclick="selectClick();">';
 
 		global $xoopsDB;
 
 		if ($imagetype == "file") {
-			$result = $xoopsDB->query("SELECT image_name,image_nicename FROM ".$xoopsDB->prefix('image')." WHERE imgcat_id = ".intval($imgcat));
+			$result = $xoopsDB->query("SELECT image_name,image_nicename,image_created FROM ".$xoopsDB->prefix('image')." WHERE imgcat_id = ".intval($imgcat));
 			while($image = $xoopsDB->fetcharray($result)){
-
-				echo '<option value="'.$image["image_name"].'" '.($image["image_name"] == $img ? 'selected' : ''). '>'.$image["image_nicename"].'</option>' ;
+				$image["image_name"] = htmlspecialchars($image["image_name"], ENT_QUOTES);
+				$image["image_nicename"] = htmlspecialchars($image["image_nicename"], ENT_QUOTES);
+				echo '<option value="'.$image["image_name"].$vsep.$vsep.$image['image_nicename'].$vsep.date('Y:m:d H:i:s', $image['image_created']).'" '.($image["image_name"] == $img ? 'selected' : ''). '>'.$image["image_nicename"].'</option>' ;
 			}
 		} else {
-			$result = $xoopsDB->query("SELECT image_id, image_name,image_nicename FROM ".$xoopsDB->prefix('image')." WHERE imgcat_id ".intval($imgcat));
+			$result = $xoopsDB->query("SELECT image_id, image_name,image_nicename,image_created FROM ".$xoopsDB->prefix('image')." WHERE imgcat_id =".intval($imgcat));
 			while($image = $xoopsDB->fetcharray($result)){
-		  
-				echo '<option value="'.$image["image_id"].'" '.($image["image_id"] == $img ? 'selected' : '').'>'.$image["image_nicename"].'</option>' ;
+				$image["image_id"] = htmlspecialchars($image["image_id"], ENT_QUOTES);
+				$image["image_nicename"] = htmlspecialchars($image["image_nicename"], ENT_QUOTES); 
+				echo '<option value="'.$image["image_id"].$vsep.$vsep.$image['image_nicename'].$vsep.date('Y:m:d H:i:s', $image['image_created']).'" '.($image["image_id"] == $img ? 'selected' : '').'>'.$image["image_nicename"].'</option>' ;
 			}
 		}
 		echo '</select>';
 
 	} else {
 	// myAlbum-P ImageManagerIntegration
-		echo '<select name="imglist" size="15" class="input" style="width: 150px;" onchange="selectChange();" ondblclick="selectClick();">';
+		echo '<select name="imglist" size="20" class="input" style="width: 150px;" onchange="selectChange();" ondblclick="selectClick();">';
 
 		$mydirnumber = $imagetype === '' ? '' : intval( $imagetype ) ;
 
 		global $xoopsDB;
-		$result = $xoopsDB->query("SELECT lid, title, ext FROM ".$xoopsDB->prefix("myalbum{$mydirnumber}_photos")." WHERE cid='".intval($imgcat)."' AND status>0 ORDER BY title" ); // GIJ
+		$result = $xoopsDB->query("SELECT lid, title, ext, date FROM ".$xoopsDB->prefix("myalbum{$mydirnumber}_photos")." WHERE cid='".intval($imgcat)."' AND status>0 ORDER BY title" ); // GIJ
 		while($image = $xoopsDB->fetcharray($result)){
 			$fname = trim($image["lid"]).".".$image["ext"];
-			if (file_exists($_root.$imglib."photos{$mydirnumber}/".$fname)) {
-				// GIJ start
-				if (!in_array($image["ext"],array('gif','png','jpg','jpeg')) || file_exists($_root.$imglib."thumbs{$mydirnumber}/".$fname)) {
-					echo '<option value="thumbs'.$mydirnumber.'/'.$fname.'" '.($fname == $img ? 'selected' : '' ).'>'.$image["title"].'</option>' ;
-				// GIJ end
+			$image["title"] = htmlspecialchars($image["title"], ENT_QUOTES);
+			if (!in_array($image["ext"],array('gif','png','jpg','jpeg'))) continue;
+			if (file_exists($_root.$imglib.$fname)) {
+				if (file_exists($_root.$thumb_dir.$thumb_prefix.$entry)) {
+					echo '<option value='.$fname.$vsep.'Thumb'.$vsep.$image['title'].$vsep.date('Y:m:d H:i:s', $image['date']).'" '.($fname == $img ? 'selected' : '' ).'>'.$image["title"].'</option>' ;
 				} else {
-				echo '<option value="photos'.$mydirnumber.'/'.$fname.'" '.($fname == $img ? 'selected' : '' ).'>'.$image["title"].'</option>' ;
+					echo '<option value="'.$fname.$vsep.$vsep.$image['title'].$vsep.date('Y:m:d H:i:s', $image['date']).'" '.($fname == $img ? 'selected' : '' ).'>'.$image["title"].'</option>' ;
 				}
 			}
 		}
@@ -306,7 +359,7 @@ function selectChange() {
   <tr>
     <td align="left" valign="middle" width="70%">
       <input type="button" value="<?php echo $l->m('select')?>" class="bt" onclick="selectClick();">
-	  <?php if ($spaw_img_delete_allowed) { ?>
+	  <?php if (($spaw_img_delete_allowed)&& ($libtype == 'Dir')) { ?>
       <input type="button" value="<?php echo $l->m('delete')?>" class="bt" onclick="deleteClick();">
 	  <?php } ?>
 	</td>
@@ -371,8 +424,16 @@ function uploadImg($img) {
   global $errors;
   global $l;
   global $spaw_upload_allowed;
+  global $libtype;
   
-  if (!$spaw_upload_allowed) return false;
+  if (!$spaw_upload_allowed || ($libtype != 'Dir')) {
+  	$errors[] = $l->m('error_uploading');
+  	return false;
+  }
+  if (!SPAW_Util::checkReferer('dialogs/img_library.php')) {
+  	$errors[] = $l->m('error_uploading');
+	return false;
+  }
 
   	$_root = XOOPS_ROOT_PATH."/";
   
@@ -385,6 +446,14 @@ function uploadImg($img) {
     // get file extension
     $ext = strtolower(substr(strrchr($data['name'],'.'), 1));
     if (in_array($ext,$spaw_valid_imgs)) {
+      if (in_array($ext,array("gif","jpg","jpeg","png","tiff","bmp"))) {
+        $image_type = array("gif"=>1, "jpg"=>2, "jpeg"=>2, "png"=>3);
+        $image_info = getimagesize($data['tmp_name']);
+        if ($image_info[2] != $image_type[$ext]) {
+			$errors[] = $l->m('error_uploading');
+			return false;
+		}
+      }
       $dir_name = $_root.$imglib;
 
       $img_name = $data['name'];
@@ -415,13 +484,24 @@ function deleteImg()
   global $spaw_img_delete_allowed;
   global $errors;
   global $l;
+  global $libtype;
   
-  if (!$spaw_img_delete_allowed) return false;
-
+  if (!$spaw_img_delete_allowed || ($libtype != 'Dir')) {
+  	$errors[] = $l->m('error_cant_delete');
+  	return false;
+  }
+  if (!SPAW_Util::checkReferer('dialogs/img_library.php')) {
+  	$errors[] = $l->m('error_cant_delete');
+	return false;
+  }
   $_root = XOOPS_ROOT_PATH . '/';
 	
+  $thumnail_img_name = $_root.$imglib.'thumb-'.$img;
   $full_img_name = $_root.$imglib.$img;
 
+  if (file_exists($thumnail_img_name)) {
+    @unlink($thumnail_img_name);
+  }
   if (@unlink($full_img_name)) {
   	return true;
   }

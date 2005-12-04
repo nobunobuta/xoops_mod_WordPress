@@ -425,21 +425,15 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
 		    	this[editor+'_rEdit'].document.execCommand('insertimage', false, imgSrc.replace(/\.\w+$/,'.gif'));
 		    }
 		    /* /GIJ */
-	  		var match = imgSrc.match(/(.*)\/thumb-(.*)/);
-	  		if (match) {
-	  			this[editor+'_rEdit'].document.execCommand('createlink',false,match[1]+'/'+match[2]);
-	  		} else {
-		  		match = imgSrc.match(/(.*)\/thumbs(\d*)\/(.*)/);
-		  		if (match) {
-	  				this[editor+'_rEdit'].document.execCommand('createlink',false,match[1]+'/photos'+match[2]+'/'+match[3]);
-	  			} else {
-	  				if (retval.zoomrate != 1) {
-		  				this[editor+'_rEdit'].document.execCommand('createlink',false,imgSrc);
-					    var im = SPAW_getImg(editor); // current cell
-					    im.width = im.width * retval.zoomrate;
-					}
-	  			}
-	  		}
+
+   			var href = '';
+			if (retval.thumbFlg == 'Thumb') {
+			    this[editor+'_rEdit'].document.execCommand('createlink',false,retval.imgHref);
+			} else if (retval.zoomrate != 1) {
+		  		this[editor+'_rEdit'].document.execCommand('createlink',false,imgSrc);
+			    var im = SPAW_getImg(editor); // current cell
+			    im.width = im.width * retval.zoomrate;
+			}
 	  	}
 	    SPAW_update_toolbar(editor, true);
 	 }
@@ -520,20 +514,8 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
     
     if(imgSrc != null)    
 	{
-		var match = imgSrc.match(/(.*)\/thumb-(.*)/);
-		if (match) {
-			imgSrc = match[1]+'/'+match[2];
-		} else {
-			match = imgSrc.match(/(.*)\/thumbs(\d*)\/(.*)/);
-			if (match) {
-				imgSrc = match[1]+'/photos'+match[2]+'/'+match[3];
-			} else {
-			   if (retval.zoomrate != 1) {
-			     imgSrc = imgSrc;
-			     imgNode.width = imgNode.width * retval.zoomrate;
-			   }
-			}
-		}
+		var imgSrc = retval.imgHref;
+
 		if (a)
 		{
 			// edit hyperlink

@@ -434,22 +434,20 @@
 		    }
 			/* /GIJ */
 		    range.insertNode(imgNode);
+			range.setStartBefore(imgNode);
 			range.setEndAfter(imgNode);
 
 			var href = '';
-			var match = imgSrc.match(/(.*)\/thumb-(.*)/);
-	  		if (match) {
-	  			href = match[1]+'/'+match[2];
-	  		} else {
-		  		match = imgSrc.match(/(.*)\/thumbs(\d*)\/(.*)/);
-		  		if (match) {
-		  			href = match[1]+'/photos'+match[2]+'/'+match[3];
-	  			} else {
-	  				if (retval.zoomrate != 1) {
-			  			href = imgSrc;
-					    imgNode.width = imgNode.width * retval.zoomrate;
-					}
-	  			}
+			if (retval.thumbFlg == 'Thumb') {
+				href = retval.imgHref;
+			} else if (retval.zoomrate != 1) {
+				href = imgSrc;
+			    imgNode.width = imgNode.width * retval.zoomrate;
+			}
+			
+	  		if (retval.title) {
+	  			imgNode.alt = retval.title;
+	  			imgNode.title = retval.title;
 	  		}
 	  		if (href) {
 			    var aNode = document.createElement('A');
@@ -557,21 +555,7 @@
 
     var retval = sender.returnValue;
     if (retval) {
-      var imgSrc = retval.imgurl;
-      var match = imgSrc.match(/(.*)\/thumb-(.*)/);
-      if (match) {
-      	imgSrc = match[1]+'/'+match[2];
-      } else {
-        match = imgSrc.match(/(.*)\/thumbs(\d*)\/(.*)/);
-        if (match) {
-        	imgSrc = match[1]+'/photos'+match[2]+'/'+match[3];
-        } else {
-           if (retval.zoomrate != 1) {
-             imgSrc = imgSrc;
-             imgNode.width = imgNode.width * retval.zoomrate;
-           }
-        }
-      }
+      var imgSrc = retval.imgHref;
       if (a)
       {
         // edit hyperlink
