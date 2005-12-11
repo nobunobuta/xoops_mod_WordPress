@@ -96,7 +96,6 @@ $spaw_a_targets['_top'] = 'Top';
 $spaw_a_targets['_parent'] = 'Parent';
 
 // image popup script url
-// This feature may contains XSS , 05/05/01 nobunobu
 //$spaw_img_popup_url = $spaw_dir.'img_popup.php';
 
 // internal link script url
@@ -116,6 +115,7 @@ $criteria = new CriteriaCompo(new Criteria('hassearch', 1));
 $criteria->add(new Criteria('isactive', 1));
 $criteria->add(new Criteria('mid', "(".implode(',', $available_modules).")", 'IN'));
 $modules =& $module_handler->getObjects($criteria, true);
+$config_handler =& xoops_gethandler('config');
 
 //Get WordPress Uploaded Images.
 foreach ($modules as $module){
@@ -126,14 +126,14 @@ foreach ($modules as $module){
 		$imnumber = $regs[2] === '' ? '' : intval( $regs[2] ) ;
 		$result = $xoopsDB->query('SELECT option_value FROM ' . $xoopsDB->prefix('wp'.$imnumber.'_options') . " WHERE option_name='fileupload_realpath'");
 		if ($option = $xoopsDB->fetcharray($result)){
-			$spaw_imglibs[$i] = array(
-				'type'    =>  'Dir',
-				'value'   => ereg_replace(XOOPS_ROOT_PATH.'\/(.*)',"\\1",$option['option_value'])."/" ,
-				'text'    => 'Uploads['.$module->getVar('name').']',
-				'catID'   => $i,
-				'storetype' => 'file',
-				'autoID' => 0
-			);
+			$spaw_imglibs[$i]["type"]  = "Dir";
+			$spaw_imglibs[$i]["value"] = ereg_replace(XOOPS_ROOT_PATH.'\/(.*)',"\\1",$option['option_value'])."/" ;
+			$spaw_imglibs[$i]["text"] = 'Uploads['.$module->getVar('name').']';
+			$spaw_imglibs[$i]["catID"] = $i;
+			$spaw_imglibs[$i]["storetype"] = 'file';
+			$spaw_imglibs[$i]["autoID"] = 0;
+			$spaw_imglibs[$i]["thumb_prefix"] = 'thumb-';
+			$spaw_imglibs[$i]["thumb_dir"] = $spaw_imglibs[$i]["value"];
 			$i++;
 		}
 	}
@@ -157,7 +157,8 @@ if( !strstr( $top_of_imagemanager , '$mydirname' ) &&
 		$spaw_imglibs[$i]["catID"] = $i;
 		$spaw_imglibs[$i]["storetype"] = $imgcat["imgcat_storetype"];
 		$spaw_imglibs[$i]["autoID"] = $imgcat["imgcat_id"];
-
+		$spaw_imglibs[$i]["thumb_prefix"] = '';
+		$spaw_imglibs[$i]["thumb_dir"] = '';
 		$i++;
 	}
 }
@@ -169,19 +170,23 @@ foreach ($modules as $module){
 	$icon_fname =  XOOPS_ROOT_PATH."/modules/".$mod."/images/myalbum_slogo.gif";
 	if (file_exists($icon_fname)) {
 		if( ! preg_match( '/^(\D+)(\d*)$/' , $mod , $regs ) ) echo ( "invalid dirname: " . htmlspecialchars( $mod ) ) ;
+	    $configs =& $config_handler->getConfigList($module->getVar('mid'));
 		$imnumber = $regs[2] === '' ? '' : intval( $regs[2] ) ;
 
 		$result = $xoopsDB->query("SELECT title, cid FROM ".$xoopsDB->prefix('myalbum'.$imnumber.'_cat')." ORDER BY title ASC");
 
 		while($imgcat = $xoopsDB->fetcharray($result)){
 			$spaw_imglibs[$i]["type"]  = "myAlbum-P";
-			$spaw_imglibs[$i]["value"] = 'uploads/';
+			$spaw_imglibs[$i]["value"] = preg_replace('|^[/]?(.*)[/]?|','$1/',$configs['myalbum_photospath']);
 			$spaw_imglibs[$i]["text"] = $imgcat["title"].'['.$module->getVar('name').']';
 			$spaw_imglibs[$i]["catID"] = $i;
 			$spaw_imglibs[$i]["autoID"] = $imgcat["cid"];
 			$spaw_imglibs[$i]["storetype"] = $imnumber ;
+			$spaw_imglibs[$i]["thumb_prefix"] = '';
+			$spaw_imglibs[$i]["thumb_dir"] = preg_replace('|^[/]?(.*)[/]?|','$1/',$configs['myalbum_thumbspath']);
 
 			$i++;
 		}
 	}
-}?>
+}
+?>

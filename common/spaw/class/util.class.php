@@ -67,5 +67,17 @@ class SPAW_Util
       return 'Unknown';
     }
   }
+  
+  function checkReferer($path)
+  {
+	$ref = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : $_ENV['HTTP_REFERER'];
+	if ($ref == '') {
+		return false;
+	}
+	if (strpos($ref, $GLOBALS['spaw_dir'].$path) !== 0 ) {
+		return false;
+	}
+	return true;
+  }
 }
 ?>

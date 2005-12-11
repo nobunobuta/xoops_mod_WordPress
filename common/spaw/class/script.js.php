@@ -418,22 +418,27 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
     if (retval) {
 	    var imgSrc = retval.imgurl;
 	  	if(imgSrc != null) {
-	    	this[editor+'_rEdit'].document.execCommand('insertimage', false, imgSrc);
-	  		var match = imgSrc.match(/(.*)\/thumb-(.*)/);
-	  		if (match) {
-	  			this[editor+'_rEdit'].document.execCommand('createlink',false,match[1]+'/'+match[2]);
-	  		} else {
-		  		match = imgSrc.match(/(.*)\/thumbs(\d*)\/(.*)/);
-		  		if (match) {
-	  				this[editor+'_rEdit'].document.execCommand('createlink',false,match[1]+'/photos'+match[2]+'/'+match[3]);
-	  			} else {
-	  				if (retval.zoomrate != 1) {
-		  				this[editor+'_rEdit'].document.execCommand('createlink',false,imgSrc);
-					    var im = SPAW_getImg(editor); // current cell
-					    im.width = im.width * retval.zoomrate;
-					}
-	  			}
+			/* GIJ */
+		    if( imgSrc.match(/(\.gif|\.png|\.jpg|\.jpeg)$/i) ) {
+	    		this[editor+'_rEdit'].document.execCommand('insertimage', false, imgSrc);
+		    } else {
+		    	this[editor+'_rEdit'].document.execCommand('insertimage', false, imgSrc.replace(/\.\w+$/,'.gif'));
+		    }
+		    /* /GIJ */
+   			var href = '';
+			if (retval.thumbFlg == 'Thumb') {
+			    this[editor+'_rEdit'].document.execCommand('createlink',false,retval.imgHref);
+			} else if (retval.zoomrate != 1) {
+		 		this[editor+'_rEdit'].document.execCommand('createlink',false,imgSrc);
+			    var im = SPAW_getImg(editor); // current cell
+			    im.width = im.width * retval.zoomrate;
+			}
+	  		if (retval.title) {
+			    var im = SPAW_getImg(editor); // current cell
+	  			im.alt = retval.title;
+	  			im.title = retval.title;
 	  		}
+
 	  	}
 	    SPAW_update_toolbar(editor, true);
 	 }
@@ -502,15 +507,20 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
 
   function SPAW_image_popup_click(editor, sender)
   {
+    <?php if (!empty($GLOBALS['spaw_img_popup_url'])) { ?>
     window.frames[editor+'_rEdit'].focus();     
 	
   	var a = SPAW_getA(editor);
 
-    var imgSrc = showModalDialog('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value+'&request_uri='+escape(window.location.href), '', 
+    var retval = showModalDialog('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' + document.all['SPAW_'+editor+'_lang'].value + '&theme=' + document.all['SPAW_'+editor+'_theme'].value+'&request_uri='+escape(window.location.href), '', 
       'dialogHeight:420px; dialogWidth:420px; resizable:no; status:no');
+    
+    var imgSrc = retval.imgurl;
     
     if(imgSrc != null)    
 	{
+		var imgSrc = retval.imgHref;
+
 		if (a)
 		{
 			// edit hyperlink
@@ -546,6 +556,7 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
 	
 
     SPAW_update_toolbar(editor, true);    
+    <?php } ?>
   }
   
   function SPAW_hr_click(editor, sender)
@@ -1997,6 +2008,9 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
     // style dropdown
     var pt = SPAW_getParentTag(editor);
     SPAW_toggle_tbi_dropdown(editor, "style", pt.className);
+    <?php if (empty($GLOBALS['spaw_img_popup_url'])) { ?>
+       SPAW_toggle_tbi(editor,"image_popup", false);
+    <?php } ?>
   }
   
   // enable/disable toolbar item

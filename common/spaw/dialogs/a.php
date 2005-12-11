@@ -27,16 +27,15 @@ $l->setBlock('hyperlink');
 
 <html>
 <head>
-  <title><?php echo $l->m('title')?></title>
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $l->getCharset()?>">
+  <title><?php echo $l->m('title')?></title>
   <link rel="stylesheet" type="text/css" href="<?php echo $theme_path.'css/'?>dialog.css">
   <?php if (SPAW_Util::getBrowser() == 'Gecko') { ?>
-  <script language="javascript" src="utils.gecko.js"></script>
+  <script language="javascript" src="<?php echo $spaw_dir ?>dialogs/utils.gecko.js"></script>
   <?php }else{ ?>
-  <script language="javascript" src="utils.js"></script>
+  <script language="javascript" src="<?php echo $spaw_dir ?>dialogs/utils.js"></script>
   <?php } ?>
-  
   <script language="javascript">
   <!--  
   function Init() {
@@ -98,7 +97,7 @@ $l->setBlock('hyperlink');
       window.close();
       <?php
       if (!empty($_GET['callback']))
-        echo "opener.".urlencode($_GET['callback'])."('".htmlspecialchars($_GET['editor'],ENT_QUOTES)."',this);\n";
+        echo "opener.SPAW_".htmlspecialchars($_GET['callback'],ENT_QUOTES)."_callback('".htmlspecialchars($_GET['editor'],ENT_QUOTES)."',this);\n";
       ?>
     }
   }
@@ -149,15 +148,15 @@ $l->setBlock('hyperlink');
       document.getElementById("catype").selectedIndex = 2;
     }
 
+    document.getElementById("url_row").style.display = new_type=="link"?"":"none";
+  	document.getElementById("name_row").style.display = new_type=="anchor"?"":"none";
+  	document.getElementById("anchor_row").style.display = new_type=="link2anchor"?"":"none";
+  	document.getElementById("target_row").style.display = (new_type=="link"||new_type=="link2anchor")?"":"none";
+  	
     <?php if (SPAW_Util::getBrowser() != 'Gecko') { ?>
     // doesn't work right in mozilla
-    document.getElementById("url_row").style.display = new_type=="link"?"inline":"none";
-  	document.getElementById("name_row").style.display = new_type=="anchor"?"inline":"none";
-  	document.getElementById("anchor_row").style.display = new_type=="link2anchor"?"inline":"none";
-  	document.getElementById("target_row").style.display = (new_type=="link"||new_type=="link2anchor")?"inline":"none";
-  	<?php } ?>
-  	
     resizeDialogToContent();
+  	<?php } ?>
   }
   //-->
   </script>

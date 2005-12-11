@@ -11,6 +11,32 @@
 // ================================================
 // v.1.0.5, 2004-07-16
 // ================================================
+require_once dirname(__FILE__).'/config/spaw_control.config.php';
+if (empty($spaw_img_popup_url)) exit();
+//Verifing Parameter
+$img_url = htmlspecialchars($_GET['img_url'],ENT_QUOTES);
+if (ini_get('allow_url_fopen')) {
+	$img_size = getimagesize($img_url);
+} else { //following part depends to XOOPS Dir structure.
+	if (file_exists('../../class/snoopy.php')) {
+		require_once '../../class/snoopy.php';
+		$snoopy =& new Snoopy;
+		$snoopy->fetch($img_url);
+		//Maybe AzdFqwe dir don't exist. So will be made tempfile to tmpdir
+		$tname = tempnam('AzdFqwe', 'spaw_img_popup'); 
+		$fp=fopen($tname,'w');
+		fwrite($fp, $snoopy->results);
+		fclose($fp);
+		$img_size = getimagesize($tname);
+		unlink($tname);
+	} else {
+		$img_size = false;
+	}
+}
+if (!($img_size && $img_size[2] >0 && $img_size[2] < 3)) {
+	exit();
+}
+
 ?>
 <html>
 <head>
@@ -40,7 +66,7 @@ function init()
 }
 </script>
 </head>
-<body marginheight="0" marginwidth="0" topmargin="0" leftmargin="0" rightmargin="0" bottommargin="0" onLoad="init();" bgcolor="red">
-<img name="LargeImg" src="<?php echo $_GET['img_url']?>" border="0"/>
+<body marginheight="0" marginwidth="0" topmargin="0" leftmargin="0" rightmargin="0" bottommargin="0" onLoad="init();" bgcolor="black">
+<img name="LargeImg" src="<?php echo $img_url?>" border="0"/>
 </body>
 </html>

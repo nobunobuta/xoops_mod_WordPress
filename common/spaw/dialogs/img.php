@@ -27,15 +27,15 @@ $l->setBlock('image_prop');
 
 <html>
 <head>
-  <title><?php echo $l->m('title')?></title>
+  <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $l->getCharset()?>">
+  <title><?php echo $l->m('title')?></title>
   <link rel="stylesheet" type="text/css" href="<?php echo $theme_path.'css/'?>dialog.css">
   <?php if (SPAW_Util::getBrowser() == 'Gecko') { ?>
-  <script language="javascript" src="utils.gecko.js"></script>
+  <script language="javascript" src="<?php echo $spaw_dir ?>dialogs/utils.gecko.js"></script>
   <?php }else{ ?>
-  <script language="javascript" src="utils.js"></script>
+  <script language="javascript" src="<?php echo $spaw_dir ?>dialogs/utils.js"></script>
   <?php } ?>
-  
   <script language="javascript">
   <!--  
   function Init() {
@@ -126,7 +126,7 @@ $l->setBlock('image_prop');
       window.close();
       <?php
       if (!empty($_GET['callback']))
-        echo "opener.".urlencode($_GET['callback'])."('".htmlspecialchars($_GET['editor'],ENT_QUOTES)."',this);\n";
+        echo "opener.SPAW_".htmlspecialchars($_GET['callback'],ENT_QUOTES)."_callback('".htmlspecialchars($_GET['editor'],ENT_QUOTES)."',this);\n";
       ?>
     }
   }

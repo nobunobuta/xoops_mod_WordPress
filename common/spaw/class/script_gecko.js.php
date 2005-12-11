@@ -170,7 +170,7 @@
   
   function SPAW_fore_color_click(editor, sender)
   {
-    var wnd = SPAW_showColorPicker(editor,null,'SPAW_fore_color_click_callback'); 
+    var wnd = SPAW_showColorPicker(editor,null,'fore_color_click'); 
   }
   
   function SPAW_fore_color_click_callback(editor, sender)
@@ -186,7 +186,7 @@
 
   function SPAW_bg_color_click(editor, sender)
   {
-    var wnd = SPAW_showColorPicker(editor,null,'SPAW_bg_color_click_callback'); 
+    var wnd = SPAW_showColorPicker(editor,null,'bg_color_click'); 
   }
 
   function SPAW_bg_color_click_callback(editor, sender)
@@ -246,7 +246,7 @@
     var wnd = window.open('<?php echo $spaw_dir?>dialogs/a.php?lang=' 
       + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
       + document.getElementById('SPAW_'+editor+'_theme').value
-      + '&editor=' + editor + '&callback=SPAW_hyperlink_click_callback', "link_window", 
+      + '&editor=' + editor + '&callback=hyperlink_click', "link_window", 
       'status=no,modal=yes,width=350,height=250'); 
     wnd.dialogArguments = aProps;
   }
@@ -410,7 +410,7 @@
     var wnd = window.open('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' 
       + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
       + document.getElementById('SPAW_'+editor+'_theme').value
-      + '&editor=' + editor + '&callback=SPAW_image_insert_click_callback', "img_library", 
+      + '&editor=' + editor + '&callback=image_insert_click', "img_library", 
       'status=no,modal=yes,width=420,height=420'); 
   }
   
@@ -426,24 +426,28 @@
 			range.deleteContents();
 
 		    var imgNode = document.createElement('IMG');
-		    imgNode.src = imgSrc;
+			/* GIJ */
+		    if( imgSrc.match(/(\.gif|\.png|\.jpg|\.jpeg)$/i) ) {
+		    	imgNode.src = imgSrc;
+		    } else {
+		    	imgNode.src = imgSrc.replace(/\.\w+$/,'.gif');
+		    }
+			/* /GIJ */
 		    range.insertNode(imgNode);
+			range.setStartBefore(imgNode);
 			range.setEndAfter(imgNode);
 
 			var href = '';
-			var match = imgSrc.match(/(.*)\/thumb-(.*)/);
-	  		if (match) {
-	  			href = match[1]+'/'+match[2];
-	  		} else {
-		  		match = imgSrc.match(/(.*)\/thumbs(\d*)\/(.*)/);
-		  		if (match) {
-		  			href = match[1]+'/photos'+match[2]+'/'+match[3];
-	  			} else {
-	  				if (retval.zoomrate != 1) {
-			  			href = imgSrc;
-					    imgNode.width = imgNode.width * retval.zoomrate;
-					}
-	  			}
+			if (retval.thumbFlg == 'Thumb') {
+				href = retval.imgHref;
+			} else if (retval.zoomrate != 1) {
+				href = imgSrc;
+			    imgNode.width = imgNode.width * retval.zoomrate;
+			}
+			
+	  		if (retval.title) {
+	  			imgNode.alt = retval.title;
+	  			imgNode.title = retval.title;
 	  		}
 	  		if (href) {
 			    var aNode = document.createElement('A');
@@ -479,7 +483,7 @@
       var wnd = window.open('<?php echo $spaw_dir?>dialogs/img.php?lang=' 
         + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
         + document.getElementById('SPAW_'+editor+'_theme').value
-        + '&editor=' + editor + '&callback=SPAW_image_prop_click_callback', "img_prop", 
+        + '&editor=' + editor + '&callback=image_prop_click', "img_prop", 
         'status=no,modal=yes,width=420,height=420'); 
       wnd.dialogArguments = iProps;
     }
@@ -535,21 +539,23 @@
 
   function SPAW_image_popup_click(editor, sender)
   {
+    <?php if (!empty($GLOBALS['spaw_img_popup_url'])) { ?>
     var wnd = window.open('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' 
       + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
       + document.getElementById('SPAW_'+editor+'_theme').value
-      + '&editor=' + editor + '&callback=SPAW_image_popup_click_callback', "img_library", 
+      + '&editor=' + editor + '&callback=image_popup_click', "img_library", 
       'status=no,modal=yes,width=420,height=420'); 
+    <?php } ?>
   }
   
   function SPAW_image_popup_click_callback(editor, sender)
   {
     var ed = document.getElementById(editor+'_rEdit');
    	var a = SPAW_getA(editor);
-   	var imgSrc = sender.returnValue;
 
-    if(imgSrc != null)    
-    {
+    var retval = sender.returnValue;
+    if (retval) {
+      var imgSrc = retval.imgHref;
       if (a)
       {
         // edit hyperlink
@@ -575,7 +581,7 @@
         
         insertNodeAtSelection(ed.contentWindow, a);  
       }      
-		}	
+    }
     ed.contentWindow.focus();
   }
   
@@ -756,7 +762,7 @@
       var wnd = window.open('<?php echo $spaw_dir?>dialogs/table.php?lang=' 
       + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
       + document.getElementById('SPAW_'+editor+'_theme').value
-      + '&editor=' + editor + '&callback=SPAW_table_create_click_callback', "table_prop", 
+      + '&editor=' + editor + '&callback=table_create_click', "table_prop", 
       'status=no,modal=yes,width=420,height=420'); 
   }
   
@@ -833,7 +839,7 @@
       var wnd = window.open('<?php echo $spaw_dir?>dialogs/table.php?lang=' 
       + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
       + document.getElementById('SPAW_'+editor+'_theme').value
-      + '&editor=' + editor + '&callback=SPAW_table_prop_click_callback', "table_prop", 
+      + '&editor=' + editor + '&callback=table_prop_click', "table_prop", 
       'status=no,modal=yes,width=420,height=420'); 
       wnd.dialogArguments = tProps;
     }
@@ -916,7 +922,7 @@
       var wnd = window.open('<?php echo $spaw_dir?>dialogs/td.php?lang=' 
       + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
       + document.getElementById('SPAW_'+editor+'_theme').value
-      + '&editor=' + editor + '&callback=SPAW_table_cell_prop_click_callback', "table_prop", 
+      + '&editor=' + editor + '&callback=table_cell_prop_click', "table_prop", 
       'status=no,modal=yes,width=420,height=420'); 
       wnd.dialogArguments = cProps;
     }    
@@ -1191,9 +1197,12 @@
   }
   
   function SPAW_getHtmlValue(editor, thefield)
-  {
-    // temporary simplified
-    return document.getElementById(editor+"_rEdit").contentDocument.body.innerHTML;
+  { // fixed bug by nobunobu 2005/07/05
+    if(document.getElementById('SPAW_'+editor+'_editor_mode').value == 'design') {
+      return document.getElementById(editor+"_rEdit").contentDocument.body.innerHTML;
+    } else {
+      return document.getElementById(editor).value;
+    }
   }
   
   function SPAW_updateField(editor, field)
@@ -1449,6 +1458,9 @@
     var pt = SPAW_getParentTag(editor);
     if (pt)
       SPAW_toggle_tbi_dropdown(editor, "style", pt.className);
+    <?php if (empty($GLOBALS['spaw_img_popup_url'])) { ?>
+       SPAW_toggle_tbi(editor,"image_popup", false);
+    <?php } ?>
   }
   
   // enable/disable toolbar item
