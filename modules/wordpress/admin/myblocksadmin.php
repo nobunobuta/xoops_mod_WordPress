@@ -44,7 +44,7 @@ if( ! empty( $_GET['dirname'] ) ) {
 if( ! empty( $target_module ) && is_object( $target_module ) ) {
 	// specified by dirname
 	$target_mid = $target_module->getVar( 'mid' ) ;
-	$target_mname = $target_module->getVar( 'name' ) ;
+	$target_mname = $target_module->getVar( 'name' ) . "&nbsp;" . sprintf( "(%2.2f)" , $target_module->getVar('version') / 100.0 ) ;
 	$query4redirect = '?dirname='.urlencode(strip_tags($_GET['dirname'])) ;
 } else if( isset( $_GET['mid'] ) && $_GET['mid'] == 0 || $xoopsModule->getVar('dirname') == 'blocksadmin' ) {
 	$target_mid = 0 ;
@@ -60,10 +60,11 @@ if( ! empty( $target_module ) && is_object( $target_module ) ) {
 $sysperm_handler =& xoops_gethandler('groupperm');
 if (!$sysperm_handler->checkRight('system_admin', XOOPS_SYSTEM_BLOCK, $xoopsUser->getGroups())) redirect_header( XOOPS_URL.'/user.php' , 1 , _NOPERM ) ;
 
-// get blocks owned by the module
-//$block_arr =& XoopsBlock::getByModule( $xoopsModule->mid() ) ;
+// get blocks owned by the module (Imported from xoopsblock.php then modified)
+//$block_arr =& XoopsBlock::getByModule( $target_mid ) ;
 $db =& Database::getInstance();
-$sql = $sql = "SELECT * FROM ".$db->prefix("newblocks")." WHERE mid=". $xoopsModule->mid()." ORDER BY side,weight,bid";
+$sql = "SELECT * FROM ".$db->prefix("newblocks")." WHERE mid='$target_mid' ORDER BY visible DESC,side,weight";
+//$sql = "SELECT * FROM ".$db->prefix("newblocks")." WHERE mid=". $xoopsModule->mid()." ORDER BY side,weight,bid";
 $result = $db->query($sql);
 $block_arr = array();
 while( $myrow = $db->fetchArray($result) ) {
@@ -80,7 +81,7 @@ function list_blocks()
 	// displaying TH
 	echo "
 	<form action='admin.php' name='blockadmin' method='post'>
-		<table width='90%' class='outer' cellpadding='4' cellspacing='1'>
+		<table width='95%' class='outer' cellpadding='4' cellspacing='1'>
 		<tr valign='middle'>
 			<th>"._AM_TITLE."</th>
 			<th align='center' nowrap='nowrap'>"._AM_SIDE."</th>
@@ -95,6 +96,7 @@ function list_blocks()
 	$block_configs = get_block_configs() ;
 	foreach( array_keys( $block_arr ) as $i ) {
 		$sseln = $ssel0 = $ssel1 = $ssel2 = $ssel3 = $ssel4 = "";
+		$scoln = $scol0 = $scol1 = $scol2 = $scol3 = $scol4 = "#FFFFFF";
 
 		$weight = $block_arr[$i]->getVar("weight") ;
 		$title = $block_arr[$i]->getVar("title") ;
@@ -104,23 +106,29 @@ function list_blocks()
 
 		// visible and side
 		if ( $block_arr[$i]->getVar("visible") != 1 ) {
-			$sseln = " checked='checked' style='background-color:#FF0000;'";
+			$sseln = " checked='checked'";
+			$scoln = "#FF0000";
 		} else switch( $block_arr[$i]->getVar("side") ) {
 			default :
 			case XOOPS_SIDEBLOCK_LEFT :
-				$ssel0 = " checked='checked' style='background-color:#00FF00;'";
+				$ssel0 = " checked='checked'";
+				$scol0 = "#00FF00";
 				break ;
 			case XOOPS_SIDEBLOCK_RIGHT :
-				$ssel1 = " checked='checked' style='background-color:#00FF00;'";
+				$ssel1 = " checked='checked'";
+				$scol1 = "#00FF00";
 				break ;
 			case XOOPS_CENTERBLOCK_LEFT :
-				$ssel2 = " checked='checked' style='background-color:#00FF00;'";
+				$ssel2 = " checked='checked'";
+				$scol2 = "#00FF00";
 				break ;
 			case XOOPS_CENTERBLOCK_RIGHT :
-				$ssel4 = " checked='checked' style='background-color:#00FF00;'";
+				$ssel4 = " checked='checked'";
+				$scol4 = "#00FF00";
 				break ;
 			case XOOPS_CENTERBLOCK_CENTER :
-				$ssel3 = " checked='checked' style='background-color:#00FF00;'";
+				$ssel3 = " checked='checked'";
+				$scol3 = "#00FF00";
 				break ;
 		}
 
@@ -159,7 +167,7 @@ function list_blocks()
 
 		// delete link if it is cloned block
 		if( $block_arr[$i]->getVar("block_type") == 'D' || $block_arr[$i]->getVar("block_type") == 'C' ) {
-			$delete_link = "<br />\n<a href='admin.php?fct=blocksadmin&amp;op=delete&amp;bid=$bid'>"._DELETE."</a>" ;
+			$delete_link = "<br /><a href='admin.php?fct=blocksadmin&amp;op=delete&amp;bid=$bid'>"._DELETE."</a>" ;
 		} else {
 			$delete_link = '' ;
 		}
@@ -171,13 +179,13 @@ function list_blocks()
 		} else {
 			$can_clone = false ;
 			foreach( $block_configs as $bconf ) {
-				if( $block_arr[$i]->getVar("show_func") == $bconf['show_func'] && $block_arr[$i]->getVar("func_file") == $bconf['file'] && $block_arr[$i]->getVar("template") == $bconf['template'] ) {
+				if( $block_arr[$i]->getVar("show_func") == $bconf['show_func'] && $block_arr[$i]->getVar("func_file") == $bconf['file'] && ( empty( $bconf['template'] ) || $block_arr[$i]->getVar("template") == $bconf['template'] ) ) {
 					if( ! empty( $bconf['can_clone'] ) ) $can_clone = true ;
 				}
 			}
 		}
 		if( $can_clone ) {
-			$clone_link = "<br />\n<a href='admin.php?fct=blocksadmin&amp;op=clone&amp;bid=$bid'>"._CLONE."</a>" ;
+			$clone_link = "<br /><a href='admin.php?fct=blocksadmin&amp;op=clone&amp;bid=$bid'>"._CLONE."</a>" ;
 		} else {
 			$clone_link = '' ;
 		}
@@ -190,15 +198,34 @@ function list_blocks()
 				<br />
 				<input type='text' name='title[$bid]' value='$title' size='20' />
 			</td>
-			<td class='$class' align='center' nowrap='nowrap'>
-				<input type='radio' name='side[$bid]' value='".XOOPS_SIDEBLOCK_LEFT."'$ssel0 />-<input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_LEFT."'$ssel2 /><input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_CENTER."'$ssel3 /><input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_RIGHT."'$ssel4 />-<input type='radio' name='side[$bid]' value='".XOOPS_SIDEBLOCK_RIGHT."'$ssel1 />
+			<td class='$class' align='center' nowrap='nowrap' width='125px'>
+				<div style='float:left;background-color:$scol0;'>
+					<input type='radio' name='side[$bid]' value='".XOOPS_SIDEBLOCK_LEFT."' style='background-color:$scol0;' $ssel0 />
+				</div>
+				<div style='float:left;'>-</div>
+				<div style='float:left;background-color:$scol2;'>
+					<input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_LEFT."' style='background-color:$scol2;' $ssel2 />
+				</div>
+				<div style='float:left;background-color:$scol3;'>
+					<input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_CENTER."' style='background-color:$scol3;' $ssel3 />
+				</div>
+				<div style='float:left;background-color:$scol4;'>
+					<input type='radio' name='side[$bid]' value='".XOOPS_CENTERBLOCK_RIGHT."' style='background-color:$scol4;' $ssel4 />
+				</div>
+				<div style='float:left;'>-</div>
+				<div style='float:left;background-color:$scol1;'>
+					<input type='radio' name='side[$bid]' value='".XOOPS_SIDEBLOCK_RIGHT."' style='background-color:$scol1;' $ssel1 />
+				</div>
 				<br />
 				<br />
-				<input type='radio' name='side[$bid]' value='-1'$sseln />
-				"._NONE."
+				<div style='float:left;width:40px;'>&nbsp;</div>
+				<div style='float:left;background-color:$scoln;'>
+					<input type='radio' name='side[$bid]' value='-1' style='background-color:$scoln;' $sseln />
+				</div>
+				<div style='float:left;'>"._NONE."</div>
 			</td>
 			<td class='$class' align='center'>
-				<input type='text' name=weight[$bid] value='$weight' size='5' maxlength='5' style='text-align:right;' />
+				<input type='text' name=weight[$bid] value='$weight' size='3' maxlength='5' style='text-align:right;' />
 			</td>
 			<td class='$class' align='center'>
 				<select name='bmodule[$bid][]' size='5' multiple='multiple'>
@@ -211,9 +238,7 @@ function list_blocks()
 				</select>
 			</td>
 			<td class='$class' align='right'>
-				<a href='admin.php?fct=blocksadmin&amp;op=edit&amp;bid=$bid'>"._EDIT."</a>
-				$delete_link
-				$clone_link
+				<a href='admin.php?fct=blocksadmin&amp;op=edit&amp;bid=$bid'>"._EDIT."</a>{$delete_link}{$clone_link}
 				<input type='hidden' name='bid[$bid]' value='$bid' />
 			</td>
 		</tr>\n" ;
@@ -227,7 +252,7 @@ function list_blocks()
 				<input type='hidden' name='query4redirect' value='$query4redirect' />
 				<input type='hidden' name='fct' value='blocksadmin' />
 				<input type='hidden' name='op' value='order' />
-				".$xoopsGTicket->getTicketHtml( __LINE__ )."
+				".$xoopsGTicket->getTicketHtml( __LINE__ , 1800 , 'myblocksadmin' )."
 				<input type='submit' name='submit' value='"._SUBMIT."' />
 			</td>
 		</tr>
@@ -269,7 +294,7 @@ function list_groups()
 
 
 if( ! empty( $_POST['submit'] ) ) {
-	if ( ! $xoopsGTicket->check() ) {
+	if ( ! $xoopsGTicket->check( true , 'myblocksadmin' ) ) {
 		redirect_header(XOOPS_URL.'/',3,$xoopsGTicket->getErrors());
 	}
 
@@ -278,9 +303,10 @@ if( ! empty( $_POST['submit'] ) ) {
 }
 
 xoops_cp_header() ;
-if( file_exists( './mymenu.php' ) ) include( './mymenu.php' ) ;
-
-echo "<h3 style='text-align:left;'>$target_mname</h3>\n" ;
+if (!strstr(XOOPS_VERSION, "XOOPS Cube 2.1")) {
+	if( file_exists( './mymenu.php' ) ) include( './mymenu.php' ) ;
+	echo "<h3 style='text-align:left;'>$target_mname</h3>\n" ;
+}
 
 if( ! empty( $block_arr ) ) {
 	echo "<h4 style='text-align:left;'>"._AM_BADMIN."</h4>\n" ;

@@ -10,35 +10,38 @@ class XoopsGTicket {
 	var $_latest_token = '' ;
 
 	// render form as plain html
-	function getTicketHtml( $salt = '' , $timeout = 1800 )
+	function getTicketHtml( $salt = '' , $timeout = 1800 , $area = '' )
 	{
-		return '<input type="hidden" name="XOOPS_G_TICKET" value="'.$this->issue( $salt , $timeout ).'" />' ;
+		return '<input type="hidden" name="XOOPS_G_TICKET" value="'.$this->issue( $salt , $timeout , $area ).'" />' ;
 	}
 
 	// returns an object of XoopsFormHidden including theh ticket
-	function getTicketXoopsForm( $salt = '' , $timeout = 1800 )
+	function getTicketXoopsForm( $salt = '' , $timeout = 1800 , $area = '' )
 	{
-		return new XoopsFormHidden( 'XOOPS_G_TICKET' , $this->issue( $salt , $timeout ) ) ;
+		return new XoopsFormHidden( 'XOOPS_G_TICKET' , $this->issue( $salt , $timeout , $area ) ) ;
 	}
 
 	// returns an array for xoops_confirm() ;
-	function getTicketArray( $salt = '' , $timeout = 1800 )
+	function getTicketArray( $salt = '' , $timeout = 1800 , $area = '' )
 	{
-		return array( 'XOOPS_G_TICKET' => $this->issue( $salt , $timeout ) ) ;
+		return array( 'XOOPS_G_TICKET' => $this->issue( $salt , $timeout , $area ) ) ;
 	}
 
 	// return GET parameter string.
-	function getTicketParamString( $salt = '' , $noamp = false , $timeout=1800 )
+	function getTicketParamString( $salt = '' , $noamp = false , $timeout=1800 , $area = '' )
 	{
-	    return ( $noamp ? '' : '&amp;' ) . 'XOOPS_G_TICKET=' . $this->issue( $salt, $timeout ) ;
+	    return ( $noamp ? '' : '&amp;' ) . 'XOOPS_G_TICKET=' . $this->issue( $salt, $timeout , $area ) ;
 	}
 
 	// issue a ticket
-	function issue( $salt = '' , $timeout = 1800 )
+	function issue( $salt = '' , $timeout = 1800 , $area = '' )
 	{
+		global $xoopsModule ;
+	
 		// create a token
 		list( $usec , $sec ) = explode( " " , microtime() ) ;
-		$token = crypt( $salt . $usec . $_SERVER['PATH'] . $sec ) ;
+		$appendix_salt = empty( $_SERVER['PATH'] ) ? XOOPS_DB_NAME : $_SERVER['PATH'] ;
+		$token = crypt( $salt . $usec . $appendix_salt . $sec ) ;
 		$this->_latest_token = $token ;
 
 		if( empty( $_SESSION['XOOPS_G_STUBS'] ) ) $_SESSION['XOOPS_G_STUBS'] = array() ;
@@ -48,10 +51,19 @@ class XoopsGTicket {
 			$_SESSION['XOOPS_G_STUBS'] = array_slice( $_SESSION['XOOPS_G_STUBS'] , -10 ) ;
 		}
 
+		// record referer if browser send it
+		$referer = empty( $_SERVER['HTTP_REFERER'] ) ? '' : $_SERVER['REQUEST_URI'] ;
+
+		// area as module's dirname
+		if( ! $area && is_object( @$xoopsModule ) ) {
+			$area = $xoopsModule->getVar('dirname') ;
+		}
+
 		// store stub
 		$_SESSION['XOOPS_G_STUBS'][] = array(
 			'expire' => time() + $timeout ,
-			'ip' => $_SERVER['REMOTE_ADDR'] ,
+			'referer' => $referer ,
+			'area' => $area ,
 			'token' => $token
 		) ;
 
@@ -60,8 +72,9 @@ class XoopsGTicket {
 	}
 
 	// check a ticket
-	function check( $post = true )
+	function check( $post = true , $area = '' )
 	{
+		global $xoopsModule ;
 
 		$this->_errors = array() ;
 
@@ -106,7 +119,7 @@ class XoopsGTicket {
 			}
 		}
 
-		// CHECK: no right stub found
+		// CHECK: the right stub found or not
 		if( empty( $found_stub ) ) {
 			$this->clear() ;
 			if( empty( $timeout_flag ) ) $this->_errors[] = 'Invalid Session' ;
@@ -114,10 +127,20 @@ class XoopsGTicket {
 			return false ;
 		}
 
-		// CHECK: different ip
-		if( $found_stub['ip'] != $_SERVER['REMOTE_ADDR'] ) {
+		// set area if necessary
+		// area as module's dirname
+		if( ! $area && is_object( @$xoopsModule ) ) {
+			$area = $xoopsModule->getVar('dirname') ;
+		}
+
+		// check area or referer
+		if( @$found_stub['area'] == $area ) $area_check = true ;
+		if( ! empty( $found_stub['referer'] ) && strstr( @$_SERVER['HTTP_REFERER'] , $found_stub['referer'] ) ) $referer_check = true ;
+
+		// if( empty( $area_check ) || empty( $referer_check ) ) { // restrict
+		if( empty( $area_check ) && empty( $referer_check ) ) { // loose
 			$this->clear() ;
-			$this->_errors[] = 'IP has been changed' ;
+			$this->_errors[] = 'Invalid area or referer' ;
 			return false ;
 		}
 
