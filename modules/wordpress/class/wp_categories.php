@@ -138,7 +138,7 @@ class WordPressCategoryHandler  extends XoopsTableObjectHandler
 		}
 		if ($result = parent::insert($record, $force, $updateOnlyChanged)) {
 			if (trim($record->getVar('category_nicename'))=='') {
-				$record->setVar('category_nicename', "category-".$record->getVar('cat_ID'));
+				$record->setVar('category_nicename', "category-".$record->getVar('cat_ID'), true);
 				$record->unsetNew();
 				return parent::insert($record, $force, true);
 			}
@@ -222,7 +222,7 @@ class WordPressCategoryHandler  extends XoopsTableObjectHandler
 				$category =& $categories[$i];
 				if ($parent == $category->getVar('category_parent')) {
 					$cat_ID = $category->getVar('cat_ID');
-					$category->setVar('cat_name', $pad.$category->getVar('cat_name'));
+					$category->setVar('cat_name', $pad.$category->getVar('cat_name'), true);
 					$category->setExtraVar('category_level', $level+1);
 					$records[] = $category;
 					$this->_getNestedObjects($criteria, $padchar, $cat_ID, $level+1, $categories, $records);

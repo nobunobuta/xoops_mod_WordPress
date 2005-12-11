@@ -14,11 +14,11 @@ switch (get_param('action')) {
   case 'addcat':
 		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
 		}
 		//Check User_Level
 		if ($user_level < get_settings('links_minadminlevel')) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		//Check Paramaters
 		init_param('POST', 'cat_name', 'string', NO_DEFAULT_PARAM, true);
@@ -36,21 +36,21 @@ switch (get_param('action')) {
 
 		$linkCategory =& $linkCategoryHandler->create();
 		
-		$linkCategory->setVar('cat_name', $cat_name);
-		$linkCategory->setVar('auto_toggle', $auto_toggle);
-		$linkCategory->setVar('show_images', $show_images);
-		$linkCategory->setVar('show_description', $show_description);
-		$linkCategory->setVar('show_rating', $show_rating);
-		$linkCategory->setVar('show_updated', $show_updated);
-		$linkCategory->setVar('sort_order', $sort_order);
-		$linkCategory->setVar('sort_desc', $sort_desc);
-		$linkCategory->setVar('text_before_link', $text_before_link);
-		$linkCategory->setVar('text_after_link', $text_after_link);
-		$linkCategory->setVar('text_after_all', $text_after_all);
-		$linkCategory->setVar('list_limit', $list_limit);
+		$linkCategory->setVar('cat_name', $cat_name, true);
+		$linkCategory->setVar('auto_toggle', $auto_toggle, true);
+		$linkCategory->setVar('show_images', $show_images, true);
+		$linkCategory->setVar('show_description', $show_description, true);
+		$linkCategory->setVar('show_rating', $show_rating, true);
+		$linkCategory->setVar('show_updated', $show_updated, true);
+		$linkCategory->setVar('sort_order', $sort_order, true);
+		$linkCategory->setVar('sort_desc', $sort_desc, true);
+		$linkCategory->setVar('text_before_link', $text_before_link, true);
+		$linkCategory->setVar('text_after_link', $text_after_link, true);
+		$linkCategory->setVar('text_after_all', $text_after_all, true);
+		$linkCategory->setVar('list_limit', $list_limit, true);
 		
 		if(!$linkCategoryHandler->insert($linkCategory)) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $linkCategoryHandler->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $linkCategoryHandler->getErrors());
 		}
 		header('Location: '.$this_file);
 		break;
@@ -58,7 +58,7 @@ switch (get_param('action')) {
 	case 'confirmdelete':
 		//Check User_Level
 		if ($user_level < get_settings('links_minadminlevel')) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		//Check Paramaters
 		init_param('GET', 'cat_id', 'integer', NO_DEFAULT_PARAM, true);
@@ -80,18 +80,18 @@ switch (get_param('action')) {
 	case 'delete':
 		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
 		}
 		//Check User_Level
 		if ($user_level < get_settings('links_minadminlevel')) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		//Check Paramaters
 		init_param('POST', 'cat_id', 'integer', NO_DEFAULT_PARAM, true);
 
 		$linkCategory =& $linkCategoryHandler->get($cat_id);
-		if(!$linkCategoryHandler->delete($linkCategory)) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $linkCategoryHandler->getErrors());
+		if(!$linkCategory || !$linkCategoryHandler->delete($linkCategory)) {
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $linkCategoryHandler->getErrors());
 		}
 
 		header('Location: '.$this_file);
@@ -100,7 +100,7 @@ switch (get_param('action')) {
 	case 'edit':
 		//Check User_Level
 		if ($user_level < get_settings('links_minadminlevel')) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		//Check Paramaters
 		init_param('GET', 'cat_id', 'integer', NO_DEFAULT_PARAM, true);
@@ -137,11 +137,11 @@ switch (get_param('action')) {
   case "editedcat":
 		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
 		}
 		//Check User_Level
 		if ($user_level < get_settings('links_minadminlevel')) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 			exit();
 		}
 		init_param('POST', 'submit','string', '');
@@ -163,22 +163,22 @@ switch (get_param('action')) {
 
 			$linkCategory =& $linkCategoryHandler->create(false);
 			
-			$linkCategory->setVar('cat_id', $cat_id);
-			$linkCategory->setVar('cat_name', $cat_name);
-			$linkCategory->setVar('auto_toggle', $auto_toggle);
-			$linkCategory->setVar('show_images', $show_images);
-			$linkCategory->setVar('show_description', $show_description);
-			$linkCategory->setVar('show_rating', $show_rating);
-			$linkCategory->setVar('show_updated', $show_updated);
-			$linkCategory->setVar('sort_order', $sort_order);
-			$linkCategory->setVar('sort_desc', $sort_desc);
-			$linkCategory->setVar('text_before_link', $text_before_link);
-			$linkCategory->setVar('text_after_link', $text_after_link);
-			$linkCategory->setVar('text_after_all', $text_after_all);
-			$linkCategory->setVar('list_limit', $list_limit);
+			$linkCategory->setVar('cat_id', $cat_id, true);
+			$linkCategory->setVar('cat_name', $cat_name, true);
+			$linkCategory->setVar('auto_toggle', $auto_toggle, true);
+			$linkCategory->setVar('show_images', $show_images, true);
+			$linkCategory->setVar('show_description', $show_description, true);
+			$linkCategory->setVar('show_rating', $show_rating, true);
+			$linkCategory->setVar('show_updated', $show_updated, true);
+			$linkCategory->setVar('sort_order', $sort_order, true);
+			$linkCategory->setVar('sort_desc', $sort_desc, true);
+			$linkCategory->setVar('text_before_link', $text_before_link, true);
+			$linkCategory->setVar('text_after_link', $text_after_link, true);
+			$linkCategory->setVar('text_after_all', $text_after_all, true);
+			$linkCategory->setVar('list_limit', $list_limit, true);
 		
 			if(!$linkCategoryHandler->insert($linkCategory)) {
-				redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $linkCategoryHandler->getErrors());
+				redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $linkCategoryHandler->getErrors());
 			}
 		}
 		header('Location: '.$this_file);
@@ -188,7 +188,7 @@ switch (get_param('action')) {
 		$title = 'Link Categories';
         include_once ("./admin-header.php");
         if ($user_level < get_settings('links_minadminlevel')) {
-			    redirect_header($siteurl.'/wp-admin/',5,_LANG_WLC_RIGHT_PROM);
+			    redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_WLC_RIGHT_PROM);
 			    exit();
         }
 		$criteria = new Criteria(1,1);

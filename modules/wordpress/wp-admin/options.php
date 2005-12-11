@@ -5,12 +5,6 @@ $title = 'Options';
 $this_file = 'options.php';
 $parent_file = 'options.php';
 
-if (!get_magic_quotes_gpc()) {
-	$_GET    = add_magic_quotes($_GET);
-	$_POST   = add_magic_quotes($_POST);
-	$_COOKIE = add_magic_quotes($_COOKIE);
-}
-
 init_param(array('POST','GET'), 'action', 'string', '');
 init_param(array('POST','GET'), 'option_group_id', 'integer', '');
 

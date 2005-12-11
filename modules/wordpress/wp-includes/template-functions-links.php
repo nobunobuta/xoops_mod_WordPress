@@ -33,6 +33,7 @@ function permalink_single_rss($file = '', $echo = true) {
 }
 
 function get_permalink($id=false) {
+	static $permalink_cache;
 	$rewritecode = array(
 		'%year%',
 		'%monthnum%',
@@ -53,11 +54,14 @@ function get_permalink($id=false) {
 		if ($permalink == '') {
 			return wp_siteurl() . '/index.php?p='.$id;
 		}
-		if (!isset($GLOBALS['permalink_cache'][wp_id()])||!isset($GLOBALS['permalink_cache'][wp_id()][$id])) {
+		if (!isset($permalink_cache[wp_id()])||!isset($permalink_cache[wp_id()][$id])) {
 			$postObject =& $postHandler->get($id);
-			$GLOBALS['permalink_cache'][wp_id()][$id] =& $postObject->exportWpObject();
+			if (!$postObject) {
+				return wp_siteurl();
+			}
+			$permalink_cache[wp_id()][$id] =& $postObject->exportWpObject();
 		}
-		$idpost = $GLOBALS['permalink_cache'][wp_id()][$id];
+		$idpost = $permalink_cache[wp_id()][$id];
 	} else {
 		$idpost = $GLOBALS['post'];
 	}
@@ -65,7 +69,11 @@ function get_permalink($id=false) {
 	if ('' != $permalink) {
 		$unixtime = strtotime($idpost->post_date);
 		$cats = get_the_category($idpost->ID);
-		$category = $cats[0]->category_nicename;
+		if ($cats) {
+			$category = $cats[0]->category_nicename;
+		} else {
+			$category = '';
+		}
 		$authordata = get_userdata($idpost->post_author);
 		$author = $authordata->user_login;
 		$rewritereplace = array(

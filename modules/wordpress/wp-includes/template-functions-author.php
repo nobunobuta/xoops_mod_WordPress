@@ -15,26 +15,26 @@ function the_author($idmode = '', $echo=true) {
     if ($idmode == 'ID')        $id = $GLOBALS['authordata']->ID;
     if (!$idmode) $id = $GLOBALS['authordata']->user_nickname;
 
-    return _echo($id, $echo);
+    return _echo(htmlspecialchars($id, ENT_QUOTES), $echo);
 }
 
 function the_author_description($echo=true) {
-	return _echo($GLOBALS['authordata']->user_description, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_description, ENT_QUOTES), $echo);
 }
 function the_author_login($echo=true) {
-	return _echo($GLOBALS['authordata']->user_login, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_login, ENT_QUOTES),$echo);
 }
 
 function the_author_firstname($echo=true) {
-	return _echo($GLOBALS['authordata']->user_firstname, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_firstname, ENT_QUOTES),$echo);
 }
 
 function the_author_lastname($echo=true) {
-	return _echo($GLOBALS['authordata']->user_lastname, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_lastname, ENT_QUOTES),$echo);
 }
 
 function the_author_nickname($echo=true) {
-	return _echo($GLOBALS['authordata']->user_nickname, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_nickname, ENT_QUOTES),$echo);
 }
 
 function the_author_ID($echo=true) {
@@ -42,27 +42,27 @@ function the_author_ID($echo=true) {
 }
 
 function the_author_email($echo=true) {
-	return _echo(antispambot($GLOBALS['authordata']->user_email), $echo);
+	return _echo(htmlspecialchars(antispambot($GLOBALS['authordata']->user_email), ENT_QUOTES),$echo);
 }
 
 function the_author_url($echo=true) {
-	return _echo($GLOBALS['authordata']->user_url, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_url, ENT_QUOTES),$echo);
 }
 
 function the_author_icq($echo=true) {
-	return _echo($GLOBALS['authordata']->user_icq, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_icq, ENT_QUOTES),$echo);
 }
 
 function the_author_aim($echo=true) {
-	return _echo(str_replace(' ', '+', $GLOBALS['authordata']->user_aim), $echo);
+	return _echo(htmlspecialchars(str_replace(' ', '+', $GLOBALS['authordata']->user_aim), ENT_QUOTES),$echo);
 }
 
 function the_author_yim($echo=true) {
-	return _echo($GLOBALS['authordata']->user_yim, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_yim, ENT_QUOTES),$echo);
 }
 
 function the_author_msn($echo=true) {
-	return _echo($GLOBALS['authordata']->user_msn, $echo);
+	return _echo(htmlspecialchars($GLOBALS['authordata']->user_msn, ENT_QUOTES),$echo);
 }
 
 function the_author_posts($echo=true) {
@@ -70,11 +70,11 @@ function the_author_posts($echo=true) {
 }
 
 function the_author_posts_link($idmode='', $echo=true) {
-    return _echo('<a href="' . get_author_link(0, $GLOBALS['authordata']->ID, $GLOBALS['authordata']->user_login) . '" title="' . sprintf("Posts by %s", htmlspecialchars(the_author($idmode, false))) . '">' . stripslashes(the_author($idmode, false)) . '</a>', $echo);
+    return _echo('<a href="' . get_author_link(0, $GLOBALS['authordata']->ID, $GLOBALS['authordata']->user_login) . '" title="' . sprintf("Posts by %s", the_author($idmode, false)) . '">' . the_author($idmode, false) . '</a>', $echo);
 }
 
 function the_author_info_link($idmode='', $echo=true) {
-    return _echo('<a href="' . XOOPS_URL . '/userinfo.php?uid=' .the_author('ID',false) . '" title="' . sprintf("Posts by %s", htmlspecialchars(the_author($idmode, false))) . '">' . stripslashes(the_author($idmode, false)) . '</a>', $echo);
+    return _echo('<a href="' . XOOPS_URL . '/userinfo.php?uid=' .the_author('ID',false) . '" title="' . sprintf("Posts by %s", the_author($idmode, false)) . '">' . the_author($idmode, false) . '</a>', $echo);
 }
 
 function get_author_link($echo = false, $author_id, $author_name="") {
@@ -83,7 +83,7 @@ function get_author_link($echo = false, $author_id, $author_name="") {
     if ($permalink_structure == '') {
         $link = wp_siteurl() . '/index.php?author='.$author_id;
     } else {
-        if ($author_name =='') $author_name = $GLOBALS['cache_userdata'][wp_id()][$author_id]->author_name;
+        if ($author_name =='') $author_name = $GLOBALS['cache_userdata'][wp_id()][$author_id]->user_login;
         // Get any static stuff from the front
         $front = substr($permalink_structure, 0, strpos($permalink_structure, '%'));
         $link = wp_siteurl() . $front . 'author/';

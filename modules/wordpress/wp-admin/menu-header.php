@@ -1,3 +1,7 @@
+<?php
+if ('menu-header.php' == basename($_SERVER['SCRIPT_FILENAME']))
+	die ();
+?>
 <div id="wpAdminMain">
 <h1 id="wphead"><a href="http://wordpress.xwd.jp/" rel="external"><span>WordPress Japan</span></a></h1>
 <ul id="adminmenu">
@@ -14,10 +18,10 @@ foreach ($menu as $item) {
     if ((substr($self, -10) == substr($item[2], -10) && empty($parent_file)) || ($parent_file && ($item[2] == $parent_file))) $class = ' class="current"';
     
     if ($user_level >= $item[1]) {
-		echo "\n\t<li><a href='".$siteurl."/wp-admin/{$item[2]}'$class>{$item[0]}</a></li>";
+		echo "\n\t<li><a href='".wp_siteurl()."/wp-admin/{$item[2]}'$class>{$item[0]}</a></li>";
     }
 }
-	echo "\n\t<li><a href='$siteurl/'>View site</a></li>";
+	echo "\n\t<li><a href='".wp_siteurl()."/'>View site</a></li>";
 
 ?>
 </ul>
@@ -44,9 +48,9 @@ foreach ($menu as $item) {
 			}
 		}
 		if (file_exists(wp_base()."/wp-content/plugins/{$item[2]}")) {
-			echo "\n\t<li><a href='" . $siteurl . "/wp-admin/admin.php?page={$item[2]}'$class>{$item[0]}</a></li>";
+			echo "\n\t<li><a href='" . wp_siteurl() . "/wp-admin/admin.php?page={$item[2]}'$class>{$item[0]}</a></li>";
 		} else {
-			echo "\n\t<li><a href='" . $siteurl . "/wp-admin/{$item[2]}'$class>{$item[0]}</a></li>";
+			echo "\n\t<li><a href='" . wp_siteurl() . "/wp-admin/{$item[2]}'$class>{$item[0]}</a></li>";
 		}
 	}
 ?>

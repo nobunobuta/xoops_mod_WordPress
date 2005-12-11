@@ -150,6 +150,7 @@ function comment_author_link($echo = true) {
 	$author = apply_filters('comment_author', $GLOBALS['comment']->comment_author);
 	if (!$author) $author = 'Anonymous';
 
+	if ($url == 'http://') $url = '';
 	if (empty($url)) {
 		$url = $author;
 	} else {

@@ -22,8 +22,8 @@ function the_title($before = '', $after = '', $echo = true) {
 	return _echo($title, $echo);
 }
 
-function the_title_rss($echo=true) {
-	$title = get_the_title();
+function the_title_rss($echo=true, $title='') {
+	if (!$title) $title = get_the_title();
 	$title = apply_filters('the_title', $title);
 	$title = apply_filters('the_title_rss', $title);
 	return _echo(wp_convert_rss_charset($title), $echo);
@@ -54,7 +54,7 @@ function the_content($more_link_text=_WP_TPL_MORE, $stripteaser=0, $more_file=''
 
 function the_content_rss($more_link_text='(more...)', $stripteaser=0, $more_file='', $cut = 0, $encode_html = 0, $echo=true) {
 	if (!empty($GLOBALS['post']->post_password)) { // if there's a password
-		$output = "<p>This post is password protected. To view it please enter your password below:</p>";
+		$output = "<p>This post is a password protected content.</p>";
 		return _echo($output, $echo);
 	}
 	$content = get_the_content($more_link_text, $stripteaser, $more_file);

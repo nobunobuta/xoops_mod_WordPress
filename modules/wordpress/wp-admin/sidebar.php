@@ -6,7 +6,7 @@ $title = "";
 require_once('admin-header.php');
 
 if ($user_level <= 0) {
-	redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+	redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 }
 init_param('GET', 'action', 'string','');
 

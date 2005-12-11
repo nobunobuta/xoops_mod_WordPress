@@ -13,7 +13,7 @@ if ($submit) {
 } else {
 	$permalink_structure = get_settings('permalink_structure');
 	if ($user_level < 9) {
-		redirect_header($siteurl.'/wp-admin/',5,_LANG_PG_LEAST_LEVEL);
+		redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_PG_LEAST_LEVEL);
 		exit();
 	}
 }
@@ -77,11 +77,11 @@ if ($submit) {
 ?>
   <p><?php printf(_LANG_WPL_USE_HTACCESS, $permalink_structure) ?></p>
   <?php
-$site_root = str_replace('http://', '', trim($siteurl));
+$site_root = str_replace('http://', '', trim(wp_siteurl()));
 $site_root = preg_replace('|([^/]*)(.*)|i', '$2', $site_root);
 if ('/' != substr($site_root, -1)) $site_root = $site_root . '/';
 
-$home_root = str_replace('http://', '', trim($siteurl));
+$home_root = str_replace('http://', '', trim(wp_siteurl()));
 $home_root = preg_replace('|([^/]*)(.*)|i', '$2', $home_root);
 if ('/' != substr($home_root, -1)) $home_root = $home_root . '/';
 $rewrite = rewrite_rules('', $permalink_structure);

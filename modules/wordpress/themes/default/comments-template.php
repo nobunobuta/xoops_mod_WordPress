@@ -46,7 +46,7 @@
 	<p>
 	  <label for="comment"><?php echo _LANG_WPCM_COM_YOUR; ?></label>
 	<br />
-	  <textarea name="comment" id="comment" cols="50" rows="4" tabindex="4"></textarea>
+	  <textarea name="comment" id="comment" cols="70" rows="5" tabindex="4"></textarea>
 	</p>
 
 <?php if ('none' != get_settings("comment_moderation")) { ?>

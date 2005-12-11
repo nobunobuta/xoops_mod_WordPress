@@ -11,7 +11,7 @@ require('admin-header.php');
 $myts =& MyTextSanitizer::getInstance();
 
 if ($user_level < get_settings('links_minadminlevel')) {
-	redirect_header($siteurl.'/wp-admin/',5,"You have no right to add the links for this blog.<br />Ask for a promotion to your <a href='mailto:".get_settings('admin_email')."'>blog admin</a>. :)");
+	redirect_header(wp_siteurl().'/wp-admin/',5,"You have no right to add the links for this blog.<br />Ask for a promotion to your <a href='mailto:".get_settings('admin_email')."'>blog admin</a>. :)");
 	exit();
 }
 init_param('GET', 'action','string', '');
@@ -45,7 +45,7 @@ $category_options = $linkCategoryHandler->getOptionArray();
 include('include/link-manager-form.php');
 ?>
 <div class="wrap">
-<p><a href="javascript:void(linkmanpopup=window.open('<?php echo $siteurl; ?>/wp-admin/link-add.php?action=popup&linkurl='+escape(location.href)+'&name='+escape(document.title),'LinkManager','scrollbars=yes,width=750,height=550,left=15,top=15,status=yes,resizable=yes'));linkmanpopup.focus();window.focus();linkmanpopup.focus();" title="Link add bookmarklet"><b>Link This: </b></a><?php echo _LANG_WLA_TEXT_TOOLBAR; ?></p>
+<p><a href="javascript:void(linkmanpopup=window.open('<?php echo wp_siteurl(); ?>/wp-admin/link-add.php?action=popup&linkurl='+escape(location.href)+'&name='+escape(document.title),'LinkManager','scrollbars=yes,width=750,height=550,left=15,top=15,status=yes,resizable=yes'));linkmanpopup.focus();window.focus();linkmanpopup.focus();" title="Link add bookmarklet"><b>Link This: </b></a><?php echo _LANG_WLA_TEXT_TOOLBAR; ?></p>
 </div>
 
 <?php

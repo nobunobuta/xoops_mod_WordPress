@@ -69,7 +69,7 @@ function the_category($seperator = '', $parents='', $echo=true) {
     if ('' == $seperator) {
         $thelist .= '<ul class="post-categories">';
         foreach ($categories as $category) {
-            $category->cat_name = $category->cat_name;
+            $category->cat_name = htmlspecialchars($category->cat_name, ENT_QUOTES);
             $thelist .= "\n\t<li>";
             switch(strtolower($parents)) {
                 case 'multiple':
@@ -94,7 +94,7 @@ function the_category($seperator = '', $parents='', $echo=true) {
     } else {
         $i = 0;
         foreach ($categories as $category) {
-            $category->cat_name = $category->cat_name;
+            $category->cat_name = htmlspecialchars($category->cat_name, ENT_QUOTES);
             if (0 < $i) $thelist .= $seperator . ' ';
             switch(strtolower($parents)) {
                 case 'multiple':
@@ -293,7 +293,7 @@ function wp_list_cats($args = '', $echo=true) {
 	if (!isset($r['exclude'])) $r['exclude'] = '';
 	if (!isset($r['hierarchical'])) $r['hierarchical'] = true;
 
-	list_cats($r['optionall'], $r['all'], $r['sort_column'], $r['sort_order'], $r['file'],	$r['list'], $r['optiondates'], $r['optioncount'], $r['hide_empty'], $r['use_desc_for_title'], $r['children'], $r['child_of'], $r['categories'], $r['recurse'], $r['feed'], $r['feed_image'], $r['exclude'], $r['hierarchical'], $echo);
+	return list_cats($r['optionall'], $r['all'], $r['sort_column'], $r['sort_order'], $r['file'],	$r['list'], $r['optiondates'], $r['optioncount'], $r['hide_empty'], $r['use_desc_for_title'], $r['children'], $r['child_of'], $r['categories'], $r['recurse'], $r['feed'], $r['feed_image'], $r['exclude'], $r['hierarchical'], $echo);
 }
 
 function list_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_order = 'asc', $file = '', $list = true, $optiondates = 0, $optioncount = 0, $hide_empty = 1, $use_desc_for_title = 1, $children=FALSE, $child_of=0, $categoryObjects=null, $recurse=0, $feed = '', $feed_image = '', $exclude = '', $hierarchical=FALSE, $echo=true) {

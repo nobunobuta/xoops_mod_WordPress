@@ -100,7 +100,7 @@ class WordPressUser  extends XoopsTableObject
 
 	function upUserLevel() {
 		if ($this->getVar('user_level') < 10) {
-	        return $this->_handler->updateByField($this, 'user_level', $this->getVar('user_level') + 1);
+	        return $this->_handler->updateByField($this, 'user_level', $this->getVar('user_level') + 1, true);
         } else {
         	return false;
         }
@@ -108,7 +108,7 @@ class WordPressUser  extends XoopsTableObject
 
 	function downUserLevel() {
 		if ($this->getVar('user_level') > 0) {
-        	return $this->_handler->updateByField($this, 'user_level', $this->getVar('user_level') - 1);
+        	return $this->_handler->updateByField($this, 'user_level', $this->getVar('user_level') - 1, true);
         } else {
         	return false;
         }
@@ -118,11 +118,11 @@ class WordPressUser  extends XoopsTableObject
 		if ($this->getVar('user_pass') !== 'X_DELETED_X') {
 			$member =& $this->_handler->member_handler->getUser($this->getVar('ID'));
 	        if ($member) {
-	            $this->assignVar('user_pass', $member->getVar('pass'));
+	            $this->assignVar('user_pass', $member->getVar('pass','n'));
 	        } else {
-	    		$this->setVar('user_level',0);
-	    		$this->setVar('user_login','X_'.$this->getVar('user_login').'_X');
-	    		$this->setVar('user_pass','X_DELETED_X');
+	    		$this->setVar('user_level',0, true);
+	    		$this->setVar('user_login','X_'.$this->getVar('user_login','n').'_X', true);
+	    		$this->setVar('user_pass','X_DELETED_X', true);
 	    		$this->_handler->insert($this,true,true);
 	        }
 		}
@@ -154,9 +154,9 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 		$this->module = $module;
 		$this->tableName = $this->db->prefix($prefix.'users');
 		$this->member_handler =& xoops_gethandler('member');
-		if (empty($GLOBALS['__'.$prefix.'usersync'])) {
+		if (!empty($GLOBALS['__'.$prefix.'dosync'])) {
 			$this->syncXoopsUsers();
-			$GLOBALS['__'.$prefix.'usersync'] = true;
+			$GLOBALS['__'.$prefix.'dosync'] = false;
 		}
 	}
 	
@@ -179,10 +179,10 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 				$member =& $this->member_handler->getUser($key);
 				if ($member) {
 					$userObject =& $this->create();
-					$userObject->setVar('ID', $key);
+					$userObject->setVar('ID', $key, true);
 					if ($this->insert($userObject,true)) {
 						$userObject =& parent::get($key);
-						$userObject->assignVar('user_pass', $member->getVar('pass'));
+						$userObject->assignVar('user_pass', $member->getVar('pass','n'));
 						return $userObject;
 					} else {
 						return false;
@@ -216,10 +216,10 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 				if (count($members)) {
 					$member = $members[0];
 					$userObject =& $this->create();
-					$userObject->setVar('ID', $key);
+					$userObject->setVar('ID', $key, true);
 					if ($this->insert($userObject,true)) {
 						$userObject =& parent::get($key);
-						$userObject->assignVar('user_pass', $member->getVar('pass'));
+						$userObject->assignVar('user_pass', $member->getVar('pass','n'));
 						return $userObject;
 					} else {
 						return false;
@@ -255,26 +255,26 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 				if (count(array_intersect($group,$admin_groups)) > 0) {
 					$user_level = 10;
 				}
-				$record->setVar('user_login', $member->getVar('uname'));
-				$record->setVar('user_nickname', $member->getVar('uname'));
-				$record->assignVar('user_email', $member->getVar('email'));
-				$record->assignVar('user_url', $member->getVar('url'));
-				$record->setVar('user_level', $user_level);
-				$record->setVar('user_icq', intval($member->getVar('user_icq')));
-				$record->setVar('user_aim', $member->getVar('user_aim'));
-				$record->setVar('user_yim', $member->getVar('user_yim'));
-				$record->setVar('user_msn', $member->getVar('user_msnm'));
-				$record->setVar('user_idmode', 'nickname');
+				$record->setVar('user_login', $member->getVar('uname','n'), true);
+				$record->setVar('user_nickname', $member->getVar('uname','n'), true);
+				$record->assignVar('user_email', $member->getVar('email','n'));
+				$record->assignVar('user_url', $member->getVar('url','n'));
+				$record->setVar('user_level', $user_level, true);
+				$record->setVar('user_icq', intval($member->getVar('user_icq','n')), true);
+				$record->setVar('user_aim', $member->getVar('user_aim','n'), true);
+				$record->setVar('user_yim', $member->getVar('user_yim','n'), true);
+				$record->setVar('user_msn', $member->getVar('user_msnm','n'), true);
+				$record->setVar('user_idmode', 'nickname', true);
 			} else {
 				return false;
 			}
 		} else {
 			if ($member) {
-				if ($member->getVar('uname') != $record->getVar('user_login')) {
-					$record->setVar('user_login', $member->getVar('uname'));
+				if ($member->getVar('uname') != $record->getVar('user_login','n')) {
+					$record->setVar('user_login', $member->getVar('uname','n'), true);
 				}
 				if (trim($record->getVar('user_nickname')) == '') {
-					$record->setVar('user_nickname', $member->getVar('uname'));
+					$record->setVar('user_nickname', $member->getVar('uname','n'), true);
 				}
 			}
 		}

@@ -3,6 +3,12 @@ $GLOBALS['HTTP_HOST'] = getenv('HTTP_HOST');  /* domain name */
 $GLOBALS['REMOTE_ADDR'] = getenv('REMOTE_ADDR'); /* visitor's IP */
 $GLOBALS['HTTP_USER_AGENT'] = getenv('HTTP_USER_AGENT'); /* visitor's browser */
 
+if (preg_match('#/modules/'.$GLOBALS['wp_mod'][$GLOBALS['wp_id']].'(/|/wp-admin/users.php.*)?$#',$_SERVER['PHP_SELF'])) {
+	$GLOBALS['__'.$GLOBALS['wp_prefix'][$GLOBALS['wp_id']].'dosync'] = true;
+} else {
+	$GLOBALS['__'.$GLOBALS['wp_prefix'][$GLOBALS['wp_id']].'dosync'] = false;
+}
+
 global $siteurl;
 
 if(!defined('WPINC')) define('WPINC', 'wp-includes');
@@ -26,7 +32,7 @@ $GLOBALS['wpdb']->postmeta[$GLOBALS['wp_id']] = $GLOBALS['table_prefix'][$GLOBAL
 
 // This is the name of the include directory. No "/" allowed.
 
-require ('wp-ver.php');
+require ($GLOBALS['wp_base'][$GLOBALS['wp_id']].'/wp-ver.php');
 require_once ($GLOBALS['wp_base'][$GLOBALS['wp_id']].'/wp-includes/functions.php');
 require_once (wp_base().'/class/wp_classes.php');
 if (empty($GLOBALS['wpPostHandler'][wp_prefix()])) {
@@ -48,7 +54,7 @@ require_once (wp_base().'/wp-includes/kses.php');
 if (get_settings('hack_file')) {
 	include_once(wp_base().'/my-hacks.php');
 }
-require ('wp-config-extra.php');
+require (wp_base().'/wp-config-extra.php');
 require_once (wp_base().'/wp-includes/template-functions.php');
 require_once (wp_base().'/wp-includes/class-xmlrpc.php');
 require_once (wp_base().'/wp-includes/class-xmlrpcs.php');
@@ -80,6 +86,7 @@ $GLOBALS['querystring_equal'] = '=';
 $GLOBALS['querystring_separator'] = '&amp;';
 $GLOBALS['dateformat'] = stripslashes(get_settings('date_format'));
 $GLOBALS['timeformat'] = stripslashes(get_settings('time_format'));
+$GLOBALS['wpcommentsjavascript'] = 0;
 
 // Used to guarantee unique cookies
 $GLOBALS['cookiehash'] = md5(wp_siteurl());

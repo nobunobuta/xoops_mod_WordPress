@@ -112,6 +112,7 @@ function get_links($category = -1, $before = '', $after = '<br />',
                    $limit = -1, $show_updated = 1, $echo = true) {
     $direction = ' ASC';
     $category_query = "";
+    $links = '';
     if ($category != -1) {
         $category_query = " AND link_category = $category ";
     }

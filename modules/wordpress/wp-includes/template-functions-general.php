@@ -20,9 +20,11 @@ function bloginfo_unicode($show='', $echo=true) {
 function get_bloginfo($show='') {
     if (get_settings('permalink_structure') != '') {
         $do_perma = 1;
+		// Get any static stuff from the front
+		$front = preg_match('#^/index.php/#' ,get_settings('permalink_structure')) ? '/index.php' : '';
 	    $site_url = wp_siteurl();
-        $feed_url = wp_siteurl().'/feed';
-        $comment_feed_url = wp_siteurl().'/comments/feed';
+        $feed_url = wp_siteurl().$front.'/feed';
+        $comment_feed_url = wp_siteurl().$front.'/comments/feed';
     } else {
 	    $do_perma = 0;
 	    $site_url = wp_siteurl();
@@ -67,6 +69,9 @@ function get_bloginfo($show='') {
             if ($do_perma) {
                 $output = $comment_feed_url . '/rss2/';
             }
+            break;
+        case 'rsd_url':
+            $output = $site_url.'/wp-rsd.php';
             break;
         case 'pingback_url':
             $output = $site_url.'/xmlrpc.php';
@@ -220,9 +225,10 @@ function single_author_title($prefix = '', $echo = true ) {
 		$userObject =& $userHandler->get($GLOBALS['author']);
 	} elseif (!empty($GLOBALS['p'])) {
 		$postHandler =& wp_handler('Post');
-		$postObject =& $postHandler->get($GLOBALS['p']);
-		$userHandler =& wp_handler('User');
-		$userObject =& $userHandler->get($postObject->getVar('post_author'));
+		if ($postObject =& $postHandler->get($GLOBALS['p'])) {
+			$userHandler =& wp_handler('User');
+			$userObject =& $userHandler->get($postObject->getVar('post_author'));
+		}
 	}
 	if ($userObject) {
 		$result = $userObject->exportWpObject();
@@ -612,7 +618,7 @@ function get_calendar($daylength = 1, $echo=true) {
 
 function allowed_tags() {
 	$allowed = "";
-	foreach($GLOBALS['allowedtags'] as $tag => $attributes) {
+	foreach($GLOBALS['wp_allowed_tags'] as $tag => $attributes) {
 		$allowed .= "<$tag";
 		if (0 < count($attributes)) {
 			foreach ($attributes as $attribute => $limits) {

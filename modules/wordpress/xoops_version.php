@@ -71,7 +71,6 @@ $modversion['config'][1] = array(
 	'options' => array(
                     '_MI_OPT_WYSIWYG_NONE'=>0 ,
                     '_MI_OPT_WYSIWYG_SPAW'=>1 ,
-//                    '_MI_OPT_WYSIWYG_KOIVI'=>2 ,
                 ),
 );
 

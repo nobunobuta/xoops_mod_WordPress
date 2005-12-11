@@ -1,6 +1,7 @@
 <?php
 $_my_ext_=pathinfo(__FILE__);if ($_my_ext_['extension']!="php") exit;
 define('MTEXPORT', '');
+require_once('admin.php');
 $stand_alone=0;
 require("admin-header.php");
 //if (!file_exists('../wp-config.php')) die("There doesn't seem to be a wp-config.php file. You must install WordPress before you import any entries.");
@@ -48,7 +49,7 @@ function checkauthor($author) {
 	$user_id = $wpdb->get_var("SELECT ID FROM $tableusers WHERE user_login = '$author'");
 	if (!$user_id) {
 		if (defined('XOOPS_URL')) {
-			//XOOPS”Å‚Å‚ÍV‚µ‚¢ƒ†[ƒU‚ðì‚é‚Æ‚¨‚©‚µ‚­‚È‚é‚Ì‚ÅŒ»ÝƒƒOƒCƒ“‚µ‚Ä‚¢‚éXOOPSƒ†[ƒUID‚Å‚Ì“Še‚É‚·‚éB
+			//XOOPSÈÇ¤Ç¤Ï¿·¤·¤¤¥æ¡¼¥¶¤òºî¤ë¤È¤ª¤«¤·¤¯¤Ê¤ë¤Î¤Ç¸½ºß¥í¥°¥¤¥ó¤·¤Æ¤¤¤ëXOOPS¥æ¡¼¥¶ID¤Ç¤ÎÅê¹Æ¤Ë¤¹¤ë¡£
 			$user_id = $xoopsUser->uid();
 		} else {
 			$wpdb->query("INSERT INTO $tableusers (user_login, user_pass, user_nickname) VALUES ('$author', 'changeme', '$author')");

@@ -1,4 +1,4 @@
-<?PHP
+<?php
 $_wp_base_prefix = 'wp';
 $_wp_my_dirname = basename( dirname( __FILE__ ) );
 if (!preg_match('/\D+(\d*)/', $_wp_my_dirname, $_wp_regs )) {
@@ -26,7 +26,7 @@ function _xoops_module_install_wordpress($dirname, $prefix)
     $q = $GLOBALS['xoopsDB']->query($query);
 
 	$now = date('Y-m-d H:i:s');
-	$query = 'INSERT INTO '.$GLOBALS['xoopsDB']->prefix("{$prefix}posts")." (post_author, post_date, post_content, post_title, post_category) VALUES ('".$GLOBALS['xoopsUser']->uid()."', '$now', "._MI_WORDPRESS_INST_POST_CONTENT.', '._MI_WORDPRESS_INST_POST_TITLE.", '1')";
+	$query = 'INSERT INTO '.$GLOBALS['xoopsDB']->prefix("{$prefix}posts")." (post_author, post_date, post_content, post_title, post_category, post_name, post_modified) VALUES ('".$GLOBALS['xoopsUser']->uid()."', '$now', "._MI_WORDPRESS_INST_POST_CONTENT.', '._MI_WORDPRESS_INST_POST_TITLE.", '1', 'wellcome', '$now')";
 
 	$q = $GLOBALS['xoopsDB']->query($query);
 

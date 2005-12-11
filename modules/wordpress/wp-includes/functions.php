@@ -105,7 +105,7 @@ function remove_magic_quotes( $mixed ) {
  *
  * {@internal init_param(-) }}
  *
- * @author fplanque
+ * @author NobuNobu
  * @param string Variable to set
  * @param string Force value type to one of:
  * - boolean
@@ -342,35 +342,38 @@ function get_userid($user_login) {
 	return $user->ID;
 }
 
-function get_author_name($auth_id) {
+function get_author_name($auth_id, $idmode='') {
 	$authordata = get_userdata($auth_id);
-
-	switch($authordata['user_idmode']) {
+	if (empty($idmode)) {
+		$idmode = $authordata->user_idmode;
+	}
+	switch($idmode) {
 		case 'nickname':
-			$authorname = $authordata['user_nickname'];
+			$authorname = $authordata->user_nickname;
+			break;
 
 		case 'login':
-			$authorname = $authordata['user_login'];
+			$authorname = $authordata->user_login;
 			break;
 	
 		case 'firstname':
-			$authorname = $authordata['user_firstname'];
+			$authorname = $authordata->user_firstname;
 			break;
 
 		case 'lastname':
-			$authorname = $authordata['user_lastname'];
+			$authorname = $authordata->user_lastname;
 			break;
 
 		case 'namefl':
-			$authorname = $authordata['user_firstname'].' '.$authordata['user_lastname'];
+			$authorname = $authordata->user_firstname.' '.$authordata->user_lastname;
 			break;
 
 		case 'namelf':
-			$authorname = $authordata['user_lastname'].' '.$authordata['user_firstname'];
+			$authorname = $authordata->user_lastname.' '.$authordata->user_firstname;
 			break;
 
 		default:
-			$authorname = $authordata['user_nickname'];
+			$authorname = $authordata->user_nickname;
 			break;
 	}
 
@@ -497,7 +500,7 @@ function update_option($option_name, $newvalue, $force=false) {
 	if (get_settings($option_name) != $newvalue) {
 		$optionHandler =& wp_handler('Option');
 		$optionObject =& $optionHandler->getByName($option_name);
-		$optionObject->setVar('option_value', $newvalue);
+		$optionObject->setVar('option_value', $newvalue, true);
 		if (!$optionHandler->insert($optionObject,$force, true)) {
 			return false;
 		}
@@ -512,11 +515,11 @@ function add_option($name, $value='', $group=0, $desc='', $type=1, $level=8) {
 		$optionHandler =& wp_handler('Option');
 		if (!$optionHandler->getByName($name)) {
 			$optionObject =& $optionHandler->create();
-			$optionObject->setVar('option_name', $name);
-			$optionObject->setVar('option_value', $value);
-			$optionObject->setVar('option_type', $type);
-			$optionObject->setVar('option_description', $desc);
-			$optionObject->setVar('option_admin_level', $level);
+			$optionObject->setVar('option_name', $name, true);
+			$optionObject->setVar('option_value', $value, true);
+			$optionObject->setVar('option_type', $type, true);
+			$optionObject->setVar('option_description', $desc, true);
+			$optionObject->setVar('option_admin_level', $level, true);
 			if ($optionHandler->insert($optionObject, true)) {
 				$option_id = $optionObject->getVar('option_id');
 				$GLOBALS['cache_settings'][wp_id()]->{$name} = $value;
@@ -527,9 +530,9 @@ function add_option($name, $value='', $group=0, $desc='', $type=1, $level=8) {
 					if ($optionGroup2OptionObjects) {
 						$seq = $optionGroup2OptionObjects[0]->getExtraVar('seq_max')+1;
 						$optionGroup2OptionObject =& $optionGroup2OptionHandler->create();
-						$optionGroup2OptionObject->setVar('group_id',$group);
-						$optionGroup2OptionObject->setVar('option_id',$option_id);
-						$optionGroup2OptionObject->setVar('seq',$seq);
+						$optionGroup2OptionObject->setVar('group_id',$group, true);
+						$optionGroup2OptionObject->setVar('option_id',$option_id, true);
+						$optionGroup2OptionObject->setVar('seq',$seq, true);
 						$optionGroup2OptionHandler->insert($optionGroup2OptionObject, true);
 					}
 				}
@@ -550,9 +553,9 @@ function add_post_meta($post_id, $key, $value, $unique = false) {
 		}
 	}
 	$postmetaObject =& $postmetaHandler->create();
-	$postmetaObject->setVar('post_id', $post_id);
-	$postmetaObject->setVar('meta_key', $key);
-	$postmetaObject->setVar('meta_value', $value);
+	$postmetaObject->setVar('post_id', $post_id, true);
+	$postmetaObject->setVar('meta_key', $key, true);
+	$postmetaObject->setVar('meta_value', $value, true);
 	$GLOBALS['post_meta_cache'][wp_id()][$post_id][$key][] = $value;
 	return $postmetaHandler->insert($postmetaObject, true);
 }
@@ -612,26 +615,29 @@ function update_post_meta($post_id, $key, $value, $prev_value = '') {
 
 function get_postdata($postid) {
 	$postHandler =& wp_handler('Post');
-	$postObject =& $postHandler->get($postid);
-	$GLOBALS['post'] = $postObject->exportWpObject();
-	$postdata = array (
-		'ID' => $GLOBALS['post']->ID,
-		'Author_ID' => $GLOBALS['post']->post_author,
-		'Date' => $GLOBALS['post']->post_date,
-		'Content' => $GLOBALS['post']->post_content,
-		'Excerpt' => $GLOBALS['post']->post_excerpt,
-		'Title' => $GLOBALS['post']->post_title,
-		'Category' => $GLOBALS['post']->post_category,
-		'Lat' => $GLOBALS['post']->post_lat,
-		'Lon' => $GLOBALS['post']->post_lon,
-		'post_status' => $GLOBALS['post']->post_status,
-		'comment_status' => $GLOBALS['post']->comment_status,
-		'ping_status' => $GLOBALS['post']->ping_status,
-		'post_password' => $GLOBALS['post']->post_password,
-		'to_ping' => $GLOBALS['post']->to_ping,
-		'pinged' => $GLOBALS['post']->pinged
-	);
-	return $postdata;
+	if ($postObject =& $postHandler->get($postid)) {
+	    $GLOBALS['post'] = $postObject->exportWpObject();
+	    $postdata = array (
+		    'ID' => $GLOBALS['post']->ID,
+		    'Author_ID' => $GLOBALS['post']->post_author,
+		    'Date' => $GLOBALS['post']->post_date,
+		    'Content' => $GLOBALS['post']->post_content,
+		    'Excerpt' => $GLOBALS['post']->post_excerpt,
+		    'Title' => $GLOBALS['post']->post_title,
+		    'Category' => $GLOBALS['post']->post_category,
+		    'Lat' => $GLOBALS['post']->post_lat,
+		    'Lon' => $GLOBALS['post']->post_lon,
+		    'post_status' => $GLOBALS['post']->post_status,
+		    'comment_status' => $GLOBALS['post']->comment_status,
+		    'ping_status' => $GLOBALS['post']->ping_status,
+		    'post_password' => $GLOBALS['post']->post_password,
+		    'to_ping' => $GLOBALS['post']->to_ping,
+		    'pinged' => $GLOBALS['post']->pinged
+	    );
+	    return $postdata;
+	} else {
+		return array();
+	}
 }
 
 function get_postdata2($postid=0) { // less flexible, but saves DB queries
@@ -660,6 +666,9 @@ function get_commentdata($comment_ID, $no_cache=0, $include_unapproved=false) { 
 		$criteria = null;
 		$commentHandler =& wp_handler('Comment');
 		$commentObject =& $commentHandler->get($comment_ID);
+		if (!$commentObject) {
+			return false;
+		}
 		if (!$include_unapproved) {
 			if ($commentObject->getVar('comment_approved') != 1) {
 				return false;
@@ -825,8 +834,8 @@ function trackback($trackback_url, $title, $excerpt, $ID, $charset = "", $force=
 	debug_fwrite($fp, "\n\n");
 	$postHandler =& wp_handler('Post');
 	$postObject =& $postHandler->get($ID);
-	$postObject->setVar('pinged', "__MySqlFunc__CONCAT(pinged, '\n', '$trackback_url')");
-	$postObject->setVar('to_ping', "__MySqlFunc__REPLACE(to_ping, '$trackback_url', '')");
+	$postObject->setVar('pinged', "__MySqlFunc__CONCAT(pinged, '\n', '$trackback_url')", true);
+	$postObject->setVar('to_ping', "__MySqlFunc__REPLACE(to_ping, '$trackback_url', '')", true);
 	if( !$postHandler->insert($postObject, $force, true)) {
 		debug_fwrite($fp, $postHandler->getErrors());
 	}
@@ -1956,7 +1965,7 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
                     $thumbnail = @imagecreatetruecolor($image_new_width, $image_new_height);
                 }
                 if (!$thumbnail) {
-                     $thumbnail =imagecreate($image_new_width, $image_new_width);
+                     $thumbnail =imagecreate($image_new_width, $image_new_height);
                 }
 			}
 			@imagecopyresized($thumbnail, $image, 0, 0, 0, 0, $image_new_width, $image_new_height, $image_attr[0], $image_attr[1]); 
@@ -1965,6 +1974,7 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
             
 			$path = explode('/', $file);
 			$thumbpath = substr($file, 0, strrpos($file, '/')) . '/thumb-' . $path[count($path)-1];
+			touch($thumbpath);
 
 			if ($type[2] == 1) {
 				if (!imagegif($thumbnail, $thumbpath)) {

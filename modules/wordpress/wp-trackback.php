@@ -132,14 +132,14 @@ if (!empty($_tb_id) && !test_param('__mode') && test_param('url')) {
 
 	$commentHandler =& wp_handler('Comment');
 	$commentObject =& $commentHandler->create();
-	$commentObject->setVar('comment_post_ID',$_tb_id);
-	$commentObject->setVar('comment_author',$_blog_name);
-	$commentObject->setVar('comment_author_email','');
-	$commentObject->setVar('comment_author_url',get_param('url'));
-	$commentObject->setVar('comment_author_IP',$_SERVER['REMOTE_ADDR']);
-	$commentObject->setVar('comment_date',current_time('mysql'));
-	$commentObject->setVar('comment_content',$_content);
-	$commentObject->setVar('comment_approved',$_approved);
+	$commentObject->setVar('comment_post_ID',$_tb_id, true);
+	$commentObject->setVar('comment_author',$_blog_name, true);
+	$commentObject->setVar('comment_author_email','', true);
+	$commentObject->setVar('comment_author_url',get_param('url'), true);
+	$commentObject->setVar('comment_author_IP',$_SERVER['REMOTE_ADDR'], true);
+	$commentObject->setVar('comment_date',current_time('mysql'), true);
+	$commentObject->setVar('comment_content',$_content, true);
+	$commentObject->setVar('comment_approved',$_approved, true);
 	if(!$commentHandler->insert($commentObject, true)) {
 		die ("There is an error with the database, it can't store your comment...<br />Please contact the <a href='mailto:".get_settings('admin_email')."'>webmaster</a>.");
 	} else {

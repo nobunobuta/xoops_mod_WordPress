@@ -201,14 +201,16 @@ if (test_param('category_name')) {
 	$_wCriteria =& new CriteriaCompo(new Criteria('category_nicename', $GLOBALS['category_name']));
 	$categoryHandler =& wp_handler('Category');
 	$categoryObject =& $categoryHandler->getByNiceName($GLOBALS['category_name']);
-	$GLOBALS['cat'] = $categoryObject->getVar('cat_ID');
-	$_catc = trim(get_category_children($GLOBALS['cat'], '', ' '));
-	$_catc_array = explode(' ',$_catc);
-    for ($_i = 0; $_i < (count($_catc_array)); $_i++) {
-		$_wCriteria->add(new Criteria('category_id', intval($_catc_array[$_i])),'OR');
+	if ($categoryObject) {
+	    $GLOBALS['cat'] = $categoryObject->getVar('cat_ID');
+	    $_catc = trim(get_category_children($GLOBALS['cat'], '', ' '));
+	    $_catc_array = explode(' ',$_catc);
+        for ($_i = 0; $_i < (count($_catc_array)); $_i++) {
+		    $_wCriteria->add(new Criteria('category_id', intval($_catc_array[$_i])),'OR');
+        }
+	    $_criteria->add($_wCriteria);
+	    unset($_wCriteria);
     }
-	$_criteria->add($_wCriteria);
-	unset($_wCriteria);
 }
 
 // author stuff
@@ -261,17 +263,23 @@ if (!test_param('orderby')) {
 } else {
 	// used to filter values
 	$_allowed_keys = array('author','date','category','title');
+	$_order_keys = array('post_author','post_date','cat_name','post_title');
 	$_orderby_list = explode(' ', addslashes_gpc(urldecode(get_param('orderby'))));
 	if (!in_array($_orderby_list[0], $_allowed_keys)) {
 		$_orderby_array[] = 'post_date';
 	}
 	for ($_i = 0; $_i < (count($_orderby_list)); $_i++) {
 		// Only allow certain values for safety
-		if (in_array($_orderby_list[$_i], $_allowed_keys)) {
-			$_orderby_array[] = 'post_'.$_orderby_list[$_i];
+		$_key = array_search($_orderby_list[$_i], $_allowed_keys);
+		if ($_key !== false) {
+			$_orderby_array[] = $_order_keys[$_key];
 		}
 	}
 	$_criteria_sort = $_orderby_array;
+	if (in_array('category', $_orderby_list) && !test_param('category_name')) {
+		$_joinCriteria =& new XoopsJoinCriteria(wp_table('post2cat'), 'ID', 'post_id');
+		$_joinCriteria->cascade(new XoopsJoinCriteria(wp_table('categories'), 'category_id', 'cat_ID'));
+	}
 }
 
 if (!test_param('cat') && !test_param('category_name') && !test_param('m') && !test_param('p') && !test_param('w') && !test_param('s') && !test_param('poststart') && !test_param('postend')) {
@@ -329,8 +337,12 @@ if ($GLOBALS['pagenow'] != 'post.php' && $GLOBALS['pagenow'] != 'edit.php') {
 	if (!test_param('poststart') || !test_param('postend') || !(get_param('postend') > get_param('poststart'))) {
 		$_criteria->add(new Criteria('post_date', current_time('mysql'), '<='));
 	}
-	$_distinct = 'DISTINCT';
+	if ($GLOBALS['pagenow'] != 'nkarchives.php' || get_param('orderby') != 'category') {
+		$_distinct = 'DISTINCT';
+		$_criteria->setGroupBy(wp_table('posts').'.ID');
+	}
 }
+
 $_wCriteria = new CriteriaCompo(new Criteria('post_status', 'publish'));
 // Get private posts
 if (!empty($GLOBALS['user_ID'])) {
@@ -339,8 +351,6 @@ if (!empty($GLOBALS['user_ID'])) {
 }
 $_criteria->add($_wCriteria);
 unset($_wCriteria);
-
-$_criteria->setGroupBy(wp_table('posts').'.ID');
 
 if ($_criteria_sort) $_criteria->setSort($_criteria_sort);
 if ($_criteria_order) $_criteria->setOrder($_criteria_order);

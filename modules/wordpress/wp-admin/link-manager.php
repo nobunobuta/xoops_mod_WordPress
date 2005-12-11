@@ -20,11 +20,11 @@ switch (get_param('action')) {
 	case _LANG_WLM_ASSIGN_TEXT:
 		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
 		}
 		//Check User_Level
 		if ($user_level < get_settings('links_minadminlevel')) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		//Check Paramaters
 		init_param('POST', 'linkcheck', 'array-int', array(), true);
@@ -35,7 +35,7 @@ switch (get_param('action')) {
 			exit;
 		}
 		if (!$userHandler->get($newowner)) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 5,'No owner ID');
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 5,'No owner ID');
 		}
 		
 		$criteria =& new Criteria('link_id', "(".implode(',', $linkcheck).")", 'IN'); 
@@ -55,11 +55,11 @@ switch (get_param('action')) {
 	case _LANG_WLM_VISIVILITY_TEXT:
 		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
 		}
 		//Check User_Level
 		if ($user_level < get_settings('links_minadminlevel')) {
-			redirect_header($siteurl.'/wp-admin/', 5, _LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/', 5, _LANG_P_CHEATING_ERROR);
 		}
 		//Check Paramaters
 		init_param('POST', 'linkcheck', 'array-int', array(), true);
@@ -97,11 +97,11 @@ switch (get_param('action')) {
 	case _LANG_WLM_MOVE_TEXT:
 		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
 		}
 		//Check User_Level
 		if ($user_level < get_settings('links_minadminlevel')) {
-			redirect_header($siteurl.'/wp-admin/', 5, _LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/', 5, _LANG_P_CHEATING_ERROR);
 		}
 		//Check Paramaters
 		init_param('POST', 'linkcheck', 'array-int', array(), true);
@@ -113,7 +113,7 @@ switch (get_param('action')) {
 		}
 
 		if (!$linkCategoryHandler->get($category)) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 5,'No category ID');
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 5,'No category ID');
 		}
 
 		$criteria =& new Criteria('link_id', "(".implode(',', $linkcheck).")", 'IN'); 
@@ -124,11 +124,11 @@ switch (get_param('action')) {
  case 'Add':
 		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
 		}
 		//Check User_Level
 		if ($user_level < get_settings('links_minadminlevel')) {
-			redirect_header($siteurl.'/wp-admin/', 5, _LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/', 5, _LANG_P_CHEATING_ERROR);
 		}
 		//Check Paramaters
 		init_param('POST', 'link_url', 'string', NO_DEFAULT_PARAM, true);
@@ -145,17 +145,17 @@ switch (get_param('action')) {
 
 		$linkRecord = $linkHandler->create();
 
-		$linkRecord->setVar('link_url', $link_url);
-		$linkRecord->setVar('link_name', $link_name);
-		$linkRecord->setVar('link_image', $link_image);
-		$linkRecord->setVar('link_target', $link_target);
-		$linkRecord->setVar('link_category', $link_category);
-		$linkRecord->setVar('link_description',$link_description);
-		$linkRecord->setVar('link_visible',$link_visible);
-		$linkRecord->setVar('link_rating',$link_rating);
-		$linkRecord->setVar('link_rel',$link_rel);
-		$linkRecord->setVar('link_notes',$link_notes);
-		$linkRecord->setVar('link_rss',$link_rss);
+		$linkRecord->setVar('link_url', $link_url, true);
+		$linkRecord->setVar('link_name', $link_name, true);
+		$linkRecord->setVar('link_image', $link_image, true);
+		$linkRecord->setVar('link_target', $link_target, true);
+		$linkRecord->setVar('link_category', $link_category, true);
+		$linkRecord->setVar('link_description',$link_description, true);
+		$linkRecord->setVar('link_visible',$link_visible, true);
+		$linkRecord->setVar('link_rating',$link_rating, true);
+		$linkRecord->setVar('link_rel',$link_rel, true);
+		$linkRecord->setVar('link_notes',$link_notes, true);
+		$linkRecord->setVar('link_rss',$link_rss, true);
 		
 		$linkHandler->insert($linkRecord);
 		
@@ -171,11 +171,11 @@ switch (get_param('action')) {
   	case 'editlink':
 		//Check Ticket
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
 		}
 		//Check User_Level
 		if ($user_level < get_settings('links_minadminlevel')) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		init_param('POST', 'submit', 'string', NO_DEFAULT_PARAM, true);
 		if ($submit == _LANG_WLM_SAVE_CHANGES) {
@@ -195,18 +195,18 @@ switch (get_param('action')) {
 
 			$linkRecord = $linkHandler->create(false);
 
-			$linkRecord->setVar('link_id', $link_id);
-			$linkRecord->setVar('link_url', $link_url);
-			$linkRecord->setVar('link_name', $link_name);
-			$linkRecord->setVar('link_image', $link_image);
-			$linkRecord->setVar('link_target', $link_target);
-			$linkRecord->setVar('link_category', $link_category);
-			$linkRecord->setVar('link_description',$link_description);
-			$linkRecord->setVar('link_visible',$link_visible);
-			$linkRecord->setVar('link_rating',$link_rating);
-			$linkRecord->setVar('link_rel',$link_rel);
-			$linkRecord->setVar('link_notes',$link_notes);
-			$linkRecord->setVar('link_rss',$link_rss);
+			$linkRecord->setVar('link_id', $link_id, true);
+			$linkRecord->setVar('link_url', $link_url, true);
+			$linkRecord->setVar('link_name', $link_name, true);
+			$linkRecord->setVar('link_image', $link_image, true);
+			$linkRecord->setVar('link_target', $link_target, true);
+			$linkRecord->setVar('link_category', $link_category, true);
+			$linkRecord->setVar('link_description',$link_description, true);
+			$linkRecord->setVar('link_visible',$link_visible, true);
+			$linkRecord->setVar('link_rating',$link_rating, true);
+			$linkRecord->setVar('link_rel',$link_rel, true);
+			$linkRecord->setVar('link_notes',$link_notes, true);
+			$linkRecord->setVar('link_rss',$link_rss, true);
 
 			$linkHandler->insert($linkRecord);
 
@@ -238,15 +238,15 @@ switch (get_param('action')) {
 		break;
   case 'Delete':
 		if ( ! $xoopsWPTicket->check() ) {
-			redirect_header($siteurl.'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
+			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $xoopsWPTicket->getErrors());
 		}
 		if ($user_level < get_settings('links_minadminlevel')) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
 		init_param('POST', 'link_id', 'integer', NO_DEFAULT_PARAM, true);
 		
 		$linkRecord =& $linkHandler->create(false);
-		$linkRecord->setVar('link_id', $link_id);
+		$linkRecord->setVar('link_id', $link_id, true);
 		
 		if(!$linkHandler->delete($linkRecord)) {
 			redirect_header("", 3, $linkHandler->getErrors());
@@ -258,7 +258,7 @@ switch (get_param('action')) {
 		$xfn = true;
 		include_once ('admin-header.php');
 		if ($user_level < get_settings('links_minadminlevel')) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_WLM_LEVEL_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_WLM_LEVEL_ERROR);
 		}
 		init_param('GET', 'link_id', 'integer', NO_DEFAULT_PARAM, true);
 
@@ -333,7 +333,7 @@ switch (get_param('action')) {
 		$standalone=0;
 		include_once ("./admin-header.php");
 		if ($user_level < get_settings('links_minadminlevel')) {
-			redirect_header($siteurl.'/wp-admin/',5,_LANG_WLM_LEVEL_ERROR);
+			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_WLM_LEVEL_ERROR);
 		}
 		include XOOPS_ROOT_PATH."/class/xoopsformloader.php";
 		$selectLinkCat = new XoopsFormSelect("", "cat_id", $cat_id);
