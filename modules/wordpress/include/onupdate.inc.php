@@ -2,9 +2,7 @@
 if (!function_exists('upgrade_wp_tables')){
 	function upgrade_wp_tables() {
 		global $xoopsDB;
-		$GLOBALS["wp_inblock"] = 1;
 		require_once dirname(dirname( __FILE__ )) . '/wp-config.php';
-		$GLOBALS["wp_inblock"] = 0;
 		if ($xoopsDB->query("SHOW COLUMNS FROM ".wp_table('postmeta'))==false) {
 			$sql1 = "CREATE TABLE ".wp_table('postmeta')." (
 						meta_id int(11) NOT NULL auto_increment,
@@ -70,6 +68,12 @@ if (!function_exists('upgrade_wp_tables')){
 		}
 		if(!get_settings('trackback_filename')) {
 			add_option('trackback_filename','wp-trackback.php', 3, 'TrackBack File Name (default wp-trackback.php)', 3, 8);
+		}
+		if(!get_settings('xmlrpc_filename')) {
+			add_option('xmlrpc_filename','xmlrpc.php', 3, 'TrackBack File Name (default xmlrpc.php)', 3, 8);
+		}
+		if(!get_settings('xmlrpc_autodetect')) {
+			add_option('xmlrpc_autodetect','0', 3, 'Enable XMLRPC File Auto detection', 2, 8);
 		}
 	}
 }

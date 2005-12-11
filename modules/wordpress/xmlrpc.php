@@ -3,6 +3,20 @@
 $HTTP_RAW_POST_DATA = $GLOBALS['HTTP_RAW_POST_DATA'];
 $HTTP_RAW_POST_DATA = trim($HTTP_RAW_POST_DATA);
 
+if (file_exists(dirname(__FILE__).'/xoops_version.php')) {
+	require_once(dirname(__FILE__) . '/wp-config.php');
+} else {
+	if (file_exists(dirname(dirname(__FILE__)). '/xoops_version.php')) {
+		require_once(dirname(dirname(__FILE__)) . '/wp-config.php');
+	}
+}
+$xmlrpc_filename = get_settings('xmlrpc_filename') ? get_settings('xmlrpc_filename') : 'xmlrpc.php';
+if (wp_base().'/'.$xmlrpc_filename != __FILE__ ) {
+	@header('HTTP/1.x 404 Not Found');
+	echo ("404 Not Found");
+	exit();
+}
+
 include('wp-config.php');
 
 require_once(wp_base().'/wp-includes/class-xmlrpc.php');
@@ -71,7 +85,7 @@ function wp_insert_post($postarr = array()) {
 		if (get_param('kousagi') == 2) {
 			$post_content = miniHTMLtoWiki($post_content);
 		}
-		$postObject->setVar('post_content', $post_content);
+		$postObject->setVar('post_content', $post_content, true);
 	}
 	if (!empty($postarr['post_excerpt'])) {
 		$post_excerpt = mb_conv($postarr['post_excerpt'], $GLOBALS['blog_charset'], 'auto');
@@ -79,14 +93,14 @@ function wp_insert_post($postarr = array()) {
 		if (get_param('kousagi') == 2) {
 			$post_excerpt = miniHTMLtoWiki($post_excerpt);
 		}
-		$postObject->setVar('post_excerpt', $post_excerpt);
+		$postObject->setVar('post_excerpt', $post_excerpt, true);
 	}
 	if (!empty($postarr['post_title'])) {
 		$post_title = mb_conv($postarr['post_title'], $GLOBALS['blog_charset'], 'auto');
-		$postObject->setVar('post_title', $post_title);
+		$postObject->setVar('post_title', $post_title, true);
 
 		$post_name = sanitize_title($post_title);
-		$postObject->setVar('post_name', $post_name);
+		$postObject->setVar('post_name', $post_name, true);
 	}
 	if (!empty($postarr['post_category'])) {
 		// Make sure we set a valid category
@@ -94,32 +108,32 @@ function wp_insert_post($postarr = array()) {
 		if (count($post_category) == 0	|| !is_array($post_category)) {
 			$post_category = array($GLOBALS['post_default_category']);
 		}
-		$postObject->setVar('post_category', $post_category[0]);
+		$postObject->setVar('post_category', $post_category[0], true);
 	} else {
 		$post_category = array($GLOBALS['post_default_category']);
 	}
 	if (!empty($postarr['post_date'])) {
-		$postObject->setVar('post_date', $postarr['post_date']);
+		$postObject->setVar('post_date', $postarr['post_date'], true);
 	} else {
-		$postObject->setVar('post_date', current_time('mysql'));
+		$postObject->setVar('post_date', current_time('mysql'), true);
 	}
 	if (!empty($postarr['post_author'])) {
-		$postObject->setVar('post_author', $postarr['post_author']);
+		$postObject->setVar('post_author', $postarr['post_author'], true);
 	}
 	if (!empty($postarr['post_status'])) {
-		$postObject->setVar('post_status', $postarr['post_status']);
+		$postObject->setVar('post_status', $postarr['post_status'], true);
 	} else {
-		$postObject->setVar('post_status', get_settings('default_post_status'));
+		$postObject->setVar('post_status', get_settings('default_post_status'), true);
 	}
 	if (!empty($postarr['ping_status'])) {
-		$postObject->setVar('ping_status', $postarr['ping_status']);
+		$postObject->setVar('ping_status', $postarr['ping_status'], true);
 	} else {
-		$postObject->setVar('ping_status', get_settings('default_ping_status'));
+		$postObject->setVar('ping_status', get_settings('default_ping_status'), true);
 	}
 	if (!empty($postarr['comment_status'])) {
-		$postObject->setVar('comment_status', $postarr['comment_status']);
+		$postObject->setVar('comment_status', $postarr['comment_status'], true);
 	} else {
-		$postObject->setVar('comment_status', get_settings('default_comment_status'));
+		$postObject->setVar('comment_status', get_settings('default_comment_status'), true);
 	}
 	if ($postHandler->insert($postObject, true)) {
 		$post_ID = $postObject->getVar('ID');
@@ -133,15 +147,18 @@ function wp_insert_post($postarr = array()) {
 
 function wp_get_single_post($post_ID = 0, $mode = OBJECT) {
 	$postHandler =& wp_handler('Post');
-	$postObject =& $postHandler->get($post_ID);
-	if ($mode == OBJECT) {
-		$result =& $postObject->exportWpObject();
+	if ($postObject =& $postHandler->get($post_ID)) {
+	    if ($mode == OBJECT) {
+		    $result =& $postObject->exportWpObject();
+	    } else {
+		    $result =& $postObject->getVarArray();
+	    }
+	    // Set categories
+	    $result['post_category'] = wp_get_post_cats('',$post_ID);
+	    return $result;
 	} else {
-		$result =& $postObject->getVarArray();
+		return false;
 	}
-	// Set categories
-	$result['post_category'] = wp_get_post_cats('',$post_ID);
-	return $result;
 }
 
 function wp_get_recent_posts($num = 10) {
@@ -162,7 +179,7 @@ function wp_get_recent_posts($num = 10) {
 
 function wp_update_post($postarr = array()) {
 	$postHandler =& wp_handler('Post');
-	$postObject =& $postHandler->get($postarr['ID']);
+	if ($postObject =& $postHandler->get($postarr['ID'])) {
 	if (!empty($postarr['post_content'])) {
 		// Charset Encoding
 		$post_content = mb_conv($postarr['post_content'], $GLOBALS['blog_charset'], 'auto');
@@ -170,7 +187,7 @@ function wp_update_post($postarr = array()) {
 		if (get_param('kousagi') == 2) {
 			$post_content = miniHTMLtoWiki($post_content);
 		}
-		$postObject->setVar('post_content', $post_content);
+			$postObject->setVar('post_content', $post_content, true);
 	}
 	if (!empty($postarr['post_excerpt'])) {
 		$post_excerpt = mb_conv($postarr['post_excerpt'], $GLOBALS['blog_charset'], 'auto');
@@ -178,17 +195,17 @@ function wp_update_post($postarr = array()) {
 		if (get_param('kousagi') == 2) {
 			$post_excerpt = miniHTMLtoWiki($post_excerpt);
 		}
-		$postObject->setVar('post_excerpt', $post_excerpt);
+			$postObject->setVar('post_excerpt', $post_excerpt, true);
 	}
 	if (!empty($postarr['post_title'])) {
 		$post_title = mb_conv($postarr['post_title'], $GLOBALS['blog_charset'], 'auto');
-		$postObject->setVar('post_title', $post_title);
+			$postObject->setVar('post_title', $post_title, true);
 
 		$post_name = sanitize_title($post_title);
 		if ($post_name == '') {
 			$post_name = 'post-'.$ID;
 		}
-		$postObject->setVar('post_name', $post_name);
+			$postObject->setVar('post_name', $post_name, true);
 	}
 	if (!empty($postarr['post_category'])) {
 		// Make sure we set a valid category
@@ -196,27 +213,27 @@ function wp_update_post($postarr = array()) {
 		if (count($post_category) == 0	|| !is_array($post_category)) {
 			$post_category = array($GLOBALS['post_default_category']);
 		}
-		$postObject->setVar('post_category', $post_category[0]);
+			$postObject->setVar('post_category', $post_category[0], true);
 	} else {
 		$post_category = array($GLOBALS['post_default_category']);
 	}
 	if (!empty($postarr['post_status'])) {
-		$postObject->setVar('post_status', $postarr['post_status']);
+			$postObject->setVar('post_status', $postarr['post_status'], true);
 	} else {
-		$postObject->setVar('post_status', get_settings('default_post_status'));
+			$postObject->setVar('post_status', get_settings('default_post_status'), true);
 	}
 	if (!empty($postarr['ping_status'])) {
-		$postObject->setVar('ping_status', $postarr['ping_status']);
+			$postObject->setVar('ping_status', $postarr['ping_status'], true);
 	} else {
-		$postObject->setVar('ping_status', get_settings('default_ping_status'));
+			$postObject->setVar('ping_status', get_settings('default_ping_status'), true);
 	} 
 	if (!empty($postarr['comment_status'])) {
-		$postObject->setVar('comment_status', $postarr['comment_status']);
+			$postObject->setVar('comment_status', $postarr['comment_status'], true);
 	} else {
-		$postObject->setVar('comment_status', get_settings('default_comment_status'));
+			$postObject->setVar('comment_status', get_settings('default_comment_status'), true);
 	}
 	if (!empty($postarr['comment_status'])) {
-		$postObject->setVar('comment_status', $postarr['comment_status']);
+			$postObject->setVar('comment_status', $postarr['comment_status'], true);
 	}
 	if ($postHandler->insert($postObject, true, true)) {
 		$post_ID = $postObject->getVar('ID');
@@ -226,17 +243,23 @@ function wp_update_post($postarr = array()) {
 	} else {
 		return 0;
 	}
+	} else {
+		return 0;
+	}
 }
 
 function wp_get_post_cats($blogid = '1', $post_ID = 0) {
 	$postHandler =& wp_handler('Post');
-	$postObject =& $postHandler->get($post_ID);
-	$categoryObjects =& $postObject->getCategories();
-	$result = array();
-	foreach($categoryObjects as $categoryObject) {
-		$result[] = $categoryObject->getVar('category_id');
+	if ($postObject =& $postHandler->get($post_ID)) {
+	    $categoryObjects =& $postObject->getCategories();
+	    $result = array();
+	    foreach($categoryObjects as $categoryObject) {
+		    $result[] = $categoryObject->getVar('category_id');
+	    }
+	    return array_unique($result);
+	} else {
+		return array();
 	}
-	return array_unique($result);
 }
 
 function wp_set_post_cats($blogid = '1', $post_ID = 0, $post_categories = array()) {
@@ -249,15 +272,19 @@ function wp_set_post_cats($blogid = '1', $post_ID = 0, $post_categories = array(
 	}
 	$post_categories = array_unique($post_categories);
 	$postHandler =& wp_handler('Post');
-	$postObject =& $postHandler->get($post_ID);
-	$postObject->assignCategories($post_categories, true);
+	if ($postObject =& $postHandler->get($post_ID)) {
+		$postObject->assignCategories($post_categories, true);
+	}
 }
 
 function wp_delete_post($post_ID = 0) {
 	$postHandler =& wp_handler('Post');
-	$postObject =& $postHandler->get($post_ID);
-	$result = $postHandler->delete($postObject, true);
-	return $result;
+	if ($postObject =& $postHandler->get($post_ID)) {
+		$result = $postHandler->delete($postObject, true);
+		return $result;
+	} else {
+		return false;
+	}
 }
 
 /**** /DB Functions ****/
@@ -285,40 +312,42 @@ function get_cat_ID($cat_name='General') {
 
 if (!function_exists('get_author_name')) {
 // Get author's preferred display name
-function get_author_name($auth_id) {
-	$authordata = get_userdata($auth_id);
+	function get_author_name($auth_id, $idmode='') {
+		$authordata = get_userdata($auth_id);
+		if (empty($idmode)) {
+			$idmode = $authordata->user_idmode;
+		}
+		switch($idmode) {
+			case 'nickname':
+				$authorname = $authordata->user_nickname;
+				break;
 
-	switch($authordata['user_idmode']) {
-		case 'nickname':
-			$authorname = $authordata['user_nickname'];
-
-		case 'login':
-			$authorname = $authordata['user_login'];
-			break;
+			case 'login':
+				$authorname = $authordata->user_login;
+				break;
 	
-		case 'firstname':
-			$authorname = $authordata['user_firstname'];
-			break;
+			case 'firstname':
+				$authorname = $authordata->user_firstname;
+				break;
 
-		case 'lastname':
-			$authorname = $authordata['user_lastname'];
-			break;
+			case 'lastname':
+				$authorname = $authordata->user_lastname;
+				break;
 
-		case 'namefl':
-			$authorname = $authordata['user_firstname'].' '.$authordata['user_lastname'];
-			break;
+			case 'namefl':
+				$authorname = $authordata->user_firstname.' '.$authordata->user_lastname;
+				break;
 
-		case 'namelf':
-			$authorname = $authordata['user_lastname'].' '.$authordata['user_firstname'];
-			break;
+			case 'namelf':
+				$authorname = $authordata->user_lastname.' '.$authordata->user_firstname;
+				break;
 
 		default:
-			$authorname = $authordata['user_nickname'];
-			break;
+				$authorname = $authordata->user_nickname;
+				break;
+		}
+		return $authorname;
 	}
-
-	return $authorname;
-}
 }
 
 // get extended entry info (<!--more-->)
@@ -1056,7 +1085,18 @@ function mwnewpost($params) {
 			$postarr['ping_status'] = $contentstruct['mt_allow_pings'] ? 'open' : 'closed';
 		}
 		if (!empty($contentstruct['dateCreated'])) {
-			$dateCreated = iso8601_decode($contentstruct['dateCreated']);
+			$dateCreated = preg_split('/([+\-Z])/',$contentstruct['dateCreated'],-1,PREG_SPLIT_DELIM_CAPTURE);
+			if(count($dateCreated) == 3) {
+				$dateCreated[2] = str_replace(':','',$dateCreated[2]);
+			}
+			if ($dateCreated[1] == '+') {
+				$dateoffset = intval($dateCreated[2])*36;
+			} else if ($dateCreated[1] == '-') {
+				$dateoffset = -intval($dateCreated[2])*36;
+			} else {
+				$dateoffset = 0;
+			}
+			$dateCreated = iso8601_decode($dateCreated[0],1)- $dateoffset + (get_settings('time_difference') * 3600);
 		} else {
 			$dateCreated = current_time('timestamp');
 		}
@@ -1156,7 +1196,18 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 			$postarr['ping_status'] = $contentstruct['mt_allow_pings'] ? 'open' : 'closed';
 		}
 		if (!empty($contentstruct['dateCreated'])) {
-			$dateCreated = iso8601_decode($contentstruct['dateCreated']);
+			$dateCreated = preg_split('/([+\-Z])/',$contentstruct['dateCreated'],-1,PREG_SPLIT_DELIM_CAPTURE);
+			if(count($dateCreated) == 3) {
+				$dateCreated[2] = str_replace(':','',$dateCreated[2]);
+			}
+			if ($dateCreated[1] == '+') {
+				$dateoffset = intval($dateCreated[2])*36;
+			} else if ($dateCreated[1] == '-') {
+				$dateoffset = -intval($dateCreated[2])*36;
+			} else {
+				$dateoffset = 0;
+			}
+			$dateCreated = iso8601_decode($dateCreated[0],1)- $dateoffset + (get_settings('time_difference') * 3600);
 		} else {
 			$dateCreated = current_time('timestamp');
 		}
