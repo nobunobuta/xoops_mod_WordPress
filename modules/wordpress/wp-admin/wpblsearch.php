@@ -3,49 +3,24 @@ require_once('../wp-config.php');
 require_once('auth.php');
 
 require_once('../wp-includes/wpblfunctions.php');
-$title = __('WPBlacklist - Search');
+$title = _('WPBlacklist - Search');
 $parent_file = 'wpblacklist.php';
+
+init_param('', 'action', 'string', '');
+init_param('POST', 'rb_search', 'integer', 0);
+init_param('POST', 'search', 'string', '');
+init_param('POST', 'delete_comments', 'array', '');
+init_param('POST', 'deladd', 'string', '');
+
+$GLOBALS['standalone'] = 0;
 require_once('admin-header.php');
-
-if (!get_magic_quotes_gpc()) {
-	$_GET    = add_magic_quotes($_GET);
-	$_POST   = add_magic_quotes($_POST);
-	$_COOKIE = add_magic_quotes($_COOKIE);
-}
-
-$rb_search = 0;
-$wpvarstoreset = array('action','rb_search','search','delete_comments', 'deladd');
-for ($i=0; $i<count($wpvarstoreset); $i += 1) {
-	$wpvar = $wpvarstoreset[$i];
-	if (empty($_POST["$wpvar"])) {
-		if (empty($_GET["$wpvar"])) {
-			if (!isset($$wpvar)) {
-				$$wpvar = '';
-			}
-		} else {
-			$$wpvar = $_GET["$wpvar"];
-		}
-	} else {
-		$$wpvar = $_POST["$wpvar"];
-	}
-}
 
 $tableblacklist = $xoopsDB->prefix("wp_blacklist");
 $tablecomments = wp_table('comments');
 $tableposts =  wp_table('posts');
 
-if ($user_level < 4) {
-?>
-	<div class="wrap">
-		<p>
-			You don&#8217;t have sufficient rights to work with comments, you&#8217;ll have to wait for an admin to raise your level to 3, in order to be authorized to work with comments.<br />
-			You can also <a href="mailto:<?php echo $admin_email ?>?subject=Plugin permission">e-mail the admin</a> to ask for a promotion.<br />
-			When you&#8217;re promoted, just reload this page to work on the comment searching in WPBlacklist. :)
-		</p>
-	</div>
-<?php
-	exit();
-} // $user_level < 4
+//Check User_Level
+user_level_check();
 ?>
 <script type="text/javascript">
 <!--
@@ -108,7 +83,7 @@ if (($action == 'delete') && !empty($delete_comments)) {
 			++$i;
 		}
 	}
-	echo "<p><strong>" . sprintf(__('%s comments deleted.'), $i);
+	echo "<p><strong>" . sprintf(_('%s comments deleted.'), $i);
 	// was this an add & delete operation - if so, add search item & harvested items to blacklist
 	if ($deladd <> '') {
 		// the search item is only added for IP or regex searches
@@ -145,6 +120,7 @@ if (($action == 'search') || ($action == 'delete')) {
 	$search = $wpdb->escape($search);
 	$sql = '';
 	$valid = True;
+	$s_results = array();
 	// do the search based on type
     switch ($rb_search) {
 		case 0:
@@ -164,13 +140,18 @@ if (($action == 'search') || ($action == 'delete')) {
 				$sql = '';
 				if ($comments) {
 					foreach ($comments as $comment) {
-						$next = False;
+						$next = False;$reason=0;
 						// IP check
 						$sites = $wpdb->get_results("SELECT regex FROM $tableblacklist WHERE regex_type='ip'");
 						if ($sites) {
 							foreach ($sites as $site)  {
 								$regex = "/^$site->regex/";
-								if (preg_match($regex, $comment->comment_author_ip)) {
+								if (preg_match($regex, $comment->comment_author_IP)) {
+									$s_result = array();
+								    $s_result['record'] = $comment;
+								    $s_result['reason'] = 'IP';
+								    $s_result['pattern'] = $site->regex;
+								    $s_results[] = $s_result;
 									$next = True;
 									break;
 								}
@@ -182,14 +163,45 @@ if (($action == 'search') || ($action == 'delete')) {
 							if ($sites) {
 								foreach ($sites as $site)  {
 									$regex = $site->regex;
-									if (preg_match("/([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/", $comment->comment_author_ip, $matches)) {
+									if (preg_match("/([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/", $comment->comment_author_IP, $matches)) {
 										$rblhost = $matches[4] . "." . $matches[3] . "." . $matches[2] . "." . $matches[1] . "." . $regex;
 										$resolved = gethostbyname($rblhost);
 										if ($resolved != $rblhost) {
+											$s_result = array();
+										    $s_result['record'] = $comment;
+										    $s_result['reason'] = 'RBL IP';
+										    $s_result['pattern'] = $site->regex;
+										    $s_results[] = $s_result;
 											$next = True;
 											break;
 										}
 									}
+								}
+							}
+						}
+						// RBL check
+						if (!$next) {
+							$sites = $wpdb->get_results("SELECT regex FROM $tableblacklist WHERE regex_type='rbld'");
+							if ($sites) {
+								foreach ($sites as $site)  {
+					                $regex = $site->regex;;
+							        $str = $comment->comment_content;
+							        $str .= ' '.$comment->comment_url;
+							        if ($domains = wpbl_get_domain($str)) {
+										foreach($domains as $domain) {
+											$rblhost = $domain .".". $regex;
+											$resolved = gethostbyname($rblhost);
+											if ($resolved != $rblhost) {
+												$s_result = array();
+											    $s_result['record'] = $comment;
+											    $s_result['reason'] = 'RBL DOMAIN';
+											    $s_result['pattern'] = $domain;
+											    $s_results[] = $s_result;
+												$next = True;
+											    break;
+											}
+										}
+							        }
 								}
 							}
 						}
@@ -200,41 +212,54 @@ if (($action == 'search') || ($action == 'delete')) {
 								foreach ($sites as $site)  {
 									$regex = "/$site->regex/i";
 									if (preg_match($regex, $comment->comment_author_url)) {
+										$s_result = array();
+									    $s_result['record'] = $comment;
+									    $s_result['reason'] = 'URL';
+									    $s_result['pattern'] = $site->regex;
+									    $s_results[] = $s_result;
 										$next = True;
 										break;
 									}
 									if (preg_match($regex, $comment->comment_author_email)) {
+										$s_result = array();
+									    $s_result['record'] = $comment;
+									    $s_result['reason'] = 'EMAIL';
+									    $s_result['pattern'] = $site->regex;
+									    $s_results[] = $s_result;
 										$next = True;
 										break;
 									}
 									if (preg_match($regex, $comment->comment_content)) {
+										$s_result = array();
+									    $s_result['record'] = $comment;
+									    $s_result['reason'] = 'CONTENT';
+									    $s_result['pattern'] = $site->regex;
+									    $s_results[] = $s_result;
 										$next = True;
 										break;
 									}
 								}
 							}
 						}
-						// was a match found - if so add ID to list
-                        if ($next) {
-							if (!empty($sql)) {
-								$sql = $sql . ',';
-							}
-							$sql = $sql . strval($comment->comment_ID);
-						}
 					} // foreach
-                    // are there any ID's in list - if so build query
-                    if (!empty($sql)) {
-						$sql = "SELECT * FROM $tablecomments WHERE comment_ID IN (" . $sql . ')';
-					}
 				}
 			}
 			break;
-
 		case 1:
 			// search by IP
             if (!empty($search)) {
 				$sql = "SELECT * FROM $tablecomments WHERE comment_author_IP LIKE ('$search%') " .
 					"ORDER BY comment_date DESC";
+				$comments = $wpdb->get_results($sql);
+				if ($comments) {
+					foreach ($comments as $comment) {
+						$s_result = array();
+					    $s_result['record'] = $comment;
+					    $s_result['pattern'] = '';
+					    $s_result['reason'] = '';
+					    $s_results[] = $s_result;
+					}
+				}
 			} else {
 				$valid = False;
 			}
@@ -253,26 +278,27 @@ if (($action == 'search') || ($action == 'delete')) {
 						// regular expression/URL check
 						$regex = "/$search/i";
 						if (preg_match($regex, $comment->comment_author_url)) {
+						    $s_result['record'] = $comment;
+						    $s_result['reason'] = '';
+						    $s_result['pattern'] = '';
+						    $s_results[] = $s_result;
 							$next = True;
 						}
 						if (preg_match($regex, $comment->comment_author_email)) {
+						    $s_result['record'] = $comment;
+						    $s_result['reason'] = '';
+						    $s_result['pattern'] = '';
+						    $s_results[] = $s_result;
 							$next = True;
 						}
 						if (preg_match($regex, $comment->comment_content)) {
+						    $s_result['record'] = $comment;
+						    $s_result['reason'] = '';
+						    $s_result['pattern'] = '';
+						    $s_results[] = $s_result;
 							$next = True;
 						}
-						// was a match found - if so add ID to list
-                        if ($next) {
-							if (!empty($sql)) {
-								$sql = $sql . ',';
-							}
-							$sql = $sql . strval($comment->comment_ID);
-						}
 					} // foreach
-                    // are there any ID's in list - if so build query
-                    if (!empty($sql)) {
-						$sql = "SELECT * FROM $tablecomments WHERE comment_ID IN (" . $sql . ')';
-					}
 				}
 			} else {
 				$valid = False;
@@ -280,57 +306,52 @@ if (($action == 'search') || ($action == 'delete')) {
 			break;
 	}
     // catch errors on blank search condition
-    if (!empty($sql)) {
-		$comments = $wpdb->get_results($sql);
-		if ($comments) {
-			echo '<form name="deletecomments" id="deletecomments" action="wpblsearch.php?action=delete" method="post">
-					<input name="search" type="hidden" value="' . $search . '">
-					<input name="rb_search" type="hidden" value="' . $rb_search . '">
-					<table width="100%" cellpadding="3" cellspacing="3">
-						<tr>
-						  <th scope="col">*</th>
-						  <th scope="col">' .  __('Name') . '</th>
-						  <th scope="col">' .  __('Email') . '</th>
-						  <th scope="col">' . __('IP') . '</th>
-						  <th scope="col">' . __('Comment Excerpt') . '</th>
-						  <th scope="col" colspan="3">' .  __('Actions') . '</th>
-						</tr>';
-			foreach ($comments as $comment) {
-				$authordata = get_userdata($wpdb->get_var("SELECT post_author FROM $tableposts WHERE ID = $comment->comment_post_ID"));
-				$bgcolor = ('#eee' == $bgcolor) ? 'none' : '#eee';
+    if ($s_results) {
+		echo '<form name="deletecomments" id="deletecomments" action="wpblsearch.php?action=delete" method="post">
+				<input name="search" type="hidden" value="' . $search . '">
+				<input name="rb_search" type="hidden" value="' . $rb_search . '">
+				<table width="100%" cellpadding="3" cellspacing="3">
+					<tr>
+					  <th scope="col">*</th>
+					  <th scope="col">' .  _('Name') . '</th>
+					  <th scope="col">' .  _('Email') . '</th>
+					  <th scope="col">' . _('IP') . '</th>
+					  <th scope="col">' . _('Comment Excerpt') . '</th>
+					  <th scope="col">' . _('Reason') . '</th>
+					  <th scope="col" colspan="3">' .  _('Actions') . '</th>
+					</tr>';
+		$_style = "";
+		foreach ($s_results as $s_result) {
+		    $comment = $s_result['record'];
+			$authordata = get_userdata($wpdb->get_var("SELECT post_author FROM $tableposts WHERE ID = $comment->comment_post_ID"));
+			$_style = ('class="odd"' == $_style) ? 'class="even"' : 'class="odd"';
 ?>
-				<tr style='background-color: <?php echo $bgcolor; ?>'>
-				  <td><?php if (($user_level > $authordata->user_level) or ($user_login == $authordata->user_login)) { ?><input type="checkbox" name="delete_comments[]" value="<?php echo $comment->comment_ID; ?>" /><?php } ?></td>
-				  <td><?php comment_author_link() ?></td>
-				  <td><?php comment_author_email_link() ?></td>
-				  <td><a href="http://ws.arin.net/cgi-bin/whois.pl?queryinput=<?php comment_author_IP() ?>"><?php comment_author_IP() ?></a></td>
-				  <td><?php comment_excerpt(); ?></td>
-				  <td><a href="<?php echo get_permalink($comment->comment_post_ID); ?>#comment-<?php comment_ID() ?>" class="edit"><?php _e('View') ?></a></td>
-				  <td><?php if (($user_level > $authordata->user_level) or ($user_login == $authordata->user_login)) {
-				  echo "<a href='post.php?action=editcomment&amp;comment=$comment->comment_ID' class='edit'>" .  __('Edit') . "</a>"; } ?></td>
-				  <td><?php if (($user_level > $authordata->user_level) or ($user_login == $authordata->user_login)) {
-						  echo "<a href=\"post.php?action=deletecomment&amp;p=".$comment->comment_post_ID."&amp;comment=".$comment->comment_ID."\" onclick=\"return confirm('" . sprintf(__("You are about to delete this comment by \'%s\'\\n  \'Cancel\' to stop, \'OK\' to delete."), $comment->comment_author) . "')\"    class='delete'>" . __('Delete') . "</a>"; } ?></td>
-				</tr>
+			<tr <?php echo $_style; ?>>
+			  <td><?php if (($user_level > $authordata->user_level) or ($user_login == $authordata->user_login)) { ?><input type="checkbox" name="delete_comments[]" value="<?php echo $comment->comment_ID; ?>" /><?php } ?></td>
+			  <td><?php comment_author_link() ?></td>
+			  <td><?php comment_author_email_link() ?></td>
+			  <td><a href="http://ws.arin.net/cgi-bin/whois.pl?queryinput=<?php comment_author_IP() ?>"><?php comment_author_IP() ?></a></td>
+			  <td><?php comment_excerpt(); ?></td>
+			  <td><?php echo $s_result['reason'].'('.$s_result['pattern'].')'; ?></td>
+			  <td><a href="<?php echo get_permalink($comment->comment_post_ID); ?>#comment-<?php comment_ID() ?>" class="edit"><?php _e('View') ?></a></td>
+			  <td><?php if (($user_level > $authordata->user_level) or ($user_login == $authordata->user_login)) {
+			  echo "<a href='post.php?action=editcomment&amp;comment=$comment->comment_ID' class='edit'>" .  _('Edit') . "</a>"; } ?></td>
+			  <td><?php if (($user_level > $authordata->user_level) or ($user_login == $authordata->user_login)) {
+					  echo "<a href=\"post.php?action=deletecomment&amp;p=".$comment->comment_post_ID."&amp;comment=".$comment->comment_ID."\" onclick=\"return confirm('" . sprintf(_("You are about to delete this comment by \'%s\'\\n  \'Cancel\' to stop, \'OK\' to delete."), $comment->comment_author) . "')\"    class='delete'>" . _('Delete') . "</a>"; } ?></td>
+			</tr>
 <?php
-			} // end foreach
+		} // end foreach
 ?>
-			</table>
-			<p>
-				<a href="javascript:;" onclick="checkAll(document.getElementById('deletecomments')); return false; "><?php _e('Invert Checkbox Selection') ?></a>
-			</p>
-			<p style="text-align: right;">
-				<input type="submit" name="deladd" value="<?php _e('Delete & Add') ?>" onclick="return confirm('<?php _e("You are about to delete these comments permanently \\n  \'Cancel\' to stop, \'OK\' to delete.") ?>')" />
-				<input type="submit" name="Submit" value="<?php _e('Delete Checked') ?>" onclick="return confirm('<?php _e("You are about to delete these comments permanently \\n  \'Cancel\' to stop, \'OK\' to delete.") ?>')" />
-			</p>
-		</form>
-<?php
-		} else {
-?>
+		</table>
 		<p>
-			<strong><?php _e('No results found.') ?></strong>
+			<a href="javascript:;" onclick="checkAll(document.getElementById('deletecomments')); return false; "><?php _e('Invert Checkbox Selection') ?></a>
 		</p>
+		<p style="text-align: right;">
+			<input type="submit" name="deladd" value="<?php _e('Delete & Add') ?>" onclick="return confirm('<?php _e("You are about to delete these comments permanently \\n  \'Cancel\' to stop, \'OK\' to delete.") ?>')" />
+			<input type="submit" name="Submit" value="<?php _e('Delete Checked') ?>" onclick="return confirm('<?php _e("You are about to delete these comments permanently \\n  \'Cancel\' to stop, \'OK\' to delete.") ?>')" />
+		</p>
+	</form>
 <?php
-		} // end if ($comments)
 	} else {
 		if ($valid) {
 			// the blacklist-based search will end up here when there are no results

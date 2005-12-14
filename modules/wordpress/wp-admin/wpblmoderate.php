@@ -3,48 +3,23 @@ require_once('../wp-config.php');
 require_once('auth.php');
 
 require_once('../wp-includes/wpblfunctions.php');
-$title = __('WPBlacklist - Moderate');
+$title = _('WPBlacklist - Moderate');
 $parent_file = 'wpblacklist.php';
+
+init_param('POST', 'btndeladd', 'string', '');
+init_param('POST', 'btndel', 'string', '');
+init_param('POST', 'btnapprove', 'string', '');
+init_param('POST', 'delete_comments', 'array', '');
+
+$GLOBALS['standalone'] = 0;
 require_once('admin-header.php');
-
-if (!get_magic_quotes_gpc()) {
-	$_GET    = add_magic_quotes($_GET);
-	$_POST   = add_magic_quotes($_POST);
-	$_COOKIE = add_magic_quotes($_COOKIE);
-}
-
-$wpvarstoreset = array('btndeladd','btndel','btnapprove','delete_comments');
-for ($i=0; $i<count($wpvarstoreset); $i += 1) {
-	$wpvar = $wpvarstoreset[$i];
-	if (empty($_POST["$wpvar"])) {
-		if (empty($_GET["$wpvar"])) {
-			if (!isset($$wpvar)) {
-				$$wpvar = '';
-			}
-		} else {
-			$$wpvar = $_GET["$wpvar"];
-		}
-	} else {
-		$$wpvar = $_POST["$wpvar"];
-	}
-}
 
 $tableblacklist = $xoopsDB->prefix("wp_blacklist");
 $tablecomments = wp_table('comments');
 $tableposts =  wp_table('posts');
 
-if ($user_level < 4) {
-?>
-	<div class="wrap">
-		<p>
-			You don&#8217;t have sufficient rights to work with comments, you&#8217;ll have to wait for an admin to raise your level to 3, in order to be authorized to work with comments.<br />
-			You can also <a href="mailto:<?php echo $admin_email ?>?subject=Plugin permission">e-mail the admin</a> to ask for a promotion.<br />
-			When you&#8217;re promoted, just reload this page to work on the comment moderation in WPBlacklist. :)
-		</p>
-	</div>
-<?php
-	exit();
-} // $user_level < 4
+//Check User_Level
+user_level_check();
 ?>
 <script type="text/javascript">
 <!--
@@ -173,7 +148,7 @@ if ($comments) {
 <?php
 } else {
     // nothing to approve
-    echo __("<p>Currently there are no comments to be approved.</p>") . "\n";
+    echo _("<p>Currently there are no comments to be approved.</p>") . "\n";
 }
 ?>
 

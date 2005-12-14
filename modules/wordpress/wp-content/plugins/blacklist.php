@@ -3,7 +3,7 @@
 Plugin Name: Blacklist
 Plugin URI: http://www.farook.org
 Description: Checks each entered comment against a standard blacklist and either approves or holds the comment for later approval or automatically deletes it. Also allows you to work with comments in the moderation queue so that you can harvest information to add to the blacklist while mass-deleting held comments. If it's your first time you can use the <a href="wpblacklist.php?action=install">Blacklist Installer</a> or you can simply go to the <a href="wpblacklist.php">Blacklist Configuration</a> screen.
-Version: 2.9
+Version: 2.99
 Author: Fahim Farook
 Author URI: http://www.farook.org
 */
@@ -151,6 +151,28 @@ function blacklist($commentID) {
                 }
             }
         }
+        $sites = $GLOBALS['wpdb']->get_results("SELECT regex FROM $tableblacklist WHERE regex_type='rbld'");
+        if ($sites) {
+            foreach ($sites as $site)  {
+                $regex = $site->regex;
+		        $str = $wpbl_comment['comment_content'];
+		        $str .= ' '.$wpbl_comment['comment_url'];
+		        if ($domains = wpbl_get_domain($str)) {
+					foreach($domains as $domain) {
+						$rblhost = $domain .".". $regex;
+						$resolved = gethostbyname($rblhost);
+						if ($resolved != $rblhost) {
+						    $held = True;
+						    if (in_array('deleterbl', $wpbl_options)) {
+						        mail_and_del($commentID, "URL($domain) in a Comment text contained blacklisted by RBL $regex");
+						        return;
+						    }
+						    break;
+						}
+					}
+				}
+	        }
+	    }
     }
     // expression check
     if (!$held || in_array('deletemail', $wpbl_options) || in_array('deleteurl', $wpbl_options) || in_array('delcommurl', $wpbl_options)) {
@@ -198,8 +220,12 @@ function blacklist($commentID) {
 		}
 
 		if (!strpos($orig_contents, wp_siteurl())) {
-			$approved = 'deleted';
-			mail_and_del($commentID, "TrackBack URL does not contain my site URL");
+            $held = True;
+            if (in_array('deltbsp', $wpbl_options)) {
+				$approved = 'deleted';
+				mail_and_del($commentID, "TrackBack URL does not contain my site URL");
+                return;
+			}
 		}
 	}
     if ($held) {
