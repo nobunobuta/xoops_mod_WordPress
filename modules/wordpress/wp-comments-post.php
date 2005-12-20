@@ -21,7 +21,7 @@ if (!is_email($_email)) {
 	$_email = '';
 }
 $_url_struct = parse_url($_url);
-if (!$_url_struct['path']) {
+if (!$_url_struct['host']) {
 	$_url = '';
 } elseif (!isset($_url_struct['scheme'])) {
 	$_url = 'http://'.$_url;
@@ -107,9 +107,9 @@ if ($_ok) { // if there was no comment from this IP in the last 10 seconds
 	// $_approved should be set according the final approval status
 	// of the new comment
 	if (get_settings('comment_moderation') == 'manual') {
-		$_approved = 0;
+		$approved = 0;
 	} else { // none
-		$_approved = 1;
+		$approved = 1;
 	}
 	$commentObject =& $commentHandler->create();
 	$commentObject->setVar('comment_post_ID', $_comment_post_ID, true);
@@ -119,16 +119,16 @@ if ($_ok) { // if there was no comment from this IP in the last 10 seconds
 	$commentObject->setVar('comment_author_IP',$_user_ip, true);
 	$commentObject->setVar('comment_date',$_now, true);
 	$commentObject->setVar('comment_content',$_comment, true);
-	$commentObject->setVar('comment_approved',$_approved, true);
+	$commentObject->setVar('comment_approved',$approved, true);
 	if(!$commentHandler->insert($commentObject, get_settings('use_comment_preview'))) {
 		redirect_header($_location, 3, $commentHandler->getErrors());
 	}
 	$_comment_ID = $commentObject->getVar('comment_ID');
 	do_action('comment_post', $_comment_ID);
-	if ((get_settings('moderation_notify')) && (!$_approved)) {
+	if ((get_settings('moderation_notify')) && (!$approved)) {
 	    wp_notify_moderator($_comment_ID);
 	}
-	if ((get_settings('comments_notify')) && ($_approved)) {
+	if ((get_settings('comments_notify')) && ($approved)) {
 	    wp_notify_postauthor($_comment_ID, 'comment');
 	}
 	if ($_email == '')
