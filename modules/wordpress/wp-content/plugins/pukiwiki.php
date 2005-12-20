@@ -12,7 +12,7 @@ define('WP_PLUGIN_PUKIWIKI',1);
 function pukiwiki($text) {
 	$text = stripslashes($text);
 	//Re-conver <!--more-->
-	$text = preg_replace("/\s*<a href='(.*?)#more-(.*?)'>(.*?)<\/a>/","\n\nRIGHT:[[\\3:\\1#more-\\2]]",$text);
+	$text = preg_replace("/\s*<a href=\"(.*?)#more-(.*?)\">(.*?)<\/a>/","\n\nRIGHT:[[\\3>\\1#more-\\2]]",$text);
 	$text = preg_replace("/\s*<a id=\"more-(.*?)\"><\/a>/","\n\n&aname(more-\\1);",$text);
 	
 
