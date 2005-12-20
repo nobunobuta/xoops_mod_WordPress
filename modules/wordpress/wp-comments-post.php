@@ -21,7 +21,7 @@ if (!is_email($_email)) {
 	$_email = '';
 }
 $_url_struct = parse_url($_url);
-if (!$_url_struct) {
+if (!$_url_struct['host']) {
 	$_url = '';
 } elseif (!isset($_url_struct['scheme'])) {
 	$_url = 'http://'.$_url;
@@ -156,28 +156,28 @@ if ($_ok) { // if there was no comment from this IP in the last 10 seconds
 	// $_approved should be set according the final approval status
 	// of the new comment
 	if (get_settings('comment_moderation') == 'manual') {
-		$_approved = 0;
+		$approved = 0;
 	} else { // none
-		$_approved = 1;
+		$approved = 1;
 	}
 	$commentObject =& $commentHandler->create();
-	$commentObject->setVar('comment_post_ID',$_comment_post_ID);
-	$commentObject->setVar('comment_author',$_author);
-	$commentObject->setVar('comment_author_email',$_email);
-	$commentObject->setVar('comment_author_url',$_url);
-	$commentObject->setVar('comment_author_IP',$_user_ip);
-	$commentObject->setVar('comment_date',$_now);
-	$commentObject->setVar('comment_content',$_comment);
-	$commentObject->setVar('comment_approved',$_approved);
-	if(!$commentHandler->insert($commentObject)) {
+	$commentObject->setVar('comment_post_ID', $_comment_post_ID, true);
+	$commentObject->setVar('comment_author',$_author, true);
+	$commentObject->setVar('comment_author_email',$_email, true);
+	$commentObject->setVar('comment_author_url',$_url, true);
+	$commentObject->setVar('comment_author_IP',$_user_ip, true);
+	$commentObject->setVar('comment_date',$_now, true);
+	$commentObject->setVar('comment_content',$_comment, true);
+	$commentObject->setVar('comment_approved',$approved, true);
+	if(!$commentHandler->insert($commentObject, get_settings('use_comment_preview'))) {
 		redirect_header($_location, 3, $commentHandler->getErrors());
 	}
 	$_comment_ID = $commentObject->getVar('comment_ID');
 	do_action('comment_post', $_comment_ID);
-	if ((get_settings('moderation_notify')) && (!$_approved)) {
+	if ((get_settings('moderation_notify')) && (!$approved)) {
 	    wp_notify_moderator($_comment_ID);
 	}
-	if ((get_settings('comments_notify')) && ($_approved)) {
+	if ((get_settings('comments_notify')) && ($approved)) {
 	    wp_notify_postauthor($_comment_ID, 'comment');
 	}
 	if ($_email == '')
@@ -188,10 +188,6 @@ if ($_ok) { // if there was no comment from this IP in the last 10 seconds
 	setcookie('comment_author_'.$GLOBALS['cookiehash'], $_author, time()+30000000);
 	setcookie('comment_author_email_'.$GLOBALS['cookiehash'], $_email, time()+30000000);
 	setcookie('comment_author_url_'.$GLOBALS['cookiehash'], $_url, time()+30000000);
-	header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-	header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-	header('Cache-Control: no-cache, must-revalidate');
-	header('Pragma: no-cache');
 	if ($GLOBALS['is_IIS']) {
 		header('Refresh: 0;url='.$_location);
 	} else {
