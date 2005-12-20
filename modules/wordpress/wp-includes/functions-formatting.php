@@ -84,11 +84,11 @@ function wpautop($pee, $br = 1) {
 
 
 function wp_filter_kses($string) {
-	return wp_kses($string, $GLOBALS['allowedtags']);
+	return wp_kses($string, $GLOBALS['wp_allowed_tags'],$GLOBALS['wp_allowed_protocols'], false);
 }
 
 function clean_html($string) {
-	return wp_kses($string, $GLOBALS['fullcleantags']);
+	return wp_kses($string, $GLOBALS['wp_fullclean_tags'],$GLOBALS['wp_allowed_protocols'], false);
 }
 
 function sanitize_title($title) {
