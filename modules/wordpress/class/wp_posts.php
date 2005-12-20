@@ -109,8 +109,8 @@ class WordPressPostHandler  extends XoopsTableObjectHandler
 		$this->prefix = $prefix;
 		$this->module = $module;
 		$this->tableName = $this->db->prefix($prefix.'posts');
-		$this->useFullCache = false;
-		$this->cacheLimit = 50;
+//		$this->useFullCache = false;
+//		$this->cacheLimit = 50;
 	}
 	
 	/**

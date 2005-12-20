@@ -392,7 +392,7 @@ if ($_criteria_limit) $_criteria->setLimit($_criteria_limit);
 if ($_criteria_start) $_criteria->setStart($_criteria_start);
 
 $postHandler =& wp_handler('Post');
-$postObjects =& $postHandler->getObjects($_criteria, false, '', $_distinct, $_joinCriteria);
+$resultSet =& $postHandler->open($_criteria, '', $_distinct, $_joinCriteria);
 
 $GLOBALS['request'] = $postHandler->getLastSQL();
 //echo $GLOBALS['request'].'<br>';
@@ -406,7 +406,7 @@ if (!empty($preview)) {
 	}
 }
 $GLOBALS['posts'] = array();
-foreach ($postObjects as $postObject) {
+while($postObject =& $postHandler->getNext($resultSet)) {
 	$GLOBALS['posts'][] =& $postObject->exportWpObject();
 }
 // No point in doing all this work if we didn't match any posts.
@@ -431,10 +431,10 @@ if ($GLOBALS['posts']) {
 	$_post_id_criteria =& new Criteria('post_id', '('.$_post_id_list.')', 'IN');
 	$_joinCriteria =& new XoopsJoinCriteria(wp_table('post2cat'), 'ID', 'post_id');
 	$_joinCriteria->cascade(new XoopsJoinCriteria(wp_table('categories'), 'category_id', 'cat_ID'));
-	$postObjects =& $postHandler->getObjects($_post_id_criteria, false,
+	$resultSet =& $postHandler->open($_post_id_criteria,
 							'ID, category_id, cat_name, category_nicename, category_description, category_parent',
 							true, $_joinCriteria);
-    foreach ($postObjects as $postObject) {
+	while($postObject =& $postHandler->getNext($resultSet)) {
     	$_cat->ID = $postObject->getVar('ID');
     	$_cat->category_id = $postObject->getExtraVar('category_id');
     	$_cat->cat_name = $postObject->getExtraVar('cat_name');
@@ -451,8 +451,8 @@ if ($GLOBALS['posts']) {
     $_criteria->add($_post_id_criteria);
     $_criteria->setGroupBy('ID');
 	$_joinCriteria =& new XoopsJoinCriteria(wp_table('comments'), 'ID', 'comment_post_ID');
-    $postObjects =&$postHandler->getObjects($_criteria, false, 'ID, COUNT( comment_ID ) AS ccount', false, $_joinCriteria);
-	foreach ($postObjects as $postObject) {
+    $resultSet =& $postHandler->open($_criteria, 'ID, COUNT( comment_ID ) AS ccount', false, $_joinCriteria);
+	while($postObject =& $postHandler->getNext($resultSet)) {
 		$GLOBALS['comment_count_cache'][wp_id()][''.$postObject->getVar('ID')] = $postObject->getExtraVar('ccount');
 	}
 
