@@ -95,5 +95,16 @@ function harvest($commentID) {
 	}
 	return $info;
 }
+function wpbl_get_domain($str) {
+	$domains = array();
+	preg_match_all('!(?:ht(?:tp)?s?:)?//(?:[a-z0-9\-\.\+:]+@)?([a-z0-9\.\-]+)!i', $str, $matches);
+	foreach($matches[1] as $match) {
+        $match = preg_replace('/^\s+/','',$match);
+        $match = preg_replace('/\s+$/','',$match);
+        $match = preg_replace('/^www\./','',$match);
+        $domains[] = strtolower($match);
+	}
+	return $domains;
+}
 }
 ?>

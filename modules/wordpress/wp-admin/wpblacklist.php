@@ -6,8 +6,9 @@ require_once('../wp-includes/wpblfunctions.php');
 $parent_file = 'wpblacklist.php';
 
 init_param('', 'action', 'string', '');
-init_param('POST', 'blfilename', 'string', 'http://www.jayallen.org/comment_spam/blacklist.txt');
+init_param('POST', 'blfilename', 'string', 'http://www.kowa.org/pub/blacklist.txt');
 init_param('POST', 'regextype', 'string', 'url');
+init_param('POST', 'sregextype', 'string', '');
 init_param('POST', 'domain', 'string', '');
 init_param('POST', 'search', 'string', '');
 init_param('POST', 'delete_regexs', 'array', '');
@@ -54,11 +55,11 @@ switch($action) {
 <p>All right sparky, here we go with the installation/upgrade! Do you feel lucky today? :p</p>
 <?php
 		$sql = "CREATE TABLE IF NOT EXISTS `$tableblacklist` (`id` int(11) NOT NULL auto_increment," .
-			"`regex` varchar(200) NOT NULL default '',`regex_type` enum('ip','url','rbl','option') NOT NULL default 'url'," .
+			"`regex` varchar(200) NOT NULL default '',`regex_type` enum('ip','url','rbl', 'rbld', 'option') NOT NULL default 'url'," .
 			"KEY `id` (`id`), FULLTEXT KEY `regex` (`regex`)) TYPE=MyISAM AUTO_INCREMENT=1046";
 		$wpdb->query($sql);
 		// update table structure for WPBlacklist 2.1 onwards
-	    $sql = "ALTER TABLE `$tableblacklist` CHANGE COLUMN `regex_type` `regex_type` enum('ip','url','rbl','option') NOT NULL DEFAULT 'url'";
+	    $sql = "ALTER TABLE `$tableblacklist` CHANGE COLUMN `regex_type` `regex_type` enum('ip','url','rbl','rbld','option') NOT NULL DEFAULT 'url'";
 		$wpdb->query($sql);
 		// clean up blacklist table to remove blank entries
 	    $results = $wpdb->get_results("SELECT * FROM $tableblacklist");
@@ -71,32 +72,49 @@ switch($action) {
 			}
 		}
 		echo "Database stuff done. Adding to blacklist ... <br />";
-		$domain = file($blfilename);
-		for ($i=0; $i<count($domain); $i++) {
-			//echo "original : $domain[$i]-<br/>";
-			$data = $domain[$i];
-			$temp = "";
-			for ($j=0; $j<strlen($data); $j++)  {
-				 if ($data[$j]==" " || $data[$j] == "#")
-					break;
-				 else
-					$temp.=$data[$j];
-				 continue;
+		if (preg_match('|^http(s)?://|', $blfilename)) {
+			$domain = '';
+			require_once(XOOPS_ROOT_PATH.'/class/snoopy.php');
+			$snoopy = New Snoopy;
+			if ($snoopy->fetch($blfilename)) {
+				$domain = $snoopy->results;
 			}
-			$temp = trim($temp);
-			if (!empty($temp)) {
-				$buf = sanctify($temp);
-				// echo "Regex: $temp<br />";
-				$request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$buf'");
-				if (!$request) {
-					$res = $wpdb->query("INSERT INTO $tableblacklist (regex, regex_type) VALUES ('$buf','url')");
-					if ($res) {
-						echo "<span class='success'>Imported : $temp</span><br/>";
+			$domain = explode("\n", $domain);
+		} else {
+			$domain = file($blfilename);
+		}
+	    $deflists  = array(
+    				'rbl'  => array('bsb.spamlookup.net','opm.blitzed.org'),
+    				'rbld' => array('bsb.spamlookup.net','sc.surbl.org','rbl.bulkfeeds.jp'),
+    				'url'  => $domain
+    			);
+    	foreach ($deflists as $key => $deflist) {
+			for ($i=0; $i<count($deflist); $i++) {
+				//echo "original : $deflist[$i]-<br/>";
+				$data = $deflist[$i];
+				$temp = "";
+				for ($j=0; $j<strlen($data); $j++)  {
+					 if ($data[$j]==" " || $data[$j] == "#")
+						break;
+					 else
+						$temp.=$data[$j];
+					 continue;
+				}
+				$temp = trim($temp);
+				if (!empty($temp)) {
+					$buf = sanctify($temp);
+					// echo "Regex: $temp<br />";
+					$request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$buf' AND regex_type='$key'");
+					if (!$request) {
+						$res = $wpdb->query("INSERT INTO $tableblacklist (regex, regex_type) VALUES ('$buf','$key')");
+						if ($res) {
+							echo "<span class='success'>Imported($key) : ".htmlspecialchars($temp,ENT_QUOTES)."</span><br/>";
+						} else {
+							echo "<span class='error'>Error importing($key) : ".htmlspecialchars($temp,ENT_QUOTES)."</span><br/>";
+						}
 					} else {
-						echo "<span class='error'>Error importing : $temp</span><br/>";
+						echo "<span class='error'>Not imported($key) : ".htmlspecialchars($temp,ENT_QUOTES)." already exists!</span><br/>";
 					}
-				} else {
-					echo "<span class='error'>Not imported : $temp already exists!</span><br/>";
 				}
 			}
 		}
@@ -213,7 +231,7 @@ user_level_check();
 				</label>
 				<label>
 					<input type="checkbox" name="options[]" value="deleterbl" <?php echo (in_array('deleterbl', $options) ? 'checked' : ''); ?> />
-					Delete comments where the author IP appears in a real-time blacklist (RBL) <br />
+					Delete comments where the author IP OR contents URL appears in a real-time blacklist (RBL) <br />
 				</label>
 				<label>
 					<input type="checkbox" name="options[]" value="deletemail" <?php echo (in_array('deletemail', $options) ? 'checked' : ''); ?> />
@@ -258,12 +276,33 @@ if ($action == 'import') {
 				<b><?php _e('Import Blacklist Results') ?></b>
 				<br/><br/>
 <?php
-	$blfile = @file($blfilename);
+	if (preg_match('|^http(s)?://|', $blfilename)) {
+		$domain = '';
+		require_once(XOOPS_ROOT_PATH.'/class/snoopy.php');
+		$snoopy = New Snoopy;
+		if ($snoopy->fetch($blfilename)) {
+			$blfile = $snoopy->results;
+		}
+		$blfile = explode("\n", $blfile);
+	} else {
+		$blfile = file($blfilename);
+	}
 	if (!$blfile) {
+	    $deflists  = array(
+					'rbl'  => array('bsb.spamlookup.net','opm.blitzed.org'),
+					'rbld' => array('bsb.spamlookup.net','sc.surbl.org','rbl.bulkfeeds.jp'),
+				);
 		_e('File not found. Please check the path or copy the file to the wp-admin directory.');
 	} else {
-		for ($i=0; $i<count($blfile); $i++) {
-			$data = $blfile[$i];
+	    $deflists  = array(
+					'rbl'  => array('bsb.spamlookup.net','opm.blitzed.org'),
+					'rbld' => array('bsb.spamlookup.net','sc.surbl.org','rbl.bulkfeeds.jp'),
+					'url'  => $blfile
+				);
+	}
+   	foreach ($deflists as $key => $deflist) {
+		for ($i=0; $i<count($deflist); $i++) {
+			$data = $deflist[$i];
 			$temp = "";
 			for ($j=0; $j<strlen($data); $j++)  {
 			   if ($data[$j]==" " || $data[$j] == "#")
@@ -276,18 +315,18 @@ if ($action == 'import') {
 			if (!empty($temp)) {
 				$buf = sanctify($temp);
 				// echo "Regex: $temp<br />";
-				$request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$buf'");
+				$request = $wpdb->get_row("SELECT id FROM $tableblacklist WHERE regex='$buf' AND regex_type='$key'");
 				if (!$request) {
-					$request1 = $wpdb->query("INSERT INTO $tableblacklist (regex,regex_type) VALUES ('$buf','url')");
+					$request1 = $wpdb->query("INSERT INTO $tableblacklist (regex,regex_type) VALUES ('$buf','$key')");
 					if ($request1)
-						echo "<font color='green'>Added : $temp</font><BR />";
+						echo "<font color='green'>Added($key) : ".htmlspecialchars($temp,ENT_QUOTES)."</font><BR />";
 					else
-						echo "<font color='red'>Error adding: $temp</font><BR />";
+						echo "<font color='red'>Error adding($key): ".htmlspecialchars($temp,ENT_QUOTES)."</font><BR />";
 				}
 			}
 		}
-		echo 'Done! <br/>';
 	}
+	echo 'Done! <br/>';
 	echo '</p>';
 } // $action == 'import'
 ?>
@@ -305,7 +344,8 @@ if ($action == 'import') {
 							<select name="regextype">
 								<option <?php echo ($regextype=='url'? 'selected' : '') ?> value="url">URL</option>
 								<option <?php echo ($regextype=='ip'? 'selected' : '') ?> value="ip">IP</option>
-								<option <?php echo ($regextype=='rbl'? 'selected' : '') ?> value="rbl">RBL</option>
+								<option <?php echo ($regextype=='rbl'? 'selected' : '') ?> value="rbl">RBL(IP)</option>
+								<option <?php echo ($regextype=='rbld'? 'selected' : '') ?> value="rbld">RBL(DOMAIN)</option>
 							</select>
 						</td>
 					</tr>
@@ -364,6 +404,13 @@ if ($action == 'add') {
 				<?php _e('Search for blacklist items to delete. Results will be of any type - expression, IP or RBL server.') ?>
 				<br /><br />
 				<input type="text" name="search" value="<?php echo $search; ?>" size="17" />
+				<select name="sregextype">
+					<option value="">ANY</option>
+					<option <?php echo ($sregextype=='url'? 'selected' : '') ?> value="url">URL</option>
+					<option <?php echo ($sregextype=='ip'? 'selected' : '') ?> value="ip">IP</option>
+					<option <?php echo ($sregextype=='rbl'? 'selected' : '') ?> value="rbl">RBL(IP)</option>
+					<option <?php echo ($sregextype=='rbld'? 'selected' : '') ?> value="rbld">RBL(DOMAIN)</option>
+				</select>
 				<input type="submit" name="submit" value="<?php _e('Search') ?>"  />
 			</form>
 <?php
@@ -390,12 +437,20 @@ if ($action == 'delete') {
 <?php
 if (($action == 'search') || ($action == 'delete')) {
 	$search = trim($search);
-	if (empty($search)) {
-		$sql = "SELECT * FROM $tableblacklist ORDER BY id ASC";
-	} else {
+	$and = "WHERE ";
+	if (!empty($search)) {
 		$search = sanctify($search);
-		$search = $wpdb->escape($search);
-		$sql = "SELECT * FROM $tableblacklist  WHERE regex LIKE '%$search%' ORDER BY id DESC";
+		$wherestr = $and . "(regex LIKE '%$search%') ";
+		$and = "AND ";
+	}
+	if (!empty($sregextype)) {
+		$sregextype = $wpdb->escape($sregextype);
+		$wherestr .= $and . "(regex_type =  '$sregextype') ";
+	}
+	if (empty($search)) {
+		$sql = "SELECT * FROM $tableblacklist $wherestr ORDER BY id ASC";
+	} else {
+		$sql = "SELECT * FROM $tableblacklist $wherestr ORDER BY id DESC";
 	}
 	$regexs = $wpdb->get_results($sql);
 	if ($regexs) {
@@ -409,16 +464,16 @@ if (($action == 'search') || ($action == 'delete')) {
 					  <th scope="col"><?php _e('Type') ?></th>
 					</tr>
 <?php
-		$bgcolor = 'none';
+		$_style = "";
 		foreach ($regexs as $regex) {
-			$bgcolor = ('#eee' == $bgcolor) ? 'none' : '#eee';
+			$_style = ('class="odd"' == $_style) ? 'class="even"' : 'class="odd"';
 ?>
-					<tr style='background-color: <?php echo $bgcolor; ?>'>
+					<tr <?php echo $_style; ?>>
 						<td>
 							<input type="checkbox" name="delete_regexs[]" value="<?php echo $regex->id ?>" />
 						</td>
-						<td><?php echo $regex->regex ?></td>
-						<td><?php echo $regex->regex_type ?></td>
+						<td><?php echo htmlspecialchars($regex->regex, ENT_QUOTES) ?></td>
+						<td><?php echo htmlspecialchars($regex->regex_type, ENT_QUOTES) ?></td>
 					</tr>
 <?php
 		} // foreach
