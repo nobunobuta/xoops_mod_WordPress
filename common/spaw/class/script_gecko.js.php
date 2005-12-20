@@ -170,7 +170,7 @@
   
   function SPAW_fore_color_click(editor, sender)
   {
-    var wnd = SPAW_showColorPicker(editor,null,'SPAW_fore_color_click_callback'); 
+    var wnd = SPAW_showColorPicker(editor,null,'fore_color_click'); 
   }
   
   function SPAW_fore_color_click_callback(editor, sender)
@@ -186,7 +186,7 @@
 
   function SPAW_bg_color_click(editor, sender)
   {
-    var wnd = SPAW_showColorPicker(editor,null,'SPAW_bg_color_click_callback'); 
+    var wnd = SPAW_showColorPicker(editor,null,'bg_color_click'); 
   }
 
   function SPAW_bg_color_click_callback(editor, sender)
@@ -246,7 +246,7 @@
     var wnd = window.open('<?php echo $spaw_dir?>dialogs/a.php?lang=' 
       + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
       + document.getElementById('SPAW_'+editor+'_theme').value
-      + '&editor=' + editor + '&callback=SPAW_hyperlink_click_callback', "link_window", 
+      + '&editor=' + editor + '&callback=hyperlink_click', "link_window", 
       'status=no,modal=yes,width=350,height=250'); 
     wnd.dialogArguments = aProps;
   }
@@ -410,7 +410,7 @@
     var wnd = window.open('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' 
       + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
       + document.getElementById('SPAW_'+editor+'_theme').value
-      + '&editor=' + editor + '&callback=SPAW_image_insert_click_callback', "img_library", 
+      + '&editor=' + editor + '&callback=image_insert_click', "img_library", 
       'status=no,modal=yes,width=420,height=420'); 
   }
   
@@ -483,7 +483,7 @@
       var wnd = window.open('<?php echo $spaw_dir?>dialogs/img.php?lang=' 
         + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
         + document.getElementById('SPAW_'+editor+'_theme').value
-        + '&editor=' + editor + '&callback=SPAW_image_prop_click_callback', "img_prop", 
+        + '&editor=' + editor + '&callback=image_prop_click', "img_prop", 
         'status=no,modal=yes,width=420,height=420'); 
       wnd.dialogArguments = iProps;
     }
@@ -543,7 +543,7 @@
     var wnd = window.open('<?php echo $spaw_dir?>dialogs/img_library.php?lang=' 
       + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
       + document.getElementById('SPAW_'+editor+'_theme').value
-      + '&editor=' + editor + '&callback=SPAW_image_popup_click_callback', "img_library", 
+      + '&editor=' + editor + '&callback=image_popup_click', "img_library", 
       'status=no,modal=yes,width=420,height=420'); 
     <?php } ?>
   }
@@ -762,7 +762,7 @@
       var wnd = window.open('<?php echo $spaw_dir?>dialogs/table.php?lang=' 
       + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
       + document.getElementById('SPAW_'+editor+'_theme').value
-      + '&editor=' + editor + '&callback=SPAW_table_create_click_callback', "table_prop", 
+      + '&editor=' + editor + '&callback=table_create_click', "table_prop", 
       'status=no,modal=yes,width=420,height=420'); 
   }
   
@@ -839,7 +839,7 @@
       var wnd = window.open('<?php echo $spaw_dir?>dialogs/table.php?lang=' 
       + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
       + document.getElementById('SPAW_'+editor+'_theme').value
-      + '&editor=' + editor + '&callback=SPAW_table_prop_click_callback', "table_prop", 
+      + '&editor=' + editor + '&callback=table_prop_click', "table_prop", 
       'status=no,modal=yes,width=420,height=420'); 
       wnd.dialogArguments = tProps;
     }
@@ -922,7 +922,7 @@
       var wnd = window.open('<?php echo $spaw_dir?>dialogs/td.php?lang=' 
       + document.getElementById('SPAW_'+editor+'_lang').value + '&theme=' 
       + document.getElementById('SPAW_'+editor+'_theme').value
-      + '&editor=' + editor + '&callback=SPAW_table_cell_prop_click_callback', "table_prop", 
+      + '&editor=' + editor + '&callback=table_cell_prop_click', "table_prop", 
       'status=no,modal=yes,width=420,height=420'); 
       wnd.dialogArguments = cProps;
     }    

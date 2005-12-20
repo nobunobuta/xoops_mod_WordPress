@@ -45,7 +45,7 @@ $request_uri = urldecode(empty($_POST['request_uri'])?(empty($_GET['request_uri'
 
   <?php if (SPAW_Util::getBrowser() == 'Gecko') { ?>
 
-    var wnd = window.open('<?php echo $spaw_dir?>dialogs/colorpicker.php?lang=<?php echo $lang?>&theme=<?php echo $theme?>&editor=<?php echo htmlspecialchars($_GET["editor"],ENT_QUOTES)?>&callback=showColorPicker_callback', 
+    var wnd = window.open('<?php echo $spaw_dir?>dialogs/colorpicker.php?lang=<?php echo $lang?>&theme=<?php echo $theme?>&editor=<?php echo htmlspecialchars($_GET["editor"],ENT_QUOTES)?>&callback=showColorPickerSelf', 
       "color_picker", 
       'status=no,modal=yes,width=350,height=250'); 
     wnd.dialogArguments = curcolor;
@@ -63,7 +63,7 @@ $request_uri = urldecode(empty($_POST['request_uri'])?(empty($_GET['request_uri'
   <?php } ?>
   }
   
-  function showColorPicker_callback(editor, sender)
+  function SPAW_showColorPickerSelf_callback(editor, sender)
   {
     var bCol = sender.returnValue;
     try
@@ -78,7 +78,7 @@ $request_uri = urldecode(empty($_POST['request_uri'])?(empty($_GET['request_uri'
   {
   <?php if (SPAW_Util::getBrowser() == 'Gecko') { ?>
 
-    var wnd = window.open('<?php echo $spaw_dir?>dialogs/img_library.php?lang=<?php echo $lang?>&theme=<?php echo $theme?>&editor=<?php echo htmlspecialchars($_GET["editor"],ENT_QUOTES)?>&callback=showImgPicker_callback',
+    var wnd = window.open('<?php echo $spaw_dir?>dialogs/img_library.php?lang=<?php echo $lang?>&theme=<?php echo $theme?>&editor=<?php echo htmlspecialchars($_GET["editor"],ENT_QUOTES)?>&callback=showImgPickerSelf',
       "img_library", 
       'status=no,modal=yes,width=420,height=420'); 
 
@@ -95,12 +95,15 @@ $request_uri = urldecode(empty($_POST['request_uri'])?(empty($_GET['request_uri'
   <?php } ?>
   }
   
-  function showImgPicker_callback(editor, sender)
+  function SPAW_showImgPickerSelf_callback(editor, sender)
   {
-    var imgSrc = sender.returnValue;
-    if(imgSrc != null)
-    {
-      document.getElementById('cbackground').value = imgSrc;
+    var retval = sender.returnValue;
+    if (retval) {
+      var imgSrc = retval.imgHref;
+      if(imgSrc != null)
+      {
+        document.getElementById('cbackground').value = imgSrc;
+      }
     }
   }
 
@@ -222,7 +225,7 @@ $request_uri = urldecode(empty($_POST['request_uri'])?(empty($_GET['request_uri'
       window.close();
       <?php
       if (!empty($_GET['callback']))
-        echo "opener.".urlencode($_GET['callback'])."('".htmlspecialchars($_GET['editor'],ENT_QUOTES)."',this);\n";
+        echo "opener.SPAW_".htmlspecialchars($_GET['callback'],ENT_QUOTES)."_callback('".htmlspecialchars($_GET['editor'],ENT_QUOTES)."',this);\n";
       ?>
     }
   }

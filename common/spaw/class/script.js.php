@@ -425,15 +425,20 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
 		    	this[editor+'_rEdit'].document.execCommand('insertimage', false, imgSrc.replace(/\.\w+$/,'.gif'));
 		    }
 		    /* /GIJ */
-
    			var href = '';
 			if (retval.thumbFlg == 'Thumb') {
 			    this[editor+'_rEdit'].document.execCommand('createlink',false,retval.imgHref);
 			} else if (retval.zoomrate != 1) {
-		  		this[editor+'_rEdit'].document.execCommand('createlink',false,imgSrc);
+		 		this[editor+'_rEdit'].document.execCommand('createlink',false,imgSrc);
 			    var im = SPAW_getImg(editor); // current cell
 			    im.width = im.width * retval.zoomrate;
 			}
+	  		if (retval.title) {
+			    var im = SPAW_getImg(editor); // current cell
+	  			im.alt = retval.title;
+	  			im.title = retval.title;
+	  		}
+
 	  	}
 	    SPAW_update_toolbar(editor, true);
 	 }

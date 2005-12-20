@@ -97,7 +97,7 @@ $l->setBlock('hyperlink');
       window.close();
       <?php
       if (!empty($_GET['callback']))
-        echo "opener.".urlencode($_GET['callback'])."('".htmlspecialchars($_GET['editor'],ENT_QUOTES)."',this);\n";
+        echo "opener.SPAW_".htmlspecialchars($_GET['callback'],ENT_QUOTES)."_callback('".htmlspecialchars($_GET['editor'],ENT_QUOTES)."',this);\n";
       ?>
     }
   }
