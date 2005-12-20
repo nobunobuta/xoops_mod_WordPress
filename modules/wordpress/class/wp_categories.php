@@ -55,7 +55,7 @@ class WordPressCategory  extends XoopsTableObject
 	
 }
 
-class WordPressCategoryHandler  extends XoopsTableObjectHandler
+class WordPressCategoryHandler  extends XoopsCachedTableObjectHandler
 {
 	var $prefix;
 	var $module;
