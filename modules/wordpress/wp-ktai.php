@@ -41,6 +41,7 @@ require_once(dirname(__FILE__).'/wp-config.php');
 //
 // １ページあたりの一覧表示行数
 $ListPerPage = 6; //ケータイのaccesskeyを使うため6以上を指定すると強制的に6になります。
+$CommentPerPage = 10;
 // １ページあたりの表示文字数
 $CharCountPerPage = 0; //文字数
 // 画像を文字列に置換するか？するならば置換文字列を設定する。
@@ -128,9 +129,9 @@ function get_number_of_comments($ID) {
 	return $number;
 }
 
-function get_comments($ID) {
+function get_comments($ID,$start,$count) {
 	global $tablecomments,$wpdb,$CommentSort;
-	$comments = $wpdb->get_results("SELECT * FROM $tablecomments WHERE comment_post_ID = $ID AND comment_approved = '1' ORDER BY comment_date $CommentSort");
+	$comments = $wpdb->get_results("SELECT * FROM $tablecomments WHERE comment_post_ID = $ID AND comment_approved = '1' ORDER BY comment_date $CommentSort LIMIT $start ,$count");
 	return $comments;
 }
 
@@ -370,12 +371,17 @@ switch ($_REQUEST["view"]) {
 	case "comprev" :
 		$num = intval($_REQUEST["num"]);
 		$p = intval($_REQUEST["p"]);
+		$start = intval(isset($_REQUEST["start"]) ? $_REQUEST["start"]: 0);
+		if ($CommentPerPage > 10) {
+			$CommentPerPage = 10;
+		}
 		//コメント表示
 		$postdata = get_postdata($p);
 		$tmp = substr($postdata['Date'],5,2).'/'.substr($postdata['Date'],8,2).substr($postdata['Date'],10,6);
 		$echostring .= '<b>'.$postdata['Title'].'('.$tmp.')へのコメント</b>';
 		$echostring .= '<hr />';
-		$comments = get_comments($postdata['ID']);
+		$comment_num = get_number_of_comments($postdata['ID']);
+		$comments = get_comments($postdata['ID'], $start, $CommentPerPage);
 		if ($comments) {
 			foreach ($comments as $comment) {
 				$author = apply_filters('comment_author', $comment->comment_author);
@@ -399,6 +405,12 @@ switch ($_REQUEST["view"]) {
 			if (!get_option('comment_registration')) {
 				$echostring .='<a href="'.$myurl.'?view=comment&num='.$num.'&p='.$p.$ses_param.'">コメントする</a><br />';
 			}
+		}
+		if ($comment_num > $start+$CommentPerPage) {
+			$echostring .= $ackeychar[9].'<a href="'.$myurl.'?view=comprev&start='.($start+$CommentPerPage).'&num='.$num.'&p='.$p.$ses_param.'" accesskey="9">次の'.$CommentPerPage.'件のコメント &gt;</a><br/>';
+		}
+		if (0 <= $start-$CommentPerPage) {
+			$echostring .= $ackeychar[7].'<a href="'.$myurl.'?view=comprev&start='.($start-$CommentPerPage).'&num='.$num.'&p='.$p.$ses_param.'" accesskey="9">前の'.$CommentPerPage.'件のコメント &gt;</a><br/>';
 		}
 		$echostring .='<hr />';
 		$echostring .= $ackeychar[0].'<a href="'.$myurl.'?view=content&num='.$num.'&p='.$p.'&start=0'.$ses_param.'" accesskey="0">記事へ戻る</a><br/>';
