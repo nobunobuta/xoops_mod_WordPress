@@ -9,6 +9,14 @@ Author URI: http://www.noprerequisite.com/
 */
 $GLOBALS['excluded_referers']=array();
 $GLOBALS['excluded_referers'][]=XOOPS_URL;
+$GLOBALS['excluded_referers'][]="google.com";
+$GLOBALS['excluded_referers'][]="google.co.jp";
+$GLOBALS['excluded_referers'][]="search.msn.co.jp";
+$GLOBALS['excluded_referers'][]='search.goo.ne.jp';
+$GLOBALS['excluded_referers'][]='search.nifty.com';
+$GLOBALS['excluded_referers'][]='search.yahoo.com';
+$GLOBALS['excluded_referers'][]='search.yahoo.co.jp';
+$GLOBALS['excluded_referers'][]='ocnsearch.goo.ne.jp';
 
 //$excluded_referers[]="google.com";
 

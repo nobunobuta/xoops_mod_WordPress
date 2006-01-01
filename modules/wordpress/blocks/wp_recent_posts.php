@@ -68,7 +68,7 @@ if( ! defined( 'WP_RECENT_POSTS_BLOCK_INCLUDED' ) ) {
 		$pdate = "";
 
 		$block['style'] =block_style_get(false);
-		$block['divid'] = 'wpRecentPost'.$wp_num;
+		$block['divid'] = 'wpRecentPost'.$wp_num.'_'.$category;
 		$block['cat_date'] = $cat_date;
 
 		if ($lposts) {
