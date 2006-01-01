@@ -418,14 +418,7 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
     if (retval) {
 	    var imgSrc = retval.imgurl;
 	  	if(imgSrc != null) {
-			/* GIJ */
-		    if( imgSrc.match(/(\.gif|\.png|\.jpg|\.jpeg)$/i) ) {
-	    		this[editor+'_rEdit'].document.execCommand('insertimage', false, imgSrc);
-		    } else {
-		    	this[editor+'_rEdit'].document.execCommand('insertimage', false, imgSrc.replace(/\.\w+$/,'.gif'));
-		    }
-		    /* /GIJ */
-   			var href = '';
+	    	this[editor+'_rEdit'].document.execCommand('insertimage', false, imgSrc);
 			if (retval.thumbFlg == 'Thumb') {
 			    this[editor+'_rEdit'].document.execCommand('createlink',false,retval.imgHref);
 			} else if (retval.zoomrate != 1) {
@@ -433,12 +426,15 @@ SPAW_toggle_borders(editor,this[editor+'_rEdit'].document.body,null);
 			    var im = SPAW_getImg(editor); // current cell
 			    im.width = im.width * retval.zoomrate;
 			}
+		    var im = SPAW_getImg(editor); // current cell
 	  		if (retval.title) {
-			    var im = SPAW_getImg(editor); // current cell
 	  			im.alt = retval.title;
 	  			im.title = retval.title;
 	  		}
-
+	        if (!retval.isImg) {
+	        	im.width = retval.twidth;
+                im.outerHTML += retval.title+' ('+retval.size+'KB)';
+		    }
 	  	}
 	    SPAW_update_toolbar(editor, true);
 	 }

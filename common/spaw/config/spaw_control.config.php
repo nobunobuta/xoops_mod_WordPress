@@ -111,8 +111,7 @@ $groups = ( $xoopsUser ) ? $xoopsUser -> getGroups() : XOOPS_GROUP_ANONYMOUS;
 $gperm_handler = & xoops_gethandler( 'groupperm' );
 $available_modules = $gperm_handler->getItemIds('module_read', $groups);
 $module_handler =& xoops_gethandler('module');
-$criteria = new CriteriaCompo(new Criteria('hassearch', 1));
-$criteria->add(new Criteria('isactive', 1));
+$criteria = new CriteriaCompo(new Criteria('isactive', 1));
 $criteria->add(new Criteria('mid', "(".implode(',', $available_modules).")", 'IN'));
 $modules =& $module_handler->getObjects($criteria, true);
 $config_handler =& xoops_gethandler('config');
@@ -124,16 +123,38 @@ foreach ($modules as $module){
 	if (file_exists($wpconf_fname)) {
 		if( ! preg_match( '/^(\D+)(\d*)$/' , $mod , $regs ) ) echo ( "invalid dirname: " . htmlspecialchars( $mod ) ) ;
 		$imnumber = $regs[2] === '' ? '' : intval( $regs[2] ) ;
-		$result = $xoopsDB->query('SELECT option_value FROM ' . $xoopsDB->prefix('wp'.$imnumber.'_options') . " WHERE option_name='fileupload_realpath'");
-		if ($option = $xoopsDB->fetcharray($result)){
+		$result = $xoopsDB->query('SELECT option_name,option_value FROM ' . $xoopsDB->prefix('wp'.$imnumber.'_options') . " WHERE option_name IN ('use_fileupload','fileupload_realpath','fileupload_minlevel','fileupload_allowedusers','fileupload_allowedtypes')");
+		$wp_img_settings = array();
+		while ($option = $xoopsDB->fetcharray($result)){
+			$wp_img_settings[$option['option_name']] = $option['option_value'];
+		}
+		if (!empty($wp_img_settings['fileupload_realpath'])) {
 			$spaw_imglibs[$i]["type"]  = "Dir";
-			$spaw_imglibs[$i]["value"] = ereg_replace(XOOPS_ROOT_PATH.'\/(.*)',"\\1",$option['option_value'])."/" ;
+			$spaw_imglibs[$i]["value"] = ereg_replace(XOOPS_ROOT_PATH.'\/(.*)',"\\1",$wp_img_settings['fileupload_realpath'])."/" ;
 			$spaw_imglibs[$i]["text"] = 'Uploads['.$module->getVar('name').']';
 			$spaw_imglibs[$i]["catID"] = $i;
 			$spaw_imglibs[$i]["storetype"] = 'file';
 			$spaw_imglibs[$i]["autoID"] = 0;
 			$spaw_imglibs[$i]["thumb_prefix"] = 'thumb-';
 			$spaw_imglibs[$i]["thumb_dir"] = $spaw_imglibs[$i]["value"];
+			$spaw_imglibs[$i]["allowed_type"] = explode(' ', strtolower($wp_img_settings['fileupload_allowedtypes']));
+			$spaw_imglibs[$i]["file_icon"] = 'modules/'.$module->getVar('dirname').'/wp-images/file.gif';
+			$spaw_imglibs[$i]["upload_allowed"] = false;
+			$spaw_imglibs[$i]["delete_allowed"] = false;
+			if ($xoopsUser) {
+				if ($wp_img_settings['use_fileupload']=='1') {
+					$result = $xoopsDB->query('SELECT user_level FROM ' . $xoopsDB->prefix('wp'.$imnumber.'_users') . " WHERE ID = ".intval($xoopsUser->getVar('uid')));
+					if ($row = $xoopsDB->fetcharray($result)){
+					    $user_level = $row['user_level'];
+					}
+					if (($user_level >= $wp_img_settings['fileupload_minlevel'])||in_array($xoopsUser->getVar('uname'),implode(' ',$wp_img_settings['fileupload_allowedusers']))) {
+						$spaw_imglibs[$i]['upload_allowed'] = true;
+					}
+					if ($user_level == 10) {
+						$spaw_imglibs[$i]['delete_allowed'] = true;
+					}
+				}
+			}
 			$i++;
 		}
 	}
@@ -149,17 +170,22 @@ if( !strstr( $top_of_imagemanager , '$mydirname' ) &&
 	global $xoopsDB;
 
 	$result = $xoopsDB->query("SELECT imgcat_name, imgcat_id, imgcat_storetype FROM " . $xoopsDB->prefix('imagecategory') . " ORDER BY imgcat_name ASC");
-
+    $available_imgcat = $gperm_handler->getItemIds('imgcat_read', $groups);
 	while($imgcat = $xoopsDB->fetcharray($result)){
-		$spaw_imglibs[$i]["type"]  = "XoopsImage";
-		$spaw_imglibs[$i]["value"] = 'uploads/';
-		$spaw_imglibs[$i]["text"] = $imgcat["imgcat_name"]."[Image Manager]";
-		$spaw_imglibs[$i]["catID"] = $i;
-		$spaw_imglibs[$i]["storetype"] = $imgcat["imgcat_storetype"];
-		$spaw_imglibs[$i]["autoID"] = $imgcat["imgcat_id"];
-		$spaw_imglibs[$i]["thumb_prefix"] = '';
-		$spaw_imglibs[$i]["thumb_dir"] = '';
-		$i++;
+		if (in_array($imgcat["imgcat_id"],$available_imgcat)) {
+			$spaw_imglibs[$i]["type"]  = "XoopsImage";
+			$spaw_imglibs[$i]["value"] = 'uploads/';
+			$spaw_imglibs[$i]["text"] = $imgcat["imgcat_name"]."[Image Manager]";
+			$spaw_imglibs[$i]["catID"] = $i;
+			$spaw_imglibs[$i]["storetype"] = $imgcat["imgcat_storetype"];
+			$spaw_imglibs[$i]["autoID"] = $imgcat["imgcat_id"];
+			$spaw_imglibs[$i]["thumb_prefix"] = '';
+			$spaw_imglibs[$i]["thumb_dir"] = '';
+			$spaw_imglibs[$i]["allowed_type"] = array('jpg','jpeg','gif','png');
+			$spaw_imglibs[$i]["upload_allowed"] = false;
+			$spaw_imglibs[$i]["delete_allowed"] = false;
+			$i++;
+		}
 	}
 }
 
@@ -172,9 +198,7 @@ foreach ($modules as $module){
 		if( ! preg_match( '/^(\D+)(\d*)$/' , $mod , $regs ) ) echo ( "invalid dirname: " . htmlspecialchars( $mod ) ) ;
 	    $configs =& $config_handler->getConfigList($module->getVar('mid'));
 		$imnumber = $regs[2] === '' ? '' : intval( $regs[2] ) ;
-
 		$result = $xoopsDB->query("SELECT title, cid FROM ".$xoopsDB->prefix('myalbum'.$imnumber.'_cat')." ORDER BY title ASC");
-
 		while($imgcat = $xoopsDB->fetcharray($result)){
 			$spaw_imglibs[$i]["type"]  = "myAlbum-P";
 			$spaw_imglibs[$i]["value"] = preg_replace('|^[/]?(.*)[/]?|','$1/',$configs['myalbum_photospath']);
@@ -184,7 +208,10 @@ foreach ($modules as $module){
 			$spaw_imglibs[$i]["storetype"] = $imnumber ;
 			$spaw_imglibs[$i]["thumb_prefix"] = '';
 			$spaw_imglibs[$i]["thumb_dir"] = preg_replace('|^[/]?(.*)[/]?|','$1/',$configs['myalbum_thumbspath']);
-
+			$spaw_imglibs[$i]["allowed_type"] = explode('|', strtolower($configs['myalbum_allowedexts']));
+			$spaw_imglibs[$i]["file_icon"] = '';
+			$spaw_imglibs[$i]["upload_allowed"] = false;
+			$spaw_imglibs[$i]["delete_allowed"] = false;
 			$i++;
 		}
 	}

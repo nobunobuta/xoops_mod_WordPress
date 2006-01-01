@@ -55,7 +55,7 @@
       // add on submit handler
       SPAW_addOnSubmitHandler(editor);
    
-      ed.contentDocument.designMode = 'on';
+      ed.contentDocument.designMode = 'off';
       var s_sheet = ed.contentDocument.createElement("link");
       s_sheet.setAttribute("rel","stylesheet");
       s_sheet.setAttribute("type","text/css");
@@ -83,8 +83,6 @@
     }
   } 
    
-  
-  
   function SPAW_showColorPicker(editor,curcolor,callback) 
   {
     var wnd = window.open('<?php echo $spaw_dir?>dialogs/colorpicker.php?lang=' 
@@ -426,15 +424,9 @@
 			range.deleteContents();
 
 		    var imgNode = document.createElement('IMG');
-			/* GIJ */
-		    if( imgSrc.match(/(\.gif|\.png|\.jpg|\.jpeg)$/i) ) {
-		    	imgNode.src = imgSrc;
-		    } else {
-		    	imgNode.src = imgSrc.replace(/\.\w+$/,'.gif');
-		    }
-			/* /GIJ */
+		    imgNode.src = imgSrc;
+
 		    range.insertNode(imgNode);
-			range.setStartBefore(imgNode);
 			range.setEndAfter(imgNode);
 
 			var href = '';
@@ -453,6 +445,10 @@
 			    var aNode = document.createElement('A');
 	  			aNode.href = href;
 		        aNode.appendChild(imgNode);
+		        if (!retval.isImg) {
+		          imgNode.width = retval.twidth;
+		          aNode.innerHTML += retval.title+' ('+retval.size+'KB)';
+		        }
 	  			range.insertNode(aNode);
 				range.setEndAfter(aNode);
 			}
