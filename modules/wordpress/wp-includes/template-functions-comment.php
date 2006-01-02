@@ -267,12 +267,11 @@ function comment_author_rss($echo = true) {
 	return _echo($author_rss, $echo);
 }
 
-function comment_text_rss($echo = true) {
+function comment_text_rss($echo = true, $plain = true) {
 	$comment_text = str_replace('<trackback />', '', $GLOBALS['comment']->comment_content);
 	$comment_text = str_replace('<pingback />', '', $comment_text);
 	$comment_text = apply_filters('comment_text', $comment_text);
-	$comment_text = strip_tags($comment_text);
-	$comment_text = htmlspecialchars($comment_text);
+	if ($plain) $comment_text = strip_tags($comment_text);
 	return _echo(wp_convert_rss_charset($comment_text), $echo);
 }
 
