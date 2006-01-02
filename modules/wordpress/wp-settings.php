@@ -32,7 +32,7 @@ foreach ($dogs as $catt) {
 
 require_once (ABSPATH . WPINC . '/functions.php');
 require_once (ABSPATH . WPINC . '/functions-formatting.php');
-require ('wp-config-extra.php');
+require (dirname( __FILE__ ).'/wp-config-extra.php');
 require_once (ABSPATH . WPINC . '/template-functions.php');
 require_once (ABSPATH . WPINC . '/class-xmlrpc.php');
 require_once (ABSPATH . WPINC . '/class-xmlrpcs.php');
