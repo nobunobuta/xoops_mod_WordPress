@@ -78,6 +78,7 @@ function wp_create_thumbnail($file, $max_side, $effect = '') {
             
             $path = explode('/', $file);
             $thumbpath = substr($file, 0, strrpos($file, '/')) . '/thumb-' . $path[count($path)-1];
+            touch($thumbpath);
             
             if($type[2] == 1) {
                 if(!imagegif($thumbnail, $thumbpath)) {
