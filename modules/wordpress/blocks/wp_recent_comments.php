@@ -60,8 +60,8 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 			$lcomments = $GLOBALS['wpdb']->get_results($request);
 			$output = '';
 			$pdate = "";
+			$block['records'] = array();
 			if ($lcomments) {
-				$block['records'] = array();
 				foreach ($lcomments as $lcomment) {
 					if ($cat_date) {
 						$date=mysql2date("Y-n-j", $lcomment->comment_date);
@@ -110,8 +110,8 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 				usort($lcomments, 'sort_comment_by_date'); 
 			} 
 			$new_post_ID = -1;
+			$block['records'] = array();
 			if ($lcomments) {
-				$block['records'] = array();
 				foreach ($lcomments as $lcomment) { 
 					$_record['new_post_ID'] = $new_post_ID;
 					$_record['ID'] = $lcomment->ID;

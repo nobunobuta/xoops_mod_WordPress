@@ -71,8 +71,8 @@ if( ! defined( 'WP_RECENT_POSTS_BLOCK_INCLUDED' ) ) {
 		$block['divid'] = 'wpRecentPost'.$wp_num.'_'.$category;
 		$block['cat_date'] = $cat_date;
 
+		$block['records'] = array();
 		if ($lposts) {
-			$block['records'] = array();
 			foreach ($lposts as $lpost) {
 				if ($cat_date) {
 					$date=mysql2date('Y-n-j', $lpost->post_date);
