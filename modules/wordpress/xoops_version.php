@@ -9,7 +9,7 @@ $modversion['name'] = sprintf(_MI_WORDPRESS_NAME, $my_wp_dirnumber);
 $modversion['dirname'] = $my_wp_dirname;
 
 $modversion['description'] = _MI_WORDPRESS_DESC;
-$modversion['version'] = "0.33b";
+$modversion['version'] = "0.33d";
 $modversion['credits'] = "";
 $modversion['author'] = _MI_WORDPRESS_AUTHOR;
 $modversion['help'] = "help.html";
