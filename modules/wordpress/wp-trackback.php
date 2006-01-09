@@ -105,8 +105,8 @@ if ((strlen(''.$tb_id)) && (empty($_GET['__mode'])) && (strlen(''.$tb_url))) {
 	if (!$result) {
 		die ("There is an error with the database, it can't store your comment...<br />Please contact the <a href='mailto:".get_settings('admin_email')."'>webmaster</a>.");
 	} else {
-		do_action('trackback_post', $comment_ID);
 		$comment_ID = $wpdb->get_var('SELECT last_insert_id()');
+		do_action('trackback_post', $comment_ID);
 		if (get_settings('comments_notify'))
 			wp_notify_postauthor($comment_ID, 'trackback');
 		trackback_response(0);
