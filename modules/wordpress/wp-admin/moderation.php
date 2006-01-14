@@ -44,7 +44,7 @@ switch($action) {
 							redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $categoryHandler->getErrors());
 						}
 						if (get_settings('comments_notify') == true) {
-							wp_notify_postauthor($key);
+							wp_notify_postauthor($key, $commentObject->getVar('comment_type'));
 						}
 						++$item_approved;
 						break;

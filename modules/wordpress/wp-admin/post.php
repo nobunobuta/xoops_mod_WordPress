@@ -393,7 +393,7 @@ switch(get_param('action')) {
 
 		init_param('GET', 'comment', 'integer', NO_DEFAULT_PARAM, true);
 		init_param('GET', 'p', 'integer', NO_DEFAULT_PARAM, true);
-		init_param('GET', 'referredby', 'string', NO_DEFAULT_PARAM, true);
+		init_param('GET', 'referredby', 'string', '');
 
 		if (!($commentObject =& $commentHandler->get($comment))) {
 			redirect_header(wp_siteurl().'/wp-admin/'.$this_file,5,_LANG_P_OOPS_IDPOS);
@@ -518,14 +518,14 @@ switch(get_param('action')) {
 			redirect_header(wp_siteurl().'/wp-admin/'.$this_file,5,_LANG_P_OOPS_IDPOS);
 		}
 		$commentdata = $commentObject->getVarArray();
-		$delete_confirm = array(
+		$approve_confirm = array(
 						'action' => 'approvecomment',
 						'p' => $p,
 						'comment' => $comment,
 						'noredir' => true,
 						);
 ?>
-<?php xoops_confirm($delete_confirm,"post.php?".$xoopsWPTicket->getTicketParamString(__LINE__,true),_LANG_WPM_MODERATE_BUTTON); ?>
+<?php xoops_confirm($approve_confirm,"post.php?".$xoopsWPTicket->getTicketParamString(__LINE__,true),_LANG_WPM_MODERATE_BUTTON); ?>
 <div class="wrap">
 	<table border="0">
 		<tr><td>Author:</td><td><?php echo $commentdata["comment_author"] ?></td></tr>
@@ -571,7 +571,7 @@ switch(get_param('action')) {
 		}
 
 		if (get_settings("comments_notify") == true) {
-			wp_notify_postauthor($comment);
+			wp_notify_postauthor($key, $commentObject->getVar('comment_type'));
 		}
 		
 		header('Location: '.$location);

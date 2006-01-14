@@ -686,12 +686,14 @@ function get_commentdata($comment_ID, $no_cache=0, $include_unapproved=false) { 
 		$myrow['comment_content']=$GLOBALS['postc']->comment_content;
 		$myrow['comment_karma']=$GLOBALS['postc']->comment_karma;
 	}
-	if (strstr($myrow['comment_content'], '<trackback />')) {
-		$myrow['comment_type'] = 'trackback';
-	} elseif (strstr($myrow['comment_content'], '<pingback />')) {
-		$myrow['comment_type'] = 'pingback';
-	} else {
-		$myrow['comment_type'] = 'comment';
+	if ($myrow['comment_type']==='') {
+		if (strstr($myrow['comment_content'], '<trackback />')) {
+			$myrow['comment_type'] = 'trackback';
+		} elseif (strstr($myrow['comment_content'], '<pingback />')) {
+			$myrow['comment_type'] = 'pingback';
+		} else {
+			$myrow['comment_type'] = 'comment';
+		}
 	}
 	return $myrow;
 }
@@ -1314,7 +1316,7 @@ function wp_notify_postauthor($comment_id, $comment_type='comment') {
    about a new comment that waits for approval
    always returns true
  */
-function wp_notify_moderator($comment_id) {
+function wp_notify_moderator($comment_id, $comment_type='comment') {
 	$commentHandler =& wp_handler('Comment');
 	if (!($commentObject =& $commentHandler->get($comment_id))) {
 		return false;
@@ -1335,19 +1337,37 @@ function wp_notify_moderator($comment_id) {
 
     $comment_author_domain = gethostbyaddr($comment->comment_author_IP);
     
+	$blogname = get_settings('blogname');
+
 	$comments_waiting = $commentHandler->getCount(new Criteria('comment_approved', '0 '));
-	$notify_message	 = _LANG_F_COMMENT_POST." #$comment->comment_post_ID ".$post->post_title._LANG_F_WAITING_APPROVAL."\r\n\r\n";
-    $notify_message .= "Author : $comment->comment_author (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
-    $notify_message .= "E-mail : $comment->comment_author_email\r\n";
-	$notify_message .= "URL	   : $comment->comment_author_url\r\n";
-    $notify_message .= "Whois  : http://ws.arin.net/cgi-bin/whois.pl?queryinput=$comment->comment_author_IP\r\n";
-    $notify_message .= "Comment:\r\n".$comment->comment_content."\r\n\r\n";
-    $notify_message .= _LANG_F_APPROVAL_VISIT." ".wp_siteurl()." /wp-admin/post.php?action=mailapprovecomment&p=".$comment->comment_post_ID."&comment=$comment_id\r\n";
+
+	if ($comment_type == 'comment') {
+		$notify_message	 = _LANG_F_NEW_COMMENT." #$comment->comment_post_ID ".$post->post_title."\r\n\r\n";
+		$notify_message .= "Author : $comment->comment_author (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
+		$notify_message .= "E-mail : $comment->comment_author_email\r\n";
+		$notify_message .= "URI	   : $comment->comment_author_url\r\n";
+		$notify_message .= "Whois  : http://ws.arin.net/cgi-bin/whois.pl?queryinput=$comment->comment_author_IP\r\n";
+		$notify_message .= "Comment:\r\n".mb_conv($comment->comment_content,$GLOBALS['blog_charset'] ,'auto')."\r\n\r\n";
+		$subject = '[' . $blogname . '] Please approve Comment: "' .$post->post_title.'"';
+	} elseif ($comment_type == 'trackback') {
+		$notify_message	 = _LANG_F_NEW_TRACKBACK." #$comment->comment_post_ID ".$post->post_title."\r\n\r\n";
+		$notify_message .= "Website: ".mb_conv($comment->comment_author,$GLOBALS['blog_charset'],"auto")." (IP: $comment->comment_author_IP , $comment_author_domain)\r\n";
+		$notify_message .= "URI	   : $comment->comment_author_url\r\n";
+		$notify_message .= "Comment:\r\n".mb_conv($comment->comment_content,$GLOBALS['blog_charset'],"auto")."\r\n\r\n";
+		$subject = '[' . $blogname . '] Please approve Trackback: "' .$post->post_title.'"';
+	} elseif ($comment_type == 'pingback') {
+		$notify_message	 = _LANG_F_NEW_PINGBACK." #$comment->comment_post_ID ".$post->post_title."\r\n\r\n";
+		$notify_message .= "Website: $comment->comment_author\r\n";
+		$notify_message .= "URI	   : $comment->comment_author_url\r\n";
+		$notify_message .= "Excerpt: \n[...] ".mb_conv($original_context,$GLOBALS['blog_charset'],"auto")." [...]\r\n\r\n";
+		$subject = '[' . $blogname . '] Please approve Pingback: "' .$post->post_title.'"';
+	}
+
+    $notify_message .= _LANG_F_APPROVAL_VISIT." ".wp_siteurl()."/wp-admin/post.php?action=mailapprovecomment&p=".$comment->comment_post_ID."&comment=$comment_id\r\n";
     $notify_message .= _LANG_F_DELETE_VISIT." ".wp_siteurl()."/wp-admin/post.php?action=confirmdeletecomment&p=".$comment->comment_post_ID."&comment=$comment_id\r\n";
     $notify_message .= "\"$comments_waiting\""._LANG_F_PLEASE_VISIT."\r\n";
     $notify_message .= wp_siteurl()."/wp-admin/moderation.php\r\n";
 
-    $subject = '[' . get_settings('blogname') . '] Please approve: "' .$post->post_title.'"';
     $from  = "From: ".get_settings('admin_email');
 
 	if (defined('XOOPS_URL')) {
@@ -1367,7 +1387,6 @@ function wp_notify_moderator($comment_id) {
 	}
     return true;
 }
-
 
 function start_wp() {
 	if (empty($GLOBALS['preview'])) {
