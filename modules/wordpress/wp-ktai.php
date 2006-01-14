@@ -162,7 +162,17 @@ switch ($_REQUEST["view"]) {
 	case "image" :
 		//²èÁüÉ½¼¨
 		$orgimg = $_REQUEST["url"];
-		$imginfo = getimagesize($orgimg);
+		if (defined('XOOPS_URL')) {
+			error_reporting(E_ERROR);
+			require_once '../../class/snoopy.php';
+			$snoopy =& new Snoopy;
+			$snoopy->fetch($orgimg);
+			$orgimg = tempnam(XOOPS_ROOT_PATH.'/cache', 'wp_ktai_img');
+			$fp=fopen($orgimg,'w');
+			fwrite($fp, $snoopy->results);
+			fclose($fp);
+		}
+		$imginfo = getimagesize($orgimg) ;
 		if (eregi('.jpeg',$orgimg) || eregi('.jpg',$orgimg) || $imginfo[2]==IMAGETYPE_JPEG ) {
 			header("Content-type: image/jpeg");
 			header("Cache-control: no-cache");
@@ -219,6 +229,9 @@ switch ($_REQUEST["view"]) {
 			imagejpeg($newimage);
 
 			imagedestroy($newimage);
+		}
+		if (defined('XOOPS_URL')) {
+			unlink($orgimg);
 		}
 		exit;
 }
@@ -488,5 +501,10 @@ if ($do_redir) {
 	$echostring = str_replace($src,$target,$echostring);
 }
 header('Content-Type: text/html; charset=Shift_JIS');
-echo mb_convert_encoding($echostring, 'sjis', 'auto');
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
+echo mb_convert_encoding($echostring, 'SJIS', 'auto');
 ?>
