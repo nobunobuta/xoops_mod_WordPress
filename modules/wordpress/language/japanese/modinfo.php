@@ -74,6 +74,11 @@ define("_MI_WORDPRESS_BNAME9","WordPress%s 投稿者ブロック");
 define("_MI_WORDPRESS_BDESC9","WordPress 投稿者ブロック");
 
 define("_MI_WORDPRESS_AD_MENU1","WordPressオプション");
+if (strstr(XOOPS_VERSION, "XOOPS 2.2")) {
+define("_MI_WORDPRESS_AD_MENU2","ブロック管理");
+define("_MI_WORDPRESS_AD_MENU3","グループ管理");
+}else{
 define("_MI_WORDPRESS_AD_MENU2","ブロックアクセス権限");
+}
 }
 ?>

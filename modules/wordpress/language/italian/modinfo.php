@@ -75,6 +75,11 @@ define("_MI_WORDPRESS_BNAME9","Autori");
 define("_MI_WORDPRESS_BDESC9","Autori del Blog");
 
 define("_MI_WORDPRESS_AD_MENU1","Opzioni");
+if (strstr(XOOPS_VERSION, "XOOPS 2.2")) {
+define("_MI_WORDPRESS_AD_MENU2","Blocchi");
+define("_MI_WORDPRESS_AD_MENU3","Gruppi");
+}else{
 define("_MI_WORDPRESS_AD_MENU2","Blocchi/Gruppi");
+}
 }
 ?>

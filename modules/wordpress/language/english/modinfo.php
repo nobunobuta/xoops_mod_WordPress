@@ -75,6 +75,11 @@ define("_MI_WORDPRESS_BNAME9","WordPress%s Authors");
 define("_MI_WORDPRESS_BDESC9","WordPress Authors");
 
 define("_MI_WORDPRESS_AD_MENU1","WordPress Option");
+if (strstr(XOOPS_VERSION, "XOOPS 2.2")) {
+define("_MI_WORDPRESS_AD_MENU2","Blocks");
+define("_MI_WORDPRESS_AD_MENU3","Groups");
+}else{
 define("_MI_WORDPRESS_AD_MENU2","Blocks/Groups");
+}
 }
 ?>
