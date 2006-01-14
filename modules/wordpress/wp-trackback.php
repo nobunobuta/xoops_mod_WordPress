@@ -123,11 +123,11 @@ if (!empty($_tb_id) && !test_param('__mode') && test_param('url')) {
 
 	$moderation_notify = get_settings('moderation_notify');
 	if (get_settings('comment_moderation') == 'manual') {
-		$_approved = 0;
+		$approved = 0;
 	} else if (get_settings('comment_moderation') == 'auto') {
-		$_approved = 0;
+		$approved = 0;
 	} else { // none
-		$_approved = 1;
+		$approved = 1;
 	}
 
 	$commentHandler =& wp_handler('Comment');
@@ -139,14 +139,18 @@ if (!empty($_tb_id) && !test_param('__mode') && test_param('url')) {
 	$commentObject->setVar('comment_author_IP',$_SERVER['REMOTE_ADDR'], true);
 	$commentObject->setVar('comment_date',current_time('mysql'), true);
 	$commentObject->setVar('comment_content',$_content, true);
-	$commentObject->setVar('comment_approved',$_approved, true);
+	$commentObject->setVar('comment_approved',$approved, true);
 	if(!$commentHandler->insert($commentObject, true)) {
 		die ("There is an error with the database, it can't store your comment...<br />Please contact the <a href='mailto:".get_settings('admin_email')."'>webmaster</a>.");
 	} else {
 		$_comment_ID = $commentObject->getVar('comment_ID');
 		do_action('trackback_post', $_comment_ID);
-		if (get_settings('comments_notify'))
+		if ((get_settings('moderation_notify')) && (!$approved)) {
+		    wp_notify_moderator($_comment_ID, 'trackback');
+		}
+		if ((get_settings('comments_notify')) && ($approved)) {
 			wp_notify_postauthor($_comment_ID, 'trackback');
+		}
 		trackback_response(0);
 	}
 }

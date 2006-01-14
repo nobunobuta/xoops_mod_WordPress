@@ -1943,15 +1943,26 @@ function pingback_ping($m) { // original code by Mort
 					$original_title = $title;
 					$title = addslashes(strip_tags(trim($title)));
 					$now = current_time('mysql');
+					if (get_settings('comment_moderation') == 'manual') {
+						$approved = 0;
+					} else if (get_settings('comment_moderation') == 'auto') {
+						$approved = 0;
+					} else { // none
+						$approved = 1;
+					}
 					$consulta = $wpdb->query("INSERT INTO ".wp_table('comments')." 
-						(comment_post_ID, comment_author, comment_author_url, comment_date, comment_content) 
+						(comment_post_ID, comment_author, comment_author_url, comment_date, comment_content,comment_approved) 
 						VALUES 
-						($post_ID, '$title', '$pagelinkedfrom', '$now', '$context')
+						($post_ID, '$title', '$pagelinkedfrom', '$now', '$context', '$approved')
 						");
 					$comment_ID = $wpdb->get_var('SELECT last_insert_id()');
 					do_action('pingback_post', $comment_ID);
-					if (get_settings('comments_notify'))
+					if ((get_settings('moderation_notify')) && (!$approved)) {
+					    wp_notify_moderator($comment_ID, 'pingback');
+					}
+					if ((get_settings('comments_notify')) && ($approved)) {
 						wp_notify_postauthor($comment_ID, 'pingback');
+					}
 			} else {
 					// URL pattern not found
 					$message = "Page linked to: $pagelinkedto\nPage linked from:"

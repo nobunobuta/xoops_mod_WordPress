@@ -89,12 +89,21 @@ class WordPressCommentHandler  extends XoopsTableObjectHandler
 	 *
      * @return	object  {@link WordPressPost2Cat}, FALSE on fail
      */
-/*テーブルに固有のデータ処理が必要な時以外は不要
 	function &get($key)
 	{
-		return parent::get($key);
+		$commentObject =& parent::get($key);
+		if ($commnetObject && $commentObject->getVar('comment_type') === '') {
+			$content = $commentObject->getVar('comment_content');
+			if (strstr($content, '<trackback />')) {
+				$commentObject->assignVar('comment_type', 'trackback');
+			} elseif (strstr($content, '<pingback />')) {
+				$commentObject->assignVar('comment_type', 'pingback');
+			} else {
+				$commentObject->assignVar('comment_type', 'comment');
+			}
+		}
+		return $commentObject;
 	}
-*/
 
     /**
      * レコードの保存
