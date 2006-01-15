@@ -47,10 +47,10 @@ class PukiWikiInlineConverter
 				'url_interwiki', // URL (interwiki definition)
 				'mailto',        // mailto:
 				'interwikiname', // InterWikiName
-				'autolink',      // AutoLink
+//				'autolink',      // AutoLink
 				'bracketname',   // BracketName
 				'wikiname',      // WikiName
-				'autolink_a',    // AutoLink(アルファベット)
+//				'autolink_a',    // AutoLink(アルファベット)
 			);
 		}
 		if ($excludes !== NULL)
@@ -90,6 +90,10 @@ class PukiWikiInlineConverter
 		{
 			$retval .= array_shift($arr).array_shift($this->result);
 		}
+ 		// オートリンク by nao-pon
+ 		// InlineConverter による一括処理では、
+ 		// ページ数増加(正規表現32kb以上)時に正常に処理できない。
+ 		$retval = $this->auto_link($retval);
 		return $retval;
 	}
 	function replace($arr)
@@ -131,6 +135,66 @@ class PukiWikiInlineConverter
 		}
 		return NULL;
 	}
+	// 別処理でのオートリンク by nao-pon
+	function auto_link(&$str)
+	{
+		$autolink = PukiWikiConfig::getParam('autolink');
+		
+		if (!$autolink) return $str;
+		
+		static $auto;
+		static $auto_a;
+		static $forceignorepages;
+		
+		if (!$auto && !$auto_a)
+		{
+			@list($auto,$auto_a,$forceignorepages) = PukiWikiConfig::getParam('autolink_dat');
+			$auto = trim($auto);
+			$auto_a = trim($auto_a);
+			$forceignorepages = explode("\t",trim($forceignorepages));
+		}
+		
+		$this->forceignorepages = $forceignorepages;
+		
+		// ページ数が多い場合は、セパレータ \t で複数パターンに分割されている
+		foreach(explode("\t",$auto) as $pat)
+		{
+			$pattern = "/(<(?:a|A).*?<\/(?:a|A)>|<[^>]*>|&(?:#[0-9]+|#x[0-9a-f]+|[0-9a-zA-Z]+);)|($pat)/s";
+			$str = preg_replace_callback($pattern,array(&$this,'auto_link_replace'),$str);
+		}
+		
+		return $str;
+	}
+	function auto_link_replace($match)
+	{
+		static $pagename_aliases = null;
+		if (is_null($pagename_aliases))
+		{
+			$pagename_aliases = PukiWikiConfig::getParam('pagename_aliases');
+		}
+		
+		if (!empty($match[1])) return $match[1];
+		$alias = $name = $match[2];
+		
+		// 無視リストに含まれているページを捨てる
+		if (in_array($name,$this->forceignorepages)) {return $match[0];}
+		
+		// ページが存在しない場合
+		if (!PukiWikiFunc::is_page($name))
+		{
+			// ページ名エイリアスを探す
+			if (array_key_exists($name,$pagename_aliases))
+			{
+				$name = $pagename_aliases[$name];
+			}
+			else
+			{
+				// 共通リンクディレクトリを探す
+				if (!$name = PukiWikiFunc::get_real_pagename($name)) return $match[0];
+			}
+		}
+		return PukiWikiLink::make_pagelink($name,$alias,'',$name);
+  	}
 }
 //インライン要素集合のベースクラス
 class PukiWikiLink
