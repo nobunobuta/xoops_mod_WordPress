@@ -90,9 +90,9 @@ class WordPressUser  extends XoopsTableObject
 			$criteria->add(new Criteria('post_status', $status));
 		}
 		$postHandler =& new WordPressPostHandler($this->_handler->db, $this->_handler->prefix, $this->_handler->module);
-		$posts =& $postHandler->getObjects($criteria);
+		$resultSet = $postHandler->open($criteria);
 		$IDs = array();
-		foreach($posts as $post) {
+		while ($post =& $postHandler->getNext($resultSet)) {
 			$IDs[] = $post->getVar('ID');
 		}
 		return $IDs;
@@ -324,6 +324,16 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 		}
 		return $userObjects;
 	}
+
+	function &getNext(&$resultSet)
+	{
+		$userObject =& parent::getNext($resultSet);
+		if ($userObject) {
+			$userObject->syncXoops();
+		}
+		return $userObject;
+	}
+
 	/**
 	 * リンクカテゴリの選択リスト用配列取得
 	 * 
@@ -347,8 +357,9 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 	}
 	function syncXoopsUsers()
 	{
+		$resultSet = $this->open();
+		while($this->getNext($resultSet)){1;}
 		$members =& $this->member_handler->getUsers();
-		$this->getObjects();
 		foreach($members as $member) {
 			$this->get($member->getVar('uid'));
 		}
