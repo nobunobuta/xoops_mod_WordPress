@@ -22,8 +22,7 @@ if (ini_get('allow_url_fopen')) {
 		require_once '../../class/snoopy.php';
 		$snoopy =& new Snoopy;
 		$snoopy->fetch($img_url);
-		//Maybe AzdFqwe dir don't exist. So will be made tempfile to tmpdir
-		$tname = tempnam('AzdFqwe', 'spaw_img_popup'); 
+		$tname = tempnam(XOOPS_ROOT_PATH.'/cache', 'spaw_img_popup'); 
 		$fp=fopen($tname,'w');
 		fwrite($fp, $snoopy->results);
 		fclose($fp);
