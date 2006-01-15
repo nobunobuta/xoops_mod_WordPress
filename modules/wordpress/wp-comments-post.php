@@ -98,7 +98,7 @@ if ($ok) { // if there was no comment from this IP in the last 10 seconds
 	");
 
 	$comment_ID = $wpdb->get_var('SELECT last_insert_id()');
-
+	do_action('comment_post', $comment_ID);
 	if (($moderation_notify) && (!$approved)) {
 	    wp_notify_moderator($comment_ID);
 	}
@@ -112,8 +112,6 @@ if ($ok) { // if there was no comment from this IP in the last 10 seconds
 
 	if ($url == '')
 		$url = ' '; // this to make sure a cookie is set for 'no url'
-
-	do_action('comment_post', $comment_ID);
 
 	setcookie('comment_author_'.$cookiehash, $author, time()+30000000);
 	setcookie('comment_author_email_'.$cookiehash, $email, time()+30000000);
