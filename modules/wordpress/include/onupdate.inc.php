@@ -78,6 +78,35 @@ if (!function_exists('upgrade_wp_tables')){
 		$date_format = get_settings('date_format');
 		$date_format = str_replace('\\\d', '\d', $date_format);
 		update_option('date_format', $date_format);
+		
+		$postHandler = & wp_handler('Post');
+		$resultSet = $postHandler->open();
+		while($postObject =& $postHandler->getNext($resultSet)) {
+		    $title = stripslashes($postObject->getVar('post_title','n'));
+		    $content = stripslashes($postObject->getVar('post_content','n'));
+		    $excerpt = stripslashes($postObject->getVar('post_excerpt','n'));
+		    if (($title != $postObject->getVar('post_title','n'))||
+		    	($content != $postObject->getVar('post_content','n'))||
+		    	($excerpt != $postObject->getVar('post_excerpt','n'))) {
+				$GLOBALS['msgs'][] = "Post[".$postObject->getVar('ID')."] is converted.";
+		    	$postObject->setVar('post_title', $title, true);
+		    	$postObject->setVar('post_content', $content, true);
+		    	$postObject->setVar('post_excerpt', $excerpt, true);
+			    $postHandler->insert($postObject,true,true);
+		    }
+		}
+		$commentHandler = & wp_handler('Comment');
+		$resultSet = $commentHandler->open();
+		while($commentObject =& $commentHandler->getNext($resultSet)) {
+		    $content = stripslashes($commentObject->getVar('comment_content','n'));
+		    $type = $commentObject->vars['comment_type']['value'];
+		    if (empty($type) || $content != $commentObject->getVar('comment_content','n')) {
+				$GLOBALS['msgs'][] = "Comment[".$commentObject->getVar('comment_ID')."] is converted.";
+		    	$commentObject->setVar('comment_content', $content, true);
+		    	$commentObject->setVar('comment_type', $commentObject->getVar('comment_type'), true);
+			    $commentHandler->insert($commentObject,true,true);
+		    }
+		}
 	}
 }
 
