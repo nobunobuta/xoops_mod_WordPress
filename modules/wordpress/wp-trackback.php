@@ -140,6 +140,7 @@ if (!empty($_tb_id) && !test_param('__mode') && test_param('url')) {
 	$commentObject->setVar('comment_date',current_time('mysql'), true);
 	$commentObject->setVar('comment_content',$_content, true);
 	$commentObject->setVar('comment_approved',$approved, true);
+	$commentObject->setVar('comment_type','trackback', true);
 	if(!$commentHandler->insert($commentObject, true)) {
 		die ("There is an error with the database, it can't store your comment...<br />Please contact the <a href='mailto:".get_settings('admin_email')."'>webmaster</a>.");
 	} else {

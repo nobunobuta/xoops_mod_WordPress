@@ -49,12 +49,16 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 
 		if ($block_style==0) {
 			$skip_posts = 0;
-			$request = "SELECT ID, comment_ID, comment_content, comment_author, comment_author_url, comment_date
+			$request = "SELECT ID, comment_ID, comment_content, comment_author, comment_author_url, comment_date, comment_type
 						FROM ".wp_table('posts').", ".wp_table('comments')."
 						WHERE ".wp_table('posts').".ID=".wp_table('comments').".comment_post_ID
 						AND post_status = 'publish' AND comment_approved = '1' ";
 			if (get_xoops_option(wp_mod(), 'wp_use_xoops_comments') == 1) {
-				$request .= "AND (comment_content like '<trackback />%' OR comment_content like '<pingkback />%') ";
+				$request .= "AND (comment_content like '<trackback />%' 
+				                  OR comment_content like '<pingkback />%'
+				                  OR comment_type = 'trackback'
+				                  OR comment_type = 'pingback'
+				                  ) ";
 			}
 			$request .= "ORDER BY ".wp_table('comments').".comment_date DESC LIMIT $num_of_list";
 			$lcomments = $GLOBALS['wpdb']->get_results($request);
@@ -73,11 +77,15 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 							$_record['date'] = '';
 						}
 					}
-
-					if (preg_match('|<trackback />|', $lcomment->comment_content)) $type='[TrackBack]';
-					elseif (preg_match('|<pingback />|', $lcomment->comment_content)) $type='[PingBack]';
-					else  $type='[Comment]';
-
+					if (empty($lcomment->comment_type)) {
+						if (preg_match('|<trackback />|', $lcomment->comment_content)) $type='[TrackBack]';
+						elseif (preg_match('|<pingback />|', $lcomment->comment_content)) $type='[PingBack]';
+						else  $type='[Comment]';
+					} else {
+						if ($lcomment->comment_type == 'trackback') $type='[TrackBack]';
+						elseif ($lcomment->comment_type == 'pingback') $type='[PingBack]';
+						else $type='[Comment]';
+					}
 					$_record['comment_author'] = apply_filters('comment_author', $lcomment->comment_author);
 					$_record['comment_author_link'] = _get_comment_author_link($lcomment,25);
 					$_record['comment_content'] = strip_tags($lcomment->comment_content);
@@ -96,12 +104,16 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 			}
 		} else {
 			$request = 'SELECT ID, post_title, post_date, comment_ID, comment_author, comment_author_url,
-						comment_date, comment_content 
+						comment_date, comment_content, comment_type
 						FROM '.wp_table('posts').', '.wp_table('comments').'
 						WHERE '.wp_table('posts').'.ID='.wp_table('comments').'.comment_post_ID
 						AND '.wp_table('comments').'.comment_approved=\'1\'';
 			if (get_xoops_option(wp_mod(), 'wp_use_xoops_comments') == 1) {
-				$request .= ' AND (comment_content like \'<trackback />%\' OR comment_content like \'<pingkback />%\') ';
+				$request .= "AND (comment_content like '<trackback />%' 
+				                  OR comment_content like '<pingkback />%'
+				                  OR comment_type = 'trackback'
+				                  OR comment_type = 'pingback'
+				                  ) ";
 			}
 			$request .= ' ORDER BY '.wp_table('comments').'.comment_date DESC LIMIT '.$num_of_list;
 			$lcomments = $GLOBALS['wpdb']->get_results($request);
@@ -139,9 +151,15 @@ if( ! defined( 'WP_RECENT_COMMENTS_BLOCK_INCLUDED' ) ) {
 					}
 					$_record['comment_author'] = apply_filters('comment_author', $lcomment->comment_author);
 					$_record['comment_author_link'] = _get_comment_author_link($lcomment,25);
-					if (preg_match('|<trackback />|', $lcomment->comment_content)) $type='[TrackBack]';
-					elseif (preg_match('|<pingback />|', $lcomment->comment_content)) $type='[Ping]';
-					else  $type='[Comment]';
+					if (empty($lcomment->comment_type)) {
+						if (preg_match('|<trackback />|', $lcomment->comment_content)) $type='[TrackBack]';
+						elseif (preg_match('|<pingback />|', $lcomment->comment_content)) $type='[PingBack]';
+						else  $type='[Comment]';
+					} else {
+						if ($lcomment->comment_type == 'trackback') $type='[TrackBack]';
+						elseif ($lcomment->comment_type == 'pingback') $type='[PingBack]';
+						else $type='[Comment]';
+					}
 					if ($show_type) {
 						$_record['type'] = $type;
 					}

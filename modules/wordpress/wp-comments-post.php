@@ -120,6 +120,7 @@ if ($_ok) { // if there was no comment from this IP in the last 10 seconds
 	$commentObject->setVar('comment_date',$_now, true);
 	$commentObject->setVar('comment_content',$_comment, true);
 	$commentObject->setVar('comment_approved',$approved, true);
+	$commentObject->setVar('comment_type','comment', true);
 	if(!$commentHandler->insert($commentObject, get_settings('use_comment_preview'))) {
 		redirect_header($_location, 3, $commentHandler->getErrors());
 	}

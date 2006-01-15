@@ -55,6 +55,8 @@ function comments_popup_link($zero='No Comments', $one='1 Comment', $more='% Com
 		$criteria->add(new Criteria('comment_approved', '1 '));// Trick for numeric chars only string compare
 		$criteria_c =& new CriteriaCompo(new Criteria('comment_content', "<trackback />%", 'like'));
 		$criteria_c->add(new Criteria('comment_content', "<pingback />%", 'like'), 'OR');
+		$criteria_c->add(new Criteria('comment_type', 'trackback'), 'OR');
+		$criteria_c->add(new Criteria('comment_type', 'pingback'), 'OR');
 		$criteria->add($criteria_c);
 		$commentHandler =& wp_handler('Comment');
 		$number = $commentHandler->getCount($criteria);
@@ -160,12 +162,22 @@ function comment_author_link($echo = true) {
 }
 
 function comment_type($commenttxt = 'Comment', $trackbacktxt = 'Trackback', $pingbacktxt = 'Pingback', $echo=true) {
-	if (preg_match('|<trackback />|', $GLOBALS['comment']->comment_content))
-		return _echo($trackbacktxt, $echo);
-	elseif (preg_match('|<pingback />|', $GLOBALS['comment']->comment_content))
-		return _echo($pingbacktxt, $echo);
-	else
-		return _echo($commenttxt, $echo);
+	if (empty($GLOBALS['comment']->comment_type)) {
+		if (preg_match('|<trackback />|', $GLOBALS['comment']->comment_content))
+			return _echo($trackbacktxt, $echo);
+		elseif (preg_match('|<pingback />|', $GLOBALS['comment']->comment_content))
+			return _echo($pingbacktxt, $echo);
+		else
+			return _echo($commenttxt, $echo);
+	} else {
+		if ($GLOBALS['comment']->comment_type == 'trackback') {
+			return _echo($trackbacktxt, $echo);
+		} else if ($GLOBALS['comment']->comment_type == 'pingback') {
+			return _echo($pingbacktxt, $echo);
+		} else {
+			return _echo($commenttxt, $echo);
+		}
+	}
 }
 
 function comment_author_url($echo = true) {

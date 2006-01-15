@@ -55,6 +55,28 @@ class WordPressComment extends XoopsTableObject
 	function unapprove($force=false) {
 		return $this->_handler->unapprove($this->getVar('comment_ID'),$force);
 	}
+	
+	function getVar($name, $format = 's') {
+	     $var = parent::getVar($name, $format);
+	     if (($name=='comment_type') && empty($var)) {
+			$content = $this->getVar('comment_content');
+			if (strstr($content, '<trackback />')) {
+				$var = 'trackback';
+			} elseif (strstr($content, '<pingback />')) {
+				$var = 'pingback';
+			} else {
+				$var = 'comment';
+			}
+			$this->assignVar('comment_type', $var);
+	     }
+	     return $var;
+	}
+	//Following two functions are only for WordPress Module.
+	function &exportWpObject() {
+		$wp_object = parent::exportWpObject();
+		$wp_object->comment_type = $this->getVar('comment_type');
+		return $wp_object;
+	}
 }
 
 class WordPressCommentHandler  extends XoopsTableObjectHandler
@@ -89,21 +111,12 @@ class WordPressCommentHandler  extends XoopsTableObjectHandler
 	 *
      * @return	object  {@link WordPressPost2Cat}, FALSE on fail
      */
+/*テーブルに固有のデータ処理が必要な時以外は不要
 	function &get($key)
 	{
-		$commentObject =& parent::get($key);
-		if ($commnetObject && $commentObject->getVar('comment_type') === '') {
-			$content = $commentObject->getVar('comment_content');
-			if (strstr($content, '<trackback />')) {
-				$commentObject->assignVar('comment_type', 'trackback');
-			} elseif (strstr($content, '<pingback />')) {
-				$commentObject->assignVar('comment_type', 'pingback');
-			} else {
-				$commentObject->assignVar('comment_type', 'comment');
-			}
-		}
-		return $commentObject;
+		return parent::get($key);
 	}
+*/
 
     /**
      * レコードの保存

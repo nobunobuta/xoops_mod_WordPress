@@ -1951,9 +1951,9 @@ function pingback_ping($m) { // original code by Mort
 						$approved = 1;
 					}
 					$consulta = $wpdb->query("INSERT INTO ".wp_table('comments')." 
-						(comment_post_ID, comment_author, comment_author_url, comment_date, comment_content,comment_approved) 
+						(comment_post_ID, comment_author, comment_author_url, comment_date, comment_content,comment_approved, comment_type) 
 						VALUES 
-						($post_ID, '$title', '$pagelinkedfrom', '$now', '$context', '$approved')
+						($post_ID, '$title', '$pagelinkedfrom', '$now', '$context', '$approved', 'pingback')
 						");
 					$comment_ID = $wpdb->get_var('SELECT last_insert_id()');
 					do_action('pingback_post', $comment_ID);

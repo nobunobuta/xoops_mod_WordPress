@@ -114,6 +114,7 @@ if (defined('XOOPS_URL')) {
 		$commentObject->setVar('comment_date',$_now, true);
 		$commentObject->setVar('comment_content',$_comment, true);
 		$commentObject->setVar('comment_approved',$_approved, true);
+		$commentObject->setVar('comment_type','comment', true);
 		if(!$commentHandler->insert($commentObject, true)) {
 			display_error($_location, 3, $commentHandler->getErrors());
 		}
