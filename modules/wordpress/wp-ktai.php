@@ -373,9 +373,11 @@ switch ($_REQUEST["view"]) {
 		if ($next_p = find_post($nextnum)) {
 			$echostring .= $ackeychar[9].'<a href="'.$myurl.'?view=content&num='.$nextnum.'&p='.$next_p.'&page=0'.$ses_param.'" accesskey="9">次の記事へ &gt;</a><br />';
 		}
-		$prevnum = $num - 1;
-		if ($prev_p = find_post($prevnum)) {
-			$echostring .= $ackeychar[7].'<a href="'.$myurl.'?view=content&num='.$prevnum.'&p='.$prev_p.'&page=0'.$ses_param.'" accesskey="7">&lt; 前の記事へ</a><br />';
+		if ($num > 0) {
+			$prevnum = $num - 1;
+			if ($prev_p = find_post($prevnum)) {
+				$echostring .= $ackeychar[7].'<a href="'.$myurl.'?view=content&num='.$prevnum.'&p='.$prev_p.'&page=0'.$ses_param.'" accesskey="7">&lt; 前の記事へ</a><br />';
+			}
 		}
 		$echostring .= $ackeychar[0].'<a href="'.$myurl.'?view=list&start=0'.$ses_param.'" accesskey="0">一覧へ戻る</a><br/>';
 		
