@@ -309,8 +309,11 @@ function get_lastcommentmodified($p=0, $name='') {
 		$_criteria->setLimit(1);
 		$_joinCriteria =& new XoopsJoinCriteria(wp_table('posts'), 'comment_post_id', 'ID');
 		$commentHandler =& wp_handler('Comment');
-		$commentObjects = $commentHandler->getObjects($_criteria, false, 'comment_date', false, $_joinCriteria);
-		$cache_lastcommentmodified[wp_id()][$p] = $lastcommentmodified = $commentObjects[0]->getVar('comment_date');
+		if ($commentObjects = $commentHandler->getObjects($_criteria, false, 'comment_date', false, $_joinCriteria)) {
+			$cache_lastcommentmodified[wp_id()][$p] = $lastcommentmodified = $commentObjects[0]->getVar('comment_date');
+		} else {
+			$cache_lastcommentmodified[wp_id()][$p] = $lastcommentmodified = '1970-01-01 00:00:00';
+		}
 	} else {
 		$lastcommentmodified = $cache_lastcommentmodified[wp_id()][$p];
 	}
