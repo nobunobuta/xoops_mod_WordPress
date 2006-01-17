@@ -320,7 +320,7 @@ function draft_list($user_ID) {
 			}
 			++$i;
 ?> 
-		<?php echo $delim ?><a href='post.php?action=edit&amp;post=<?echo $draft->ID ?>' title='Edit this draft'><?php echo $draft->post_title ?></a>
+		<?php echo $delim ?><a href='post.php?action=edit&amp;post=<?php echo $draft->ID ?>' title='Edit this draft'><?php echo $draft->post_title ?></a>
 <?php
 		}
 ?>
