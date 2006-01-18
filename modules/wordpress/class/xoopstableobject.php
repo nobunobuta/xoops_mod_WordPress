@@ -125,7 +125,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 			if (file_exists(XOOPS_ROOT_PATH.'/class/xoopsform/formtoken.php')) {
 				include_once XOOPS_ROOT_PATH.'/class/xoopsform/formtoken.php';
 			} else {
-				$withtoken=0;
+				$token=0;
 			}
 			
 			$formEdit =& new XoopsThemeForm($caption,$name,$action);
@@ -236,6 +236,7 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 					switch ($v['data_type']) {
 					case XOBJ_DTYPE_FLOAT:
 						$cleanv = (float)($cleanv);
+						$this->cleanVars[$k] =& $cleanv;
 						break;
 					default:
 						break;
@@ -246,7 +247,6 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 						$this->$checkMethod($cleanv);
 					}
 				}
-				$this->cleanVars[$k] =& $cleanv;
 				unset($cleanv);
 			}
 			if (count($this->_errors) > 0) {
@@ -954,12 +954,6 @@ if( ! class_exists( 'XoopsTableObject' ) ) {
 			$record->resetChenged();
 			return true;
 		}
-
-	    function updateByField(&$record, $fieldName, $fieldValue, $not_gpc=false)
-	    {
-	        $record->setVar($fieldName, $fieldValue, $not_gpc);
-	        return $this->insert($record, true, true);
-	    }
 
 		/**
 		 * レコードの削除
