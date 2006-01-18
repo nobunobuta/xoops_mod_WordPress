@@ -10,7 +10,13 @@
     	// focus on first input field
     	document.post.name.focus();
     }
-    window.onload = focusit;
+	var onload_tmpstr="";
+	if (window.onload != null) {
+	  onload_tmpstr = window.onload.toString();
+	  var  onload_i = onload_tmpstr.indexOf("{") + 2;
+	  onload_tmpstr = onload_tmpstr.substr(onload_i,onload_tmpstr.length-onload_i-2);
+	}
+    window.onload = new Function("focusit();"+onload_tmpstr);
     </script>
     <fieldset id="namediv">
     	<legend><{$smarty.const._LANG_EFC_COM_NAME}></legend>
