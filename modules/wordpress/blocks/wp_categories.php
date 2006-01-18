@@ -115,13 +115,15 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 		$pad = str_repeat($padchar, $level)." ";
 		$block['records'] = array();
 		foreach ($categoryObjects as $categoryObject) {
+			$_record = array();
 			$category = $categoryObject->exportWpObject();
 			if (($category->category_parent == $child_of)) {
-				$chilid_block =& _b_wp_categories_list($sort_column, $sort_order, $optioncount, $category->cat_ID, $categoryObjects, $arraytree, $padchar, $level+1, $current);
-				if ($arraytree) {
-					$_record['children'] = $chilid_block['records'];
+				$child_block =& _b_wp_categories_list($sort_column, $sort_order, $optioncount, $category->cat_ID, $categoryObjects, $arraytree, $padchar, $level+1, $current);
+				$num_children = count($child_block['records']);
+				if ($num_children && $arraytree) {
+					$_record['children'] = $child_block['records'];
 				}
-				if (isset($GLOBALS['category_posts']["$category->cat_ID"]) || count($chilid_block['records'])) {
+				if (isset($GLOBALS['category_posts']["$category->cat_ID"]) || $num_children) {
 					$_record['name'] = apply_filters('list_cats', $category->cat_name);
 					if (!$arraytree) {
 						$_record['name'] = $pad .$_record['name'];
@@ -140,15 +142,16 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 					if (intval($optioncount)) {
 						$_record['count'] = ' ('. intval($GLOBALS['category_posts']["$category->cat_ID"]).')';
 					}
+					$block['records'][] = $_record;
 				}
-				$block['records'][] = $_record;
-				if (!$arraytree) {
-					foreach($chilid_block['records'] as $_record) {
+				if ($num_children && !$arraytree) {
+					foreach($child_block['records'] as $_record) {
 						$block['records'][] = $_record;
 					}
 				}
 			}
 		}
+//		if (!$level) var_dump($block);
 		return $block;
 	}
 }
