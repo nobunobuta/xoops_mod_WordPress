@@ -1,4 +1,4 @@
-<?php 
+<?php
 $GLOBALS['blog'] = 1;
 $GLOBALS['doing_rss'] = 1;
 require_once(dirname(__FILE__).'/wp-config.php');
@@ -29,7 +29,7 @@ foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp();
 	<dc:language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></dc:language>
 	<dc:creator><?php echo antispambot(get_settings('admin_email')) ?></dc:creator>
 	<dc:rights>Copyright <?php echo mysql2date('Y', get_lastpostdate()); ?></dc:rights>
-	<pubDate><?php echo gmdate('r',$lastcommentdate_s); ?></pubDate>
+	<pubDate><?php echo gmdate('r'); ?></pubDate>
 	<admin:generatorAgent rdf:resource="http://www.kowa.org/?v=<?php echo $GLOBALS['wp_version_str'] ?>"/>
 	<admin:errorReportsTo rdf:resource="mailto:<?php echo antispambot(get_settings('admin_email')) ?>"/>
 	<sy:updatePeriod>hourly</sy:updatePeriod>
