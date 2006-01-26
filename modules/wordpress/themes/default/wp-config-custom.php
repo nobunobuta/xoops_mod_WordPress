@@ -7,15 +7,19 @@
 $GLOBALS['my_pingserver'][0]['server']="rpc.weblogs.com";
 $GLOBALS['my_pingserver'][0]['path']="/RPC2";
 $GLOBALS['my_pingserver'][0]['port']=80;
-//$GLOBALS['my_pingserver'][1]['server']="ping.bloggers.jp";
-//$GLOBALS['my_pingserver'][1]['path']="/rpc/";
+//$GLOBALS['my_pingserver'][1]['server']="blog.goo.ne.jp";
+//$GLOBALS['my_pingserver'][1]['path']="/XMLRPC";
 //$GLOBALS['my_pingserver'][1]['port']=80;
-//$GLOBALS['my_pingserver'][2]['server']="ping.myblog.jp";
-//$GLOBALS['my_pingserver'][2]['path']="/";
+//$GLOBALS['my_pingserver'][1]['myurl']='wp-rdf.php';
+//$GLOBALS['my_pingserver'][2]['server']="ping.bloggers.jp";
+//$GLOBALS['my_pingserver'][2]['path']="/rpc/";
 //$GLOBALS['my_pingserver'][2]['port']=80;
-//$GLOBALS['my_pingserver'][3]['server']="bulkfeeds.net";
-//$GLOBALS['my_pingserver'][3]['path']="/rpc";
+//$GLOBALS['my_pingserver'][3]['server']="ping.myblog.jp";
+//$GLOBALS['my_pingserver'][3]['path']="/";
 //$GLOBALS['my_pingserver'][3]['port']=80;
+//$GLOBALS['my_pingserver'][4]['server']="bulkfeeds.net";
+//$GLOBALS['my_pingserver'][4]['path']="/rpc";
+//$GLOBALS['my_pingserver'][4]['port']=80;
 
 // 日本語環境で曜日を英語で出したいとき。
 /*
