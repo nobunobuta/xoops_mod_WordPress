@@ -6,7 +6,7 @@ error_reporting(E_ERROR);
 init_param('GET', 'num','integer');
 if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
 $lastpostdate_s = mysql2date('Y-m-d H:i:s', get_lastpostmodified());
-$lastpostdate = mysql2date('U',$lastpostdate_s);
+$lastpostdate = mysql2date('U',$lastpostdate)-(get_settings('time_difference')*3600);
 static_content_header($lastpostdate);
 require_once('wp-blog-header.php');
 add_filter('the_content', 'trim');

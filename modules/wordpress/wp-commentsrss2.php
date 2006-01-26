@@ -11,7 +11,7 @@ if (!empty($_GET['p'])) {
 	$_post_id = 0;
 }
 $lastcommentdate_s = mysql2date('Y-m-d H:i:s', get_lastcommentmodified($_post_id));
-$lastcommentdate = mysql2date('U',$lastcommentdate_s);
+$lastcommentdate = mysql2date('U',$lastcommentdate_s)-(get_settings('time_difference')*3600);
 static_content_header($lastcommentdate);
 require_once('wp-blog-header.php');
 header('Content-type: application/xml');
@@ -37,7 +37,7 @@ foreach ($GLOBALS['posts'] as $GLOBALS['post']) { start_wp();
 	<dc:language><?php echo (get_settings('rss_language')?get_settings('rss_language'):'en') ?></dc:language>
 	<dc:creator><?php echo antispambot(get_settings('admin_email')) ?></dc:creator>
 	<dc:rights>Copyright <?php echo mysql2date('Y', get_lastpostdate()); ?></dc:rights>
-	<pubDate><?php echo gmdate('r',$lastcommentdate_s); ?></pubDate>
+	<pubDate><?php echo gmdate('r',$lastcommentdate); ?></pubDate>
 	<admin:generatorAgent rdf:resource="http://www.kowa.org/?v=<?php echo $GLOBALS['wp_version_str'] ?>"/>
 	<admin:errorReportsTo rdf:resource="mailto:<?php echo antispambot(get_settings('admin_email')) ?>"/>
 	<sy:updatePeriod>hourly</sy:updatePeriod>
