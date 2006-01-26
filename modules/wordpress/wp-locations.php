@@ -5,8 +5,8 @@ require(dirname(__FILE__).'/wp-config.php');
 error_reporting(E_ERROR);
 init_param('GET', 'num','integer');
 if (test_param('num')) $GLOBALS['showposts'] = get_param('num');
-require('wp-blog-header.php');
-header('Content-type: text/xml');
+require_once('wp-blog-header.php');
+header('Content-type: text/xml charset="'.wp_get_rss_charset().'"');
 ?>
 <?php echo '<?xml version="1.0" encoding="'.wp_get_rss_charset().'"?'.'>'; ?>
 <travels>
