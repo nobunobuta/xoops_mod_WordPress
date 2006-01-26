@@ -409,6 +409,7 @@ $GLOBALS['posts'] = array();
 while($postObject =& $postHandler->getNext($resultSet)) {
 	$GLOBALS['posts'][] =& $postObject->exportWpObject();
 }
+$GLOBALS['posts'] = apply_filters('the_posts', $GLOBALS['posts']);
 // No point in doing all this work if we didn't match any posts.
 if ($GLOBALS['posts']) {
 	if (count($GLOBALS['posts']) == 1) {
