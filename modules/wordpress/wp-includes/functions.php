@@ -840,13 +840,27 @@ function timer_stop($display=0,$precision=3) { //if called like timer_stop(1), w
 function pingWeblogs($blog_ID = 1) {
 	// original function by Dries Buytaert for Drupal
 	if ((!((get_settings('blogname')=="my weblog") && (wp_siteurl()=="http://example.com"))) && (!preg_match("/localhost\//",wp_siteurl())) && (get_settings('use_weblogsping'))) {
-		$message = new xmlrpcmsg("weblogUpdates.ping", array(new xmlrpcval(get_settings('blogname')), new xmlrpcval(wp_siteurl()."/index.php")));
+		$fp = debug_fopen(wp_base().'/log/pingsend.log', 'a');
+		debug_fwrite($fp,"\n***********************************************");
+		if ($GLOBALS['wp_debug']) ob_start();
 		foreach($GLOBALS['my_pingserver'] as $p) {
+			$myurl = wp_siteurl() . '/' . ((!empty($p['myurl'])) ? $p['myurl'] : 'index.php');
+			$message = new xmlrpcmsg("weblogUpdates.ping", array(new xmlrpcval(mb_conv(get_settings('blogname'),"UTF-8",$GLOBALS['blog_charset'])), new xmlrpcval($myurl)));
+			debug_fwrite($fp,"\n****\n** Server : ".$p['server']."\n** Path   : ".$p['path']."\n****\n");
 			$client = new xmlrpc_client($p['path'],$p['server'],$p['port']);
+			$client->setDebug($GLOBALS['wp_debug']);
 			$result = $client->send($message, 30);
 			unset($client);
+			unset($message);
+			if ($GLOBALS['wp_debug']) {
+				$dbg_msg = ob_get_contents();
+				ob_end_flush();
+			} else {
+				$dbg_msg = '';
 		}
-		unset($message);
+			debug_fwrite($fp,$dbg_msg);
+		}
+		debug_fclose($fp);
 		if (!$result || $result->faultCode()) {
 			return false;
 		}
@@ -2039,12 +2053,12 @@ function static_content_header($mod_timestamp) {
 	header('Etag: "'.$etag.'"' );
 	header('Cache-Control: max-age=866400');
 	header('Expires:'.gmdate('D, d M Y H:i:s',$mod_timestamp+866400).' GMT');
+	header('Last-Modified: '.gmdate('D, d M Y H:i:s',$mod_timestamp).' GMT');
 	if((!empty($_SERVER['HTTP_IF_MODIFIED_SINCE'])&&($mod_timestamp==str2time($_SERVER['HTTP_IF_MODIFIED_SINCE'])))||
 	   (!empty($_SERVER['HTTP_IF_NONE_MATCH'])&&($etag==$_SERVER['HTTP_IF_NONE_MATCH']))){
         header('HTTP/1.1 304 Not Modified');
         exit();
 	}
-	header('Last-Modified: '.gmdate('D, d M Y H:i:s',$mod_timestamp).' GMT');
 }
 
 function wp_get_fullurl($url) {
