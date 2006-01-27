@@ -793,8 +793,8 @@ function pingWeblogs($blog_ID = 1) {
 	if ((!((get_settings('blogname')=="my weblog") && (wp_siteurl()=="http://example.com"))) && (!preg_match("/localhost\//",wp_siteurl())) && (get_settings('use_weblogsping'))) {
 		$fp = debug_fopen(wp_base().'/log/pingsend.log', 'a');
 		debug_fwrite($fp,"\n***********************************************");
-		if ($GLOBALS['wp_debug']) ob_start();
 		foreach($GLOBALS['my_pingserver'] as $p) {
+			if ($GLOBALS['wp_debug']) ob_start();
 			$myurl = wp_siteurl() . '/' . ((!empty($p['myurl'])) ? $p['myurl'] : 'index.php');
 			$message = new xmlrpcmsg("weblogUpdates.ping", array(new xmlrpcval(mb_conv(get_settings('blogname'),"UTF-8",$GLOBALS['blog_charset'])), new xmlrpcval($myurl)));
 			debug_fwrite($fp,"\n****\n** Server : ".$p['server']."\n** Path   : ".$p['path']."\n****\n");
