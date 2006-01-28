@@ -333,7 +333,7 @@ function mysql2date($dateformatstring, $mysqlstring, $use_b2configmonthsdays = 1
 		return false;
 	}
 	$i = mktime(substr($mysqlstring,11,2),substr($mysqlstring,14,2),substr($mysqlstring,17,2),substr($mysqlstring,5,2),substr($mysqlstring,8,2),substr($mysqlstring,0,4));
-	if (preg_match("/([^\\\])o/i",$dateformatstring)||preg_match("/([^\\\])r/",$dateformatstring)) {
+	if (preg_match("/([^\\\])o/i",$dateformatstring)||preg_match("/([^\\\])r/",$dateformatstring)||($dateformatstring=='r')) {
 		$i -= get_settings('time_difference')*3600;
 	}
 	if (!empty($GLOBALS['month']) && !empty($GLOBALS['weekday']) && $use_b2configmonthsdays) {
