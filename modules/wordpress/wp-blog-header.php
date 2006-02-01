@@ -395,6 +395,12 @@ $postHandler =& wp_handler('Post');
 $resultSet =& $postHandler->open($_criteria, '', $_distinct, $_joinCriteria);
 
 $GLOBALS['request'] = $postHandler->getLastSQL();
+if ( !empty($_criteria_limit) ) {
+	if (empty($_criteria_start)) {
+		$_criteria_start = 0;
+	}
+	$GLOBALS['request'] = $GLOBALS['request']. ' LIMIT '.(int)$_criteria_start.', '.(int)$_criteria_limit;
+}
 //echo $GLOBALS['request'].'<br>';
 
 if (!empty($preview)) {
