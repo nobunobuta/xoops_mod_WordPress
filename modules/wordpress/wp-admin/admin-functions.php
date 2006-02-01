@@ -106,7 +106,7 @@ function wp_dropdown_weekly($current) {
 		$archive_week_start_date_format = "Y/m/d";
 		$archive_week_end_date_format   = "Y/m/d";
 		$archive_week_separator = " - ";
-		$arc_result=$wpdb->geT_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date), DAYOFMONTH(post_date), WEEK(post_date) FROM ".wp_table('posts')." ORDER BY post_date DESC", ARRAY_A);
+		$arc_result=$wpdb->get_results("SELECT DISTINCT YEAR(post_date), MONTH(post_date), DAYOFMONTH(post_date), WEEK(post_date) FROM ".wp_table('posts')." ORDER BY post_date DESC", ARRAY_A);
 		$arc_w_last = '';
         foreach ($arc_result as $arc_row) {
 			$arc_year = $arc_row["YEAR(post_date)"];
