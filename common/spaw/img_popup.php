@@ -33,7 +33,7 @@ if (ini_get('allow_url_fopen')) {
 		$img_size = false;
 	}
 }
-if (!($img_size && $img_size[2] >0 && $img_size[2] < 3)) {
+if (!($img_size && $img_size[2] >0 && $img_size[2] < 4)) {
 	exit();
 }
 
