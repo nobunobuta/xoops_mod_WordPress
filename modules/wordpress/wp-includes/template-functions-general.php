@@ -471,8 +471,8 @@ function get_calendar($daylength = 1, $echo=true) {
 			$thismonth = ''.intval(substr($GLOBALS['m'], 4, 2));
 		}
 	} else {
-		$thisyear = intval(date('Y', current_time('timestamp')));
-		$thismonth = intval(date('m', current_time('timestamp')));
+		$thisyear = intval(date('Y', current_time('timestamp',0)));
+		$thismonth = intval(date('m', current_time('timestamp',0)));
 	}
 
 	$unixmonth = mktime(0, 0 , 0, $thismonth, 1, $thisyear);
@@ -583,7 +583,7 @@ function get_calendar($daylength = 1, $echo=true) {
 		}
 		$newrow = false;
 
-		if ($day == date('j', current_time('timestamp')) && $thismonth == date('m', current_time('timestamp')))
+		if ($day == date('j', current_time('timestamp',0)) && $thismonth == date('m', current_time('timestamp',0)))
 			$get_calendar .= '<td id="today">';
 		else
 			$get_calendar .= "<td>";

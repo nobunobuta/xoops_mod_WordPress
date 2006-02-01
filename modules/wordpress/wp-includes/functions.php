@@ -774,7 +774,7 @@ function touch_time($edit = 1, $echo=true) {
 	
 	$output = '<p><input type="checkbox" class="checkbox" name="edit_date" value="1" id="timestamp" '.$checked.'/> <label for="timestamp">'._LANG_F_TIMESTAMP.'</label> : <a href="http://wordpress.xwd.jp/wiki/index.php?Reference%20Post%2FEdit#timestamp" title="Help on changing the timestamp">Help</a><br />';
 
-	$time_adj = current_time('timestamp');
+	$time_adj = current_time('timestamp',0);
 	$jj = ($edit) ? mysql2date('d', $GLOBALS['postdata']['post_date']) : date('d', $time_adj);
 	$mm = ($edit) ? mysql2date('m', $GLOBALS['postdata']['post_date']) : date('m', $time_adj);
 	$aa = ($edit) ? mysql2date('Y', $GLOBALS['postdata']['post_date']) : date('Y', $time_adj);

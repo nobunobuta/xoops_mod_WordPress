@@ -77,7 +77,7 @@ if ((get_settings('use_comment_preview'))&&($_action!='confirm')) {
 			redirect_header($_location, 3, $xoopsWPTicket->getErrors());
 		}
 	}
-$_now = current_time('mysql');
+$_now = current_time('mysql',0);
 
 $_comment = balanceTags($_comment, 1);
 $_comment = convert_chars($_comment);

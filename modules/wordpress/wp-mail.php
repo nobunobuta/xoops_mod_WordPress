@@ -134,7 +134,7 @@ function wp_mail_receive() {
 		$ncharset = preg_match("/\s?charset=\"?([A-Za-z0-9\-]*)\"?/i", $content, $matches);
 		if ($ncharset) $charset = $matches[1];
 
-		$ddate_today = current_time('timestamp');
+		$ddate_today = current_time('timestamp',0);
 		$ddate_difference_days = ($ddate_today - $ddate_U) / 86400; 
 
 		if ($ddate_difference_days > 14) {

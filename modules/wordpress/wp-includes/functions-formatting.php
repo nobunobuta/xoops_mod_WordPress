@@ -361,7 +361,7 @@ function mysql2date($dateformatstring, $mysqlstring, $use_b2configmonthsdays = 1
 	return $j;
 }
 
-function current_time($type, $offset=0) {
+function current_time($type, $offset=WP_QUERY_TIME_OFFSET) {
 	$time_difference = get_settings('time_difference');
 	switch ($type) {
 		case 'mysql':

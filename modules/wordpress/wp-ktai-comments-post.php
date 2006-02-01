@@ -75,7 +75,7 @@ if (defined('XOOPS_URL')) {
 	   	display_error($_location ,5,_LANG_WPCP_ERR_TYPE);
 	}
 
-	$_now = current_time('mysql');
+	$_now = current_time('mysql',0);
 
 	$_comment = balanceTags($_comment, 1);
 	$_comment = convert_chars($_comment);

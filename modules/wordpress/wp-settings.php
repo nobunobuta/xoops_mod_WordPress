@@ -60,6 +60,8 @@ require_once (wp_base().'/wp-includes/class-xmlrpc.php');
 require_once (wp_base().'/wp-includes/class-xmlrpcs.php');
 require_once (wp_base().'/wp-includes/links.php');
 
+if(!defined('WP_QUERY_TIME_OFFSET')) define('WP_QUERY_TIME_OFFSET',0);
+
 if (empty($GLOBALS['cache_categories'][wp_id()])||(count($GLOBALS['cache_categories'][wp_id()])==0)) {
 	$GLOBALS['cache_categories'][wp_id()] = array();
 	$categoryHandler =& wp_handler('Category');

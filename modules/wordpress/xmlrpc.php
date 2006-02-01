@@ -115,7 +115,7 @@ function wp_insert_post($postarr = array()) {
 	if (!empty($postarr['post_date'])) {
 		$postObject->setVar('post_date', $postarr['post_date'], true);
 	} else {
-		$postObject->setVar('post_date', current_time('mysql'), true);
+		$postObject->setVar('post_date', current_time('mysql',0), true);
 	}
 	if (!empty($postarr['post_author'])) {
 		$postObject->setVar('post_author', $postarr['post_author'], true);
@@ -425,7 +425,7 @@ function b2newpost($m) {
 		if ($postdate != '') {
 			$postarr['post_date'] = $postdate;
 		} else {
-			$postarr['post_date'] = current_time('mysql');
+			$postarr['post_date'] = current_time('mysql',0);
 		}
 		if ($category) {
 			$postarr['post_category'] = array($category);
@@ -602,7 +602,7 @@ function bloggernewpost($m) {
 		$postarr['post_title'] = xmlrpc_getposttitle($content);
 		$postarr['post_category'] = array(xmlrpc_getpostcategory($content));
 		$postarr['post_content'] = format_to_post(xmlrpc_removepostdata($content));
-		$postarr['post_date'] = current_time('mysql');
+		$postarr['post_date'] = current_time('mysql',0);
 
 		$post_ID = wp_insert_post($postarr);
 		if (!$post_ID) {
@@ -1099,7 +1099,7 @@ function mwnewpost($params) {
 			}
 			$dateCreated = iso8601_decode($dateCreated[0],1)- $dateoffset + (get_settings('time_difference') * 3600);
 		} else {
-			$dateCreated = current_time('timestamp');
+			$dateCreated = current_time('timestamp',0);
 		}
 		$postarr['post_date'] = date('Y-m-d H:i:s', $dateCreated);
 		$postarr['post_category'] = array();
@@ -1210,7 +1210,7 @@ function mweditpost ($params) {	// ($postid, $user, $pass, $content, $publish)
 			}
 			$dateCreated = iso8601_decode($dateCreated[0],1)- $dateoffset + (get_settings('time_difference') * 3600);
 		} else {
-			$dateCreated = current_time('timestamp');
+			$dateCreated = current_time('timestamp',0);
 		}
 		$postarr['post_date'] = date('Y-m-d H:i:s', $dateCreated);
 		$postarr['post_category'] = array();
@@ -1942,7 +1942,7 @@ function pingback_ping($m) { // original code by Mort
 					$pagelinkedfrom = addslashes($pagelinkedfrom);
 					$original_title = $title;
 					$title = addslashes(strip_tags(trim($title)));
-					$now = current_time('mysql');
+					$now = current_time('mysql',0);
 					if (get_settings('comment_moderation') == 'manual') {
 						$approved = 0;
 					} else if (get_settings('comment_moderation') == 'auto') {

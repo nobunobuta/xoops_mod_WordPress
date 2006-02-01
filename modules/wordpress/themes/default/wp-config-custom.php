@@ -2,6 +2,7 @@
 /* Don't remove this line */ if (!defined('XOOPS_ROOT_PATH')) { exit; }
 //Debug Log 出力モード
 //$GLOBALS['wp_debug'] = true;
+//if(!defined('WP_QUERY_TIME_OFFSET')) define('WP_QUERY_TIME_OFFSET',0);
 //
 // PINGサーバの指定
 $GLOBALS['my_pingserver'][0]['server']="rpc.weblogs.com";

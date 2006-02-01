@@ -1075,7 +1075,6 @@ if (!function_exists('xml_parser_create'))
 
 			if($this->debug)
 			{
-				//by maHo, replaced htmlspecialchars with htmlentities
 				print "<PRE>---SEND---\n" . htmlentities($op) . "\n---END---\n</PRE>";
 			}
 

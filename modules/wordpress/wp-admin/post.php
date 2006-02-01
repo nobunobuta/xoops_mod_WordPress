@@ -77,7 +77,7 @@ switch(get_param('action')) {
 			$ss = ($ss > 59) ? $ss - 60 : $ss;
 			$now = "$aa-$mm-$jj $hh:$mn:$ss";
 		} else {
-			$now = current_time('mysql');
+			$now = current_time('mysql',0);
 		}
 		$postObject->setVar('post_date', $now, true);
 

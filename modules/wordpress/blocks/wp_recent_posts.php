@@ -88,7 +88,7 @@ if( ! defined( 'WP_RECENT_POSTS_BLOCK_INCLUDED' ) ) {
 				$_record['newstr'] = '';
 				if ($new_flg) {
 					$m =  $lpost->post_date;
-					$elapse = current_time('timestamp') - mktime(substr($m,11,2),substr($m,14,2),substr($m,17,2),substr($m,5,2),substr($m,8,2),substr($m,0,4));
+					$elapse = current_time('timestamp',0) - mktime(substr($m,11,2),substr($m,14,2),substr($m,17,2),substr($m,5,2),substr($m,8,2),substr($m,0,4));
 					if ($elapse < $new1_span ) {
 						$_record['new'] = 1;
 						$_record['newstr'] = ' <span class="new1">New!</span>';

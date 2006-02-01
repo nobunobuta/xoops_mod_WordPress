@@ -137,7 +137,7 @@ if (!empty($_tb_id) && !test_param('__mode') && test_param('url')) {
 	$commentObject->setVar('comment_author_email','', true);
 	$commentObject->setVar('comment_author_url',get_param('url'), true);
 	$commentObject->setVar('comment_author_IP',$_SERVER['REMOTE_ADDR'], true);
-	$commentObject->setVar('comment_date',current_time('mysql'), true);
+	$commentObject->setVar('comment_date',current_time('mysql',0), true);
 	$commentObject->setVar('comment_content',$_content, true);
 	$commentObject->setVar('comment_approved',$approved, true);
 	$commentObject->setVar('comment_type','trackback', true);
