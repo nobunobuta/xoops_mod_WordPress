@@ -15,15 +15,20 @@ require_once dirname(__FILE__).'/config/spaw_control.config.php';
 if (empty($spaw_img_popup_url)) exit();
 //Verifing Parameter
 $img_url = htmlspecialchars($_GET['img_url'],ENT_QUOTES);
+if (!preg_match('!http(s)?://!', $img_url)) { //URL Check
+	$img_url = preg_replace('!^(http(s)?\://[^/]*)?.*$!','$1',XOOPS_URL).'/'.$img_url;
+}
 if (ini_get('allow_url_fopen')) {
 	$img_size = getimagesize($img_url);
 } else { //following part depends to XOOPS Dir structure.
 	if (file_exists('../../class/snoopy.php')) {
+		error_reporting(E_ERROR);
 		require_once '../../class/snoopy.php';
 		$snoopy =& new Snoopy;
 		$snoopy->fetch($img_url);
 		$tname = tempnam(XOOPS_ROOT_PATH.'/cache', 'spaw_img_popup'); 
-		$fp=fopen($tname,'w');
+		touch($tname);
+		$fp=fopen($tname,'wb');
 		fwrite($fp, $snoopy->results);
 		fclose($fp);
 		$img_size = getimagesize($tname);
@@ -32,7 +37,8 @@ if (ini_get('allow_url_fopen')) {
 		$img_size = false;
 	}
 }
-if (!($img_size && $img_size[2] >0 && $img_size[2] < 4)) {
+if (!($img_size && $img_size[2] >0 && $img_size[2] < 3)) {
+	echo "No Image";
 	exit();
 }
 
