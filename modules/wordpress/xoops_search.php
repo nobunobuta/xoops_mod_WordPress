@@ -46,8 +46,14 @@ if( ! defined( 'WP_XOOPS_SEARCH_INCLUDED' ) ) {
 			$ret[$i]['time'] = mktime( $hh,$nn,$ss,$mm,$dd,$yyyy);
 			$ret[$i]['uid'] = $myrow['post_author'];
 			$ret[$i]['page'] = $myrow['post_title'];
+			
 			if (!empty($myrow['post_content']) && function_exists('xoops_make_context')) {
 				$ret[$i]['context'] = xoops_make_context(strip_tags($myrow['post_content']),$queryarray);
+			}
+			if (!empty($myrow['post_content']) && function_exists('search_make_context')) {
+			    if (!empty($_GET['showcontext']) && ($_GET['showcontext']==1)) {
+				    $ret[$i]['context'] = search_make_context(strip_tags($myrow['post_content']),$queryarray);
+				}
 			}
 
 			$i++;
