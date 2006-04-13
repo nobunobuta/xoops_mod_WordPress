@@ -19,7 +19,7 @@ class WordPressCategory  extends XoopsTableObject
 
 		//各オブジェクト要素の定義
 		$this->initVar('cat_ID', XOBJ_DTYPE_INT, NULL, true);
-		$this->initVar('cat_name', XOBJ_DTYPE_TXTBOX, NULL, true, 55);
+		$this->initVar('cat_name', XOBJ_DTYPE_TXTBOX, NULL, true, 255);
 		$this->initVar('category_nicename', XOBJ_DTYPE_TXTBOX, '', false,200);
 		$this->initVar('category_description', XOBJ_DTYPE_TXTAREA, NULL, false);
 		$this->initVar('category_parent', XOBJ_DTYPE_INT, 0, false);

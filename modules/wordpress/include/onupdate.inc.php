@@ -34,6 +34,13 @@ if (!function_exists('upgrade_wp_tables')){
 		$xoopsDB->query($sql1);
 		$GLOBALS['msgs'][] = "TABLE ".wp_table('options')." is modified.";
 
+        $sql1 = "Alter TABLE ".wp_table('categories')." CHANGE 
+                    cat_name cat_name varchar(255) NOT NULL Default ''
+                ";
+
+		$xoopsDB->query($sql1);
+		$GLOBALS['msgs'][] = "TABLE ".wp_table('categories')." is modified.";
+
 		$xoopsDB->query("DELETE FROM ".wp_table('optiongroup_options')." WHERE group_id=6 AND option_id=1");
 		$xoopsDB->query("DELETE FROM ".wp_table('optiongroup_options')." WHERE group_id=6 AND option_id=2");
 		$xoopsDB->query("UPDATE ".wp_table('optiongroup_options')." SET seq=1 WHERE group_id=6 AND option_id=3");

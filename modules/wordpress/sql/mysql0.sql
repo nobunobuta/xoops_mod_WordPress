@@ -4,7 +4,7 @@
 
 CREATE TABLE wp0_categories (
   `cat_ID` int(4) NOT NULL auto_increment,
-  `cat_name` varchar(55) NOT NULL default '',
+  `cat_name` varchar(255) NOT NULL default '',
   `category_nicename` varchar(200) NOT NULL default '',
   `category_description` text NOT NULL,
   `category_parent` int(4) NOT NULL default '0',
