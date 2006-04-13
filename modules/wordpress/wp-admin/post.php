@@ -75,7 +75,7 @@ switch(get_param('action')) {
 			$hh = ($hh > 23) ? $hh - 24 : $hh;
 			$mn = ($mn > 59) ? $mn - 60 : $mn;
 			$ss = ($ss > 59) ? $ss - 60 : $ss;
-			$now = "$aa-$mm-$jj $hh:$mn:$ss";
+			$now = $aa.'-'.$mm.'-'.$jj.' '.$hh.':'.$mn.':'.$ss;
 		} else {
 			$now = current_time('mysql',0);
 		}
@@ -102,13 +102,13 @@ switch(get_param('action')) {
 				$location = 'sidebar.php?action=done';
 				break;
 			default:
-				$location = 'post.php';
+				$location = wp_siteurl();
 				break;
 		}
 		if (test_param('advanced')) {
-			$location = "post.php?action=edit&post=$post_ID";
+			$location = 'post.php?action=edit&post='.$post_ID;
 		}
-		header("Location: $location");
+		header('Location: '.$location);
 		$postObject->assignCategories(get_param(post_category));
 		do_action('save_post', $post_ID);       
 		if ($post_status == 'publish') {
@@ -146,7 +146,7 @@ switch(get_param('action')) {
 			redirect_header(wp_siteurl().'/wp-admin/',5, _LANG_P_DATARIGHT_EDIT.' by <strong>['.$authorObject->getVar('user_login').']</strong>');
 		}
 		$postdata = $postObject->getVarArray('e');
-		$mode = "";
+		$mode = '';
 		$content = apply_filters('content_edit_pre', $postdata['post_content']);
 		$excerpt = apply_filters('excerpt_edit_pre', $postdata['post_excerpt']);
 		$edited_post_title = apply_filters('title_edit_pre', $postdata['post_title']);
@@ -207,8 +207,8 @@ switch(get_param('action')) {
 		}
 		$prev_status = $postObject->getVar('post_status');
 		$post_name = sanitize_title(get_param('post_title'));
-		if ($post_name == "") {
-			$post_name = "post-".get_param('post_ID');
+		if ($post_name == '') {
+			$post_name = 'post-'.get_param('post_ID');
 		}
 		$postObject->setVar('post_content', apply_filters('content_save_pre', get_param('wp_content')), true);
 		$postObject->setVar('post_title', get_param('post_title'), true);
@@ -243,7 +243,7 @@ switch(get_param('action')) {
 			$hh = ($hh > 23) ? $hh - 24 : $hh;
 			$mn = ($mn > 59) ? $mn - 60 : $mn;
 			$ss = ($ss > 59) ? $ss - 60 : $ss;
-			$postObject->setVar('post_date', "$aa-$mm-$jj $hh:$mn:$ss", true);
+			$postObject->setVar('post_date', $aa.'-'.$mm.'-'.$jj.' '.$hh.':'.$mn.':'.$ss, true);
 		}
 
 		$post_status = get_param('post_status');
@@ -328,7 +328,7 @@ switch(get_param('action')) {
 						'post' => $post_id,
 						);
 		$delete_confirm += $xoopsWPTicket->getTicketArray(__LINE__);
-		$msg = _LANG_P_CONFIRM_DELETE."<br />'".$postObject->getVar('post_title')."'";
+		$msg = _LANG_P_CONFIRM_DELETE.'<br />"'.$postObject->getVar('post_title').'"';
 		xoops_confirm($delete_confirm, $this_file, $msg);
 		include('admin-footer.php');
 		break;
@@ -416,10 +416,10 @@ switch(get_param('action')) {
 <div class="wrap">
 	<p><strong>Caution:</strong><?php echo _LANG_P_ABOUT_FOLLOW ?></p>
 	<table border="0">
-		<tr><td>Author:</td><td><?php echo $commentdata["comment_author"] ?></td></tr>
-		<tr><td>E-Mail:</td><td><?php echo $commentdata["comment_author_email"] ?></td></tr>
-		<tr><td>URL:</td><td><?php echo $commentdata["comment_author_url"] ?></td></tr>
-		<tr><td>Comment:</td><td><?php echo apply_filters('comment_text',$commentdata["comment_content"]) ?></td></tr>
+		<tr><td>Author:</td><td><?php echo $commentdata['comment_author'] ?></td></tr>
+		<tr><td>E-Mail:</td><td><?php echo $commentdata['comment_author_email'] ?></td></tr>
+		<tr><td>URL:</td><td><?php echo $commentdata['comment_author_url'] ?></td></tr>
+		<tr><td>Comment:</td><td><?php echo apply_filters('comment_text',$commentdata['comment_content']) ?></td></tr>
 	</table>
 </div>
 <?php
@@ -475,7 +475,7 @@ switch(get_param('action')) {
 		exit();
 		break;
 	case 'unapprovecomment':
-		wp_refcheck("/wp-admin");
+		wp_refcheck('/wp-admin');
 		if ($user_level <= 0) {
 			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 		}
@@ -488,7 +488,7 @@ switch(get_param('action')) {
 		} else {
 			$noredir = false;
 		}
-		if (($_SERVER['HTTP_REFERER'] != "") && (false == $noredir)) {
+		if (($_SERVER['HTTP_REFERER'] != '') && (false == $noredir)) {
 			$location = $_SERVER['HTTP_REFERER'];
 		} else {
 			$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&c=1#comments';
@@ -530,13 +530,13 @@ switch(get_param('action')) {
 						'noredir' => true,
 						);
 ?>
-<?php xoops_confirm($approve_confirm,"post.php?".$xoopsWPTicket->getTicketParamString(__LINE__,true),_LANG_WPM_MODERATE_BUTTON); ?>
+<?php xoops_confirm($approve_confirm,'post.php?'.$xoopsWPTicket->getTicketParamString(__LINE__,true),_LANG_WPM_MODERATE_BUTTON); ?>
 <div class="wrap">
 	<table border="0">
-		<tr><td>Author:</td><td><?php echo $commentdata["comment_author"] ?></td></tr>
-		<tr><td>E-Mail:</td><td><?php echo $commentdata["comment_author_email"] ?></td></tr>
-		<tr><td>URL:</td><td><?php echo $commentdata["comment_author_url"] ?></td></tr>
-		<tr><td>Comment:</td><td><?php echo apply_filters('comment_text',$commentdata["comment_content"]) ?></td></tr>
+		<tr><td>Author:</td><td><?php echo $commentdata['comment_author'] ?></td></tr>
+		<tr><td>E-Mail:</td><td><?php echo $commentdata['comment_author_email'] ?></td></tr>
+		<tr><td>URL:</td><td><?php echo $commentdata['comment_author_url'] ?></td></tr>
+		<tr><td>Comment:</td><td><?php echo apply_filters('comment_text',$commentdata['comment_content']) ?></td></tr>
 	</table>
 </div>
 <?php
@@ -544,7 +544,7 @@ switch(get_param('action')) {
 		break;
 	case 'approvecomment':
 		$standalone = 1;
-		wp_refcheck("/wp-admin");
+		wp_refcheck('/wp-admin');
 		if ($user_level <= 0) {
 			redirect_header(wp_siteurl().'/wp-admin/',5,_LANG_P_CHEATING_ERROR);
 			exit();
@@ -559,7 +559,7 @@ switch(get_param('action')) {
 		} else {
 			$noredir = false;
 		}
-		if (($_SERVER['HTTP_REFERER'] != "") && (false == $noredir)) {
+		if (($_SERVER['HTTP_REFERER'] != '') && (false == $noredir)) {
 			$location = $_SERVER['HTTP_REFERER'];
 		} else {
 			$location = wp_siteurl().'/wp-admin/edit.php?p='.$p.'&c=1#comments';
@@ -575,7 +575,7 @@ switch(get_param('action')) {
 			redirect_header($location, 3, $commentHandler->getErrors());
 		}
 
-		if (get_settings("comments_notify") == true) {
+		if (get_settings('comments_notify') == true) {
 			wp_notify_postauthor($key, $commentObject->getVar('comment_type'));
 		}
 		
@@ -597,7 +597,7 @@ switch(get_param('action')) {
 		init_param('POST', 'comment_post_ID', 'integer', NO_DEFAULT_PARAM, true);
 		init_param('POST', 'edit_date','integer', 0);
 		init_param('POST', 'wp_content','html', '', true);
-		init_param('POST', 'referredby', 'string', urlencode($this_file."?p=$comment_post_ID&c=1#comments"), true);
+		init_param('POST', 'referredby', 'string', urlencode($this_file.'?p='.$comment_post_ID.'&c=1#comments'), true);
 
 		if (($user_level > 4) && $edit_date) {
 			init_param('POST', 'aa','integer');
@@ -610,7 +610,7 @@ switch(get_param('action')) {
 			$hh = ($hh > 23) ? $hh - 24 : $hh;
 			$mn = ($mn > 59) ? $mn - 60 : $mn;
 			$ss = ($ss > 59) ? $ss - 60 : $ss;
-			$datemodif = "$aa-$mm-$jj $hh:$mn:$ss";
+			$datemodif = $aa.'-'.$mm.'-'.$jj.' '.$hh.':'.$mn.':'.$ss;
 		} else {
 			$datemodif = '';
 		}
@@ -625,7 +625,7 @@ switch(get_param('action')) {
 			$commentObject->setVar('comment_date',$datemodif, true);
 		}
 
-		if (!test_param('referredby') && $_SERVER['HTTP_REFERER'] != "") {
+		if (!test_param('referredby') && $_SERVER['HTTP_REFERER'] != '') {
 			$location = $_SERVER['HTTP_REFERER'];
 		} else {
 			$location = urldecode($referredby);
@@ -673,7 +673,7 @@ switch(get_param('action')) {
 		} else {
 ?>
 <div class="wrap">
-			<p><?php echo _LANG_P_NEWCOMER_MESS." : <a href=\"mailto:".get_settings('admin_email')."?subject=Promotion\">E-Mail</a>"; ?></p>
+			<p><?php echo _LANG_P_NEWCOMER_MESS ?> : <a href="mailto:<?php echo get_settings('admin_email') ?>?subject=Promotion">E-Mail</a></p>
 </div>
 <?php
 		}
