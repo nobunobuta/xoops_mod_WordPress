@@ -2,7 +2,7 @@
 	include XOOPS_ROOT_PATH."/class/xoopsformloader.php";
 	$_form = new XoopsThemeForm($_form_title, $_form_id, "categories.php");
 
-	$_form->addElement(new XoopsFormText(_LANG_C_NAME_SUBCAT, "cat_name", 50, 150, $_form_cat_name), true);
+	$_form->addElement(new XoopsFormText(_LANG_C_NAME_SUBCAT, "cat_name", 50, 250, $_form_cat_name), true);
 
 	$_form_cat = new XoopsFormSelect(_LANG_C_NAME_PARENT, "category_parent", $_form_category_parent);
 	$_form_cat->addOptionArray($_form_category_options);
