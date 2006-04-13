@@ -49,6 +49,9 @@ if( ! defined( 'WP_XOOPS_SEARCH_INCLUDED' ) ) {
 			if (!empty($myrow['post_content']) && function_exists('xoops_make_context')) {
 				$ret[$i]['context'] = xoops_make_context(strip_tags($myrow['post_content']),$queryarray);
 			}
+			if (!empty($myrow['post_content']) && function_exists('search_make_context')) {
+				$ret[$i]['context'] = search_make_context(strip_tags($myrow['post_content']),$queryarray);
+			}
 
 			$i++;
 		}
