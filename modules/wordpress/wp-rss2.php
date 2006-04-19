@@ -32,7 +32,11 @@ header('Content-type: application/xml');
 		<link><?php permalink_single_rss() ?></link>
 		<comments><?php comments_link(); ?></comments>
 		<pubDate><?php the_time('r'); ?></pubDate>
+<?php if (the_author_user_viewemail()) {?>
 		<author><?php the_author_rss() ?> &lt;<?php the_author_email() ?>&gt;</author>
+<?php } else { ?>
+		<author><?php the_author_rss() ?></author>
+<?php } ?>
 		<?php the_category_rss() ?>
 		<guid isPermaLink="true"><?php permalink_single_rss() ?></guid>
 <?php $GLOBALS['more'] = 1; if (get_settings('rss_use_excerpt')) {
