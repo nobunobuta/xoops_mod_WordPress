@@ -45,7 +45,11 @@ header('Content-type: application/xml');
 	<title><?php the_title_rss() ?></title>
 	<link><?php permalink_single_rss() ?></link>
 	<dc:date><?php the_time('Y-m-d\TH:i:so'); ?></dc:date>
+<?php if (the_author_user_viewemail()) {?>
 	<dc:creator><?php the_author_rss() ?> &lt;<?php the_author_email() ?>&gt;</dc:creator>
+<?php } else { ?>
+	<dc:creator><?php the_author_rss() ?></dc:creator>
+<?php } ?>
 	<?php the_category_rss('rdf') ?>
 <?php $GLOBALS['more'] = 1; if (get_settings('rss_use_excerpt')) {
 ?>

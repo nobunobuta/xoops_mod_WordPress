@@ -45,6 +45,10 @@ function the_author_email($echo=true) {
 	return _echo(htmlspecialchars(antispambot($GLOBALS['authordata']->user_email), ENT_QUOTES),$echo);
 }
 
+function the_author_user_viewemail() {
+    return $GLOBALS['authordata']->user_viewemail;
+}
+
 function the_author_url($echo=true) {
 	return _echo(htmlspecialchars($GLOBALS['authordata']->user_url, ENT_QUOTES),$echo);
 }

@@ -119,6 +119,7 @@ class WordPressUser  extends XoopsTableObject
 			$member =& $this->_handler->member_handler->getUser($this->getVar('ID'));
 	        if ($member) {
 	            $this->assignVar('user_pass', $member->getVar('pass','n'));
+	            $this->setAttribute('user_viewemail',$member->getVar('user_viewemail'));
 	        } else {
 	    		$this->setVar('user_level',0, true);
 	    		$this->setVar('user_login','X_'.$this->getVar('user_login','n').'_X', true);
@@ -208,6 +209,9 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 		$userObjects =& $this->getObjects($criteria);
 		if (count($userObjects) == 1) {
 			$userObject =& $userObjects[0];
+			if ($sync_xoops) {
+    			$userObject->syncXOOPS();
+    		}
 			return $userObject;
 		} else {
 			if ($sync_xoops) {
