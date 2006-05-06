@@ -203,7 +203,7 @@ function wp_update_post($postarr = array()) {
 
 		$post_name = sanitize_title($post_title);
 		if ($post_name == '') {
-			$post_name = 'post-'.$ID;
+				$post_name = 'post-'.$postarr['ID'];
 		}
 			$postObject->setVar('post_name', $post_name, true);
 	}
@@ -1345,7 +1345,7 @@ function mwrecentposts ($params) {	// ($blogid, $user, $pass, $num)
 			$content = new xmlrpcval(stripslashes($entry['post_content']));
 			$excerpt = new xmlrpcval(mb_conv(stripslashes($entry['post_excerpt']),'UTF-8',$GLOBALS['blog_charset']));
 			
-			$pcat = stripslashes(get_cat_name($entry['post_category']));
+			$pcat = mb_conv(stripslashes(get_cat_name($entry['post_category'])),'UTF-8',$GLOBALS['blog_charset']);
 			
 			// For multiple cats, we might do something like
 			// this in the future:
