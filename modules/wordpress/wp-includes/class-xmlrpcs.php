@@ -371,6 +371,7 @@ if( ! defined( 'WP_CLASS_XMLRPCS_INCLUDED' ) ) {
 			{
 				$data=$HTTP_RAW_POST_DATA;
 			}
+			$data=preg_replace("/^\s*/","", $data);
             // G. Giunta 2005/02/13: we do NOT expect to receive html entities
             // so we do not try to convert them into xml character entities
 			//$data = xmlrpc_html_entity_xlate($data);
