@@ -138,6 +138,21 @@ class WordPressPostHandler  extends XoopsTableObjectHandler
 	function insert(&$record,$force=false,$updateOnlyChanged=false)
 	{
 		$record->setVar('post_modified', current_time('mysql'), true);
+		if (trim($record->getVar('post_name'))!='') {
+		    $post_name = strtolower($record->getVar('post_name'));
+    		$criteria =& new CriteriaCompo(new Criteria('post_name', $record->getVar('post_name')));
+    		$criteria->add(new Criteria('ID', $record->getVar('ID'),'!='),'AND');
+    		$objects =& $this->getObjects($criteria);
+    		$suffix = 2;
+    		while (count($objects)) {
+    		    $post_name = strtolower($record->getVar('post_name')).'_'.$suffix;
+        		$criteria =& new CriteriaCompo(new Criteria('post_name', $post_name));
+        		$criteria->add(new Criteria('ID', $record->getVar('ID'),'!='),'AND');
+        		$objects =& $this->getObjects($criteria);
+        		$suffix++;
+    		}
+    		$record->setVar('post_name', $post_name, true);
+		}
 		if ($result = parent::insert($record, $force, $updateOnlyChanged)) {
 			if (trim($record->getVar('post_name'))=='') {
 				$record->setVar('post_name', "post-".$record->getVar('ID'), true);
