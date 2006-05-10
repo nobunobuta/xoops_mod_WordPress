@@ -350,7 +350,7 @@ switch(get_param('action')) {
 			redirect_header(wp_siteurl().'/wp-admin/'.$this_file, 3, $postHandler->getErrors());
 		}
 
-		do_action('delete_post', $post_ID);
+		do_action('delete_post', $post_id);
 		$location = wp_siteurl() .'/wp-admin/edit.php';
 		header ('Location: ' . $location);
 
