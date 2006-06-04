@@ -34,7 +34,7 @@ if (!is_object($module) || !$module->getVar('isactive')) {
 	exit();
 }
 $member_handler =& xoops_gethandler('member');
-$group_list =& $member_handler->getGroupList();
+$group_list = $member_handler->getGroupList();
 if (is_array($_POST['perms']) && !empty($_POST['perms'])) {
 	$gperm_handler = xoops_gethandler('groupperm');
 	foreach ($_POST['perms'] as $perm_name => $perm_data) {

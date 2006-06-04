@@ -6,6 +6,12 @@
 // ------------------------------------------------------------------------- //
 
 include_once( '../../../include/cp_header.php' ) ;
+
+if( substr( XOOPS_VERSION , 6 , 3 ) > 2.0 ) {
+	include 'myblocksadmin2.php' ;
+	exit ;
+}
+
 include_once( 'mygrouppermform.php' ) ;
 include_once( XOOPS_ROOT_PATH.'/class/xoopsblock.php' ) ;
 include_once "../include/gtickets.php" ;// GIJ
@@ -64,7 +70,6 @@ if (!$sysperm_handler->checkRight('system_admin', XOOPS_SYSTEM_BLOCK, $xoopsUser
 //$block_arr =& XoopsBlock::getByModule( $target_mid ) ;
 $db =& Database::getInstance();
 $sql = "SELECT * FROM ".$db->prefix("newblocks")." WHERE mid='$target_mid' ORDER BY visible DESC,side,weight";
-//$sql = "SELECT * FROM ".$db->prefix("newblocks")." WHERE mid=". $xoopsModule->mid()." ORDER BY side,weight,bid";
 $result = $db->query($sql);
 $block_arr = array();
 while( $myrow = $db->fetchArray($result) ) {
@@ -264,7 +269,11 @@ function list_blocks()
 function get_block_configs()
 {
 	$error_reporting_level = error_reporting( 0 ) ;
+	if( preg_match( '/^[.0-9a-zA-Z_-]+$/' , @$_GET['dirname'] ) ) {
+		include dirname(dirname(dirname(__FILE__))).'/'.$_GET['dirname'].'/xoops_version.php' ;
+	} else {
 	include '../xoops_version.php' ;
+	}
 	error_reporting( $error_reporting_level ) ;
 	if( empty( $modversion['blocks'] ) ) return array() ;
 	else return $modversion['blocks'] ;
@@ -303,10 +312,9 @@ if( ! empty( $_POST['submit'] ) ) {
 }
 
 xoops_cp_header() ;
-if (!strstr(XOOPS_VERSION, "XOOPS Cube 2.1")) {
-	if( file_exists( './mymenu.php' ) ) include( './mymenu.php' ) ;
-	echo "<h3 style='text-align:left;'>$target_mname</h3>\n" ;
-}
+if( file_exists( './mymenu.php' ) ) include( './mymenu.php' ) ;
+
+echo "<h3 style='text-align:left;'>$target_mname</h3>\n" ;
 
 if( ! empty( $block_arr ) ) {
 	echo "<h4 style='text-align:left;'>"._AM_BADMIN."</h4>\n" ;

@@ -81,7 +81,7 @@ if ($admintest != 0) {
 			$category = !empty($modversion['category']) ? intval($modversion['category']) : 0;
 			unset($modversion);
 			if ($category > 0) {
-				$groups =& $xoopsUser->getGroups();
+				$groups = $xoopsUser->getGroups();
 				if (in_array(XOOPS_GROUP_ADMIN, $groups) || false != $sysperm_handler->checkRight('system_admin', $category, $groups, $xoopsModule->getVar('mid'))){
 //					if (file_exists(XOOPS_ROOT_PATH."/modules/system/admin/".$fct."/main.php")) {
 //						include_once XOOPS_ROOT_PATH."/modules/system/admin/".$fct."/main.php"; GIJ
@@ -119,7 +119,7 @@ if (false != $error) {
 	$all_ok = false;
 	if (!in_array(XOOPS_GROUP_ADMIN, $groups)) {
 		$sysperm_handler =& xoops_gethandler('groupperm');
-		$ok_syscats =& $sysperm_handler->getItemIds('system_admin', $groups);
+		$ok_syscats = $sysperm_handler->getItemIds('system_admin', $groups);
 	} else {
 		$all_ok = true;
 	}
