@@ -54,6 +54,8 @@ init_param('', 'more','integer',NO_DEFAULT_PARAM); // Display More Content;
 init_param('', 'feed','string',NO_DEFAULT_PARAM);
 init_param('', 'tb','integer',NO_DEFAULT_PARAM);
 
+get_currentuserinfo();
+
 /* Getting settings from db */
 if (!empty($GLOBALS['doing_rss'])) {
     $GLOBALS['posts_per_page']=get_settings('posts_per_rss');
@@ -82,33 +84,33 @@ if (!empty($GLOBALS['showposts'])) {
 // if a month is specified in the querystring, load that month
 if (test_param('m')) {
 	$GLOBALS['m'] = ''.get_param('m');
-	$_criteria->add(new Criteria('YEAR(post_date)', substr($GLOBALS['m'],0,4)));
+	$_criteria->add(new Criteria('YEAR(post_date)', intCriteriaVal(substr($GLOBALS['m'],0,4))));
 	if (strlen($GLOBALS['m'])>5)
-		$_criteria->add(new Criteria('MONTH(post_date)', substr($GLOBALS['m'],4,2)));
+		$_criteria->add(new Criteria('MONTH(post_date)', intCriteriaVal(substr($GLOBALS['m'],4,2))));
 	if (strlen($GLOBALS['m'])>7)
-		$_criteria->add(new Criteria('DAYOFMONTH(post_date)', substr($GLOBALS['m'],6,2)));
+		$_criteria->add(new Criteria('DAYOFMONTH(post_date)', intCriteriaVal(substr($GLOBALS['m'],6,2))));
 	if (strlen($GLOBALS['m'])>9)
-		$_criteria->add(new Criteria('HOUR(post_date)', substr($GLOBALS['m'],8,2)));
+		$_criteria->add(new Criteria('HOUR(post_date)', intCriteriaVal(substr($GLOBALS['m'],8,2))));
 	if (strlen($GLOBALS['m'])>11)
-		$_criteria->add(new Criteria('MINUTE(post_date)', substr($GLOBALS['m'],10,2)));
+		$_criteria->add(new Criteria('MINUTE(post_date)', intCriteriaVal(substr($GLOBALS['m'],10,2))));
 	if (strlen($GLOBALS['m'])>13)
-		$_criteria->add(new Criteria('SECOND(post_date)', substr($GLOBALS['m'],12,2)));
+		$_criteria->add(new Criteria('SECOND(post_date)', intCriteriaVal(substr($GLOBALS['m'],12,2))));
 }
 if (test_param('year')) {
 	$GLOBALS['year'] = ''.get_param('year');
-	$_criteria->add(new Criteria('YEAR(post_date)', $GLOBALS['year']));
+	$_criteria->add(new Criteria('YEAR(post_date)', intCriteriaVal($GLOBALS['year'])));
 }
 if (test_param('monthnum')) {
 	$GLOBALS['monthnum'] = ''.get_param('monthnum');
-	$_criteria->add(new Criteria('MONTH(post_date)', $GLOBALS['monthnum']));
+	$_criteria->add(new Criteria('MONTH(post_date)', intCriteriaVal($GLOBALS['monthnum'])));
 }
 if (test_param('day')) {
 	$GLOBALS['day'] = ''.get_param('day');
-	$_criteria->add(new Criteria('DAYOFMONTH(post_date)', $GLOBALS['day']));
+	$_criteria->add(new Criteria('DAYOFMONTH(post_date)', intCriteriaVal($GLOBALS['day'])));
 }
 if (test_param('w')) {
 	$GLOBALS['w'] = ''.get_param('w');
-	$_criteria->add(new Criteria('WEEK(post_date)', $GLOBALS['w']));
+	$_criteria->add(new Criteria('WEEK(post_date)', intCriteriaVal($GLOBALS['w'])));
 }
 if (test_param('name')) {
 	$GLOBALS['name'] = get_param('name');
@@ -121,7 +123,7 @@ if (test_param('p') && (get_param('p') != 'all')) {
 }
 // if a search pattern is specified, load the posts that match
 if (test_param('s')) {
-	$GLOBALS['s'] = addslashes_gpc(get_param('s'));
+	$GLOBALS['s'] = get_param('s');
 
 	// puts spaces instead of commas
 	$GLOBALS['s'] = preg_replace('/, +/', ' ', $GLOBALS['s']);
@@ -158,7 +160,7 @@ if (test_param('s')) {
 }
 // category stuff
 if (test_param('cat') && (get_param('cat') != 'all')) {
-	$GLOBALS['cat'] = addslashes_gpc(urldecode(get_param('cat')));
+	$GLOBALS['cat'] = urldecode(get_param('cat'));
 	if (stristr($GLOBALS['cat'], '-')) {
 		$_eq = '!=';
 		$_andor = 'AND';
@@ -172,12 +174,12 @@ if (test_param('cat') && (get_param('cat') != 'all')) {
 	$_wCriteria =& new CriteriaCompo();
 	$_cat_array = explode(' ', $GLOBALS['cat']);
     for ($_i = 0; $_i < (count($_cat_array)); $_i++) {
-		$_wCriteria->add(new Criteria('category_id', intval($_cat_array[$_i]), $_eq), $_andor);
+		$_wCriteria->add(new Criteria('category_id', intCriteriaVal($_cat_array[$_i]), $_eq), $_andor);
 		$_catc = trim(get_category_children($_cat_array[$_i], '', ' '));
 		if ($_catc!=="") {
 			$_catc_array = explode(' ',$_catc);
 		    for ($_j = 0; $_j < (count($_catc_array)); $_j++) {
-				$_wCriteria->add(new Criteria('category_id', intval($_catc_array[$_j]), $_eq), $_andor);
+				$_wCriteria->add(new Criteria('category_id', intCriteriaVal($_catc_array[$_j]), $_eq), $_andor);
 		    }
 		}
 	}
@@ -206,7 +208,7 @@ if (test_param('category_name')) {
 	    $_catc = trim(get_category_children($GLOBALS['cat'], '', ' '));
 	    $_catc_array = explode(' ',$_catc);
         for ($_i = 0; $_i < (count($_catc_array)); $_i++) {
-		    $_wCriteria->add(new Criteria('category_id', intval($_catc_array[$_i])),'OR');
+			$_wCriteria->add(new Criteria('category_id', intCriteriaVal($_catc_array[$_i])),'OR');
         }
 	    $_criteria->add($_wCriteria);
 	    unset($_wCriteria);
@@ -216,7 +218,6 @@ if (test_param('category_name')) {
 // author stuff
 if (test_param('author') && (get_param('author') != 'all')) {
 	$GLOBALS['author'] = ''.urldecode(get_param('author')).'';
-	$GLOBALS['author'] = addslashes_gpc($GLOBALS['author']);
 	if (stristr($GLOBALS['author'], '-')) {
 		$_eq = '!=';
 		$_andor = 'AND';
@@ -229,7 +230,7 @@ if (test_param('author') && (get_param('author') != 'all')) {
 	$_wCriteria =& new CriteriaCompo();
 	$_author_array = explode(' ', $GLOBALS['author']);
 	for ($_i = 0; $_i < (count($_author_array)); $_i++) {
-		$_wCriteria->add(new Criteria('post_author', intval($_author_array[$_i]), $_eq), $_andor);
+		$_wCriteria->add(new Criteria('post_author', $_author_array[$_i], $_eq), $_andor);
 	}
 	$_criteria->add($_wCriteria);
 	unset($_wCriteria);
@@ -264,7 +265,7 @@ if (!test_param('orderby')) {
 	// used to filter values
 	$_allowed_keys = array('author','date','category','title');
 	$_order_keys = array('post_author','post_date','cat_name','post_title');
-	$_orderby_list = explode(' ', addslashes_gpc(urldecode(get_param('orderby'))));
+	$_orderby_list = explode(' ', addslashes(urldecode(get_param('orderby'))));
 	if (!in_array($_orderby_list[0], $_allowed_keys)) {
 		$_orderby_array[] = 'post_date';
 	}
@@ -297,7 +298,7 @@ if (test_param('postend') && (get_param('postend') > get_param('poststart')) && 
 	if ($GLOBALS['what_to_show'] == 'posts' || ($GLOBALS['what_to_show'] == 'paged' && !test_param('paged'))) {
 		$_poststart = intval(get_param('poststart'));
 		$_postend = intval(get_param('postend'));
-		$_criteria_limit = $_postend - $_poststart;
+		$_criteria_limit = $_postend - $_poststart+1;
 		$_criteria_start = $_poststart;
 	} elseif ($GLOBALS['what_to_show'] == 'days') {
 		$_poststart = intval(get_param('poststart'));
