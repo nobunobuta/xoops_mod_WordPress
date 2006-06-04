@@ -136,7 +136,7 @@ function &_wpGetUserRows(&$records, $ticket, $this_file) {
 				$row['user_del'] = "&nbsp;";
 			}
 			if ((($GLOBALS['user_level'] >= 2) && ($GLOBALS['user_level'] > $row['user_level']) && ($row['user_level'] > 0)) ||
-			    (($GLOBALS['user_level'] == 10) && ($GLOBALS['user_ID'] == 1))) {
+			    (($GLOBALS['user_level'] == 10) && ($GLOBALS['user_ID'] == 1) && ($GLOBALS['user_ID'] != $row['ID']))) {
 				$row['level_down'] = "<a href='$this_file?action=promote&amp;id={$row['ID']}&prom=down$ticket'>-</a>";
 			} else {
 				$row['level_down'] = "&nbsp;";
