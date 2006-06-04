@@ -41,7 +41,7 @@ header('Content-type: application/xml');
 <?php
 } // end else use content
 ?>
-		<content type="text/html" mode="escaped" xml:base="<?php permalink_single_rss() ?>"><![CDATA[<?php the_content_rss('', 0, '', 0, 1) ?>]]></content>
+		<content type="text/html" mode="escaped" xml:base="<?php permalink_single_rss() ?>"><![CDATA[<?php the_content_rss('', 0, '', 0, 3) ?>]]></content>
 	</entry>
 	<?php } } ?>
 </feed>
