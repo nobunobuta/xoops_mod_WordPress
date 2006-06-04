@@ -25,8 +25,13 @@ function categories_nested_select($sel_categories) {
 	$categoryHandler =& wp_handler('Category');
 	$categoryObjects =& $categoryHandler->getNestedObjects(null,'');
 	$prev_level = 1;
-	$output = "";
+    $output = '<div style="float:left">';
+    $lines = 0;
 	foreach ($categoryObjects as $categoryObject) {
+        if (++$lines > 10) {
+            $output .= '</div><div style="float:left">';
+            $lines = 0;
+        }
 		if ($prev_level < $categoryObject->getExtraVar('category_level')) {
 			$output .= "<span class='cat-nest'>";
 		} elseif  ($prev_level > $categoryObject->getExtraVar('category_level')) {
@@ -41,6 +46,7 @@ function categories_nested_select($sel_categories) {
 		$output .= "<input value='$cat_ID' type='checkbox' name='post_category[]' id='$id' $checked/>$cat_name";
 		$output .= "</label>";
 	}
+    $output .= '</div>';
 	return $output;
 }
 
