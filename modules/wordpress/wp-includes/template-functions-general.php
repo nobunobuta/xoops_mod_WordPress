@@ -105,7 +105,9 @@ function wp_title($sep = '&raquo;', $echo = true) {
 	if (!empty($GLOBALS['category_name'])) {
 		$categoryHandler =& wp_handler('Category');
 		$categoryObject =& $categoryHandler->getByNiceName($GLOBALS['category_name']);
-		$title = $categoryObject->getVar('cat_name');
+		if ($categoryObject) {
+			$title = $categoryObject->getVar('cat_name');
+		}
 	}
 
 	if(!empty($GLOBALS['monthnum']) && !empty($GLOBALS['year'])) {
@@ -134,22 +136,26 @@ function wp_title($sep = '&raquo;', $echo = true) {
 		if (empty($GLOBALS['p'])) {
 			$criteria = new CriteriaCompo(new Criteria('post_name',$GLOBALS['name']));
 			if (!empty($GLOBALS['year'])) {
-				$criteria->add(new Criteria('YEAR(post_date)', $GLOBALS['year']));
+				$criteria->add(new Criteria('YEAR(post_date)', intCriteriaVal($GLOBALS['year'])));
 			}
 			if (!empty($GLOBALS['monthnum'])) {
-				$criteria->add(new Criteria('MONTH(post_date)', $GLOBALS['monthnum']));
+				$criteria->add(new Criteria('MONTH(post_date)', intCriteriaVal($GLOBALS['monthnum'])));
 			}
 			if (!empty($GLOBALS['day'])) {
-				$criteria->add(new Criteria('DAYOFMONTH(post_date)', $GLOBALS['day']));
+				$criteria->add(new Criteria('DAYOFMONTH(post_date)', intCriteriaVal($GLOBALS['day'])));
 			}
 			$postHandler =& wp_handler('Post');
 			$postObjects =& $postHandler->getObjects($criteria);
-			$GLOBALS['p'] = $postObjects[0]->getVar('ID');
+			if ($postObjects) {
+				$GLOBALS['p'] = $postObjects[0]->getVar('ID');
+			}
 		}
-		$post_data = get_postdata($GLOBALS['p']);
-		$title = strip_tags($post_data['Title']);
-		if (trim($title)=="") $title = _WP_POST_NOTITLE;
-		$title = apply_filters('single_post_title', $title);
+		if (!empty($GLOBALS['p'])) {
+		    $post_data = get_postdata($GLOBALS['p']);
+		    $title = strip_tags($post_data['Title']);
+		    if (trim($title)=="") $title = _WP_POST_NOTITLE;
+		    $title = apply_filters('single_post_title', $title);
+	    }
 	}
 
 	$userObject = false;
@@ -188,8 +194,8 @@ function wp_title($sep = '&raquo;', $echo = true) {
 function single_post_title($prefix = '', $echo = true) {
 	$title = '';
 	if ((!empty($GLOBALS['p']) && intval($GLOBALS['p'])) || (!empty($GLOBALS['name']) && $GLOBALS['name'] != '')) {
-		$criteria = new CriteriaCompo(new Criteria('post_name',$GLOBALS['name']));
 		if (empty($GLOBALS['p'])) {
+    		$criteria = new CriteriaCompo(new Criteria('post_name',$GLOBALS['name']));
 			if (!empty($GLOBALS['year'])) {
 				$criteria->add(new Criteria('YEAR(post_date)', $GLOBALS['year']));
 			}
@@ -309,7 +315,6 @@ function get_archives_link($url, $text, $format = "html", $before = "", $after =
 		return "\t".$before.'<a href="'.$url.'" title="'.$text.'">'.$text.'</a>'.$after."\n";
 	}
 }
-
 
 function wp_get_archives($args = '', $echo=true) {
 	parse_str($args, $r);
