@@ -65,12 +65,12 @@ switch(get_param('action')) {
 		}
 
 		if (($GLOBALS['user_level'] > 4) && get_param('edit_date')) {
-			$aa = init_param('POST', 'aa', 'integer');
-			$mm = init_param('POST', 'mm', 'integer');
-			$jj = init_param('POST', 'jj', 'integer');
-			$hh = init_param('POST', 'hh', 'integer');
-			$mn = init_param('POST', 'mn', 'integer');
-			$ss = init_param('POST', 'ss', 'integer');
+			$aa = init_param('POST', 'aa', 'integer',0);
+			$mm = init_param('POST', 'mm', 'integer',0);
+			$jj = init_param('POST', 'jj', 'integer',0);
+			$hh = init_param('POST', 'hh', 'integer',0);
+			$mn = init_param('POST', 'mn', 'integer',0);
+			$ss = init_param('POST', 'ss', 'integer',0);
 			$jj = ($jj > 31) ? 31 : $jj;
 			$hh = ($hh > 23) ? $hh - 24 : $hh;
 			$mn = ($mn > 59) ? $mn - 60 : $mn;
@@ -233,12 +233,12 @@ switch(get_param('action')) {
 		}
 
 		if (($GLOBALS['user_level'] > 4) && get_param('edit_date')) {
-			$aa = init_param('POST', 'aa','integer');
-			$mm = init_param('POST', 'mm','integer');
-			$jj = init_param('POST', 'jj','integer');
-			$hh = init_param('POST', 'hh','integer');
-			$mn = init_param('POST', 'mn','integer');
-			$ss = init_param('POST', 'ss','integer');
+			$aa = init_param('POST', 'aa','integer',0);
+			$mm = init_param('POST', 'mm','integer',0);
+			$jj = init_param('POST', 'jj','integer',0);
+			$hh = init_param('POST', 'hh','integer',0);
+			$mn = init_param('POST', 'mn','integer',0);
+			$ss = init_param('POST', 'ss','integer',0);
 			$jj = ($jj > 31) ? 31 : $jj;
 			$hh = ($hh > 23) ? $hh - 24 : $hh;
 			$mn = ($mn > 59) ? $mn - 60 : $mn;
@@ -600,12 +600,12 @@ switch(get_param('action')) {
 		init_param('POST', 'referredby', 'string', urlencode($this_file.'?p='.$comment_post_ID.'&c=1#comments'), true);
 
 		if (($user_level > 4) && $edit_date) {
-			init_param('POST', 'aa','integer');
-			init_param('POST', 'mm','integer');
-			init_param('POST', 'jj','integer');
-			init_param('POST', 'hh','integer');
-			init_param('POST', 'mn','integer');
-			init_param('POST', 'ss','integer');
+			init_param('POST', 'aa','integer',0);
+			init_param('POST', 'mm','integer',0);
+			init_param('POST', 'jj','integer',0);
+			init_param('POST', 'hh','integer',0);
+			init_param('POST', 'mn','integer',0);
+			init_param('POST', 'ss','integer',0);
 			$jj = ($jj > 31) ? 31 : $jj;
 			$hh = ($hh > 23) ? $hh - 24 : $hh;
 			$mn = ($mn > 59) ? $mn - 60 : $mn;
