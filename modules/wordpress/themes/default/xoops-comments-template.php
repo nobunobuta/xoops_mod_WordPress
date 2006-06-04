@@ -22,7 +22,7 @@
 	<p><?php echo _LANG_WPCM_COM_YET; ?></p>
 <?php } ?>
 <h2 id="xcomments"><?php echo _LANG_WPCM_COM_TITLE; ?></h2>
-<?php if ('open' == $post->comment_status) { ?>
+<?php if (('open' == $post->comment_status) && (XOOPS_COMMENT_APPROVENONE != $xoopsModuleConfig['com_rule'])) { ?>
 <?php require XOOPS_ROOT_PATH.'/modules/'.wp_mod().'/include/comment_view.php'; ?>
 <div style="text-align: center; padding: 3px; margin: 3px;">
   <?php echo $navbar; ?>
