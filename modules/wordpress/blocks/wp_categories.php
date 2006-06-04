@@ -118,7 +118,7 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 			$_record = array();
 			$category = $categoryObject->exportWpObject();
 			if (($category->category_parent == $child_of)) {
-				$child_block =& _b_wp_categories_list($sort_column, $sort_order, $optioncount, $category->cat_ID, $categoryObjects, $arraytree, $padchar, $level+1, $current);
+				$child_block = _b_wp_categories_list($sort_column, $sort_order, $optioncount, $category->cat_ID, $categoryObjects, $arraytree, $padchar, $level+1, $current);
 				$num_children = count($child_block['records']);
 				if ($num_children && $arraytree) {
 					$_record['children'] = $child_block['records'];

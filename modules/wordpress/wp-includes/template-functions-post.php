@@ -413,7 +413,7 @@ function next_posts_link($label='Next Page &raquo;', $max_page=0, $echo=true) {
             $GLOBALS['paged'] = 1;
         }
 		$nextpage = intval($GLOBALS['paged']) + 1;
-		if (empty($GLOBALS['p']) && (empty($GLOBALS['paged']) || $nextpage <= $max_page)) {
+		if ($label && empty($GLOBALS['p']) && (empty($GLOBALS['paged']) || $nextpage <= $max_page) ) {
 			return _echo('<a href="'.next_posts($max_page, false).'">'.preg_replace('/&([^#])(?![a-z]{1,8};)/', '&#038;$1', $label) .'</a>', $echo);
 		}
 	}
@@ -443,7 +443,7 @@ function previous_posts($echo=true) { // original by cfactor at cooltux.org
 }
 
 function previous_posts_link($label='&laquo; Previous Page', $echo=true) {
-	if (empty($GLOBALS['p']) && !empty($GLOBALS['paged']) && ($GLOBALS['paged'] > 1) && (get_settings('what_to_show') == 'paged')) {
+	if ($label && empty($GLOBALS['p']) && !empty($GLOBALS['paged']) && ($GLOBALS['paged'] > 1) && (get_settings('what_to_show') == 'paged')) {
 		return _echo('<a href="'.previous_posts(false).'">'. preg_replace('/&([^#])(?![a-z]{1,8};)/', '&#038;$1', $label) .'</a>', $echo);
 	}
 	return _echo('', $echo);

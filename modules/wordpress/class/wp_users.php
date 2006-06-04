@@ -170,6 +170,7 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
      */
 	function &get($key, $sync_xoops=true)
 	{
+	    $ret = false;
 		if ($userObject =& parent::get($key)) {
 			if ($sync_xoops) {
 				$userObject->syncXOOPS();
@@ -184,16 +185,11 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 					if ($this->insert($userObject,true)) {
 						$userObject =& parent::get($key);
 						$userObject->assignVar('user_pass', $member->getVar('pass','n'));
-						return $userObject;
-					} else {
-						return false;
+						$ret =& $userObject;
 					}
-				} else {
-					return false;
 				}
-			} else {
-				return false;
 			}
+			return $ret;
 		}
 	}
 	/**
@@ -205,6 +201,7 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
      */
 	function &getByLogin($login, $sync_xoops=true)
 	{
+	    $ret = false;
 		$criteria =& new Criteria('user_login', $login);
 		$userObjects =& $this->getObjects($criteria);
 		if (count($userObjects) == 1) {
@@ -215,7 +212,7 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 			return $userObject;
 		} else {
 			if ($sync_xoops) {
-				$criteria =& new Criteria('uname', $login);
+				$criteria =& new Criteria('uname', addslashes($login));
 				$members =& $this->member_handler->getUsers($criteria);
 				if (count($members)) {
 					$member = $members[0];
@@ -224,16 +221,11 @@ class WordPressUserHandler  extends XoopsTableObjectHandler
 					if ($this->insert($userObject,true)) {
 						$userObject =& parent::get($key);
 						$userObject->assignVar('user_pass', $member->getVar('pass','n'));
-						return $userObject;
-					} else {
-						return false;
+						$ret =& $userObject;
 					}
-				} else {
-					return false;
 				}
-			} else {
-				return false;
 			}
+			return $ret;
 		}
 	}
     /**

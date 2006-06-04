@@ -91,7 +91,8 @@ class WordPressOptionHandler  extends XoopsTableObjectHandler
 		if ($optionObjects) {
 			return $optionObjects[0];
 		} else {
-			return false;
+		    $ret = false;
+			return $ret;
 		}
 	}
 

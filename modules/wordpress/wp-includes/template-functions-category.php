@@ -133,7 +133,7 @@ function the_category_rss($type = 'rss', $echo=true) {
 }
 
 function get_the_category_by_ID($cat_ID) {
-    if ( !$GLOBALS['cache_categories'][wp_id()][$cat_ID] ) {
+    if ( empty($GLOBALS['cache_categories'][wp_id()][$cat_ID] )) {
 		$categoryHandler =& wp_handler('Category');
 		if ($categoryObject = $categoryHandler->get($cat_ID)) {
 			$cat_name = $categoryObject->getVar('cat_name');

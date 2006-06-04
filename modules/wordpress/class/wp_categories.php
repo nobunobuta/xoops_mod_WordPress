@@ -110,14 +110,15 @@ class WordPressCategoryHandler  extends XoopsCachedTableObjectHandler
 		if (!empty($this->_cache_by_nicename[$category_nicename])) {
 			return $this->_cache_by_nicename[$category_nicename];
 		} else {
+		    $ret = false;
 			$criteria = new Criteria('category_nicename', $category_nicename);
 			$categoryObjects =& $this->getObjects($criteria);
 			if (count($categoryObjects) == 1) {
 				$categoryObject =& $categoryObjects[0];
 				$this->_cache_by_nicename[$category_nicename] = $categoryObject;
-				return $categoryObject;
+				$ret =& $categoryObject;
 			}
-			return false;
+			return $ret;
 		}
 	}
 	
