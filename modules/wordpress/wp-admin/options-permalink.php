@@ -99,7 +99,6 @@ foreach ($rewrite as $match => $query) {
     <p>
     	<textarea rows="5" style="width: 98%;"><?php echo "RewriteEngine On\nRewriteBase $home_root\n$rule_text"; ?></textarea>
     </p>
-    <?php printf(_LANG_WPL_EDIT_TEMPLATE, 'templates.php?file=.htaccess') ?>
 </form>
 </div> 
 <?php
