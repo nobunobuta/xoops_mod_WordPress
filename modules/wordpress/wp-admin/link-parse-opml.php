@@ -5,10 +5,10 @@ require_once('admin.php');
 // we need to map XML attribute names to our columns
 // if we are doing OPML use this map
 $opml_map = array(
-                  'link_url' => 'URL',
-                  'link_name' => 'TEXT',
+                  'link_url' => 'HTMLURL',
+                  'link_name' => 'TITLE',
                   'link_target' => 'TARGET',
-                  'link_description' => 'DESCRIPTION'
+                  'link_rss' => 'RSSURL'
                  );
 
 $map = $opml_map;
