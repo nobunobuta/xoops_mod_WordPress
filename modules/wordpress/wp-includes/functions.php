@@ -227,7 +227,7 @@ function init_param($para_types, $var, $type = '', $default = NO_DEFAULT_PARAM, 
 			}
 		}
 	}
-	if (!empty($para_value)) {
+	if (isset($para_value)) {
 		return $para_value;
 	} else {
 		return false;
@@ -321,7 +321,6 @@ function get_userdata($userid) {
 }
 
 function get_userdatabylogin($user_login) {
-	$user_login = addslashes($user_login);
 	if ((empty($GLOBALS['cache_userdata'][wp_id()]["$user_login"])) || (!$GLOBALS['use_cache'])) {
 		$userHandler =& wp_handler('User');
 		$userObject =& $userHandler->getByLogin($user_login);
@@ -376,7 +375,6 @@ function get_author_name($auth_id, $idmode='') {
 			$authorname = $authordata->user_nickname;
 			break;
 	}
-
 	return $authorname;
 }
 
@@ -452,9 +450,9 @@ function url_to_postid($url = '') {
 
 	// Otherwise, build a WHERE clause, making the values safe along the way:
 	$criteria &= new CriteriaCompo(new Criteria(1,1));
-	if ($year) $criteria->add('YEAR(post_date)', intval($year));
-	if ($monthnum) $criteria->add('MONTH(post_date)', intval($monthnum));
-	if ($day) $criteria->add('DAYOFMONTH(post_date)', intval($day));
+	if ($year) $criteria->add('YEAR(post_date)', intCriteriaVal($year));
+	if ($monthnum) $criteria->add('MONTH(post_date)', intCriteriaVal($monthnum));
+	if ($day) $criteria->add('DAYOFMONTH(post_date)', intCriteriaVal($day));
 	if ($postname) $criteria->add('post_name', $postname);
 	$postHandler =& wp_handler('Post');
 	$postObjects =& $postHandler->getObjects($criteria, false, 'ID');
@@ -1710,7 +1708,7 @@ function check_comment($author, $email, $url, $comment, $user_ip) {
 
 function get_xoops_option($dirname,$conf_name) {
 	$module_handler =& xoops_gethandler('module');
-	$module=$module_handler->getByDirname($dirname);
+	$module =& $module_handler->getByDirname($dirname);
 	$mid=$module->getVar('mid');
 	if (empty($GLOBALS['wp_xoops_config'])) {
 		$GLOBALS['wp_xoops_config'] =& xoops_gethandler('config');
