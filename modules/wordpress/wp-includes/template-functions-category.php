@@ -11,21 +11,23 @@ function get_the_category($id=false) {
 	} else {
 		$postHandler =& wp_handler('Post');
 		$postObject =& $postHandler->get($id);
-		$post2CatObjects =& $postObject->getCategories();
 		$categories = array();
-		$categoryHandler =& wp_handler('Category');
-		foreach($post2CatObjects as $post2CatObject) {
-			$categoryObject =& $categoryHandler->get($post2CatObject->getVar('category_id'));
-			$category =& $categoryObject->exportWpObject();
-			$category->category_id = $category->cat_ID;
-			$categories[] = $category;
-			$GLOBALS['category_cache'][wp_id()][$id][] = $category;
+		if ($post2CatObjects =& $postObject->getCategories()) {
+			$categoryHandler =& wp_handler('Category');
+		    foreach($post2CatObjects as $post2CatObject) {
+				if ($categoryObject =& $categoryHandler->get($post2CatObject->getVar('category_id'))) {
+			        $category =& $categoryObject->exportWpObject();
+			        $category->category_id = $category->cat_ID;
+			        $categories[] = $category;
+			        $GLOBALS['category_cache'][wp_id()][$id][] = $category;
+		        }
+			}
 		}
 		return $categories;
 	}
 }
 
-function get_category_link($echo = false, $category_id, $category_nicename) {
+function get_category_link($echo = false, $category_id, $category_nicename = '') {
 	$category_id = intval($category_id);
 	$cat_ID = $category_id;
 	$permalink_structure = get_settings('permalink_structure');
@@ -131,7 +133,7 @@ function the_category_rss($type = 'rss', $echo=true) {
 }
 
 function get_the_category_by_ID($cat_ID) {
-    if ( !$GLOBALS['cache_categories'][wp_id()][$cat_ID] ) {
+    if ( empty($GLOBALS['cache_categories'][wp_id()][$cat_ID] )) {
 		$categoryHandler =& wp_handler('Category');
 		if ($categoryObject = $categoryHandler->get($cat_ID)) {
 			$cat_name = $categoryObject->getVar('cat_name');
@@ -396,37 +398,28 @@ function list_cats($optionall = 1, $all = 'All', $sort_column = 'ID', $sort_orde
 				$link .= apply_filters('list_cats', $category->cat_name).'</a>';
 
 				if ( (! empty($feed_image)) || (! empty($feed)) ) {
-					
 					$link .= ' ';
-
 					if (empty($feed_image)) {
 						$link .= '(';
 					}
-
 					$link .= '<a href="' . get_category_rss_link(0, $category->cat_ID, $category->category_nicename)  . '"';
-
 					if ( !empty($feed) ) {
 						$title =  ' title="' . $feed . '"';
 						$alt = ' alt="' . $feed . '"';
 						$name = $feed;
 						$link .= $title;
 					}
-
 					$link .= '>';
-
 					if (! empty($feed_image)) {
 						$link .= "<img src=\"$feed_image\" border=\"0\"$alt$title" . ' />';
 					} else {
 						$link .= $name;
 					}
-					
 					$link .= '</a>';
-
 					if (empty($feed_image)) {
 						$link .= ')';
 					}
 				}
-
 				if (intval($optioncount) == 1) {
 					$link .= ' ('.intval($GLOBALS['category_posts']["$category->cat_ID"]).')';
 				}

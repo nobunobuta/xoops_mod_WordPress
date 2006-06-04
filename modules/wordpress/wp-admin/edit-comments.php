@@ -26,6 +26,8 @@ if (test_param('commentstart') && test_param('commentend')) {
 	}
 }
 
+if ($commentorder <> 'ASC') $commentorder = 'DESC';
+
 $nextXstart = $commentend + 1;
 $nextXend = $nextXstart + $showcomments -1;
 

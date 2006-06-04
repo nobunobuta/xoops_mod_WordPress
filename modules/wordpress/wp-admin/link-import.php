@@ -7,8 +7,7 @@ $parent_file = 'link-manager.php';
 $title = 'Import Blogroll';
 $this_file = 'link-import.php';
 
-$step = $_POST['step'];
-if (!$step) $step = 0;
+$step = (!empty($_POST['step'])) ? $_POST['step'] : 0;
 ?>
 <?php
 switch ($step) {
