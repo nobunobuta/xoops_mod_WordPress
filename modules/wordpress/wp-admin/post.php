@@ -398,7 +398,7 @@ switch(get_param('action')) {
 
 		init_param('GET', 'comment', 'integer', NO_DEFAULT_PARAM, true);
 		init_param('GET', 'p', 'integer', NO_DEFAULT_PARAM, true);
-		init_param('GET', 'referredby', 'string', '');
+		init_param('GET', 'referredby', 'string', wp_siteurl());
 
 		if (!($commentObject =& $commentHandler->get($comment))) {
 			redirect_header(wp_siteurl().'/wp-admin/'.$this_file,5,_LANG_P_OOPS_IDPOS);
