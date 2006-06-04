@@ -30,8 +30,8 @@ if (test_param('poststart') && test_param('postend')) {
 		$postend = get_param('postend');
 	}
 }
-
-$nextXstart = $poststart + 1;
+$showposts = $postend - $poststart+1;
+$nextXstart = $postend + 1;
 $nextXend = $nextXstart + $showposts -1;
 
 $previousXstart = $poststart - $showposts;
