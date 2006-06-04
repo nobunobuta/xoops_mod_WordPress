@@ -69,7 +69,11 @@ if (($action == 'delete') && !empty($delete_comments)) {
 	foreach ($delete_comments as $comment) { // Check the permissions on each
 		$comment = intval($comment);
 		$post_id = $wpdb->get_var("SELECT comment_post_ID FROM $tablecomments WHERE comment_ID = $comment");
-		$authordata = get_userdata($wpdb->get_var("SELECT post_author FROM $tableposts WHERE ID = $post_id"));
+		if ($post_id) {
+		    $authordata = get_userdata($wpdb->get_var("SELECT post_author FROM $tableposts WHERE ID = $post_id"));
+		} else {
+		    $authordata = get_userdata($user_ID);
+		}
 		if (($user_level > $authordata->user_level) or ($user_login == $authordata->user_login)) {
 			// harvest information before deleting if this is a delete & add operation
             if (!empty($deladd)) {
