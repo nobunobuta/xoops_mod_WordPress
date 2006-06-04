@@ -154,7 +154,7 @@ class MyXoopsGroupPermForm extends XoopsForm
 		}
 		$gperm_handler =& xoops_gethandler('groupperm');
 		$member_handler =& xoops_gethandler('member');
-		$glist =& $member_handler->getGroupList();
+		$glist = $member_handler->getGroupList();
 		foreach (array_keys($glist) as $i) {
 			// get selected item id(s) for each group
 			$selected = $gperm_handler->getItemIds($this->_permName, $i, $this->_modid);

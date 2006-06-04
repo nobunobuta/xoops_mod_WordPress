@@ -2,6 +2,8 @@
 
 if( ! defined( 'XOOPS_ROOT_PATH' ) ) exit ;
 
+if( substr( XOOPS_VERSION , 6 , 3 ) < 2.1 ) {
+
 	// Keep Block option values when update (by nobunobu)
 	global $xoopsDB;
 	$query = "SELECT mid FROM ".$xoopsDB->prefix('modules')." WHERE dirname='".$modversion['dirname']."' ";
@@ -46,6 +48,8 @@ if( ! defined( 'XOOPS_ROOT_PATH' ) ) exit ;
 	if( ! empty( $msgs ) && empty( $myblocksadmin_parsed_updateblock ) ) {
 		$msgs = array_merge( $msgs , $local_msgs ) ;
 		$myblocksadmin_parsed_updateblock = true ;
+}
+
 }
 
 ?>
