@@ -305,7 +305,7 @@ function get_cat_name($cat_id) {
 function get_cat_ID($cat_name='General') {
 	global $wpdb;
 	
-	$cid = $wpdb->get_var("SELECT cat_ID FROM ".wp_table('categories')." WHERE cat_name='$cat_name'");
+	$cid = $wpdb->get_var("SELECT cat_ID FROM ".wp_table('categories')." WHERE cat_name='".addslashes($cat_name)."'");
 
 	return $cid?$cid:1;	// default to cat 1
 }
@@ -1850,7 +1850,7 @@ function pingback_ping($m) { // original code by Mort
 			} elseif (is_string($urltest['fragment'])) {
 				// ...or a string #title, a little more complicated
 				$title = preg_replace('/[^a-zA-Z0-9]/', '.', $urltest['fragment']);
-				$sql = "SELECT ID FROM ".wp_table('posts')." WHERE post_title RLIKE '$title'";
+				$sql = "SELECT ID FROM ".wp_table('posts')." WHERE post_title RLIKE '".addslashes($title)."'";
 				$post_ID = $wpdb->get_var($sql) or die("Query: $sql\n\nError: ");
 				$way = 'from the fragment (title)';
 			}
