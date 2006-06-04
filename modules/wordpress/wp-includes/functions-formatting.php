@@ -16,8 +16,8 @@ function wptexturize($text) {
 			$curl = str_replace('``', '&#8220;', $curl);
 
 			// This is a hack, look at this more later. It works pretty well though.
-			$cockney = array("'tain't","'twere","'twas","'tis","'twill","'til","'bout","'nuff","'round");
-			$cockneyreplace = array("&#8217;tain&#8217;t","&#8217;twere","&#8217;twas","&#8217;tis","&#8217;twill","&#8217;til","&#8217;bout","&#8217;nuff","&#8217;round");
+			$cockney = array("'tain't","'twere","'twas","'tis","'twill","'til","'bout","'nuff","'round","'cause");
+			$cockneyreplace = array("&#8217;tain&#8217;t","&#8217;twere","&#8217;twas","&#8217;tis","&#8217;twill","&#8217;til","&#8217;bout","&#8217;nuff","&#8217;round","&#8217;cause");
 			$curl = str_replace($cockney, $cockneyreplace, $curl);
 
 			$curl = preg_replace("/'s/", '&#8217;s', $curl);
@@ -35,7 +35,7 @@ function wptexturize($text) {
 			$curl = preg_replace('/&([^#])(?![a-z]{1,8};)/', '&#038;$1', $curl);
 			$curl = str_replace("''", '&#8221;', $curl);
 			
-			$curl = preg_replace('/(d+)x(\d+)/', "$1&#215;$2", $curl);
+			$curl = preg_replace('/(\d+)x(\d+)/', "$1&#215;$2", $curl);
 
 		} elseif (strstr($curl, '<code') || strstr($curl, '<pre') || strstr($curl, '<kbd' || strstr($curl, '<style') || strstr($curl, '<script'))) {
 			// strstr is fast
@@ -51,6 +51,8 @@ function wptexturize($text) {
 function clean_pre($text) {
 	$text = stripslashes($text);
 	$text = str_replace('<br />', '', $text);
+	$text = str_replace('<p>', "\n", $text);
+	$text = str_replace('</p>', '', $text);
 	return $text;
 }
 
@@ -58,24 +60,24 @@ function wpautop($pee, $br = 1) {
 	$pee = $pee . "\n"; // just to make things a little easier, pad the end
 	$pee = preg_replace('|<br />\s*<br />|i', "\n\n", $pee);
 	// Space things out a little
-	$pee = preg_replace('!(<(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)!i', "\n$1", $pee);
-	$pee = preg_replace('!(</(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])>)!i', "$1\n", $pee);
+	$pee = preg_replace('!(<(?:table|thead|tfoot|caption|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|code|select|form|blockquote|address|math|p|h[1-6])[^>]*>)!i', "\n$1", $pee);
+	$pee = preg_replace('!(</(?:table|thead|tfoot|caption|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|code|select|form|blockquote|address|math|p|h[1-6])>)!i', "$1\n", $pee);
 	$pee = preg_replace("/(\r\n|\r)/", "\n", $pee); // cross-platform newlines 
 	$pee = preg_replace("/\n\n+/", "\n\n", $pee); // take care of duplicates
 	$pee = preg_replace('/\n?(.+?)(?:\n\s*\n|\z)/s', "\t<p>$1</p>\n", $pee); // make paragraphs, including one at the end 
 	$pee = preg_replace('|<p>\s*?</p>|i', '', $pee); // under certain strange conditions it could create a P of entirely whitespace 
-    $pee = preg_replace('!<p>\s*(</?(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)\s*</p>!i', "$1", $pee); // don't pee all over a tag
+    $pee = preg_replace('!<p>\s*(</?(?:table|thead|tfoot|caption|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|hr|pre|code|select|form|blockquote|address|math|p|h[1-6])[^>]*>)\s*</p>!i', "$1", $pee); // don't pee all over a tag
 	$pee = preg_replace("|<p>(<li.+?)</p>|i", "$1", $pee); // problem with nested lists
 	$pee = preg_replace('|<p><blockquote([^>]*)>|i', "<blockquote$1><p>", $pee);
 	$pee = preg_replace('|</blockquote></p>|i', '</p></blockquote>', $pee);
-	$pee = preg_replace('!<p>\s*(</?(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)!i', "$1", $pee);
-	$pee = preg_replace('!(</?(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)\s*</p>!i', "$1", $pee); 
+	$pee = preg_replace('!<p>\s*(</?(?:table|thead|tfoot|caption|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|hr|pre|code|select|form|blockquote|address|math|p|h[1-6])[^>]*>)!i', "$1", $pee);
+	$pee = preg_replace('!(</?(?:table|thead|tfoot|caption|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|code|select|form|blockquote|address|math|p|h[1-6])[^>]*>)\s*</p>!i', "$1", $pee); 
 	if ($br) {
        $pee = preg_replace('/(\<[a-z][a-z0-9]+\s.*?\>)/ies' ,'str_replace(array("\n","\r"), array(" ", " "), "\\1")', $pee);
 	   $pee = preg_replace('|(?<!<br />)\s*\n|i', "<br />\n", $pee); // optionally make line breaks
     }
-	$pee = preg_replace('!(</?(?:table|thead|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)\s*<br />!i', "$1", $pee);
-	$pee = preg_replace('!<br />(\s*</?(?:p|li|div|dl|dd|dt|th|pre|td|ul|ol)>)!i', '$1', $pee);
+	$pee = preg_replace('!(</?(?:table|thead|tfoot|caption|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|code|select|form|blockquote|p|h[1-6])[^>]*>)\s*<br />!i', "$1", $pee);
+	$pee = preg_replace('!<br />(\s*</?(?:p|li|div|dl|dd|dt|th|pre|code|td|ul|ol)>)!i', '$1', $pee);
 	$pee = preg_replace('/&([^#])(?![a-z]{1,8};)/', '&#038;$1', $pee);
 	$pee = preg_replace('!(<pre.*?>)(.*?)</pre>!ise', " stripslashes('$1') .  clean_pre('$2')  . '</pre>' ", $pee);
 	
@@ -124,11 +126,11 @@ function sanitize_text($str, $isArea=false, $isURL=false) {
 		$patterns[] = "/&lt;(\/)?\s*script.*?&gt;/si";
 		$replacements[] = '[$1script]';
 		$patterns[] = "/&lt;(\/)?\s*style.*?&gt;/si";
-		$replacements[] = '[$style]';
+		$replacements[] = '[$1style]';
 		$patterns[] = "/&lt;(\/)?\s*body.*?&gt;/si";
-		$replacements[] = '[$body]';
+		$replacements[] = '[$1body]';
 		$patterns[] = "/&lt;(\/)?\s*link.*?&gt;/si";
-		$replacements[] = '[$link]';
+		$replacements[] = '[$1link]';
 		$patterns[] = "/(&lt;.*)(?:onError|onUnload|onBlur|onFocus|onClick|onMouseOver|onSubmit|onReset|onChange|onSelect|onAbort)\s*=\s*(&quot;|&#039;).*\\2(.*?&gt;)/si";
 		$replacements[] = '$1$3';
 		if ($isURL) {
@@ -421,7 +423,7 @@ function convert_smilies($text) {
 }
 
 function is_email($user_email) {
-	$chars = "/^([a-z0-9_]|\\-|\\.)+@(([a-z0-9_]|\\-)+\\.)+[a-z]{2,4}\$/i";
+	$chars = "/^([a-z0-9+_]|\\-|\\.)+@(([a-z0-9_]|\\-)+\\.)+[a-z]{2,6}\$/i";
 	if(strstr($user_email, '@') && strstr($user_email, '.')) {
 		if (preg_match($chars, $user_email)) {
 			return true;
@@ -495,15 +497,15 @@ function fix_js_param($str) {
 function convert_bbcode($content) {
     if (get_settings('use_bbcode')) {
         $myts = new MyTextSanitizer;
-        $content =& $myts->codePreConv($content, 1); // Ryuji_edit(2003-11-18)
+        $content = $myts->codePreConv($content, 1); // Ryuji_edit(2003-11-18)
         if (method_exists($myts, 'wikiPreConv')) {
-			$content =& $myts->wikiPreConv($content, 1); // modPukiWiki Conv by nobunobu
+			$content = $myts->wikiPreConv($content, 1); // modPukiWiki Conv by nobunobu
 		}
-        $content =& $myts->xoopsCodeDecode($content);
+        $content = $myts->xoopsCodeDecode($content);
         if (method_exists($myts, 'wikiConv')) {
-			$content =& $myts->wikiConv($content, 1, 0, 1); // modPukiWiki Conv by nobunobu
+			$content = $myts->wikiConv($content, 1, 0, 1); // modPukiWiki Conv by nobunobu
 		}
-        $content =& $myts->codeConv($content, 1, 0);    // Ryuji_edit(2003-11-18)
+        $content = $myts->codeConv($content, 1, 0);    // Ryuji_edit(2003-11-18)
     }
     return $content;
 }
