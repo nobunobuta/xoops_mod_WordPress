@@ -65,8 +65,8 @@ case "update":
         $message = $any_changed ._LANG_WOP_SETTING_SAVED;
     }
     
-    if (($dB_errors != '') || ($validation_message != '')) {
-        if ($message != '') {
+    if ((!empty($dB_errors)) || (!empty($validation_message))) {
+        if (!empty($message)) {
             $message .= '<br />and ';
         }
         $message .= $dB_errors . '<br />' . $validation_message;

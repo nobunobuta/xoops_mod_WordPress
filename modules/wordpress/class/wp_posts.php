@@ -230,7 +230,7 @@ class WordPressPostHandler  extends XoopsTableObjectHandler
      * 
      * @return	bool    成功の時は TRUE
 	 */
-	function &deleteAll($criteria = null, $force = false)
+	function deleteAll($criteria = null, $force = false)
 	{
 		//条件に合致する記事ID一覧の取得
 		$posts =& $this->getObjects($criteria);
@@ -263,6 +263,7 @@ class WordPressPostHandler  extends XoopsTableObjectHandler
 			if (!($postmeta_handler->deleteAll($criteria, $force))) {
 				return false;
 			}
+			return true;
 		}
 	}
 }

@@ -116,13 +116,13 @@ switch(get_param('action')) {
 				$version ='';
 			}
 			$description = wptexturize($description[1]);
-			if ('' == $plugin_uri) {
+			if (empty($plugin_uri)) {
 				$plugin = $plugin_name[1];
 			} else {
 				$plugin = "<a href='{$plugin_uri[1]}' title='Visit plugin homepage'>{$plugin_name[1]}</a>";
 			}
 
-			if ('' == $author_uri) {
+			if (empty($author_uri)) {
 				$author = $author_name[1];
 			} else {
 				$author = "<a href='{$author_uri[1]}' title='Visit author homepage'>{$author_name[1]}</a>";
