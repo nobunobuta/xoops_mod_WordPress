@@ -858,7 +858,7 @@ if( ! class_exists( 'XoopsTableObjectHandler' ) ) {
 		    return '';
 		}
 		
-			function _makeCriteria4sql($criteria)
+		function _makeCriteria4sql($criteria)
     	{
     		$dmmyObj =& $this->create();
     		return $this->_makeCriteriaElement4sql($criteria, $dmmyObj);
@@ -871,7 +871,7 @@ if( ! class_exists( 'XoopsTableObjectHandler' ) ) {
     	function _makeCriteriaElement4sql($criteria, &$obj)
     	{
     		if (is_a($criteria, "CriteriaElement")) {
-    			if ($criteria->hasChildElements()) {
+    			if (is_a($criteria, "CriteriaCompo")) {
     				$queryString = "";
     				$maxCount = $criteria->getCountChildElements();
     				for ($i = 0; $i < $maxCount ; $i++) {
@@ -885,8 +885,15 @@ if( ! class_exists( 'XoopsTableObjectHandler' ) ) {
     				//
     				// Render
     				//
-    				$name = $criteria->getName();
-    				$value = $criteria->getValue();
+    				if (method_exists($criteria, 'getName')) {
+    				    $name = $criteria->getName();
+    				    $value = $criteria->getValue();
+    				    $op = $criteria->getOperator();
+    				} else {
+    				    $name = $criteria->column;
+    				    $value = $criteria->value;
+    				    $operator = $criteria->operator;
+    				}
                     if ($name != null) {
         				if (isset($obj->vars[$name])) {
         				    $type = $obj->vars[$name]['data_type'];
@@ -896,7 +903,7 @@ if( ! class_exists( 'XoopsTableObjectHandler' ) ) {
         				} else {
         				    $type = XOBJ_DTYPE_STRING;
         				}
-                        if (!in_array(strtoupper($criteria->getOperator()), array('IN', 'NOT IN'))) {
+                        if (!in_array(strtoupper($operator), array('IN', 'NOT IN'))) {
         			    	$value = $this->_makeCriteriaValue4sql($value, $type);
         			    } else {
         			        if (!is_array($value) && preg_match('/^\(([^)]*)\)$/', trim($value), $match)) {
@@ -911,7 +918,7 @@ if( ! class_exists( 'XoopsTableObjectHandler' ) ) {
         			            return null;
         			        }
         			    }
-       					return $name . " " . $criteria->getOperator() . " " . $value;
+       					return $name . " " . $operator . " " . $value;
     				} else {
     					return null;
     				}
