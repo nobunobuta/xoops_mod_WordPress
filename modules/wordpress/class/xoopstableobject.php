@@ -888,7 +888,7 @@ if( ! class_exists( 'XoopsTableObjectHandler' ) ) {
     				if (method_exists($criteria, 'getName')) {
     				    $name = $criteria->getName();
     				    $value = $criteria->getValue();
-    				    $op = $criteria->getOperator();
+    				    $operator = $criteria->getOperator();
     				} else {
     				    $name = $criteria->column;
     				    $value = $criteria->value;
