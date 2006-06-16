@@ -873,13 +873,13 @@ if( ! class_exists( 'XoopsTableObjectHandler' ) ) {
     		if (is_a($criteria, "CriteriaElement")) {
     			if (is_a($criteria, "CriteriaCompo")) {
     				$queryString = "";
-    				$maxCount = $criteria->getCountChildElements();
-    				for ($i = 0; $i < $maxCount ; $i++) {
-    					if ($i != 0) {
-    						$queryString .= " " . $criteria->getCondition($i);
-    					}
-    					$queryString .= " " . $this->_makeCriteria4sql($criteria->getChildElement($i));
-    				}
+                    $maxCount = count($criteria->criteriaElements);
+                    for ($i = 0; $i < $maxCount ; $i++) {
+                        if ($i != 0) {
+                            $queryString .= " " . $criteria->conditions[$i];
+                        }
+                        $queryString .= " " . $this->_makeCriteria4sql($criteria->criteriaElements[$i]);
+                    }
     				return "(" . $queryString . ")";
     			} else {
     				//
