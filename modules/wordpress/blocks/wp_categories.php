@@ -99,7 +99,7 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 				'cat_ID, cat_name, category_nicename, category_description cat_description, category_parent');
 		}
 		if (empty($GLOBALS['category_posts']) || !count($GLOBALS['category_posts'])) {
-			$criteria =& new CriteriaCompo('post_status', 'publish');
+			$criteria =& new CriteriaCompo(new Criteria('post_status', 'publish'));
 			$criteria->setGroupBy('category_id');
 			$joinCriteria =& new XoopsJoinCriteria(wp_table('post2cat'), 'cat_ID', 'category_id', 'INNER');
 			$joinCriteria->cascade(new XoopsJoinCriteria(wp_table('posts'), 'post_id', 'ID', 'INNER'));
