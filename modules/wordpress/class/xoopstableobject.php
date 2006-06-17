@@ -6,6 +6,9 @@ if (!defined('XOBJ_DTYPE_CUSTOM')) define('XOBJ_DTYPE_CUSTOM', 102);
 if (!defined('XOBJ_VCLASS_TFIELD')) define('XOBJ_VCLASS_TFIELD', 1);
 if (!defined('XOBJ_VCLASS_ATTRIB')) define('XOBJ_VCLASS_ATTRIB', 2);
 if (!defined('XOBJ_VCLASS_EXTRA')) define('XOBJ_VCLASS_EXTRA', 3);
+if (!defined('XOBJ_DTYPE_STRING')) define('XOBJ_DTYPE_STRING', 1);
+if (!defined('XOBJ_DTYPE_TEXT')) define('XOBJ_DTYPE_TEXT', 2);
+if (!defined('XOBJ_DTYPE_BOOL')) define('XOBJ_DTYPE_BOOL', 103);
 /**
 * Generic Table Manupulation XoopsObject class
  * 
@@ -901,7 +904,7 @@ if( ! class_exists( 'XoopsTableObjectHandler' ) ) {
         				    $type = $value['type'];
         				    $value = $value['value'];
         				} else {
-        				    $type = XOBJ_DTYPE_STRING;
+        				    $type = XOBJ_DTYPE_TXTBOX;
         				}
                         if (!in_array(strtoupper($operator), array('IN', 'NOT IN'))) {
         			    	$value = $this->_makeCriteriaValue4sql($value, $type);
@@ -910,10 +913,10 @@ if( ! class_exists( 'XoopsTableObjectHandler' ) ) {
         			            $value = $this->_parseInCause($match[1]);
         			        }
         			        if (is_array($value)) {
-        			            foreach (array_keys($values) as $key) {
-        			                $values[$key] = $this->_makeCriteriaValue4sql($values[$key], $type);
+        			            foreach (array_keys($value) as $key) {
+        			                $value[$key] = $this->_makeCriteriaValue4sql($value[$key], $type);
         			            }
-        			            $value = '('.implode(',', $values).')';
+        			            $value = '('.implode(',', $value).')';
         			        } else {
         			            return null;
         			        }
@@ -943,8 +946,8 @@ if( ! class_exists( 'XoopsTableObjectHandler' ) ) {
     				$value = floatval($value);
     				break;
     			
-    			case XOBJ_DTYPE_STRING:
-    			case XOBJ_DTYPE_TEXT:
+    			case XOBJ_DTYPE_TXTBOX:
+    			case XOBJ_DTYPE_TXTAREA:
     			case XOBJ_DTYPE_URL:
     			case XOBJ_DTYPE_EMAIL:
     			case XOBJ_DTYPE_SOURCE:
@@ -1528,13 +1531,13 @@ if( ! class_exists( 'XoopsTableObjectList' ) ) {
 	}
 
 	function intCriteriaVal($value) {
-		return array('value'=>$value, 'type'=>XOBJ_DTYPE_INT,0);
+		return array('value'=>$value, 'type'=>XOBJ_DTYPE_INT, 0);
 	}
 	function strCriteriaVal($value) {
-		return array('value'=>$value, 'type'=>XOBJ_DTYPE_STRING,0);
+		return array('value'=>$value, 'type'=>XOBJ_DTYPE_TXTBOX, 0);
 	}
 	function floatCriteriaVal($value) {
-		return array('value'=>$value, 'type'=>XOBJ_DTYPE_FLOAT,0);
+		return array('value'=>$value, 'type'=>XOBJ_DTYPE_FLOAT, 0);
 	}
 }
 
