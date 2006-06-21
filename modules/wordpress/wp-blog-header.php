@@ -131,6 +131,8 @@ for ($i=0; $i<count($wpvarstoreset); $i += 1) {
 @header("Pragma: no-cache"); 									// HTTP/1.0
 @header ("X-Pingback: $siteurl/xmlrpc.php");
 
+get_currentuserinfo();
+
 /* Getting settings from db */
 if (isset($doing_rss) && $doing_rss == 1)
     $posts_per_page=get_settings('posts_per_rss');
