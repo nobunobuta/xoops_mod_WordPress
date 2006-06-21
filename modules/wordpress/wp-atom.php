@@ -47,7 +47,7 @@ $rss_charset = wp_get_rss_charset();
 <?php
 } // end else use content
 ?>
-		<content type="text/html" mode="escaped" xml:base="<?php permalink_single_rss() ?>"><![CDATA[<?php the_content_rss('', 0, '', 0, 1) ?>]]></content>
+		<content type="text/html" mode="escaped" xml:base="<?php permalink_single_rss() ?>"><![CDATA[<?php the_content_rss('', 0, '', 0, 3) ?>]]></content>
 	</entry>
 	<?php $items_count++; if (($items_count == $posts_per_page) && empty($m)) { break; } } } ?>
 </feed>
