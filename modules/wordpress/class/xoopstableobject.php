@@ -878,12 +878,19 @@ if( ! class_exists( 'XoopsTableObjectHandler' ) ) {
     				$queryString = "";
                     $maxCount = count($criteria->criteriaElements);
                     for ($i = 0; $i < $maxCount ; $i++) {
-                        if ($i != 0) {
-                            $queryString .= " " . $criteria->conditions[$i];
+                        $subQueryString = $this->_makeCriteria4sql($criteria->criteriaElements[$i]);
+                        if ($subQueryString) {
+                            if ($i != 0) {
+                                $queryString .= " " . $criteria->conditions[$i];
+                            }
+                            $queryString .= " " . $subQueryString;
                         }
-                        $queryString .= " " . $this->_makeCriteria4sql($criteria->criteriaElements[$i]);
                     }
-    				return "(" . $queryString . ")";
+                    if ($queryString) {
+    				    return "(" . $queryString . ")";
+    				} else {
+    				    return null;
+    				}
     			} else {
     				//
     				// Render
