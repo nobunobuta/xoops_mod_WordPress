@@ -405,8 +405,8 @@ function wp_mail_receive() {
 }
 function wp_getattach(&$content, $prefix = "", $create_thumbs = 0)
 {
-	$allowedtypes = explode(' ', trim(get_settings('fileupload_allowedtypes')));
-	$allowedimage = array_intersect($allowedtypes, array('gig', 'jpg', 'jpeg', 'png'));
+    $allowedtypes = explode(' ', trim(strtolower(get_settings('fileupload_allowedtypes'))));
+    $allowedimage = array_intersect($allowedtypes, array('gif', 'jpg', 'jpeg', 'png'));
 	$subtype = $content['subtype'];
 	if (!empty($content['name'])) {
 		$origname = $content['name'];
@@ -414,7 +414,7 @@ function wp_getattach(&$content, $prefix = "", $create_thumbs = 0)
 			$origname = mb_conv(mb_decode_mimeheader($origname), $GLOBALS['blog_charset'], "auto");
 		}
 		$filename_info = pathinfo($origname);
-		$subtype = $filename_info["extension"];
+        $subtype = strtolower($filename_info["extension"]);
 //		$filename_base = basename($filename, "." . $filename_info["extension"]);
 	}
 	$filename_base = $prefix . "_" . time();
