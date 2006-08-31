@@ -11,7 +11,8 @@ if (file_exists(dirname(__FILE__).'/xoops_version.php')) {
 	}
 }
 $xmlrpc_filename = get_settings('xmlrpc_filename') ? get_settings('xmlrpc_filename') : 'xmlrpc.php';
-if (wp_base().'/'.$xmlrpc_filename != __FILE__ ) {
+$__file__ = str_replace( '\\' , '/' , __FILE__ ) ;
+if (wp_base().'/'.$xmlrpc_filename != $__file__ ) {
 	@header('HTTP/1.x 404 Not Found');
 	echo ("404 Not Found");
 	exit();
