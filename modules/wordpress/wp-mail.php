@@ -405,18 +405,18 @@ function wp_mail_receive() {
 }
 function wp_getattach(&$content, $prefix = "", $create_thumbs = 0)
 {
-	$allowedtypes = explode(' ', trim(get_settings('fileupload_allowedtypes')));
-	$allowedimage = array_intersect($allowedtypes, array('gig', 'jpg', 'jpeg', 'png'));
-	$subtype = $content['subtype'];
-	if (!empty($content['name'])) {
-		$origname = $content['name'];
-		if (function_exists('mb_convert_encoding')) {
-			$origname = mb_conv(mb_decode_mimeheader($origname), $GLOBALS['blog_charset'], "auto");
-		}
-		$filename_info = pathinfo($origname);
-		$subtype = $filename_info["extension"];
-//		$filename_base = basename($filename, "." . $filename_info["extension"]);
-	}
+    $allowedtypes = explode(' ', trim(strtolower(get_settings('fileupload_allowedtypes'))));
+    $allowedimage = array_intersect($allowedtypes, array('gif', 'jpg', 'jpeg', 'png'));
+    $subtype = $content['subtype'];
+    if (!empty($content['name'])) {
+        $origname = $content['name'];
+        if (function_exists('mb_convert_encoding')) {
+            $origname = mb_conv(mb_decode_mimeheader($origname), $GLOBALS['blog_charset'], "auto");
+        }
+        $filename_info = pathinfo($origname);
+        $subtype = strtolower($filename_info["extension"]);
+//      $filename_base = basename($filename, "." . $filename_info["extension"]);
+    }
 	$filename_base = $prefix . "_" . time();
 	if (in_array($subtype, $allowedtypes)) {
 		if (!empty($content['encodings'])&&($content['encodings']=='base64')) {
