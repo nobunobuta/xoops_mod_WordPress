@@ -496,7 +496,7 @@ function fix_js_param($str) {
 
 function convert_bbcode($content) {
     if (get_settings('use_bbcode')) {
-        $myts = new MyTextSanitizer;
+        $myts =& MyTextSanitizer::getInstance();
         $content = $myts->codePreConv($content, 1); // Ryuji_edit(2003-11-18)
         if (method_exists($myts, 'wikiPreConv')) {
 			$content = $myts->wikiPreConv($content, 1); // modPukiWiki Conv by nobunobu
