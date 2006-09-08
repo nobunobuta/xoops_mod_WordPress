@@ -2051,8 +2051,8 @@ function static_content_header($mod_timestamp) {
 	$etag = md5( $_SERVER["REQUEST_URI"] . $mod_timestamp );
 	header('Pragma:');
 	header('Etag: "'.$etag.'"' );
-	header('Cache-Control: max-age=866400');
-	header('Expires:'.gmdate('D, d M Y H:i:s',$mod_timestamp+866400).' GMT');
+	header('Cache-Control: max-age=1800');
+	header('Expires:'.gmdate('D, d M Y H:i:s',time()+1800).' GMT');
 	header('Last-Modified: '.gmdate('D, d M Y H:i:s',$mod_timestamp).' GMT');
 	if((!empty($_SERVER['HTTP_IF_MODIFIED_SINCE'])&&($mod_timestamp==str2time($_SERVER['HTTP_IF_MODIFIED_SINCE'])))||
 	   (!empty($_SERVER['HTTP_IF_NONE_MATCH'])&&($etag==$_SERVER['HTTP_IF_NONE_MATCH']))){
