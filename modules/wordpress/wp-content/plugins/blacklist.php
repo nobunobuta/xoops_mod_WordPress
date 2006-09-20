@@ -59,11 +59,21 @@ function wpbl_notify($comment_id, $reason, $harvest) {
     	. "$from\r\n"
     	. "Content-Type: text/plain; charset=\"" . $mail_charset . "\"\r\n";
     // send e-mail
-	if (function_exists('mb_send_mail')) {
-		mb_send_mail($admin_email, $subject, $notify_message, $from);
+	if (defined('XOOPS_URL')) {
+		$xoopsMailer =& getMailer();
+		$xoopsMailer->useMail();
+		$xoopsMailer->setToEmails($admin_email);
+		$xoopsMailer->setFromEmail($admin_email);
+		$xoopsMailer->setSubject($subject);
+		$xoopsMailer->setBody($notify_message);
+		$xoopsMailer->send(true);
 	} else {
-		@mail($admin_email, $subject, $notify_message, $from);
-	}
+    	if (function_exists('mb_send_mail')) {
+    		mb_send_mail($admin_email, $subject, $notify_message, $from);
+    	} else {
+    		@mail($admin_email, $subject, $notify_message, $from);
+    	}
+    }
     return true;
 }
 
