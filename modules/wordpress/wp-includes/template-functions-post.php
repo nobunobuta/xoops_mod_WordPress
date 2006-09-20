@@ -405,6 +405,8 @@ function next_posts_link($label='Next Page &raquo;', $max_page=0, $echo=true) {
 		if (!$max_page) {
 			$postHandler =& wp_handler('Post');
 			$GLOBALS['current_posts_criteria']->setGroupBy('');
+    		$GLOBALS['current_posts_criteria']->setStart(0);
+    		$GLOBALS['current_posts_criteria']->setLimit(-1);
 			$postObjects =& $postHandler->getObjects($GLOBALS['current_posts_criteria'], false, 'count(DISTINCT ID) numposts', '',$GLOBALS['current_posts_join']);
 	        $numposts = $postObjects[0]->getExtraVar('numposts');
 			$max_page = ceil($numposts / $GLOBALS['posts_per_page']);
@@ -453,6 +455,8 @@ function posts_nav_link($sep=' :: ', $prelabel='<< Previous Page', $nxtlabel='Ne
 	if (empty($GLOBALS['p']) && (get_settings('what_to_show') == 'paged')) {
 		$postHandler =& wp_handler('Post');
 		$GLOBALS['current_posts_criteria']->setGroupBy('');
+		$GLOBALS['current_posts_criteria']->setStart(0);
+		$GLOBALS['current_posts_criteria']->setLimit(-1);
 		$postObjects =& $postHandler->getObjects($GLOBALS['current_posts_criteria'], false, 'count(DISTINCT ID) numposts', '',$GLOBALS['current_posts_join']);
         $numposts = $postObjects[0]->getExtraVar('numposts');
 		$max_page = ceil($numposts / $GLOBALS['posts_per_page']);
