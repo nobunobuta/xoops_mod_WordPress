@@ -14,6 +14,7 @@
 
 // include wysiwyg config
 include '../config/spaw_control.config.php';
+include $spaw_root.'class/util.class.php';
 include $spaw_root.'class/lang.class.php';
 
 $theme = htmlspecialchars(empty($_GET['theme'])?$spaw_default_theme:$_GET['theme'],ENT_QUOTES);
