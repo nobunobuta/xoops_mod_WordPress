@@ -537,7 +537,7 @@ function uploadImg($img, $cur_imglib) {
     if (!empty($_POST['thumb']) && in_array($ext,$GLOBALS['spaw_valid_imgs'])) {
       $thumb_size = intval($_POST['thumb']);
       $thums_size_array = array(0, 180, 240, 300);
-      if ($thumb_size < 3) $thumb_size = $thums_size_array[$thumb_size];
+      if ($thumb_size < 4) $thumb_size = $thums_size_array[$thumb_size];
       
       if (!function_exists('imagegif') && $image_info[2] == 1) {
           $errors[] = 'Filetype not supported. Thumbnail not created.';
