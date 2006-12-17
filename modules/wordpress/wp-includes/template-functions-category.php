@@ -155,12 +155,16 @@ function get_category_parents($id, $link = FALSE, $separator = '/', $nicename = 
     } else {
         $name = $parent->cat_name;
     }
-    if ($parent->category_parent) $chain .= get_category_parents($parent->category_parent, $link, $separator, $nicename);
-    if ($link) {
-        $chain .= '<a href="' . get_category_link(0, $parent->cat_ID, $parent->category_nicename) . '" title="' . sprintf("View all posts in %s", $parent->cat_name) . '">'.$name.'</a>' . $separator;
-    } else {
-        $chain .= $name.$separator;
+    if ($parent->category_parent) {
+        $chain .= get_category_parents($parent->category_parent, $link, $separator, $nicename);
+        if ($separator != '/') $chain .= $separator;
     }
+    if ($link) {
+        $chain .= '<a href="' . get_category_link(0, $parent->cat_ID, $parent->category_nicename) . '" title="' . sprintf("View all posts in %s", $parent->cat_name) . '">'.$name.'</a>';
+    } else {
+        $chain .= $name;
+    }
+    if ($separator == '/') $chain .= $separator;
     return $chain;
 }
 

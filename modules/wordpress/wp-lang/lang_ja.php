@@ -624,7 +624,7 @@ define('_LANG_INST_BASE_VALUE22','RSSに出力する言語<br>(参考:<a href="http://bac
 define('_LANG_INST_BASE_VALUE23','b2rss.phpにて&lt;description>中にHTMLタグを許可しますか ?');
 define('_LANG_INST_BASE_VALUE24','RSSで出力する抜粋記事の長さ(0=無制限)<br>注 : b2rss.phpではコード化されたHTMLを使用すれば0にセットされます。');
 define('_LANG_INST_BASE_VALUE25','RSS出力用に抜粋フィールドを使用する');
-define('_LANG_INST_BASE_VALUE26','投稿記事をhttp://weblogs.com/にてリスト化されることを許可する');
+define('_LANG_INST_BASE_VALUE26','投稿記事の更新ををPINGサーバに登録する');
 define('_LANG_INST_BASE_VALUE27','投稿記事をhttp://blo.gs/にてリスト化されることを許可する');
 define('_LANG_INST_BASE_VALUE28','これを変更する必要はありません');
 define('_LANG_INST_BASE_VALUE29','Trackbackの使用を許可するかしないかを設定してください<br>[false]にすると利用できなくなります。');

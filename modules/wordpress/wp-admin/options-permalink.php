@@ -69,7 +69,7 @@ if ($submit) {
     </p> 
 	<p><?php echo _LANG_WPL_USE_BLANK; ?></p>
     <p class="submit"> 
-      <input type="submit" name="submit" value="<?php echo _LANG_WPL_SUBMIT_UPDATE; ?>"> 
+      <input type="submit" name="submit" value="<?php echo _LANG_WPL_SUBMIT_UPDATE; ?>"/> 
     </p> 
   </form> 
 <?php
@@ -87,6 +87,8 @@ if ('/' != substr($home_root, -1)) $home_root = $home_root . '/';
 $rewrite = rewrite_rules('', $permalink_structure);
 $rule_text = '';
 foreach ($rewrite as $match => $query) {
+    $match = htmlspecialchars($match, ENT_QUOTES);
+    $query = htmlspecialchars($query, ENT_QUOTES);
 	if (strstr($query, 'index.php')) {
 		$rule_text .= 'RewriteRule ^' . $match . ' ' . $home_root . $query . " [QSA]\n";
 	} else {
@@ -97,10 +99,9 @@ foreach ($rewrite as $match => $query) {
 ?> 
 <form action="">
     <p>
-    	<textarea rows="5" style="width: 98%;"><?php echo "RewriteEngine On\nRewriteBase $home_root\n$rule_text"; ?></textarea>
+    	<textarea rows="5" cols="70" style="width: 98%;"><?php echo "RewriteEngine On\nRewriteBase $home_root\n$rule_text"; ?></textarea>
     </p>
 </form>
-</div> 
 <?php
 } else {
 ?>
@@ -109,7 +110,6 @@ foreach ($rewrite as $match => $query) {
 </p>
 <?php } ?>
 </div>
-
 <?php
 require('./admin-footer.php');
 ?>

@@ -482,7 +482,11 @@ function get_post_custom_keys() {
 }
 
 function get_post_custom_values($key='') {
-	return $GLOBALS['post_meta_cache'][wp_id()][$GLOBALS['wp_post_id']][$key];
+    if (!empty($GLOBALS['post_meta_cache'][wp_id()])) {
+		return $GLOBALS['post_meta_cache'][wp_id()][$GLOBALS['wp_post_id']][$key];
+	} else {
+	    return array('');
+	}
 }
 
 // this will probably change at some point...

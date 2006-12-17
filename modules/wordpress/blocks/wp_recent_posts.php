@@ -43,7 +43,7 @@ if( ! defined( 'WP_RECENT_POSTS_BLOCK_INCLUDED' ) ) {
 		$show_rss2_icon = (empty($options[4]))? 0 : $options[4];
 		$show_atom_icon = (empty($options[5]))? 0 : $options[5];
 		$rss_num = (empty($options[6]))? "" : $options[6];
-		$category = intval((empty($options[7]))? "all" : $options[7]);
+		$category = (empty($options[7]))? "all" : intval($options[7]);
 		$new_flg = (empty($options[8]))? 0 : $options[8];
 		$tpl_file = (empty($options[9]))? 'wp_recent_posts.html' : $options[9];
 		

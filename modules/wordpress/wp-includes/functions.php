@@ -899,8 +899,8 @@ function trackback($trackback_url, $title, $excerpt, $ID, $charset = "", $force=
 	debug_fwrite($fp, "\n\n");
 	$postHandler =& wp_handler('Post');
 	$postObject =& $postHandler->get($ID);
-	$postObject->setVar('pinged', "__MySqlFunc__CONCAT(pinged, '\n', '$trackback_url')", true);
-	$postObject->setVar('to_ping', "__MySqlFunc__REPLACE(to_ping, '$trackback_url', '')", true);
+	$postObject->setVarAsSQLFunc('pinged', 'CONCAT', "pinged, '\n', '$trackback_url'", true);
+	$postObject->setVarAsSQLFunc('to_ping', 'REPLACE', "to_ping, '$trackback_url', ''", true);
 	if( !$postHandler->insert($postObject, $force, true)) {
 		debug_fwrite($fp, $postHandler->getErrors());
 	}
@@ -1813,6 +1813,7 @@ EOD;
 
 function wp_refcheck($offset = "", $redirect = true) {
 	$ref = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : $_ENV['HTTP_REFERER'];
+	$ref1 = isset($_SERVER['HTTP_REFERER_ORIG']) ? $_SERVER['HTTP_REFERER_ORIG'] : $ref;
 	if ($ref == '') {
 		if ($redirect) {
 			if (defined('XOOPS_URL')) { //XOOPS Module mode
@@ -1823,7 +1824,7 @@ function wp_refcheck($offset = "", $redirect = true) {
 		}
 		return false;
 	}
-	if (strpos($ref, wp_siteurl().$offset) !== 0 ) {
+	if ((strpos($ref, wp_siteurl().$offset) !== 0 )&&(strpos($ref1, wp_siteurl().$offset) !== 0 )) {
 		if ($redirect) {
 			if (defined('XOOPS_URL')) { //XOOPS Module mode
 				redirect_header(wp_siteurl(), 1, 'You cannot update Database contents.(HTTP_REFERER is not valid site.)');

@@ -122,6 +122,8 @@ if( ! defined( 'WP_CATEGORIES_BLOCK_INCLUDED' ) ) {
 				$num_children = count($child_block['records']);
 				if ($num_children && $arraytree) {
 					$_record['children'] = $child_block['records'];
+				} else {
+					$_record['children'] = null;
 				}
 				if (isset($GLOBALS['category_posts']["$category->cat_ID"]) || $num_children) {
 					$_record['name'] = apply_filters('list_cats', $category->cat_name);
