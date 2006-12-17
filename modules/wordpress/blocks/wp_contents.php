@@ -12,10 +12,16 @@ if( ! defined( 'WP_CONTENTS_BLOCK_INCLUDED' ) ) {
 
 	function _b_wp_contents_edit($options)
 	{
+		$categoryHandler =& wp_handler('Category');
+		$optFormCatOptions = Array("0"=>_WP_LIST_CAT_ALL) + $categoryHandler->getParentOptionArray();
+
 		require_once XOOPS_ROOT_PATH.'/class/xoopsformloader.php';
 		$optForm = new XoopsSimpleForm('Block Option Dummy Form', 'optionform', '');
 		$optForm->addElement(new XoopsFormText('Number of posts to show:', 'options[0]', 5, 5, $options[0]));
 		$optForm->addElement(new XoopsFormText('Custom Block Template File<br />(Default: wp_contents.html):', 'options[1]', 25, 50, $options[1]));
+		$optFormCat = new XoopsFormSelect('Listing only in a following categoty:',  'options[2]', $options[2]);
+		$optFormCat->addOptionArray($optFormCatOptions);
+		$optForm->addElement($optFormCat);
 
 		$_wpTpl =& new WordPresTpl('theme');
 		$optForm->assign($_wpTpl);
@@ -24,20 +30,37 @@ if( ! defined( 'WP_CONTENTS_BLOCK_INCLUDED' ) ) {
 	function _b_wp_contents_show($options,$wp_num="") {
 		$no_posts = (empty($options[0]))? 10 : $options[0];
 		$tpl_file = (empty($options[1]))? 'wp_contents.html' : $options[1];
+		$category = (empty($options[2]))? "all" : intval($options[2]);
 
 		$GLOBALS['dateformat'] = get_settings('date_format');
 		$GLOBALS['timeformat'] = get_settings('time_format');
 		
 		$_criteria = new CriteriaCompo(new Criteria('post_status', 'publish'));
 		$_criteria->add(new Criteria('post_date', current_time('mysql'), '<='));
+
+		if ((empty($category)) || ($category == 'all') || ($category == '0')) {
+			$_joinCriteria = null;
+		} else {
+        	$_joinCriteria =& new XoopsJoinCriteria(wp_table('post2cat'), 'ID', 'post_id');
+        	$_wCriteria =& new CriteriaCompo();
+    		$_wCriteria->add(new Criteria('category_id', intCriteriaVal($category)), 'OR');
+    		$_catc = trim(get_category_children($category, '', ' '));
+    		if ($_catc!=="") {
+    			$_catc_array = explode(' ',$_catc);
+    		    for ($_j = 0; $_j < (count($_catc_array)); $_j++) {
+    				$_wCriteria->add(new Criteria('category_id', intCriteriaVal($_catc_array[$_j])), 'OR');
+    		    }
+    		}
+    		$_criteria->add($_wCriteria);
+		}
 		$_criteria->setGroupBy(wp_table('posts').'.ID');
 		$_criteria->setSort('post_date');
 		$_criteria->setOrder('DESC');
 		$_criteria->setLimit($no_posts);
 		$_criteria->setStart(0);
-
 		$postHandler =& wp_handler('Post');
-		$postObjects =& $postHandler->getObjects($_criteria, false, '', 'DISTINCT');
+		$postObjects =& $postHandler->getObjects($_criteria, false, '', 'DISTINCT', $_joinCriteria);
+//		echo $postHandler->getLastSQL();
 		$lposts = array();
 		foreach ($postObjects as $postObject) {
 				$lposts[] =& $postObject->exportWpObject();
@@ -78,6 +101,28 @@ if( ! defined( 'WP_CONTENTS_BLOCK_INCLUDED' ) ) {
 			foreach ($postObjects as $postObject) {
 				$GLOBALS['comment_count_cache'][wp_id()][''.$postObject->getVar('ID')] = $postObject->getExtraVar('ccount');
 			}
+
+        	// Get post-meta info
+        	if ( $meta_list = $GLOBALS['wpdb']->get_results('SELECT post_id, meta_key, meta_value FROM '.wp_table('postmeta').' WHERE post_id IN('.$_post_id_list.') ORDER BY post_id, meta_key', ARRAY_A) ) {
+        		
+        		// Change from flat structure to hierarchical:
+        		$GLOBALS['post_meta_cache'][wp_id()] = array();
+        		foreach ($meta_list as $metarow) {
+        			$mpid = $metarow['post_id'];
+        			$mkey = $metarow['meta_key'];
+        			$mval = $metarow['meta_value'];
+        			
+        			// Force subkeys to be array type:
+        			if (!isset($GLOBALS['post_meta_cache'][wp_id()][$mpid]) || !is_array($GLOBALS['post_meta_cache'][wp_id()][$mpid])) {
+        				$GLOBALS['post_meta_cache'][wp_id()][$mpid] = array();
+        			}
+        			if (!isset($GLOBALS['post_meta_cache'][wp_id()][$mpid]["$mkey"]) || !is_array($GLOBALS['post_meta_cache'][wp_id()][$mpid]["$mkey"])) {
+        				$GLOBALS['post_meta_cache'][wp_id()][$mpid]["$mkey"] = array();
+        			}
+        			// Add a value to the current pid/key:
+        			$GLOBALS['post_meta_cache'][wp_id()][$mpid]["$mkey"][] = $mval;
+        		}
+        	}
 		}
 		$blog = 1;
 		$block = array();
